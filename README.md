@@ -1,2 +1,2 @@
-# slytides
-Sly Tides Game Unity Project
+# Sly Tides
+Sly Tides game Unity project.
