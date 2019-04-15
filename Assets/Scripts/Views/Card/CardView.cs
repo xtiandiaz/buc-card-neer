@@ -6,7 +6,14 @@ using Zenject;
 using UniRx;
 using Random = UnityEngine.Random;
 
-public abstract class CardView : MonoBehaviour
+public interface ICardView
+{
+    Vector3 LocalPosition { get; set; }
+    
+    void Destroy();
+}
+
+public abstract class CardView : MonoBehaviour, ICardView
 {
     [SerializeField] protected SpriteRenderer frontFace;
     protected ICard card;
@@ -21,8 +28,14 @@ public abstract class CardView : MonoBehaviour
     private Tween flipTween;
     private Sequence disposeSequence;
     private Sequence flipSequence;
+    private Transform thisTransform;
 
     public Vector2 Size => frontFace.size;
+    public Vector3 LocalPosition
+    {
+        get => thisTransform.localPosition;
+        set => thisTransform.localPosition = value;
+    }
 
     protected virtual string DefaultSortingLayer => settings.CardDefaultSortingLayerName;
     protected virtual string DefaultTextSortingLayer => settings.CardTextDefaultSortingLayerName;
@@ -43,6 +56,8 @@ public abstract class CardView : MonoBehaviour
         this.palette = palette;
         this.settings = settings;
         this.boardCamera = boardCamera;
+        
+        thisTransform = transform;
 
         Initialize();
     }
@@ -68,11 +83,6 @@ public abstract class CardView : MonoBehaviour
     {
         var introDelay = TimeSpan.FromSeconds(
             Random.Range(settings.MoveDurationInSeconds * 0.25f, settings.MoveDurationInSeconds * 0.5f));
-        
-        card.ObservableCoordinates
-            .DelaySubscription(introDelay)
-            .Subscribe(SetPosition)
-            .AddTo(this);
 
         flipTween = transform.DORotate(
                 Vector3.zero,
@@ -123,6 +133,11 @@ public abstract class CardView : MonoBehaviour
             .SetEase(Ease.InOutQuint));
 
         disposeSequence.OnComplete(() => Destroy(gameObject));
+    }
+
+    public void Destroy()
+    {
+        Destroy(gameObject);
     }
     
     protected Color GetTypeColor()

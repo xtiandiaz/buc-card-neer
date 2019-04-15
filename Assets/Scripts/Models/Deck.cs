@@ -28,8 +28,8 @@ public struct DeckContents
 
 public class Deck
 {
-    private CardFactory cardFactory;
-    private List<Card> cards = new List<Card>();
+    private readonly CardFactory cardFactory;
+    private readonly List<ICard> cards = new List<ICard>();
 
     public class Factory : PlaceholderFactory<DeckContents, Deck>
     {
@@ -45,16 +45,16 @@ public class Deck
         {
             ProduceClass(cardClass);
         }
-
-        cards.Shuffle();
+        
+        Shuffle();
     }
 
-    public void Push(Card card)
+    public void Queue(ICard card)
     {
         cards.Add(card);
     }
 
-    public Card Pull()
+    public ICard Dequeue()
     {
         var first = cards.FirstOrDefault();
         if (first != null)
@@ -63,11 +63,16 @@ public class Deck
         return first;
     }
 
+    private void Shuffle()
+    {
+        cards.Shuffle();
+    }
+
     private void ProduceClass(CardClass cardClass)
     {
         for (var i = 0; i < cardClass.count; i++)
         {
-            Push(cardFactory.CreateModel(cardClass.type, i));
+            Queue(cardFactory.CreateModel(cardClass.type, i));
         }
     }
 }

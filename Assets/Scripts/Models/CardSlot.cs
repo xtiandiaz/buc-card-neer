@@ -3,50 +3,38 @@ using System.Collections.Generic;
 using UniRx;
 using Zenject;
 
-public interface ICardTile
+public interface ICardSlot
 {
-    Coordinates Coordinates { get; }
+    int Capacity { get; }
     IObservable<bool> IsSelectedAsObservable { get; }
     IObservable<bool> IsLockedAsObservable { get; }
 }
 
-
-public class CardTile : ICardTile
+public class CardSlot : ICardSlot
 {
-    public class Factory : PlaceholderFactory<Coordinates, CardTile>
+    public class Factory : PlaceholderFactory<int, CardSlot>
     {
+        public CardSlot Create(CardSlotView fromView)
+        {
+            return Create(fromView.InitialCapacity);
+        }
     }
     
     private readonly ReactiveProperty<bool> isLocked = new ReactiveProperty<bool>();
     private readonly ReactiveProperty<bool> isSelected = new ReactiveProperty<bool>();
-    private Card card;
 
-    private CardTile(Coordinates coordinates)
+    private CardSlot(int capacity)
     {
-        Coordinates = coordinates;
-        IsCenter = coordinates.x == 0 && coordinates.y == 0;
+        Capacity = capacity;
     }
     
-    public Coordinates Coordinates { get; }
-    public Dictionary<Direction, CardTile> Neighbors { get; } = new Dictionary<Direction, CardTile>();
+    public int Capacity { get; }
+    public Dictionary<Direction, CardSlot> Neighbors { get; } = new Dictionary<Direction, CardSlot>();
     public bool IsLocked => isLocked.Value;
-    public bool IsEdge { get; set; }
-    public bool IsCenter { get; }
     
     public IObservable<bool> IsSelectedAsObservable => isSelected;
     public IObservable<bool> IsLockedAsObservable => isLocked;
-
-    public Card Card
-    {
-        get => card;
-        set
-        {
-            card = value;
-
-            if (card != null)
-                card.Coordinates = Coordinates;
-        }
-    }
+    
 
     public void Select()
     {

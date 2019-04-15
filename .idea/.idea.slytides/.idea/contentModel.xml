@@ -735,11 +735,15 @@
         </e>
         <e p="Scripts" t="Include">
           <e p="CardFactory.cs" t="Include" />
+          <e p="CardSlotFactory.cs" t="Include" />
           <e p="Controllers" t="Include">
             <e p="BoardController.cs" t="Include" />
-            <e p="CardTileFactory.cs" t="Include" />
+            <e p="CardController.cs" t="Include" />
+            <e p="CardSlotController.cs" t="Include" />
+            <e p="DeckController.cs" t="Include" />
             <e p="GameController.cs" t="Include" />
           </e>
+          <e p="DeckFactory.cs" t="Include" />
           <e p="Extensions.cs" t="Include" />
           <e p="Installer.cs" t="Include" />
           <e p="Models" t="Include">
@@ -751,7 +755,7 @@
               <e p="PlayerCard.cs" t="Include" />
               <e p="ResourceCard.cs" t="Include" />
             </e>
-            <e p="CardTile.cs" t="Include" />
+            <e p="CardSlot.cs" t="Include" />
             <e p="Deck.cs" t="Include" />
             <e p="Direction.cs" t="Include" />
             <e p="GamePalette.cs" t="Include" />
@@ -770,7 +774,7 @@
               <e p="PlayerCardView.cs" t="Include" />
               <e p="ResourceCardView.cs" t="Include" />
             </e>
-            <e p="CardTileView.cs" t="Include" />
+            <e p="CardSlotView.cs" t="Include" />
             <e p="FocusLight.cs" t="Include" />
           </e>
         </e>

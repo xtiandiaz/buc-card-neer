@@ -16,13 +16,11 @@ public interface ICard
 {
     CardType Type { get; }
     IObservable<bool> IsSelected { get; }
-    IObservable<Coordinates> ObservableCoordinates { get; }
 }
 
 public abstract class Card : ICard
 {
     private readonly ReactiveProperty<bool> isSelected = new ReactiveProperty<bool>();
-    private readonly ReactiveProperty<Coordinates?> coordinates = new ReactiveProperty<Coordinates?>();
 
     protected Card(CardType type)
     {
@@ -31,13 +29,6 @@ public abstract class Card : ICard
     
     public CardType Type { get; }
 
-    public Coordinates? Coordinates
-    {
-        get => coordinates.Value;
-        set => coordinates.Value = value;
-    }
-
-    public IObservable<Coordinates> ObservableCoordinates => coordinates.Where(c => c.HasValue).Select(c => c.Value);
     public IObservable<bool> IsSelected => isSelected;
 
     public void Select()

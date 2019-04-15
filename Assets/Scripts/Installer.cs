@@ -5,16 +5,19 @@ public class Installer : MonoInstaller
 {
     [SerializeField] private BoardCamera camera;
     [SerializeField] private BoardView boardView;
-    [SerializeField] private CardTileView cardTileViewPrefab;
+    [SerializeField] private CardSlotView cardSlotViewPrefab;
     [SerializeField] private GamePalette palette;
 
     public override void InstallBindings()
     {
-        Container.BindInterfacesAndSelfTo<BoardCamera>().FromInstance(camera).AsSingle();
+        // Deck
+        Container.BindFactory<DeckContents, Deck, Deck.Factory>().AsSingle();
+        Container.BindFactory<Deck, DeckController, DeckController.Factory>().AsSingle();
+        Container.Bind<DeckFactory>().AsSingle();
         
-        Container.BindFactory<Coordinates, CardTile, CardTile.Factory>();
-        Container.BindFactory<ICardTile, CardTileView, CardTileView.Factory>().FromComponentInNewPrefab(cardTileViewPrefab);
-        Container.Bind<CardTileFactory>().AsSingle();
+        Container.BindFactory<int, CardSlot, CardSlot.Factory>();
+        Container.BindFactory<ICardSlot, ICardSlotView, CardSlotView.Factory>().FromComponentInNewPrefab(cardSlotViewPrefab);
+        Container.Bind<CardSlotFactory>().AsSingle();
 
         Container.BindFactory<PlayerCard, PlayerCard.Factory>();
         Container.BindFactory<string, IPlayerCard, PlayerCardView, PlayerCardView.Factory>()
@@ -32,13 +35,15 @@ public class Installer : MonoInstaller
         Container.BindFactory<string, IAbilityCard, AbilityCardView, AbilityCardView.Factory>()
             .FromFactory<PrefabResourceFactory<IAbilityCard, AbilityCardView>>();
         
+        Container.BindFactory<ICardSlot, ICardSlotView, CardSlotController, CardSlotController.Factory>().AsSingle();
+        Container.BindFactory<ICard, ICardView, CardController, CardController.Factory>().AsSingle();
         Container.Bind<CardFactory>().AsSingle();
-
-        Container.BindFactory<DeckContents, Deck, Deck.Factory>();
-
+        
+        // Board
         Container.BindFactory<int, int, Board, Board.Factory>();
         Container.BindInterfacesAndSelfTo<BoardController>().AsSingle();
         Container.Bind<BoardView>().FromInstance(boardView).AsSingle();
+        Container.BindInterfacesAndSelfTo<BoardCamera>().FromInstance(camera).AsSingle();
         
         Container.Bind<GameSettings>().AsSingle();
         Container.Bind<GameState>().AsSingle();

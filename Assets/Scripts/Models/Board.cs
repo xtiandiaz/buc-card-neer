@@ -15,14 +15,18 @@ public class Board : IBoard
     
     private readonly int cols;
     private readonly int rows;
-    private readonly CardTile.Factory tileFactory;
+    private readonly CardSlot.Factory tileFactory;
     private readonly GameSettings settings;
-    private readonly Dictionary<Tuple<int, int>, CardTile> tiles = new Dictionary<Tuple<int, int>, CardTile>();
+    private readonly Dictionary<Tuple<int, int>, CardSlot> tiles = new Dictionary<Tuple<int, int>, CardSlot>();
 
+    public List<CardSlot> PlaySlots { get; set; }
+    public List<CardSlot> StashSlots { get; set; }
+    public CardSlot PlayerSlot { get; set; }
+    
     public Board(
         int cols, 
         int rows, 
-        CardTile.Factory tileFactory,
+        CardSlot.Factory tileFactory,
         GameSettings settings
         )
     {
@@ -34,9 +38,9 @@ public class Board : IBoard
         Build();
     }
 
-    public IEnumerable<CardTile> Tiles => tiles.Select(t => t.Value);
+    public IEnumerable<CardSlot> Tiles => tiles.Select(t => t.Value);
 
-    public CardTile this[int xCoordinate, int yCoordinate]
+    public CardSlot this[int xCoordinate, int yCoordinate]
     {
         get
         {
@@ -57,15 +61,13 @@ public class Board : IBoard
             for (var j = 0; j < cols; j++)
             {
                 var coords = new Coordinates(-halfCols + j, -halfRows + i);
-                var newTile = tileFactory.Create(coords);
+                //var newTile = tileFactory.Create(coords);
 
-                newTile.IsEdge = i == 0 || i == rowsM1 || j == 0 || j == colsM1;
-
-                tiles[Tuple.Create(coords.x, coords.y)] = newTile;
+                //tiles[Tuple.Create(coords.x, coords.y)] = newTile;
             }
         }
 
-        foreach (var valuePair in tiles)
+        /*foreach (var valuePair in tiles)
         {
             var tile = valuePair.Value;
             var tileCoords = tile.Coordinates;
@@ -74,7 +76,7 @@ public class Board : IBoard
             tile.Neighbors[Direction.Right] = this[tileCoords.x + 1, tileCoords.y];
             tile.Neighbors[Direction.Down] = this[tileCoords.x, tileCoords.y - 1];
             tile.Neighbors[Direction.Left] = this[tileCoords.x - 1, tileCoords.y];
-        }
+        }*/
 
         /*var nonPlayerTiles = tiles.Where(t => !t.Value.IsCenter && !t.Value.IsEdge)
             .Select(t => t.Value).ToList();

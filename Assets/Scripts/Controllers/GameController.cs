@@ -19,14 +19,5 @@ public class GameController : IInitializable
     public void Initialize()
     {
         Application.targetFrameRate = 50;
-        
-        boardController.PlayerCard.ObservableHealth
-            .Where(h => h == 0)
-            .Delay(settings.MoveDuration)
-            .Subscribe(_ =>
-            {
-                boardController.PlayerCardView.Flip();
-                boardController.Dispose();
-            });
     }
 }

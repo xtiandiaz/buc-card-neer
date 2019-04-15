@@ -19,7 +19,7 @@ public class GameSettings
     public Vector2 CardSize { get; } = new Vector2(2.5f, 3.5f);
     public Vector2 CardSpacing { get; } = Vector2.one * 0.25f;
     public Vector2 DisplacementUnit { get; }
-    public float VisibleCardCountPerRow { get; } = 3.25f;
+    public float VisibleCardCountPerRow { get; } = 4f;
     public TimeSpan MoveDuration { get; } = TimeSpan.FromSeconds(0.75);
     public float MoveDurationInSeconds { get; }
     

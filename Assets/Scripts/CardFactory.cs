@@ -1,7 +1,7 @@
 using System;
 using Zenject;
 
-public class CardFactory : IFactory<CardType, BoardView, Tuple<Card, CardView>>
+public class CardFactory : IFactory<CardType, BoardView, CardController>
 {
     private readonly GameState gameState;
     private readonly PlayerCard.Factory playerCardFactory;
@@ -12,6 +12,8 @@ public class CardFactory : IFactory<CardType, BoardView, Tuple<Card, CardView>>
     private readonly BaddieCardView.Factory baddieCardViewFactory;
     private readonly AbilityCard.Factory abilityCardFactory;
     private readonly AbilityCardView.Factory abilityCardViewFactory;
+    private readonly CardController.Factory cardControllerFactory;
+    private readonly BoardView boardView;
 
     private CardFactory(
         GameState gameState,
@@ -22,7 +24,9 @@ public class CardFactory : IFactory<CardType, BoardView, Tuple<Card, CardView>>
         BaddieCard.Factory baddieCardFactory, 
         BaddieCardView.Factory baddieCardViewFactory,
         AbilityCard.Factory abilityCardFactory,
-        AbilityCardView.Factory abilityCardViewFactory
+        AbilityCardView.Factory abilityCardViewFactory,
+        CardController.Factory cardControllerFactory, 
+        BoardView boardView
         )
     {
         this.gameState = gameState;
@@ -34,22 +38,19 @@ public class CardFactory : IFactory<CardType, BoardView, Tuple<Card, CardView>>
         this.baddieCardViewFactory = baddieCardViewFactory;
         this.abilityCardFactory = abilityCardFactory;
         this.abilityCardViewFactory = abilityCardViewFactory;
+        this.cardControllerFactory = cardControllerFactory;
+        this.boardView = boardView;
     }
 
-    public Tuple<TModel, TView> Create<TModel, TView>(CardType type, BoardView inParentView)
-        where TModel : Card
-        where TView : CardView
-    {
-        var (model, view) = Create(type, inParentView);
-        return Tuple.Create((TModel)model, (TView)view);
-    }
-
-    public Tuple<Card, CardView> Create(CardType type, BoardView inParentView)
+    public CardController Create(CardType type, BoardView inView) 
     {
         var model = CreateModel(type);
-        var view = CreateView(model, inParentView);
-
-        return Tuple.Create(model, view);
+        return cardControllerFactory.Create(model, CreateView(model, inView));
+    }
+    
+    public CardController Create(ICard fromModel) 
+    {
+        return cardControllerFactory.Create(fromModel, CreateView(fromModel, boardView));
     }
     
     public Card CreateModel(CardType forType, int withSequenceNumber = 0)
@@ -71,14 +72,14 @@ public class CardFactory : IFactory<CardType, BoardView, Tuple<Card, CardView>>
         }
     }
     
-    public CardView CreateView(Card fromModel, BoardView inParentView)
+    public CardView CreateView(ICard fromModel, BoardView inParentView)
     {
         var view = CreateView(fromModel);
         inParentView.ParentAsNew(view);
         return view;
     }
 
-    private CardView CreateView(Card fromModel)
+    private CardView CreateView(ICard fromModel)
     {
         switch (fromModel.Type)
         {

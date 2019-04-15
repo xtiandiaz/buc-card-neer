@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 using UniRx;
@@ -7,11 +8,18 @@ public class BoardView : MonoBehaviour
 {
     [SerializeField] private Transform background;
     [SerializeField] private UserInteractionListener interactionListener;
+    [SerializeField] private List<CardSlotView> playSlots;
+    [SerializeField] private List<CardSlotView> stashSlots;
+    [SerializeField] private CardSlotView playerSlot;
 
     private new BoardCamera camera;
     private Rect viewRect;
 
     public IObservable<Direction> Move { get; private set; }
+    
+    public List<CardSlotView> PlaySlots => playSlots;
+    public List<CardSlotView> StashSlots => stashSlots;
+    public CardSlotView PlayerSlot => playerSlot;
 
     [Inject]
     private void Construct(
