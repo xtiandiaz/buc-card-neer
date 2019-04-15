@@ -6,8 +6,8 @@ public class CardFactory : IFactory<CardType, BoardView, CardController>
     private readonly GameState gameState;
     private readonly PlayerCard.Factory playerCardFactory;
     private readonly PlayerCardView.Factory playerCardViewFactory;
-    private readonly ResourceCard.Factory resourceCardFactory;
-    private readonly ResourceCardView.Factory resourceCardViewFactory;
+    private readonly ItemCard.Factory resourceCardFactory;
+    private readonly ItemCardView.Factory resourceCardViewFactory;
     private readonly BaddieCard.Factory baddieCardFactory;
     private readonly BaddieCardView.Factory baddieCardViewFactory;
     private readonly AbilityCard.Factory abilityCardFactory;
@@ -19,8 +19,8 @@ public class CardFactory : IFactory<CardType, BoardView, CardController>
         GameState gameState,
         PlayerCard.Factory playerCardFactory, 
         PlayerCardView.Factory playerCardViewFactory, 
-        ResourceCard.Factory resourceCardFactory, 
-        ResourceCardView.Factory resourceCardViewFactory,
+        ItemCard.Factory resourceCardFactory, 
+        ItemCardView.Factory resourceCardViewFactory,
         BaddieCard.Factory baddieCardFactory, 
         BaddieCardView.Factory baddieCardViewFactory,
         AbilityCard.Factory abilityCardFactory,
@@ -88,7 +88,7 @@ public class CardFactory : IFactory<CardType, BoardView, CardController>
             case CardType.Health:
             case CardType.Stamina:
             case CardType.Defense:
-                return resourceCardViewFactory.Create(GetResourceName(fromModel.Type), (IResourceCard)fromModel);
+                return resourceCardViewFactory.Create(GetResourceName(fromModel.Type), (IItemCard)fromModel);
             case CardType.Ability:
                 return abilityCardViewFactory.Create(GetResourceName(fromModel.Type), (IAbilityCard)fromModel);
             case CardType.Baddie:
@@ -107,7 +107,7 @@ public class CardFactory : IFactory<CardType, BoardView, CardController>
             case CardType.Health:
             case CardType.Stamina:
             case CardType.Defense:
-                return "Prefabs/Cards/Resource";
+                return "Prefabs/Cards/Item";
             case CardType.Ability:
                 return "Prefabs/Cards/Ability";
             case CardType.Baddie:

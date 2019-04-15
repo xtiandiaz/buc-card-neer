@@ -66,7 +66,7 @@ public abstract class CardView : MonoBehaviour, ICardView
 
     protected virtual void Awake()
     {
-        SetToFirstOverlaySortingLayers();
+        //SetToFirstOverlaySortingLayers();
 
         var cameraPos = boardCamera.Position;
         var viewRect = boardCamera.GetFrustumRect(transform.position.z);
@@ -87,9 +87,9 @@ public abstract class CardView : MonoBehaviour, ICardView
         flipTween = transform.DORotate(
                 Vector3.zero,
                 settings.MoveDurationInSeconds * 0.75f)
-            .SetDelay((float)introDelay.TotalSeconds)
-            .SetEase(Ease.InOutQuint)
-            .OnComplete(SetToDefaultSortingLayers);
+            .SetDelay((float) introDelay.TotalSeconds)
+            .SetEase(Ease.InOutQuint);
+        //.OnComplete(SetToDefaultSortingLayers);
     }
 
     public void Flip()

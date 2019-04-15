@@ -56,7 +56,7 @@ public class PlayerCard : Card, IPlayerCard
     public IObservable<int> ObservableStamina => stamina;
     public IObservable<Tuple<AbilityType, int>> AcquiredAbility => acquiredAbility;
 
-    public void Collect(ResourceCard fromCard)
+    public void Collect(ItemCard fromCard)
     {
         switch (fromCard.Type)
         {

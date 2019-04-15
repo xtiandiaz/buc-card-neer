@@ -1,19 +1,19 @@
 using Zenject;
 using Random = UnityEngine.Random;
 
-public interface IResourceCard
+public interface IItemCard
 {
     CardType Type { get; }
     int Value { get; }
 }
 
-public class ResourceCard : Card, IResourceCard
+public class ItemCard : Card, IItemCard
 {
-    public class Factory : PlaceholderFactory<CardType, ResourceCard>
+    public class Factory : PlaceholderFactory<CardType, ItemCard>
     {
     }
     
-    protected ResourceCard(CardType cardType) : base(cardType)
+    protected ItemCard(CardType cardType) : base(cardType)
     {
         switch (cardType)
         {

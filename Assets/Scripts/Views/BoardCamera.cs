@@ -26,7 +26,7 @@ public class BoardCamera : MonoBehaviour, IBoardCamera
         this.settings = settings;
         
         var thisTransform = transform;
-        var desiredViewWidth = (settings.DisplacementUnit.x) * settings.VisibleCardCountPerRow + settings.CardSpacing.x;
+        var desiredViewWidth = settings.CardSize.x * settings.VisibleCardCountPerRow + settings.Margins.x * 2f;
         
         thisTransform.position = new Vector3(
             0, 

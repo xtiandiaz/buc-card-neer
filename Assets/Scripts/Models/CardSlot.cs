@@ -6,6 +6,7 @@ using Zenject;
 public interface ICardSlot
 {
     int Capacity { get; }
+    IObservable<int> ObservableCapacity { get; }
     IObservable<bool> IsSelectedAsObservable { get; }
     IObservable<bool> IsLockedAsObservable { get; }
 }
@@ -19,16 +20,19 @@ public class CardSlot : ICardSlot
             return Create(fromView.InitialCapacity);
         }
     }
-    
+
+    private readonly ReactiveProperty<int> capacity;
     private readonly ReactiveProperty<bool> isLocked = new ReactiveProperty<bool>();
     private readonly ReactiveProperty<bool> isSelected = new ReactiveProperty<bool>();
 
-    private CardSlot(int capacity)
+    private CardSlot(int initialCapacity)
     {
-        Capacity = capacity;
+        capacity = new ReactiveProperty<int>(initialCapacity);
     }
+
+    public int Capacity => capacity.Value;
+    public IObservable<int> ObservableCapacity => capacity.DistinctUntilChanged();
     
-    public int Capacity { get; }
     public Dictionary<Direction, CardSlot> Neighbors { get; } = new Dictionary<Direction, CardSlot>();
     public bool IsLocked => isLocked.Value;
     

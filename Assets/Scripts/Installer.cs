@@ -23,9 +23,9 @@ public class Installer : MonoInstaller
         Container.BindFactory<string, IPlayerCard, PlayerCardView, PlayerCardView.Factory>()
             .FromFactory<PrefabResourceFactory<IPlayerCard, PlayerCardView>>();
         
-        Container.BindFactory<CardType, ResourceCard, ResourceCard.Factory>();
-        Container.BindFactory<string, IResourceCard, ResourceCardView, ResourceCardView.Factory>()
-            .FromFactory<PrefabResourceFactory<IResourceCard, ResourceCardView>>();
+        Container.BindFactory<CardType, ItemCard, ItemCard.Factory>();
+        Container.BindFactory<string, IItemCard, ItemCardView, ItemCardView.Factory>()
+            .FromFactory<PrefabResourceFactory<IItemCard, ItemCardView>>();
         
         Container.BindFactory<BaddieCard, BaddieCard.Factory>();
         Container.BindFactory<string, IBaddieCard, BaddieCardView, BaddieCardView.Factory>()

@@ -25,6 +25,7 @@ public class BoardController : IInitializable, IDisposable
     private readonly BoardView boardView;
     private readonly GameSettings settings;
     private readonly CardSlotFactory cardSlotFactory;
+    private readonly CompositeDisposable perGameDisposables = new CompositeDisposable();
 
     private Board board;
     private DeckController deck;
@@ -60,24 +61,37 @@ public class BoardController : IInitializable, IDisposable
         playSlots = boardView.PlaySlots.Select(slotView => cardSlotFactory.Create(slotView)).ToList();
         stashSlots = boardView.StashSlots.Select(slotView => cardSlotFactory.Create(slotView)).ToList();
         playerSlot = cardSlotFactory.Create(boardView.PlayerSlot);
-        
-        playSlots.ForEach(Deal);
+
+        perGameDisposables.Add(
+            playSlots.Select(s => s.Emptied.Select(_ => s)).Merge()
+                .Subscribe(s => Deal(s, s.Model.Capacity)));
     }
 
     public void Dispose()
     {
-        moveSubscription?.Dispose();
+        perGameDisposables.Dispose();
+    }
+
+    public void Deal(CardSlotController onSlot, int count)
+    {
+        for (var i = 0; i < count; i++)
+        {
+            if (!Deal(onSlot))
+                break;
+        }
     }
     
-    public void Deal(CardSlotController onSlot)
+    public bool Deal(CardSlotController onSlot)
     {
         if (!onSlot.DoesAcceptNewCards)
-            return;
+            return false;
 
         var cardController = deck.Dequeue();
         if (cardController == null)
-            return;
+            return false;
 
         onSlot.Take(cardController);
+
+        return true;
     }
 }

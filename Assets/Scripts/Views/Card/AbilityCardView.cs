@@ -14,7 +14,5 @@ public class AbilityCardView : CardView
     protected override void Initialize()
     {
         card = (IAbilityCard) base.card;
-
-        iconRenderer.color = palette.GetColor(card.AbilityType);
     }
 }

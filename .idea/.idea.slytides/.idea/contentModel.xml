@@ -771,8 +771,8 @@
               <e p="BaddieCardView.cs" t="Include" />
               <e p="CardStatView.cs" t="Include" />
               <e p="CardView.cs" t="Include" />
+              <e p="ItemCardView.cs" t="Include" />
               <e p="PlayerCardView.cs" t="Include" />
-              <e p="ResourceCardView.cs" t="Include" />
             </e>
             <e p="CardSlotView.cs" t="Include" />
             <e p="FocusLight.cs" t="Include" />

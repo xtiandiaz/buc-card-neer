@@ -2,9 +2,9 @@ using System;
 using UnityEngine;
 using Zenject;
 
-public class ResourceCardView : CardView
+public class ItemCardView : CardView
 {
-    public class Factory : PlaceholderFactory<string, IResourceCard, ResourceCardView>
+    public class Factory : PlaceholderFactory<string, IItemCard, ItemCardView>
     {
     }
     
@@ -14,11 +14,11 @@ public class ResourceCardView : CardView
     [SerializeField] private Sprite staminaIcon;
     [SerializeField] private Sprite defenseIcon;
 
-    private new IResourceCard card;
+    private new IItemCard card;
 
     protected override void Initialize()
     {
-        card = (IResourceCard) base.card;
+        card = (IItemCard) base.card;
     }
 
     protected override void Awake()
@@ -26,8 +26,6 @@ public class ResourceCardView : CardView
         base.Awake();
         
         textMesh.text = $"{card.Value}";
-        frontFace.color = GetTypeColor();
-        iconRenderer.sprite = GetIconSprite();
     }
 
     private Sprite GetIconSprite()
