@@ -5,11 +5,10 @@ using Zenject;
 public enum CardType
 {
     Player,
-    Health, 
-    Stamina,
-    Defense,
-    Ability,
-    Baddie
+    Item, 
+    Merchant,
+    Pirate,
+    Inspector
 }
 
 public interface ICard

@@ -6,12 +6,12 @@ public class CardFactory : IFactory<CardType, BoardView, CardController>
     private readonly GameState gameState;
     private readonly PlayerCard.Factory playerCardFactory;
     private readonly PlayerCardView.Factory playerCardViewFactory;
-    private readonly ItemCard.Factory resourceCardFactory;
+    private readonly ItemCard.Factory itemCardFactory;
     private readonly ItemCardView.Factory resourceCardViewFactory;
-    private readonly BaddieCard.Factory baddieCardFactory;
-    private readonly BaddieCardView.Factory baddieCardViewFactory;
-    private readonly AbilityCard.Factory abilityCardFactory;
-    private readonly AbilityCardView.Factory abilityCardViewFactory;
+    private readonly PirateCard.Factory baddieCardFactory;
+    private readonly PirateCardView.Factory pirateCardViewFactory;
+    private readonly MerchantCard.Factory abilityCardFactory;
+    private readonly MerchantCardView.Factory merchantCardViewFactory;
     private readonly CardController.Factory cardControllerFactory;
     private readonly BoardView boardView;
 
@@ -19,12 +19,12 @@ public class CardFactory : IFactory<CardType, BoardView, CardController>
         GameState gameState,
         PlayerCard.Factory playerCardFactory, 
         PlayerCardView.Factory playerCardViewFactory, 
-        ItemCard.Factory resourceCardFactory, 
+        ItemCard.Factory itemCardFactory, 
         ItemCardView.Factory resourceCardViewFactory,
-        BaddieCard.Factory baddieCardFactory, 
-        BaddieCardView.Factory baddieCardViewFactory,
-        AbilityCard.Factory abilityCardFactory,
-        AbilityCardView.Factory abilityCardViewFactory,
+        PirateCard.Factory baddieCardFactory, 
+        PirateCardView.Factory pirateCardViewFactory,
+        MerchantCard.Factory abilityCardFactory,
+        MerchantCardView.Factory merchantCardViewFactory,
         CardController.Factory cardControllerFactory, 
         BoardView boardView
         )
@@ -32,12 +32,12 @@ public class CardFactory : IFactory<CardType, BoardView, CardController>
         this.gameState = gameState;
         this.playerCardFactory = playerCardFactory;
         this.playerCardViewFactory = playerCardViewFactory;
-        this.resourceCardFactory = resourceCardFactory;
+        this.itemCardFactory = itemCardFactory;
         this.resourceCardViewFactory = resourceCardViewFactory;
         this.baddieCardFactory = baddieCardFactory;
-        this.baddieCardViewFactory = baddieCardViewFactory;
+        this.pirateCardViewFactory = pirateCardViewFactory;
         this.abilityCardFactory = abilityCardFactory;
-        this.abilityCardViewFactory = abilityCardViewFactory;
+        this.merchantCardViewFactory = merchantCardViewFactory;
         this.cardControllerFactory = cardControllerFactory;
         this.boardView = boardView;
     }
@@ -59,13 +59,11 @@ public class CardFactory : IFactory<CardType, BoardView, CardController>
         {
             case CardType.Player:
                 return playerCardFactory.Create();
-            case CardType.Health:
-            case CardType.Stamina:
-            case CardType.Defense:
-                return resourceCardFactory.Create(forType);
-            case CardType.Ability:
-                return abilityCardFactory.Create(gameState.AbilityIndex[withSequenceNumber], withSequenceNumber);
-            case CardType.Baddie:
+            case CardType.Item:
+                return itemCardFactory.Create();
+            case CardType.Merchant:
+                return abilityCardFactory.Create();
+            case CardType.Pirate:
                 return baddieCardFactory.Create();
             default:
                 throw new ArgumentOutOfRangeException(nameof(forType), forType, null);
@@ -84,15 +82,13 @@ public class CardFactory : IFactory<CardType, BoardView, CardController>
         switch (fromModel.Type)
         {
             case CardType.Player:
-                return playerCardViewFactory.Create(GetResourceName(fromModel.Type), (IPlayerCard) fromModel);
-            case CardType.Health:
-            case CardType.Stamina:
-            case CardType.Defense:
-                return resourceCardViewFactory.Create(GetResourceName(fromModel.Type), (IItemCard)fromModel);
-            case CardType.Ability:
-                return abilityCardViewFactory.Create(GetResourceName(fromModel.Type), (IAbilityCard)fromModel);
-            case CardType.Baddie:
-                return baddieCardViewFactory.Create(GetResourceName(fromModel.Type), (IBaddieCard)fromModel);
+                return playerCardViewFactory.Create(GetResourceName(fromModel.Type));
+            case CardType.Item:
+                return resourceCardViewFactory.Create(GetResourceName(fromModel.Type));
+            case CardType.Merchant:
+                return merchantCardViewFactory.Create(GetResourceName(fromModel.Type));
+            case CardType.Pirate:
+                return pirateCardViewFactory.Create(GetResourceName(fromModel.Type));
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -104,14 +100,12 @@ public class CardFactory : IFactory<CardType, BoardView, CardController>
         {
             case CardType.Player:
                 return "Prefabs/Cards/Player";
-            case CardType.Health:
-            case CardType.Stamina:
-            case CardType.Defense:
+            case CardType.Item:
                 return "Prefabs/Cards/Item";
-            case CardType.Ability:
-                return "Prefabs/Cards/Ability";
-            case CardType.Baddie:
-                return "Prefabs/Cards/Baddie";
+            case CardType.Merchant:
+                return "Prefabs/Cards/Merchant";
+            case CardType.Pirate:
+                return "Prefabs/Cards/Pirate";
             default:
                 throw new ArgumentOutOfRangeException(nameof(cardType), cardType, null);
         }

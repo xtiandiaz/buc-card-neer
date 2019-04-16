@@ -4,15 +4,7 @@ using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
 
-public interface IPlayerCard
-{
-    IObservable<int> ObservableHealth { get; }
-    IObservable<int> ObservableStamina { get; }
-    IObservable<int> ObservableDefense { get; }
-    IObservable<Tuple<AbilityType, int>> AcquiredAbility { get; }
-}
-
-public class PlayerCard : Card, IPlayerCard
+public class PlayerCard : Card
 {
     public class Factory : PlaceholderFactory<PlayerCard>
     {
@@ -22,7 +14,6 @@ public class PlayerCard : Card, IPlayerCard
     private readonly ReactiveProperty<int> health;
     private readonly ReactiveProperty<int> defense;
     private readonly ReactiveProperty<int> stamina;
-    private readonly Subject<Tuple<AbilityType, int>> acquiredAbility = new Subject<Tuple<AbilityType, int>>();
     
     protected PlayerCard(GameSettings gameSettings) : base(CardType.Player)
     {
@@ -54,35 +45,16 @@ public class PlayerCard : Card, IPlayerCard
     public IObservable<int> ObservableHealth => health;
     public IObservable<int> ObservableDefense => defense;
     public IObservable<int> ObservableStamina => stamina;
-    public IObservable<Tuple<AbilityType, int>> AcquiredAbility => acquiredAbility;
 
     public void Collect(ItemCard fromCard)
     {
-        switch (fromCard.Type)
-        {
-            case CardType.Health:
-                Health += fromCard.Value;
-                break;
-            case CardType.Stamina:
-                Stamina += fromCard.Value;
-                break;
-            case CardType.Defense:
-                Defense += fromCard.Value;
-                break;
-        }
     }
 
-    public void Acquire(AbilityCard card)
+    public void Acquire(MerchantCard card)
     {
-        acquiredAbility.OnNext(Tuple.Create(card.AbilityType, card.Index));
     }
 
-    public void Perform(BaddieCard onCard)
+    public void Perform(PirateCard onCard)
     {
-        var attackRemanent = Mathf.Max(0,onCard.Attack - Defense);
-        
-        Defense -= onCard.Attack;
-        Health -= attackRemanent;
-        Stamina -= Random.Range(1, onCard.Stamina + 1);
     }
 }

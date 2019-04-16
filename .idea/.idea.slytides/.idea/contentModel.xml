@@ -749,11 +749,11 @@
           <e p="Models" t="Include">
             <e p="Board.cs" t="Include" />
             <e p="Card" t="Include">
-              <e p="AbilityCard.cs" t="Include" />
-              <e p="BaddieCard.cs" t="Include" />
               <e p="Card.cs" t="Include" />
+              <e p="ItemCard.cs" t="Include" />
+              <e p="MerchantCard.cs" t="Include" />
+              <e p="PirateCard.cs" t="Include" />
               <e p="PlayerCard.cs" t="Include" />
-              <e p="ResourceCard.cs" t="Include" />
             </e>
             <e p="CardSlot.cs" t="Include" />
             <e p="Deck.cs" t="Include" />
@@ -767,11 +767,11 @@
             <e p="BoardCamera.cs" t="Include" />
             <e p="BoardView.cs" t="Include" />
             <e p="Card" t="Include">
-              <e p="AbilityCardView.cs" t="Include" />
-              <e p="BaddieCardView.cs" t="Include" />
               <e p="CardStatView.cs" t="Include" />
               <e p="CardView.cs" t="Include" />
               <e p="ItemCardView.cs" t="Include" />
+              <e p="MerchantCardView.cs" t="Include" />
+              <e p="PirateCardView.cs" t="Include" />
               <e p="PlayerCardView.cs" t="Include" />
             </e>
             <e p="CardSlotView.cs" t="Include" />

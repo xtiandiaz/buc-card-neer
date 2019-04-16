@@ -20,20 +20,20 @@ public class Installer : MonoInstaller
         Container.Bind<CardSlotFactory>().AsSingle();
 
         Container.BindFactory<PlayerCard, PlayerCard.Factory>();
-        Container.BindFactory<string, IPlayerCard, PlayerCardView, PlayerCardView.Factory>()
-            .FromFactory<PrefabResourceFactory<IPlayerCard, PlayerCardView>>();
+        Container.BindFactory<string, PlayerCardView, PlayerCardView.Factory>()
+            .FromFactory<PrefabResourceFactory<PlayerCardView>>();
         
-        Container.BindFactory<CardType, ItemCard, ItemCard.Factory>();
-        Container.BindFactory<string, IItemCard, ItemCardView, ItemCardView.Factory>()
-            .FromFactory<PrefabResourceFactory<IItemCard, ItemCardView>>();
+        Container.BindFactory<ItemCard, ItemCard.Factory>();
+        Container.BindFactory<string, ItemCardView, ItemCardView.Factory>()
+            .FromFactory<PrefabResourceFactory<ItemCardView>>();
         
-        Container.BindFactory<BaddieCard, BaddieCard.Factory>();
-        Container.BindFactory<string, IBaddieCard, BaddieCardView, BaddieCardView.Factory>()
-            .FromFactory<PrefabResourceFactory<IBaddieCard, BaddieCardView>>();
+        Container.BindFactory<PirateCard, PirateCard.Factory>();
+        Container.BindFactory<string, PirateCardView, PirateCardView.Factory>()
+            .FromFactory<PrefabResourceFactory<PirateCardView>>();
         
-        Container.BindFactory<AbilityType, int, AbilityCard, AbilityCard.Factory>();
-        Container.BindFactory<string, IAbilityCard, AbilityCardView, AbilityCardView.Factory>()
-            .FromFactory<PrefabResourceFactory<IAbilityCard, AbilityCardView>>();
+        Container.BindFactory<MerchantCard, MerchantCard.Factory>();
+        Container.BindFactory<string, MerchantCardView, MerchantCardView.Factory>()
+            .FromFactory<PrefabResourceFactory<MerchantCardView>>();
         
         Container.BindFactory<ICardSlot, ICardSlotView, CardSlotController, CardSlotController.Factory>().AsSingle();
         Container.BindFactory<ICard, ICardView, CardController, CardController.Factory>().AsSingle();

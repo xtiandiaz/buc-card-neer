@@ -4,11 +4,12 @@ using DG.Tweening;
 using UnityEngine;
 using Zenject;
 using UniRx;
+using UnityEngine.Rendering;
 using Random = UnityEngine.Random;
 
 public interface ICardView
 {
-    Vector3 LocalPosition { get; set; }
+    void Arrange(Vector3 atLocalPosition, int withSortingOrder);
     
     void Destroy();
 }
@@ -16,13 +17,12 @@ public interface ICardView
 public abstract class CardView : MonoBehaviour, ICardView
 {
     [SerializeField] protected SpriteRenderer frontFace;
-    protected ICard card;
+    [SerializeField] protected SpriteRenderer backFace;
+    [SerializeField] protected SortingGroup sortingGroup;
     protected GamePalette palette;
     protected GameSettings settings;
     protected IBoardCamera boardCamera;
     
-    [SerializeField] private Renderer[] bodyRenderersForSorting;
-    [SerializeField] private Renderer[] textRenderersForSorting;
     private MeshRenderer textMeshRenderer;
     private Tween locationTween;
     private Tween flipTween;
@@ -31,28 +31,14 @@ public abstract class CardView : MonoBehaviour, ICardView
     private Transform thisTransform;
 
     public Vector2 Size => frontFace.size;
-    public Vector3 LocalPosition
-    {
-        get => thisTransform.localPosition;
-        set => thisTransform.localPosition = value;
-    }
-
-    protected virtual string DefaultSortingLayer => settings.CardDefaultSortingLayerName;
-    protected virtual string DefaultTextSortingLayer => settings.CardTextDefaultSortingLayerName;
-    private string FirstOverlaySortingLayer => settings.CardFirstOverlaySortingLayerName;
-    private string FirstOverlayTextSortingLayer => settings.CardTextFirstOverlaySortingLayerName;
-    private string SecondOverlaySortingLayer => settings.CardSecondOverlaySortingLayerName;
-    private string SecondOverlayTextSortingLayer => settings.CardTextSecondOverlaySortingLayerName;
 
     [Inject]
     private void Construct(
-        ICard card, 
         GamePalette palette, 
         GameSettings settings, 
         IBoardCamera boardCamera 
         )
     {
-        this.card = card;
         this.palette = palette;
         this.settings = settings;
         this.boardCamera = boardCamera;
@@ -66,8 +52,6 @@ public abstract class CardView : MonoBehaviour, ICardView
 
     protected virtual void Awake()
     {
-        //SetToFirstOverlaySortingLayers();
-
         var cameraPos = boardCamera.Position;
         var viewRect = boardCamera.GetFrustumRect(transform.position.z);
         
@@ -81,15 +65,18 @@ public abstract class CardView : MonoBehaviour, ICardView
 
     protected virtual void Start()
     {
-        var introDelay = TimeSpan.FromSeconds(
-            Random.Range(settings.MoveDurationInSeconds * 0.25f, settings.MoveDurationInSeconds * 0.5f));
-
         flipTween = transform.DORotate(
                 Vector3.zero,
                 settings.MoveDurationInSeconds * 0.75f)
-            .SetDelay((float) introDelay.TotalSeconds)
-            .SetEase(Ease.InOutQuint);
-        //.OnComplete(SetToDefaultSortingLayers);
+            .SetEase(Ease.InOutQuint)
+            .OnComplete(() => backFace.enabled = false);
+    }
+
+    public void Arrange(Vector3 atLocalPosition, int withSortingOrder)
+    {
+        thisTransform.localPosition = atLocalPosition;
+        sortingGroup.sortingOrder = withSortingOrder;
+        //sortingGroup.enabled = false;
     }
 
     public void Flip()
@@ -129,7 +116,6 @@ public abstract class CardView : MonoBehaviour, ICardView
         disposeSequence.Join(transform.DORotate(
             new Vector3(0, -180, 0),
             settings.MoveDurationInSeconds * 0.75f)
-            .OnStart(SetToSecondOverlaySortingLayers)
             .SetEase(Ease.InOutQuint));
 
         disposeSequence.OnComplete(() => Destroy(gameObject));
@@ -138,27 +124,6 @@ public abstract class CardView : MonoBehaviour, ICardView
     public void Destroy()
     {
         Destroy(gameObject);
-    }
-    
-    protected Color GetTypeColor()
-    {
-        switch (card.Type)
-        {
-            case CardType.Player:
-                return Color.white;
-            case CardType.Health:
-                return palette.Health;
-            case CardType.Stamina:
-                return palette.Stamina;
-            case CardType.Defense:
-                return palette.Defense;
-            case CardType.Ability:
-                return palette.Ability1;
-            case CardType.Baddie:
-                return palette.Baddie;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
     }
 
     private void SetPosition(Coordinates forCoordinates)
@@ -170,33 +135,5 @@ public abstract class CardView : MonoBehaviour, ICardView
                     forCoordinates.y, 0) * settings.DisplacementUnit,
                 settings.MoveDurationInSeconds)
             .SetEase(Ease.OutQuint);
-    }
-
-    private void SetToFirstOverlaySortingLayers()
-    {
-        SetSortingLayer(FirstOverlaySortingLayer, bodyRenderersForSorting);
-        SetSortingLayer(FirstOverlayTextSortingLayer, textRenderersForSorting);
-    }
-    
-    private void SetToSecondOverlaySortingLayers()
-    {
-        SetSortingLayer(SecondOverlaySortingLayer, bodyRenderersForSorting);
-        SetSortingLayer(SecondOverlayTextSortingLayer, textRenderersForSorting);
-    }
-    
-    private void SetToDefaultSortingLayers()
-    {
-        SetSortingLayer(DefaultSortingLayer, bodyRenderersForSorting);
-        SetSortingLayer(DefaultTextSortingLayer, textRenderersForSorting);
-    }
-
-    private void SetSortingLayer(string named, IEnumerable<Renderer> forRenderers)
-    {
-        var sortingLayerId = SortingLayer.NameToID(named);
-        
-        foreach (var sortingRenderer in forRenderers)
-        {
-            sortingRenderer.sortingLayerID = sortingLayerId;
-        }
     }
 }

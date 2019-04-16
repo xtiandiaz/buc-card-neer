@@ -22,23 +22,4 @@ public class GamePalette : MonoBehaviour
     public Color Ability4 => ability4;
     public Color Ability5 => ability5;
     public Color Baddie => baddie;
-    
-    public Color GetColor(AbilityType forAbilityType)
-    {
-        switch (forAbilityType)
-        {
-            case AbilityType.StealthBoots:
-                return Ability1;
-            case AbilityType.HawkEye:
-                return Ability2;
-            case AbilityType.SuckerPunch:
-                return Ability3;
-            case AbilityType.Decoy:
-                return Ability4;
-            case AbilityType.MithrilVest:
-                return Ability5;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    }
 }

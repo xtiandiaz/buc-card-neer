@@ -29,12 +29,9 @@ public class GameSettings
     
     // Deck
     public DeckContents DeckContents { get; } = new DeckContents(
-        new CardClass(CardType.Health, 9),
-        new CardClass(CardType.Stamina, 13),
-        new CardClass(CardType.Health, 10),
-        new CardClass(CardType.Defense, 7),
-        new CardClass(CardType.Ability, 5), 
-        new CardClass(CardType.Baddie, 19) 
+        new CardClass(CardType.Item, 20),
+        new CardClass(CardType.Merchant, 10), 
+        new CardClass(CardType.Pirate, 10) 
         );
     
     // Player
