@@ -3,6 +3,7 @@ using Zenject;
 
 public class Installer : MonoInstaller
 {
+    [SerializeField] private UserInteractionListener userInteractionListener;
     [SerializeField] private BoardCamera camera;
     [SerializeField] private BoardView boardView;
     [SerializeField] private CardSlotView cardSlotViewPrefab;
@@ -45,6 +46,10 @@ public class Installer : MonoInstaller
         Container.Bind<BoardView>().FromInstance(boardView).AsSingle();
         Container.BindInterfacesAndSelfTo<BoardCamera>().FromInstance(camera).AsSingle();
         
+        // UI
+        Container.Bind<UserInteractionListener>().FromInstance(userInteractionListener).AsSingle();
+        
+        // Game
         Container.Bind<GameSettings>().AsSingle();
         Container.Bind<GameState>().AsSingle();
         Container.Bind<GamePalette>().FromInstance(palette);

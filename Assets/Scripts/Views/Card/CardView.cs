@@ -4,12 +4,13 @@ using DG.Tweening;
 using UnityEngine;
 using Zenject;
 using UniRx;
+using UniRx.Triggers;
 using UnityEngine.Rendering;
 using Random = UnityEngine.Random;
 
 public interface ICardView
 {
-    void Arrange(Vector3 atLocalPosition, int withSortingOrder);
+    void Arrange(Vector3 atLocalPosition, int withStackIndex, int andSortingOrder);
     
     void Destroy();
 }
@@ -23,12 +24,17 @@ public abstract class CardView : MonoBehaviour, ICardView
     protected GameSettings settings;
     protected IBoardCamera boardCamera;
     
+    private readonly ReactiveProperty<int?> stackIndex = new ReactiveProperty<int?>();
+    private readonly CompositeDisposable interactionEventDisposables = new CompositeDisposable();
+    private ObservableEventTrigger eventTrigger;
     private MeshRenderer textMeshRenderer;
     private Tween locationTween;
     private Tween flipTween;
     private Sequence disposeSequence;
     private Sequence flipSequence;
     private Transform thisTransform;
+    private Vector3 defaultLocalPosition;
+    private int defaultSortingOrder;
 
     public Vector2 Size => frontFace.size;
 
@@ -36,12 +42,15 @@ public abstract class CardView : MonoBehaviour, ICardView
     private void Construct(
         GamePalette palette, 
         GameSettings settings, 
-        IBoardCamera boardCamera 
+        IBoardCamera boardCamera,
+        UserInteractionListener interactionListener
         )
     {
         this.palette = palette;
         this.settings = settings;
         this.boardCamera = boardCamera;
+
+        eventTrigger = gameObject.AddComponent<ObservableEventTrigger>();
         
         thisTransform = transform;
 
@@ -61,6 +70,17 @@ public abstract class CardView : MonoBehaviour, ICardView
             cameraPos.z * 0.5f);
         
         transform.rotation = Quaternion.Euler(0, 180f, 0);
+
+        stackIndex
+            .Where(index => index.HasValue)
+            .Subscribe(index =>
+            {
+                if (index == 0)
+                    SubscribeToInteractionEvents();
+                else
+                    interactionEventDisposables.Clear();
+            })
+            .AddTo(this);
     }
 
     protected virtual void Start()
@@ -69,14 +89,17 @@ public abstract class CardView : MonoBehaviour, ICardView
                 Vector3.zero,
                 settings.MoveDurationInSeconds * 0.75f)
             .SetEase(Ease.InOutQuint)
-            .OnComplete(() => backFace.enabled = false);
+            .OnComplete(() =>
+            {
+                backFace.enabled = false;
+            });
     }
 
-    public void Arrange(Vector3 atLocalPosition, int withSortingOrder)
+    public void Arrange(Vector3 atLocalPosition, int withStackIndex, int andSortingOrder)
     {
-        thisTransform.localPosition = atLocalPosition;
-        sortingGroup.sortingOrder = withSortingOrder;
-        //sortingGroup.enabled = false;
+        defaultLocalPosition = thisTransform.localPosition = atLocalPosition;
+        defaultSortingOrder = sortingGroup.sortingOrder = andSortingOrder;
+        stackIndex.Value = withStackIndex;
     }
 
     public void Flip()
@@ -123,17 +146,57 @@ public abstract class CardView : MonoBehaviour, ICardView
 
     public void Destroy()
     {
+        interactionEventDisposables.Dispose();
+        
         Destroy(gameObject);
     }
 
-    private void SetPosition(Coordinates forCoordinates)
+    private void SubscribeToInteractionEvents()
+    {
+        interactionEventDisposables.Clear();
+        
+        var lastDragWorldPos = Vector3.zero;
+
+        interactionEventDisposables.Add(
+            eventTrigger
+                .OnBeginDragAsObservable()
+                .Subscribe(eventData =>
+                {
+                    lastDragWorldPos = boardCamera.GetWorldPosition(eventData.position);
+                    sortingGroup.sortingOrder = settings.ActiveCardSortingOrder;
+
+                    locationTween?.Kill();
+                }));
+
+        interactionEventDisposables.Add(
+            eventTrigger
+                .OnDragAsObservable()
+                .TakeUntilDisable(this)
+                .Select(eventData =>
+                {
+                    var worldPos = boardCamera.GetWorldPosition(eventData.position);
+                    var delta = worldPos - lastDragWorldPos;
+
+                    lastDragWorldPos = worldPos;
+
+                    return delta;
+                })
+                .Subscribe(deltaWorldPos => thisTransform.localPosition += deltaWorldPos));
+
+        interactionEventDisposables.Add(
+            eventTrigger
+                .OnEndDragAsObservable()
+                .Subscribe(_ =>
+                {
+                    Move(defaultLocalPosition, settings.CardReturnDuration);
+                    sortingGroup.sortingOrder = defaultSortingOrder;
+                }));
+    }
+
+    private void Move(Vector3 toLocalPosition, TimeSpan during)
     {
         locationTween?.Kill();
-        locationTween = transform.DOMove(
-                new Vector3(
-                    forCoordinates.x,
-                    forCoordinates.y, 0) * settings.DisplacementUnit,
-                settings.MoveDurationInSeconds)
+        locationTween = transform.DOLocalMove(toLocalPosition, (float) during.TotalSeconds)
             .SetEase(Ease.OutQuint);
     }
 }

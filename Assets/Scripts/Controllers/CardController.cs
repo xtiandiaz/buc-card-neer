@@ -24,11 +24,12 @@ public class CardController
     public ICard Model { get; }
     private ICardView View { get; }
 
-    public void Arrange(Vector3 slotPosition, int indexInPile, int inverseIndexInPile)
+    public void Arrange(Vector3 forSlotPosition, int withStackIndex, int andInverseStackIndex)
     {
         View.Arrange(
-            slotPosition + indexInPile * Vector3.up * settings.CardOffsetInPile.y, 
-            inverseIndexInPile);
+            forSlotPosition + withStackIndex * Vector3.up * settings.CardOffsetInPile.y, 
+            withStackIndex, 
+            andInverseStackIndex);
     }
     
     public void Destroy()

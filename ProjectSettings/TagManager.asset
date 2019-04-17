@@ -44,7 +44,7 @@ TagManager:
   - name: Background
     uniqueID: 486503231
     locked: 0
-  - name: Tile
+  - name: Slot
     uniqueID: 2666232371
     locked: 0
   - name: Card
@@ -52,25 +52,4 @@ TagManager:
     locked: 0
   - name: Card Text
     uniqueID: 2681747259
-    locked: 0
-  - name: Player
-    uniqueID: 3256497917
-    locked: 0
-  - name: Player Text
-    uniqueID: 4011859497
-    locked: 0
-  - name: Token
-    uniqueID: 3039083605
-    locked: 0
-  - name: Card Overlay 1
-    uniqueID: 1274688359
-    locked: 0
-  - name: Card Text Overlay 1
-    uniqueID: 3224485011
-    locked: 0
-  - name: Card Overlay 2
-    uniqueID: 2190285191
-    locked: 0
-  - name: Card Text Overlay 2
-    uniqueID: 1289051161
     locked: 0

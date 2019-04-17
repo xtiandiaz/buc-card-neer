@@ -14,6 +14,10 @@ public class GameSettings
     public int LockedTileCount { get; } = 0; 
     public int CardCountPerPlaySlot { get; } = 3;
     
+    // Interaction
+    public int ActiveCardSortingOrder { get; } = 10;
+    public TimeSpan CardReturnDuration { get; } = TimeSpan.FromSeconds(0.5f);
+    
     // Layout
     public int BoardCols { get; } = 5;
     public int BoardRows { get; } = 5;

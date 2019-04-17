@@ -17,33 +17,13 @@ public class UserInteractionListener : MonoBehaviour
     private Subject<Vector2> tap = new Subject<Vector2>();
     private Subject<Direction> swipe = new Subject<Direction>();
 
-    public IObservable<Vector2> PointerDown
-    {
-    	get 
-    	{
-    		return pointerDown;
-    	}
-    }
+    public IObservable<Vector2> PointerDown => pointerDown;
+    public IObservable<Vector2> Tap => tap;
+    public IObservable<Direction> Swipe => swipe;
 
-    public IObservable<Vector2> Tap
-    {
-    	get 
-    	{
-    		return tap;
-    	}
-    }
-
-    public IObservable<Direction> Swipe
-    {
-    	get 
-    	{
-    		return swipe;
-    	}
-    }
-
-	private void Awake() 
+    private void Awake() 
 	{
-		var eventTrigger = this.gameObject.AddComponent<ObservableEventTrigger>(); 
+		var eventTrigger = gameObject.AddComponent<ObservableEventTrigger>(); 
 
 		var onPointerDownObservable = eventTrigger
 			.OnPointerDownAsObservable()
@@ -52,7 +32,8 @@ public class UserInteractionListener : MonoBehaviour
 			.Share();
 
 		onPointerDownObservable
-			.Subscribe(pointerDown.OnNext);
+			.Subscribe(pointerDown.OnNext)
+			.AddTo(this);
 
 		var onTapObservable = eventTrigger
 			.OnPointerClickAsObservable()
@@ -63,25 +44,29 @@ public class UserInteractionListener : MonoBehaviour
 		onTapObservable
 			.Subscribe(tap.OnNext);
 
-        eventTrigger
-			.OnBeginDragAsObservable() 
-			.TakeUntilDisable(this) 
-			.Where(eventData => eventData.pointerDrag.gameObject == this.gameObject) 
-			.Select(eventData => eventData.position) 
-			.Subscribe(position => 
-				{ 
-					this.beginPosition = position; 
-					this.beginTime = DateTime.Now;
-				});
+		var onBeginDragObservable = eventTrigger
+			.OnBeginDragAsObservable()
+			.TakeUntilDisable(this)
+			.Where(eventData => eventData.pointerDrag.gameObject == gameObject)
+			.Select(eventData => eventData.position)
+			.Share();
+
+		onBeginDragObservable
+			.Subscribe(position =>
+			{
+				beginPosition = position;
+				beginTime = DateTime.Now;
+			})
+			.AddTo(this);
 
 		var onEndDragObservable = eventTrigger
 			.OnEndDragAsObservable() 
             .TakeUntilDisable(this) 
-            .Where(eventData => (DateTime.Now - this.beginTime).TotalSeconds < this.swipeThresholdInSeconds) 
             .Select(eventData => eventData.position) 
             .Share();
 
         onEndDragObservable
+	        .Where(eventData => (DateTime.Now - beginTime).TotalSeconds < swipeThresholdInSeconds)
         	.Select(position => 
         		{
         			var deltaX = Mathf.Abs(position.x - beginPosition.x);
@@ -91,7 +76,8 @@ public class UserInteractionListener : MonoBehaviour
                     {
                         return position.x > beginPosition.x ? Direction.Right : Direction.Left;
                     }
-                    else if (deltaY >= deltaX && deltaY > this.swipeThresholdDistance)
+                    
+                    if (deltaY >= deltaX && deltaY > this.swipeThresholdDistance)
                     {
                         return position.y > beginPosition.y ? Direction.Up : Direction.Down;
                     }
@@ -99,6 +85,7 @@ public class UserInteractionListener : MonoBehaviour
         			return Direction.None;
         		})
         	.Where(dir => dir != Direction.None)
-        	.Subscribe(swipe.OnNext);
+        	.Subscribe(swipe.OnNext)
+            .AddTo(this);
 	}
 }

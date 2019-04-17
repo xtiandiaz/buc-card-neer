@@ -7,6 +7,7 @@ public interface IBoardCamera
     Vector3 Position { get; }
     
     Rect GetFrustumRect(float forTargetCoordinateZ);
+    Vector3 GetWorldPosition(Vector2 fromScreenPosition);
 }
 
 public class BoardCamera : MonoBehaviour, IBoardCamera
@@ -40,6 +41,12 @@ public class BoardCamera : MonoBehaviour, IBoardCamera
         var frustumHeight = 2.0f * distance * Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad);
         
         return new Rect(0, 0, frustumHeight * camera.aspect, frustumHeight);
+    }
+
+    public Vector3 GetWorldPosition(Vector2 fromScreenPosition)
+    {
+        return camera.ScreenToWorldPoint(new Vector3(fromScreenPosition.x, fromScreenPosition.y,
+            -camera.transform.localPosition.z));
     }
 
     public void Move(Coordinates toCoordinates)

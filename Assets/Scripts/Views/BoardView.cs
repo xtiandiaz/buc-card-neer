@@ -7,12 +7,13 @@ using UniRx;
 public class BoardView : MonoBehaviour
 {
     [SerializeField] private Transform background;
-    [SerializeField] private UserInteractionListener interactionListener;
     [SerializeField] private List<CardSlotView> playSlots;
     [SerializeField] private List<CardSlotView> stashSlots;
     [SerializeField] private CardSlotView playerSlot;
 
+    private UserInteractionListener interactionListener;
     private new BoardCamera camera;
+    private GameSettings settings;
     private Rect viewRect;
 
     public IObservable<Direction> Move { get; private set; }
@@ -23,12 +24,18 @@ public class BoardView : MonoBehaviour
 
     [Inject]
     private void Construct(
+        UserInteractionListener interactionListener,
         BoardCamera camera, 
         GameSettings settings
         )
     {
+        this.interactionListener = interactionListener;
         this.camera = camera;
+        this.settings = settings;
+    }
 
+    private void Awake()
+    {
         Move = interactionListener.Swipe
             .ThrottleFirst(settings.MoveDuration.Multiply(0.9));
         
