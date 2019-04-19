@@ -734,8 +734,6 @@
           </e>
         </e>
         <e p="Scripts" t="Include">
-          <e p="CardFactory.cs" t="Include" />
-          <e p="CardSlotFactory.cs" t="Include" />
           <e p="Controllers" t="Include">
             <e p="BoardController.cs" t="Include" />
             <e p="CardController.cs" t="Include" />
@@ -743,7 +741,6 @@
             <e p="DeckController.cs" t="Include" />
             <e p="GameController.cs" t="Include" />
           </e>
-          <e p="DeckFactory.cs" t="Include" />
           <e p="Extensions.cs" t="Include" />
           <e p="Installer.cs" t="Include" />
           <e p="Models" t="Include">
@@ -774,6 +771,7 @@
               <e p="PirateCardView.cs" t="Include" />
               <e p="PlayerCardView.cs" t="Include" />
             </e>
+            <e p="CardSlotImage.cs" t="Include" />
             <e p="CardSlotView.cs" t="Include" />
             <e p="FocusLight.cs" t="Include" />
           </e>

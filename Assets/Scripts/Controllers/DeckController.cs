@@ -2,33 +2,47 @@ using Zenject;
 
 public class DeckController
 {
-    private readonly Deck model;
-    private readonly CardFactory cardFactory;
-
     public class Factory : PlaceholderFactory<Deck, DeckController>
     {
-    }
+        private readonly Deck.Factory deckFactory;
+        private readonly GameSettings settings;
 
+        private Factory(
+            Deck.Factory deckFactory,
+            GameSettings settings
+            )
+        {
+            this.deckFactory = deckFactory;
+            this.settings = settings;
+        }
+
+        public DeckController Create()
+        {
+            return base.Create(deckFactory.Create(settings.DeckContents));
+        }
+    }
+    
+    private readonly Deck model;
+    private readonly CardController.Factory cardControllerFactory;
+    
     private DeckController(
         Deck model,
-        CardFactory cardFactory
+        CardController.Factory cardControllerFactory
         )
     {
         this.model = model;
-        this.cardFactory = cardFactory;
+        this.cardControllerFactory = cardControllerFactory;
+    }
+    
+    public ICardController Draw()
+    {
+        var cardModel = model.Supply();
+        
+        return cardModel == null ? null : cardControllerFactory.Create(cardModel);
     }
 
-    public void Queue(CardController cardController)
+    public void PutBack(ICard card)
     {
-        model.Queue(cardController.Model);
-        
-        cardController.Destroy();
-    }
-
-    public CardController Dequeue()
-    {
-        var cardModel = model.Dequeue();
-        
-        return cardModel == null ? null : cardFactory.Create(cardModel);
+        model.PutBack(card);
     }
 }

@@ -500,6 +500,7 @@ MonoBehaviour:
   frontFace: {fileID: 7937292614706334159}
   backFace: {fileID: 6900283449548002474}
   sortingGroup: {fileID: 3372970107563141447}
+  hitArea: {fileID: 3235438252223773731}
   staminaStat: {fileID: 0}
   attackStat: {fileID: 0}
 --- !u!210 &3372970107563141447

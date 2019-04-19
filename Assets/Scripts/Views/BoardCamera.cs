@@ -27,7 +27,7 @@ public class BoardCamera : MonoBehaviour, IBoardCamera
         this.settings = settings;
         
         var thisTransform = transform;
-        var desiredViewWidth = settings.CardSize.x * settings.VisibleCardCountPerRow + settings.Margins.x * 2f;
+        var desiredViewWidth = settings.CardSize.x * settings.VisibleCardCountPerRow + settings.BoardMargins.x * 2f;
         
         thisTransform.position = new Vector3(
             0, 
@@ -47,17 +47,5 @@ public class BoardCamera : MonoBehaviour, IBoardCamera
     {
         return camera.ScreenToWorldPoint(new Vector3(fromScreenPosition.x, fromScreenPosition.y,
             -camera.transform.localPosition.z));
-    }
-
-    public void Move(Coordinates toCoordinates)
-    {
-        scrollingTween?.Kill();
-        scrollingTween = transform.DOMove(
-                new Vector3(
-                    toCoordinates.x * settings.DisplacementUnit.x,
-                    toCoordinates.y * settings.DisplacementUnit.y,
-                    transform.position.z),
-                settings.MoveDurationInSeconds)
-            .SetEase(Ease.InOutQuart);
     }
 }

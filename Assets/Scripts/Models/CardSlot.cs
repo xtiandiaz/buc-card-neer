@@ -1,62 +1,68 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UniRx;
 using Zenject;
 
+public enum CardSlotType
+{
+    Play,
+    Player,
+    Stash
+}
+
 public interface ICardSlot
 {
-    int Capacity { get; }
-    IObservable<int> ObservableCapacity { get; }
-    IObservable<bool> IsSelectedAsObservable { get; }
-    IObservable<bool> IsLockedAsObservable { get; }
+    uint Id { get; }
+    uint Capacity { get; }
+    CardSlotType Type { get; }
+
+    bool Take(ICard card);
+    ICard Release();
 }
 
 public class CardSlot : ICardSlot
 {
-    public class Factory : PlaceholderFactory<int, CardSlot>
+    public class Factory : PlaceholderFactory<uint, CardSlotType, uint, CardSlot>
     {
-        public CardSlot Create(CardSlotView fromView)
+        private static uint serialNumber = 0;
+        
+        public CardSlot Create(CardSlotType type, uint capacity)
         {
-            return Create(fromView.InitialCapacity);
+            return base.Create(serialNumber++, type, capacity);
         }
     }
+    
+    private readonly ReactiveCollection<ICard> cards = new ReactiveCollection<ICard>();
 
-    private readonly ReactiveProperty<int> capacity;
-    private readonly ReactiveProperty<bool> isLocked = new ReactiveProperty<bool>();
-    private readonly ReactiveProperty<bool> isSelected = new ReactiveProperty<bool>();
-
-    private CardSlot(int initialCapacity)
+    private CardSlot(uint id, CardSlotType type, uint capacity)
     {
-        capacity = new ReactiveProperty<int>(initialCapacity);
+        Id = id;
+        Capacity = capacity;
+        Type = type;
     }
 
-    public int Capacity => capacity.Value;
-    public IObservable<int> ObservableCapacity => capacity.DistinctUntilChanged();
-    
-    public Dictionary<Direction, CardSlot> Neighbors { get; } = new Dictionary<Direction, CardSlot>();
-    public bool IsLocked => isLocked.Value;
-    
-    public IObservable<bool> IsSelectedAsObservable => isSelected;
-    public IObservable<bool> IsLockedAsObservable => isLocked;
-    
+    public uint Id { get; }
+    public uint Capacity { get; }
+    public CardSlotType Type { get; }
 
-    public void Select()
+    public bool Take(ICard card)
     {
-        isSelected.Value = true;
+        if (cards.Count >= Capacity)
+            return false;
+            
+        cards.Insert(0, card);
+
+        return true;
     }
 
-    public void Deselect()
+    public ICard Release()
     {
-        isSelected.Value = false;
-    }
+        var card = cards.FirstOrDefault();
 
-    public void Lock()
-    {
-        isLocked.Value = true;
-    }
-    
-    public void Unlock()
-    {
-        isLocked.Value = false;
+        if (card != null)
+            cards.RemoveAt(0);
+
+        return card;
     }
 }

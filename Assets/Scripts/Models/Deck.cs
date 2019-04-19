@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Zenject;
 
-public struct CardClass
+public struct CardSet
 {
     public CardType type;
     public int count;
 
-    public CardClass(CardType type, int count)
+    public CardSet(CardType type, int count)
     {
         this.type = type;
         this.count = count;
@@ -16,63 +16,48 @@ public struct CardClass
 
 public struct DeckContents
 {
-    public CardClass[] classes;
+    public CardSet[] sets;
     public int count;
 
-    public DeckContents(params CardClass[] classes)
+    public DeckContents(params CardSet[] sets)
     {
-        this.classes = classes;
-        count = classes.Sum(c => c.count);
+        this.sets = sets;
+        count = sets.Sum(c => c.count);
     }
 }
 
 public class Deck
 {
-    private readonly CardFactory cardFactory;
-    private readonly List<ICard> cards = new List<ICard>();
+    private readonly Queue<ICard> cards;
 
     public class Factory : PlaceholderFactory<DeckContents, Deck>
     {
     }
 
     private Deck(
-        DeckContents contents, 
-        CardFactory cardFactory)
-    {
-        this.cardFactory = cardFactory;
-        
-        foreach (var cardClass in contents.classes)
+        DeckContents contents,
+        Card.Factory cardFactory
+    )
+    {      
+        var cardList = new List<ICard>();
+        foreach (var cardSet in contents.sets)
         {
-            ProduceClass(cardClass);
+            for (var i = 0; i < cardSet.count; i++)
+                cardList.Add(cardFactory.Create(cardSet.type));
         }
+
+        cardList.Shuffle();
         
-        Shuffle();
+        cards = new Queue<ICard>(cardList);
     }
 
-    public void Queue(ICard card)
+    public ICard Supply()
     {
-        cards.Add(card);
+        return cards.Dequeue();
     }
-
-    public ICard Dequeue()
+    
+    public void PutBack(ICard card)
     {
-        var first = cards.FirstOrDefault();
-        if (first != null)
-            cards.RemoveAt(0);
-
-        return first;
-    }
-
-    private void Shuffle()
-    {
-        cards.Shuffle();
-    }
-
-    private void ProduceClass(CardClass cardClass)
-    {
-        for (var i = 0; i < cardClass.count; i++)
-        {
-            Queue(cardFactory.CreateModel(cardClass.type, i));
-        }
+        cards.Enqueue(card);
     }
 }

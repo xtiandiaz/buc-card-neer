@@ -234,6 +234,7 @@ MonoBehaviour:
   frontFace: {fileID: 7937292614706334159}
   backFace: {fileID: 6900283449548002474}
   sortingGroup: {fileID: 5842380372498211504}
+  hitArea: {fileID: 4913865113789630240}
 --- !u!210 &5842380372498211504
 SortingGroup:
   m_ObjectHideFlags: 0

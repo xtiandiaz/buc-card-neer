@@ -237,6 +237,7 @@ MonoBehaviour:
   frontFace: {fileID: 7937292614706334159}
   backFace: {fileID: 6900283449548002474}
   sortingGroup: {fileID: 1930202638288472529}
+  hitArea: {fileID: 5568783168104904828}
   valueRenderer: {fileID: 6611832691711284909}
   itemRenderer: {fileID: 2668953442288971850}
 --- !u!210 &1930202638288472529

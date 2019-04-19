@@ -124,8 +124,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7a6457f3bfb48a39486898950466c9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  faceRenderer: {fileID: 4019751580280472258}
   forbiddenIconRenderer: {fileID: 3229724398499932965}
-  initialCapacity: 3
+  capacity: 0
+  type: 0
 --- !u!1 &5523543981612504518
 GameObject:
   m_ObjectHideFlags: 0

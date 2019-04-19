@@ -4,51 +4,50 @@ using UnityEngine;
 using Zenject;
 using UniRx;
 
-public class BoardView : MonoBehaviour
+public interface IBoardView
+{
+    IEnumerable<CardSlotView> SlotViews { get; }
+
+    void Parent(Transform child);
+}
+
+public class BoardView : MonoBehaviour, IBoardView
 {
     [SerializeField] private Transform background;
-    [SerializeField] private List<CardSlotView> playSlots;
-    [SerializeField] private List<CardSlotView> stashSlots;
-    [SerializeField] private CardSlotView playerSlot;
+    [SerializeField] private List<CardSlotView> slotViews;
 
-    private UserInteractionListener interactionListener;
     private new BoardCamera camera;
     private GameSettings settings;
     private Rect viewRect;
 
-    public IObservable<Direction> Move { get; private set; }
-    
-    public List<CardSlotView> PlaySlots => playSlots;
-    public List<CardSlotView> StashSlots => stashSlots;
-    public CardSlotView PlayerSlot => playerSlot;
+    public IEnumerable<CardSlotView> SlotViews => slotViews;
 
     [Inject]
     private void Construct(
-        UserInteractionListener interactionListener,
         BoardCamera camera, 
         GameSettings settings
         )
     {
-        this.interactionListener = interactionListener;
         this.camera = camera;
         this.settings = settings;
     }
 
     private void Awake()
     {
-        Move = interactionListener.Swipe
-            .ThrottleFirst(settings.MoveDuration.Multiply(0.9));
-        
         var thisTransform = transform;
         var position = thisTransform.position;
+        var height = settings.CardSize.y * 2f + 1f; // TODO Turn dynamic
+        
         viewRect = camera.GetFrustumRect(position.z);
 
         background.localScale = new Vector3(viewRect.width, viewRect.height, 1f);
         background.position = Vector3.zero;
+
+        thisTransform.position = Vector3.down * ((viewRect.height - height) * 0.5f - settings.BoardMargins.y);
     }
 
-    public void ParentAsNew(CardView cardView)
+    public void Parent(Transform child)
     {
-        cardView.transform.SetParent(transform);
+        child.SetParent(transform, false);
     }
 }

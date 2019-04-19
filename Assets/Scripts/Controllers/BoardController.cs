@@ -5,66 +5,70 @@ using UnityEngine;
 using Zenject;
 using UniRx;
 
-public struct Coordinates
+public interface IBoardController
 {
-    public int x;
-    public int y;
-
-    public Coordinates(int x, int y)
-    {
-        this.x = x;
-        this.y = y;
-    }
+    List<ICardSlotController> PlaySlots { get; }
+    List<ICardSlotController> StashSlots { get; }
+    ICardSlotController PlayerSlot { get; }
+    
+    List<ICardSlotController> DropSlots { get; }
 }
 
-public class BoardController : IInitializable, IDisposable
+public class BoardController : IBoardController, IInitializable, IDisposable
 {
-    private readonly CardFactory cardFactory;
-    private readonly Board.Factory boardFactory;
-    private readonly DeckFactory deckFactory;
-    private readonly BoardView boardView;
+    private readonly CardSlotController.Factory cardSlotControllerFactory;
+    private readonly IBoard model;
+    private readonly IBoardView view;
+    private readonly DeckController deckController;
     private readonly GameSettings settings;
-    private readonly CardSlotFactory cardSlotFactory;
     private readonly CompositeDisposable perGameDisposables = new CompositeDisposable();
+    private readonly Dictionary<ICardController, ICardSlotController> cardLocationMap 
+        = new Dictionary<ICardController, ICardSlotController>();
 
-    private Board board;
-    private DeckController deck;
-    private Dictionary<int, CardView> cardViews = new Dictionary<int, CardView>();
     private IDisposable moveSubscription;
-
-    private List<CardSlotController> playSlots;
-    private List<CardSlotController> stashSlots;
-    private CardSlotController playerSlot;
 
     private BoardController(
         Board.Factory boardFactory,
-        DeckFactory deckFactory,
-        BoardView boardView,
-        CardFactory cardFactory,
-        CardSlotFactory cardSlotFactory,
+        IBoardView view,
+        DeckController.Factory deckControllerFactory,
+        CardSlotController.Factory cardSlotControllerFactory,
         GameSettings settings
         )
     {
-        this.boardFactory = boardFactory;
-        this.deckFactory = deckFactory;
-        this.boardView = boardView;
-        this.cardFactory = cardFactory;
-        this.cardSlotFactory = cardSlotFactory;
+        model = boardFactory.Create();
+        
+        this.view = view;
+        this.cardSlotControllerFactory = cardSlotControllerFactory;
         this.settings = settings;
+
+        deckController = deckControllerFactory.Create();
+        
+        PlaySlots = view.SlotViews
+            .Where(s => s.Type == CardSlotType.Play)
+            .Select(slotView => (ICardSlotController) cardSlotControllerFactory.Create(slotView))
+            .ToList();
+        
+        StashSlots = view.SlotViews
+            .Where(s => s.Type == CardSlotType.Stash)
+            .Select(slotView => (ICardSlotController) cardSlotControllerFactory.Create(slotView))
+            .ToList();
+
+        PlayerSlot = view.SlotViews
+            .Where(s => s.Type == CardSlotType.Player)
+            .Select(slotView => (ICardSlotController) cardSlotControllerFactory.Create(slotView))
+            .First();
+
+        DropSlots = PlaySlots;
     }
+    
+    public List<ICardSlotController> PlaySlots { get; }
+    public List<ICardSlotController> StashSlots { get; }
+    public ICardSlotController PlayerSlot { get; }
+    public List<ICardSlotController> DropSlots { get; }
 
     public void Initialize()
     {
-        board = boardFactory.Create(settings.BoardCols, settings.BoardRows);
-        deck = deckFactory.Create(settings.DeckContents);
-
-        playSlots = boardView.PlaySlots.Select(slotView => cardSlotFactory.Create(slotView)).ToList();
-        stashSlots = boardView.StashSlots.Select(slotView => cardSlotFactory.Create(slotView)).ToList();
-        playerSlot = cardSlotFactory.Create(boardView.PlayerSlot);
-
-        perGameDisposables.Add(
-            playSlots.Select(s => s.Emptied.Select(_ => s)).Merge()
-                .Subscribe(s => Deal(s, s.Model.Capacity)));
+        PlaySlots.ForEach(cardSlotController => Deal(cardSlotController, settings.MaxCardCountPerPlaySlot));
     }
 
     public void Dispose()
@@ -72,26 +76,59 @@ public class BoardController : IInitializable, IDisposable
         perGameDisposables.Dispose();
     }
 
-    public void Deal(CardSlotController onSlot, int count)
+    private void Deal(ICardSlotController onSlot, int count)
     {
         for (var i = 0; i < count; i++)
         {
-            if (!Deal(onSlot))
+            if (!onSlot.DoesAcceptNewGuests)
                 break;
+            
+            var card = deckController.Draw();
+            if (card == null)
+                break;
+
+            Lodge(card, onSlot);
+            
+            view.Parent(card.Transform);
+
+            card.InteractionEvent
+                .Subscribe(OnCardInteraction);
         }
     }
-    
-    public bool Deal(CardSlotController onSlot)
+
+    private bool Lodge(ICardController card, ICardSlotController inSlot)
     {
-        if (!onSlot.DoesAcceptNewCards)
-            return false;
+        var canLodge = inSlot.Lodge(card);
+        if (canLodge)
+        {
+            if (cardLocationMap.ContainsKey(card))
+                cardLocationMap[card].Release(card);
 
-        var cardController = deck.Dequeue();
-        if (cardController == null)
-            return false;
+            cardLocationMap[card] = inSlot;
+        }
 
-        onSlot.Take(cardController);
+        return canLodge;
+    }
 
-        return true;
+    private void OnCardInteraction(CardInteractionEvent withEvent)
+    {
+        switch (withEvent.type)
+        {
+            case CardInteractionEventType.Pick:
+                break;
+            case CardInteractionEventType.Drop:
+
+                var targetedSlot = DropSlots
+                    .FirstOrDefault(s => s.DoesContain(withEvent.card.Transform.position));
+                
+                if (targetedSlot == null /* OR Slot does not accept Card*/)
+                    return;
+
+                Lodge(withEvent.card, targetedSlot);
+
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 }

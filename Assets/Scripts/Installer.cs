@@ -14,12 +14,11 @@ public class Installer : MonoInstaller
         // Deck
         Container.BindFactory<DeckContents, Deck, Deck.Factory>().AsSingle();
         Container.BindFactory<Deck, DeckController, DeckController.Factory>().AsSingle();
-        Container.Bind<DeckFactory>().AsSingle();
         
-        Container.BindFactory<int, CardSlot, CardSlot.Factory>();
-        Container.BindFactory<ICardSlot, ICardSlotView, CardSlotView.Factory>().FromComponentInNewPrefab(cardSlotViewPrefab);
-        Container.Bind<CardSlotFactory>().AsSingle();
+        Container.BindFactory<uint, CardSlotType, uint, CardSlot, CardSlot.Factory>();
 
+        Container.Bind<Card.Factory>().AsSingle();
+        
         Container.BindFactory<PlayerCard, PlayerCard.Factory>();
         Container.BindFactory<string, PlayerCardView, PlayerCardView.Factory>()
             .FromFactory<PrefabResourceFactory<PlayerCardView>>();
@@ -38,12 +37,11 @@ public class Installer : MonoInstaller
         
         Container.BindFactory<ICardSlot, ICardSlotView, CardSlotController, CardSlotController.Factory>().AsSingle();
         Container.BindFactory<ICard, ICardView, CardController, CardController.Factory>().AsSingle();
-        Container.Bind<CardFactory>().AsSingle();
         
         // Board
-        Container.BindFactory<int, int, Board, Board.Factory>();
+        Container.BindFactory<Board, Board.Factory>();
         Container.BindInterfacesAndSelfTo<BoardController>().AsSingle();
-        Container.Bind<BoardView>().FromInstance(boardView).AsSingle();
+        Container.BindInterfacesAndSelfTo<BoardView>().FromInstance(boardView).AsSingle();
         Container.BindInterfacesAndSelfTo<BoardCamera>().FromInstance(camera).AsSingle();
         
         // UI

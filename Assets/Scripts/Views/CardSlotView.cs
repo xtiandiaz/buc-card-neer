@@ -4,27 +4,38 @@ using Zenject;
 
 public interface ICardSlotView
 {
-    int InitialCapacity { get; }
-    Vector3 LocalPosition { get; }
+    uint Capacity { get; }
+    CardSlotType Type { get; }
+    Transform Transform { get; }
+
+    bool DoesContain(Vector3 worldPoint);
 }
 
 public class CardSlotView : MonoBehaviour, ICardSlotView
 {
-    public class Factory : PlaceholderFactory<ICardSlot, ICardSlotView>
-    {
-    }
-
+    [SerializeField] private SpriteRenderer faceRenderer;
     [SerializeField] private SpriteRenderer forbiddenIconRenderer;
-    [SerializeField] private int initialCapacity;
+    [SerializeField] private uint capacity;
+    [SerializeField] private CardSlotType type;
     
     private GameSettings settings;
 
-    public int InitialCapacity => initialCapacity;
-    public Vector3 LocalPosition => transform.localPosition;
+    public uint Capacity => capacity;
+    public CardSlotType Type => type;
+    public Transform Transform { get; private set; }
     
     [Inject]
-    private void Construct(GameSettings settings)
+    private void Construct(
+        GameSettings settings
+        )
     {
+        Transform = transform;
+        
         this.settings = settings;
+    }
+
+    public bool DoesContain(Vector3 worldPoint)
+    {
+        return faceRenderer.bounds.Contains(worldPoint);
     }
 }

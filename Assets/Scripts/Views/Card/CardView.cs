@@ -10,9 +10,12 @@ using Random = UnityEngine.Random;
 
 public interface ICardView
 {
-    void Arrange(Vector3 atLocalPosition, int withStackIndex, int andSortingOrder);
+    Transform Transform { get; }
+    IObservable<CardInteractionEventType> InteractionEvent { get; }
     
     void Destroy();
+    void SetParent(Transform parent);
+    void Arrange(Vector3 atLocalPos, int andIndexInSlot);
 }
 
 public abstract class CardView : MonoBehaviour, ICardView
@@ -20,72 +23,49 @@ public abstract class CardView : MonoBehaviour, ICardView
     [SerializeField] protected SpriteRenderer frontFace;
     [SerializeField] protected SpriteRenderer backFace;
     [SerializeField] protected SortingGroup sortingGroup;
-    protected GamePalette palette;
-    protected GameSettings settings;
-    protected IBoardCamera boardCamera;
     
-    private readonly ReactiveProperty<int?> stackIndex = new ReactiveProperty<int?>();
+    private readonly ReactiveProperty<int> siblingIndex = new ReactiveProperty<int>();
     private readonly CompositeDisposable interactionEventDisposables = new CompositeDisposable();
+    private readonly Subject<CardInteractionEventType> interactionEvent = new Subject<CardInteractionEventType>();
+
+    [SerializeField] private BoxCollider2D hitArea;
+    private GameSettings settings;
+    private IBoardCamera boardCamera;
     private ObservableEventTrigger eventTrigger;
     private MeshRenderer textMeshRenderer;
     private Tween locationTween;
-    private Tween flipTween;
-    private Sequence disposeSequence;
-    private Sequence flipSequence;
-    private Transform thisTransform;
     private Vector3 defaultLocalPosition;
-    private int defaultSortingOrder;
 
-    public Vector2 Size => frontFace.size;
-
+    public Transform Transform { get; private set; }
+    public IObservable<CardInteractionEventType> InteractionEvent => interactionEvent;
+    
+    private int DefaultSortingOrder => settings.MaxCardCountPerPlaySlot - siblingIndex.Value;
+    
     [Inject]
     private void Construct(
-        GamePalette palette, 
         GameSettings settings, 
-        IBoardCamera boardCamera,
-        UserInteractionListener interactionListener
+        IBoardCamera boardCamera
         )
     {
-        this.palette = palette;
         this.settings = settings;
         this.boardCamera = boardCamera;
 
         eventTrigger = gameObject.AddComponent<ObservableEventTrigger>();
-        
-        thisTransform = transform;
+        Transform = transform;
 
         Initialize();
     }
     
     protected abstract void Initialize();
 
-    protected virtual void Awake()
+    private void Awake()
     {
-        var cameraPos = boardCamera.Position;
-        var viewRect = boardCamera.GetFrustumRect(transform.position.z);
-        
-        transform.position = new Vector3(
-            cameraPos.x, 
-            cameraPos.y + (viewRect.height + Size.y) * 0.5f, 
-            cameraPos.z * 0.5f);
-        
-        transform.rotation = Quaternion.Euler(0, 180f, 0);
-
-        stackIndex
-            .Where(index => index.HasValue)
-            .Subscribe(index =>
-            {
-                if (index == 0)
-                    SubscribeToInteractionEvents();
-                else
-                    interactionEventDisposables.Clear();
-            })
-            .AddTo(this);
+        Transform.rotation = Quaternion.Euler(0, 180f, 0);
     }
 
-    protected virtual void Start()
+    private void Start()
     {
-        flipTween = transform.DORotate(
+        Transform.DORotate(
                 Vector3.zero,
                 settings.MoveDurationInSeconds * 0.75f)
             .SetEase(Ease.InOutQuint)
@@ -95,53 +75,22 @@ public abstract class CardView : MonoBehaviour, ICardView
             });
     }
 
-    public void Arrange(Vector3 atLocalPosition, int withStackIndex, int andSortingOrder)
+    public void Arrange(Vector3 atLocalPos, int andIndexInSlot)
     {
-        defaultLocalPosition = thisTransform.localPosition = atLocalPosition;
-        defaultSortingOrder = sortingGroup.sortingOrder = andSortingOrder;
-        stackIndex.Value = withStackIndex;
+        defaultLocalPosition = 
+            Transform.localPosition = atLocalPos + Vector3.up * andIndexInSlot * settings.CardOffsetInPile.y;
+        
+        sortingGroup.sortingOrder = settings.MaxCardCountPerPlaySlot - andIndexInSlot;
+
+        if (andIndexInSlot == 0)
+            EnableUserInteraction();
+        else
+            DisableUserInteraction();
     }
 
-    public void Flip()
+    public void SetParent(Transform parent)
     {
-        flipSequence?.Kill();
-
-        var tweenDuration = settings.MoveDurationInSeconds * 0.5f;
-        
-        flipSequence = DOTween.Sequence();
-        flipSequence.Append(transform.DORotate(
-                new Vector3(0, 180, 0),
-                tweenDuration)
-            .SetEase(Ease.InOutQuint));
-
-        flipSequence.Join(transform.DOPunchPosition(Vector3.back * Size.x, tweenDuration)
-                .SetEase(Ease.InOutQuint));
-    }
-
-    public void OnDispose()
-    {
-        flipTween?.Kill();
-        locationTween?.Kill();
-        flipSequence?.Kill();
-        
-        var cameraPos = boardCamera.Position;
-        var viewRect = boardCamera.GetFrustumRect(transform.position.z);
-        
-        disposeSequence = DOTween.Sequence();
-        disposeSequence.Append(transform.DOMove(
-                new Vector3(
-                    cameraPos.x,
-                    cameraPos.y - (viewRect.height + Size.y) * 0.5f,
-                    cameraPos.z * 0.5f),
-                settings.MoveDurationInSeconds)
-            .SetEase(Ease.InOutQuint));
-
-        disposeSequence.Join(transform.DORotate(
-            new Vector3(0, -180, 0),
-            settings.MoveDurationInSeconds * 0.75f)
-            .SetEase(Ease.InOutQuint));
-
-        disposeSequence.OnComplete(() => Destroy(gameObject));
+        Transform.SetParent(parent, false);
     }
 
     public void Destroy()
@@ -151,9 +100,11 @@ public abstract class CardView : MonoBehaviour, ICardView
         Destroy(gameObject);
     }
 
-    private void SubscribeToInteractionEvents()
+    private void EnableUserInteraction()
     {
         interactionEventDisposables.Clear();
+
+        hitArea.enabled = true;
         
         var lastDragWorldPos = Vector3.zero;
 
@@ -162,6 +113,8 @@ public abstract class CardView : MonoBehaviour, ICardView
                 .OnBeginDragAsObservable()
                 .Subscribe(eventData =>
                 {
+                    interactionEvent.OnNext(CardInteractionEventType.Pick);
+                    
                     lastDragWorldPos = boardCamera.GetWorldPosition(eventData.position);
                     sortingGroup.sortingOrder = settings.ActiveCardSortingOrder;
 
@@ -181,22 +134,35 @@ public abstract class CardView : MonoBehaviour, ICardView
 
                     return delta;
                 })
-                .Subscribe(deltaWorldPos => thisTransform.localPosition += deltaWorldPos));
+                .Subscribe(deltaWorldPos => Transform.localPosition += deltaWorldPos));
 
         interactionEventDisposables.Add(
             eventTrigger
                 .OnEndDragAsObservable()
                 .Subscribe(_ =>
                 {
-                    Move(defaultLocalPosition, settings.CardReturnDuration);
-                    sortingGroup.sortingOrder = defaultSortingOrder;
+                    interactionEvent.OnNext(CardInteractionEventType.Drop);
+                    
+                    Move(
+                        defaultLocalPosition, 
+                        settings.CardReturnDuration, 
+                        () => sortingGroup.sortingOrder = DefaultSortingOrder);
                 }));
     }
 
-    private void Move(Vector3 toLocalPosition, TimeSpan during)
+    private void DisableUserInteraction()
+    {
+        interactionEventDisposables.Clear();
+        hitArea.enabled = false;
+    }
+
+    private void Move(Vector3 toLocalPosition, TimeSpan during, TweenCallback andDoOncomplete = null)
     {
         locationTween?.Kill();
-        locationTween = transform.DOLocalMove(toLocalPosition, (float) during.TotalSeconds)
+        locationTween = Transform.DOLocalMove(toLocalPosition, (float) during.TotalSeconds)
             .SetEase(Ease.OutQuint);
+
+        if (andDoOncomplete != null)
+            locationTween.OnComplete(andDoOncomplete);
     }
 }

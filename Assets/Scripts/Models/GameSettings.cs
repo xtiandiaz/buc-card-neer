@@ -12,7 +12,7 @@ public class GameSettings
     // Gameplay
     public bool ShouldCameraFollowPlayer { get; } = true;
     public int LockedTileCount { get; } = 0; 
-    public int CardCountPerPlaySlot { get; } = 3;
+    public int MaxCardCountPerPlaySlot { get; } = 3;
     
     // Interaction
     public int ActiveCardSortingOrder { get; } = 10;
@@ -21,11 +21,11 @@ public class GameSettings
     // Layout
     public int BoardCols { get; } = 5;
     public int BoardRows { get; } = 5;
-    public Vector2 Margins { get; } = new Vector2(0.25f, 0);
+    public Vector2 BoardMargins { get; } = new Vector2(0.25f, 0.25f);
     public Vector2 CardSize { get; } = new Vector2(2.5f, 3.5f);
     public Vector2 CardSpacing { get; } = Vector2.zero;
     public Vector2 DisplacementUnit { get; }
-    public Vector2 CardOffsetInPile { get; } = new Vector2(0.8f, 0.8f);
+    public Vector3 CardOffsetInPile { get; } = new Vector2(0.8f, 0.8f);
     public float CardThickness { get; } = 0.05f;
     public float VisibleCardCountPerRow { get; } = 4f;
     public TimeSpan MoveDuration { get; } = TimeSpan.FromSeconds(0.75);
@@ -33,9 +33,9 @@ public class GameSettings
     
     // Deck
     public DeckContents DeckContents { get; } = new DeckContents(
-        new CardClass(CardType.Item, 20),
-        new CardClass(CardType.Merchant, 10), 
-        new CardClass(CardType.Pirate, 10) 
+        new CardSet(CardType.Item, 20),
+        new CardSet(CardType.Merchant, 10), 
+        new CardSet(CardType.Pirate, 10) 
         );
     
     // Player
