@@ -8,11 +8,17 @@ public interface ICardSlotController
 {
     uint Id { get; }
     CardSlotType Type { get; }
-    bool DoesAcceptNewGuests { get; }
+    Vector3 LocalPosition { get; }
+    bool CanBeDealtOn { get; }
+    ICardController Head { get; }
 
-    bool Lodge(ICardController cardController);
-    bool Release(ICardController cardController);
     bool DoesContain(Vector3 worldPoint);
+    bool DoesContain(ICardController cardController);
+    bool DoesAdmit(ICardController cardController);
+    bool DoesMatch(ICardController cardController);
+    bool Take(ICardController cardController);
+    bool Release(ICardController cardController);
+    void ToggleHighlight(bool on);
 }
 
 public class CardSlotController : ICardSlotController
@@ -50,35 +56,67 @@ public class CardSlotController : ICardSlotController
     }
 
     public uint Id => model.Id;
-    public CardSlotType Type => model.Type; 
+    public CardSlotType Type => model.Type;
+    public Vector3 LocalPosition => view.Transform.localPosition;
+    public bool CanBeDealtOn => guests.Count < model.Capacity;
+    public ICardController Head => guests.FirstOrDefault();
     
-    public bool DoesAcceptNewGuests => guests.Count < model.Capacity;
-
-    public bool Lodge(ICardController cardController)
+    public bool DoesContain(Vector3 worldPoint)
     {
-        if (!DoesAcceptNewGuests || cardController == null)
+        return view.DoesContain(worldPoint);
+    }
+    
+    public bool DoesContain(ICardController cardController)
+    {
+        return guests.Contains(cardController);
+    }
+    
+    public bool DoesAdmit(ICardController cardController)
+    {
+        return CanBeDealtOn 
+               && cardController != null 
+               && !DoesContain(cardController) 
+               && model.Type == CardSlotType.Stash;
+    }
+    
+    public bool DoesMatch(ICardController cardController)
+    {
+        return !DoesContain(cardController) && Head?.DoesMatch(cardController) == true;
+    }
+
+    public bool Take(ICardController dealtCardController)
+    {
+        if (!CanBeDealtOn)
             return false;
         
-        guests.Insert(0, cardController);
+        guests.Insert(0, dealtCardController);
+        
+        dealtCardController.OnMoved(this);
+
+        dealtCardController.Destroyed
+            .Merge(dealtCardController.Moved)
+            .Select(_ => dealtCardController)
+            .Subscribe(c => Release(c))
+            .AddTo(dealtCardController.Transform);
         
         ArrangeGuests();
 
         return true;
     }
 
-    public bool DoesContain(Vector3 worldPoint)
-    {
-        return view.DoesContain(worldPoint);
-    }
-
     public bool Release(ICardController cardController)
     {
-        var didRemoveGuest = guests.Remove(cardController);
+        var didReleaseCard = guests.Remove(cardController);
         
-        if (didRemoveGuest)
+        if (didReleaseCard)
             ArrangeGuests();
 
-        return didRemoveGuest;
+        return didReleaseCard;
+    }
+
+    public void ToggleHighlight(bool on)
+    {
+        view.ToggleHighlight(on);
     }
 
     private void ArrangeGuests()
@@ -86,7 +124,7 @@ public class CardSlotController : ICardSlotController
         var totalGuests = guests.Count;
         for (var i = 0; i < totalGuests; i++)
         {
-            guests[i].Arrange(view.Transform.localPosition, i);
+            guests[i].Arrange(i, totalGuests, view.Layout);
         }
     }
 }

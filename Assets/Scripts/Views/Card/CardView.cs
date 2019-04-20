@@ -15,7 +15,7 @@ public interface ICardView
     
     void Destroy();
     void SetParent(Transform parent);
-    void Arrange(Vector3 atLocalPos, int andIndexInSlot);
+    void Arrange(Vector3 atLocalPos, int andIndexInStack, int withStackCount, CardStackLayout andLayout);
 }
 
 public abstract class CardView : MonoBehaviour, ICardView
@@ -75,14 +75,19 @@ public abstract class CardView : MonoBehaviour, ICardView
             });
     }
 
-    public void Arrange(Vector3 atLocalPos, int andIndexInSlot)
+    public void Arrange(Vector3 atLocalPos, int andIndexInStack, int withStackCount, CardStackLayout andLayout)
     {
-        defaultLocalPosition = 
-            Transform.localPosition = atLocalPos + Vector3.up * andIndexInSlot * settings.CardOffsetInPile.y;
-        
-        sortingGroup.sortingOrder = settings.MaxCardCountPerPlaySlot - andIndexInSlot;
+        var sortingOrder = withStackCount - andIndexInStack - 1;
+        var positionOffset = andLayout == CardStackLayout.Vertical
+            ? Vector3.up * andIndexInStack * settings.CardOffsetInPile.y
+            : Vector3.right * sortingOrder * settings.CardOffsetInPile.x;
 
-        if (andIndexInSlot == 0)
+        defaultLocalPosition =
+            Transform.localPosition = atLocalPos + positionOffset;
+        
+        sortingGroup.sortingOrder = sortingOrder;
+
+        if (andIndexInStack == 0)
             EnableUserInteraction();
         else
             DisableUserInteraction();
@@ -116,7 +121,7 @@ public abstract class CardView : MonoBehaviour, ICardView
                     interactionEvent.OnNext(CardInteractionEventType.Pick);
                     
                     lastDragWorldPos = boardCamera.GetWorldPosition(eventData.position);
-                    sortingGroup.sortingOrder = settings.ActiveCardSortingOrder;
+                    sortingGroup.sortingOrder = settings.FloatingCardSortingOrder;
 
                     locationTween?.Kill();
                 }));

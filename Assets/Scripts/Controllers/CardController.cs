@@ -27,9 +27,14 @@ public struct CardInteractionEvent
 public interface ICardController
 {
     Transform Transform { get; }
-    IConnectableObservable<CardInteractionEvent> InteractionEvent { get; }
+    IObservable<CardInteractionEvent> InteractionEvent { get; }
+    IObservable<Unit> Moved { get; }
+    IObservable<Unit> Destroyed { get; }
 
-    void Arrange(Vector3 atLocalPos, int andIndexInSlot);
+    void Arrange(int andIndexInStack, int withStackCount, CardStackLayout andLayout);
+    bool DoesMatch(ICardController other);
+    void OnMoved(ICardSlotController toSlot);
+    void Destroy();
 }
 
 public class CardController : ICardController
@@ -81,6 +86,7 @@ public class CardController : ICardController
     private readonly ICardView view;
     private readonly GameSettings settings;
     private readonly IDisposable interactionEventConnection;
+    private ICardSlotController slot;
     
     private CardController(
         ICard model, 
@@ -93,23 +99,46 @@ public class CardController : ICardController
         this.settings = settings;
 
         InteractionEvent = view.InteractionEvent
-                .Select(eventType => new CardInteractionEvent(eventType, this))
-                .Publish();
-
-        interactionEventConnection = InteractionEvent.Connect();
+            .Select(eventType => new CardInteractionEvent(eventType, this));
+        
+        Moved = Observable.FromEvent(
+            h => MovedEvent += h,
+            h => MovedEvent -= h);
+        
+        Destroyed = Observable.FromEvent(
+            h => DestroyedEvent += h,
+            h => DestroyedEvent -= h);
     }
+
+    private event Action MovedEvent;
+    private event Action DestroyedEvent;
 
     public Transform Transform => view.Transform;
+    public IObservable<CardInteractionEvent> InteractionEvent { get; }
+    public IObservable<Unit> Moved { get; }
+    public IObservable<Unit> Destroyed { get; }
 
-    public IConnectableObservable<CardInteractionEvent> InteractionEvent { get; }
-
-    public void Arrange(Vector3 atLocalPos, int andIndexInSlot)
+    public void OnMoved(ICardSlotController toSlot)
     {
-        view.Arrange(atLocalPos, andIndexInSlot);
+        slot = toSlot;
+        
+        MovedEvent?.Invoke();
+    }
+    
+    public void Arrange(int andIndexInStack, int withStackCount, CardStackLayout andLayout)
+    {
+        view.Arrange(slot.LocalPosition, andIndexInStack, withStackCount, andLayout);
     }
 
-    public void Dispose()
+    public bool DoesMatch(ICardController other)
     {
-        interactionEventConnection.Dispose();
+        return other != null;
+    }
+
+    public void Destroy()
+    {
+        view.Destroy();
+
+        DestroyedEvent?.Invoke();
     }
 }

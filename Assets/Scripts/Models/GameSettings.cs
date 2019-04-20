@@ -15,7 +15,6 @@ public class GameSettings
     public int MaxCardCountPerPlaySlot { get; } = 3;
     
     // Interaction
-    public int ActiveCardSortingOrder { get; } = 10;
     public TimeSpan CardReturnDuration { get; } = TimeSpan.FromSeconds(0.5f);
     
     // Layout
@@ -47,12 +46,7 @@ public class GameSettings
     public int MaxPlayerDefense { get; } = 20;
     
     // Rendering
-    public string CardDefaultSortingLayerName { get; } = "Card";
-    public string CardTextDefaultSortingLayerName { get; } = "Card Text";
-    public string PlayerDefaultSortingLayerName { get; } = "Player";
-    public string PlayerTextDefaultSortingLayerName { get; } = "Player Text";
-    public string CardFirstOverlaySortingLayerName { get; } = "Card Overlay 1";
-    public string CardTextFirstOverlaySortingLayerName { get; } = "Card Text Overlay 1";
-    public string CardSecondOverlaySortingLayerName { get; } = "Card Overlay 2";
-    public string CardTextSecondOverlaySortingLayerName { get; } = "Card Text Overlay 2";
+    public string SlotSortingLayerName { get; } = "Slot";
+    public string CardSortingLayerName { get; } = "Card";
+    public int FloatingCardSortingOrder { get; } = 50;
 }

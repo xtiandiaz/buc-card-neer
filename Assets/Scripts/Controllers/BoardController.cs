@@ -7,11 +7,13 @@ using UniRx;
 
 public interface IBoardController
 {
-    List<ICardSlotController> PlaySlots { get; }
+    List<ICardSlotController> ServiceSlots { get; }
     List<ICardSlotController> StashSlots { get; }
     ICardSlotController PlayerSlot { get; }
-    
-    List<ICardSlotController> DropSlots { get; }
+    List<ICardSlotController> PlaySlots { get; }
+
+    void Deal(ICardSlotController onSlot, int count);
+    void TryMatching(ICardController card, ICardController withAnother);
 }
 
 public class BoardController : IBoardController, IInitializable, IDisposable
@@ -22,8 +24,6 @@ public class BoardController : IBoardController, IInitializable, IDisposable
     private readonly DeckController deckController;
     private readonly GameSettings settings;
     private readonly CompositeDisposable perGameDisposables = new CompositeDisposable();
-    private readonly Dictionary<ICardController, ICardSlotController> cardLocationMap 
-        = new Dictionary<ICardController, ICardSlotController>();
 
     private IDisposable moveSubscription;
 
@@ -43,7 +43,7 @@ public class BoardController : IBoardController, IInitializable, IDisposable
 
         deckController = deckControllerFactory.Create();
         
-        PlaySlots = view.SlotViews
+        ServiceSlots = view.SlotViews
             .Where(s => s.Type == CardSlotType.Play)
             .Select(slotView => (ICardSlotController) cardSlotControllerFactory.Create(slotView))
             .ToList();
@@ -58,17 +58,18 @@ public class BoardController : IBoardController, IInitializable, IDisposable
             .Select(slotView => (ICardSlotController) cardSlotControllerFactory.Create(slotView))
             .First();
 
-        DropSlots = PlaySlots;
+        PlaySlots = ServiceSlots.ConvertAll(s => s);
+        PlaySlots.AddRange(StashSlots);
     }
     
-    public List<ICardSlotController> PlaySlots { get; }
+    public List<ICardSlotController> ServiceSlots { get; }
     public List<ICardSlotController> StashSlots { get; }
     public ICardSlotController PlayerSlot { get; }
-    public List<ICardSlotController> DropSlots { get; }
+    public List<ICardSlotController> PlaySlots { get; }
 
     public void Initialize()
     {
-        PlaySlots.ForEach(cardSlotController => Deal(cardSlotController, settings.MaxCardCountPerPlaySlot));
+        ServiceSlots.ForEach(cardSlotController => Deal(cardSlotController, settings.MaxCardCountPerPlaySlot));
     }
 
     public void Dispose()
@@ -76,59 +77,73 @@ public class BoardController : IBoardController, IInitializable, IDisposable
         perGameDisposables.Dispose();
     }
 
-    private void Deal(ICardSlotController onSlot, int count)
+    public void Deal(ICardSlotController onSlot, int count)
     {
         for (var i = 0; i < count; i++)
         {
-            if (!onSlot.DoesAcceptNewGuests)
+            if (!onSlot.CanBeDealtOn)
                 break;
             
             var card = deckController.Draw();
             if (card == null)
                 break;
 
-            Lodge(card, onSlot);
+            onSlot.Take(card);
             
             view.Parent(card.Transform);
 
             card.InteractionEvent
-                .Subscribe(OnCardInteraction);
+                .Subscribe(OnCardInteraction)
+                .AddTo(card.Transform);
         }
     }
 
-    private bool Lodge(ICardController card, ICardSlotController inSlot)
+    public void TryMatching(ICardController card, ICardController withAnother)
     {
-        var canLodge = inSlot.Lodge(card);
-        if (canLodge)
-        {
-            if (cardLocationMap.ContainsKey(card))
-                cardLocationMap[card].Release(card);
-
-            cardLocationMap[card] = inSlot;
-        }
-
-        return canLodge;
+        if (!card.DoesMatch(withAnother))
+            return;
+        
+        card.Destroy();
+        withAnother.Destroy();
     }
 
     private void OnCardInteraction(CardInteractionEvent withEvent)
     {
+        var card = withEvent.card;
+        
         switch (withEvent.type)
         {
             case CardInteractionEventType.Pick:
+
+                ToggleSlotHighlight(true, s => s.DoesAdmit(card) || s.DoesMatch(card));
+                
                 break;
             case CardInteractionEventType.Drop:
 
-                var targetedSlot = DropSlots
-                    .FirstOrDefault(s => s.DoesContain(withEvent.card.Transform.position));
+                ToggleSlotHighlight(false);
                 
-                if (targetedSlot == null /* OR Slot does not accept Card*/)
+                var targetedSlot = PlaySlots
+                    .FirstOrDefault(s => s.DoesContain(card.Transform.position));
+                
+                if (targetedSlot == null)
                     return;
 
-                Lodge(withEvent.card, targetedSlot);
+                if (targetedSlot.DoesAdmit(card))
+                    targetedSlot.Take(card);
+                else if (targetedSlot.DoesMatch(card))
+                    TryMatching(card, targetedSlot.Head);
 
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
+    }
+
+    private void ToggleSlotHighlight(bool on, Func<ICardSlotController, bool> where = null)
+    {
+        var slotSelection = where != null ? PlaySlots.Where(where) : PlaySlots; 
+        
+        foreach (var slot in slotSelection)
+            slot.ToggleHighlight(on);
     }
 }
