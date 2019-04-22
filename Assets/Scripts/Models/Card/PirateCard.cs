@@ -7,10 +7,9 @@ public class PirateCard : Card
     {
     }
     
-    private readonly ReactiveProperty<int> stamina;
-    private readonly ReactiveProperty<int> attack;
-    
     protected PirateCard() : base(CardType.Pirate)
     {
     }
+    
+    public override CardType InteractionMask { get; } = CardType.Item | CardType.Merchant | CardType.Inspector;
 }

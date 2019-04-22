@@ -6,11 +6,12 @@ using Zenject;
 
 public interface ICardSlotController
 {
-    uint Id { get; }
     CardSlotType Type { get; }
+    uint Capacity { get; }
     Vector3 LocalPosition { get; }
-    bool CanBeDealtOn { get; }
     ICardController Head { get; }
+    bool CanBeDealtOn { get; }
+    IObservable<Unit> Emptied { get; }
 
     bool DoesContain(Vector3 worldPoint);
     bool DoesContain(ICardController cardController);
@@ -54,12 +55,15 @@ public class CardSlotController : ICardSlotController
         this.model = model;
         this.view = view;
     }
-
-    public uint Id => model.Id;
+    
     public CardSlotType Type => model.Type;
+    public uint Capacity => model.Capacity;
     public Vector3 LocalPosition => view.Transform.localPosition;
     public bool CanBeDealtOn => guests.Count < model.Capacity;
     public ICardController Head => guests.FirstOrDefault();
+    public IObservable<Unit> Emptied => guests.ObserveCountChanged(true)
+        .Where(count => count == 0)
+        .AsUnitObservable();
     
     public bool DoesContain(Vector3 worldPoint)
     {
@@ -96,6 +100,7 @@ public class CardSlotController : ICardSlotController
         dealtCardController.Destroyed
             .Merge(dealtCardController.Moved)
             .Select(_ => dealtCardController)
+            .Take(1)
             .Subscribe(c => Release(c))
             .AddTo(dealtCardController.Transform);
         
@@ -124,7 +129,7 @@ public class CardSlotController : ICardSlotController
         var totalGuests = guests.Count;
         for (var i = 0; i < totalGuests; i++)
         {
-            guests[i].Arrange(i, totalGuests, view.Layout);
+            guests[i].Arrange(view.HookingLocalPosition, i, totalGuests, view.Layout);
         }
     }
 }

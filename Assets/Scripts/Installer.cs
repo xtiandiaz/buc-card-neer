@@ -15,9 +15,10 @@ public class Installer : MonoInstaller
         Container.BindFactory<DeckContents, Deck, Deck.Factory>().AsSingle();
         Container.BindFactory<Deck, DeckController, DeckController.Factory>().AsSingle();
         
-        Container.BindFactory<uint, CardSlotType, uint, CardSlot, CardSlot.Factory>();
+        Container.BindFactory<CardSlotType, uint, CardSlot, CardSlot.Factory>();
 
         Container.Bind<Card.Factory>().AsSingle();
+        Container.Bind<CardView.Factory>().AsSingle();
         
         Container.BindFactory<PlayerCard, PlayerCard.Factory>();
         Container.BindFactory<string, PlayerCardView, PlayerCardView.Factory>()

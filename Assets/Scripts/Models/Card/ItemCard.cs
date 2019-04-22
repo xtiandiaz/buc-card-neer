@@ -10,4 +10,6 @@ public class ItemCard : Card
     protected ItemCard() : base(CardType.Item)
     {
     }
+
+    public override CardType InteractionMask { get; } = CardType.Merchant | CardType.Pirate | CardType.Inspector;
 }

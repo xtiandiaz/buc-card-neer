@@ -12,8 +12,4 @@ public class PlayerCardView : CardView
     [SerializeField] private CardStatView healthStat;
     [SerializeField] private CardStatView staminaStat;
     [SerializeField] private CardStatView defenseStat;
-
-    protected override void Initialize()
-    {
-    }
 }

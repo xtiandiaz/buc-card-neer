@@ -9,8 +9,4 @@ public class PirateCardView : CardView
 
     [SerializeField] private CardStatView staminaStat;
     [SerializeField] private CardStatView attackStat;
-    
-    protected override void Initialize()
-    {
-    }
 }

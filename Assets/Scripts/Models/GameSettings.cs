@@ -6,7 +6,6 @@ public class GameSettings
     private GameSettings()
     {
         DisplacementUnit = CardSize + CardSpacing;
-        MoveDurationInSeconds = (float) MoveDuration.TotalSeconds;
     }
     
     // Gameplay
@@ -16,6 +15,7 @@ public class GameSettings
     
     // Interaction
     public TimeSpan CardReturnDuration { get; } = TimeSpan.FromSeconds(0.5f);
+    public TimeSpan CardArrangementDuration { get; } = TimeSpan.FromSeconds(0.2);
     
     // Layout
     public int BoardCols { get; } = 5;
@@ -27,8 +27,6 @@ public class GameSettings
     public Vector3 CardOffsetInPile { get; } = new Vector2(0.8f, 0.8f);
     public float CardThickness { get; } = 0.05f;
     public float VisibleCardCountPerRow { get; } = 4f;
-    public TimeSpan MoveDuration { get; } = TimeSpan.FromSeconds(0.75);
-    public float MoveDurationInSeconds { get; }
     
     // Deck
     public DeckContents DeckContents { get; } = new DeckContents(
@@ -36,14 +34,6 @@ public class GameSettings
         new CardSet(CardType.Merchant, 10), 
         new CardSet(CardType.Pirate, 10) 
         );
-    
-    // Player
-    public int StartPlayerHealth { get; } = 10;
-    public int StartPlayerStamina { get; } = 10;
-    public int StartPlayerDefense { get; } = 10;
-    public int MaxPlayerHealth { get; } = 20;
-    public int MaxPlayerStamina { get; } = 20;
-    public int MaxPlayerDefense { get; } = 20;
     
     // Rendering
     public string SlotSortingLayerName { get; } = "Slot";

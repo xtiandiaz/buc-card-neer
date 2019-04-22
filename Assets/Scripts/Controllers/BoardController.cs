@@ -13,16 +13,18 @@ public interface IBoardController
     List<ICardSlotController> PlaySlots { get; }
 
     void Deal(ICardSlotController onSlot, int count);
+    void Place(ICardController card, ICardSlotController onSlot);
     void TryMatching(ICardController card, ICardController withAnother);
 }
 
 public class BoardController : IBoardController, IInitializable, IDisposable
 {
-    private readonly CardSlotController.Factory cardSlotControllerFactory;
     private readonly IBoard model;
     private readonly IBoardView view;
     private readonly DeckController deckController;
+    private readonly CardController.Factory cardControllerFactory;
     private readonly GameSettings settings;
+    private readonly PlayerCard playerCard;
     private readonly CompositeDisposable perGameDisposables = new CompositeDisposable();
 
     private IDisposable moveSubscription;
@@ -31,6 +33,8 @@ public class BoardController : IBoardController, IInitializable, IDisposable
         Board.Factory boardFactory,
         IBoardView view,
         DeckController.Factory deckControllerFactory,
+        Card.Factory cardFactory,
+        CardController.Factory cardControllerFactory,
         CardSlotController.Factory cardSlotControllerFactory,
         GameSettings settings
         )
@@ -38,13 +42,13 @@ public class BoardController : IBoardController, IInitializable, IDisposable
         model = boardFactory.Create();
         
         this.view = view;
-        this.cardSlotControllerFactory = cardSlotControllerFactory;
         this.settings = settings;
+        this.cardControllerFactory = cardControllerFactory;
 
         deckController = deckControllerFactory.Create();
         
         ServiceSlots = view.SlotViews
-            .Where(s => s.Type == CardSlotType.Play)
+            .Where(s => s.Type == CardSlotType.Service)
             .Select(slotView => (ICardSlotController) cardSlotControllerFactory.Create(slotView))
             .ToList();
         
@@ -60,6 +64,8 @@ public class BoardController : IBoardController, IInitializable, IDisposable
 
         PlaySlots = ServiceSlots.ConvertAll(s => s);
         PlaySlots.AddRange(StashSlots);
+        
+        playerCard = (PlayerCard) cardFactory.Create(CardType.Player);
     }
     
     public List<ICardSlotController> ServiceSlots { get; }
@@ -69,7 +75,13 @@ public class BoardController : IBoardController, IInitializable, IDisposable
 
     public void Initialize()
     {
-        ServiceSlots.ForEach(cardSlotController => Deal(cardSlotController, settings.MaxCardCountPerPlaySlot));
+        Place(cardControllerFactory.Create(playerCard), PlayerSlot);
+        
+        perGameDisposables.Add(
+            ServiceSlots.Select(s => s.Emptied.Select(_ => s))
+                .Merge()
+                .Delay(TimeSpan.FromSeconds(0.25f))
+                .Subscribe(slot => Deal(slot, (int) slot.Capacity)));
     }
 
     public void Dispose()
@@ -88,14 +100,22 @@ public class BoardController : IBoardController, IInitializable, IDisposable
             if (card == null)
                 break;
 
-            onSlot.Take(card);
-            
-            view.Parent(card.Transform);
-
-            card.InteractionEvent
-                .Subscribe(OnCardInteraction)
-                .AddTo(card.Transform);
+            Place(card, onSlot);
         }
+    }
+
+    public void Place(ICardController card, ICardSlotController onSlot)
+    {
+        onSlot.Take(card);
+            
+        view.Parent(card.Transform);
+
+        if (!card.IsDraggable)
+            return;
+            
+        card.InteractionEvent
+            .Subscribe(OnCardInteraction)
+            .AddTo(card.Transform);
     }
 
     public void TryMatching(ICardController card, ICardController withAnother)

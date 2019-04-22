@@ -9,4 +9,6 @@ public class MerchantCard : Card
     private MerchantCard() : base(CardType.Merchant)
     {
     }
+    
+    public override CardType InteractionMask { get; } = CardType.Item | CardType.Pirate | CardType.Inspector;
 }

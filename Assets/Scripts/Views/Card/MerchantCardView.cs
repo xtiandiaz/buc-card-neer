@@ -7,8 +7,4 @@ public class MerchantCardView : CardView
     public class Factory : PlaceholderFactory<string, MerchantCardView>
     {
     }
-    
-    protected override void Initialize()
-    {
-    }
 }

@@ -14,6 +14,7 @@ public interface ICardSlotView
     CardStackLayout Layout { get; }
     
     Transform Transform { get; }
+    Vector3 HookingLocalPosition { get; }
 
     bool DoesContain(Vector3 worldPoint);
     void ToggleHighlight(bool on);
@@ -22,7 +23,7 @@ public interface ICardSlotView
 public class CardSlotView : MonoBehaviour, ICardSlotView
 {
     [SerializeField] private SpriteRenderer faceRenderer;
-    [SerializeField] private SpriteRenderer forbiddenIconRenderer;
+    [SerializeField] private Transform hook;
     [SerializeField] private uint capacity;
     [SerializeField] private CardSlotType type;
     [SerializeField] private CardStackLayout layout;
@@ -35,6 +36,7 @@ public class CardSlotView : MonoBehaviour, ICardSlotView
     public CardSlotType Type => type;
     public CardStackLayout Layout => layout;
     public Transform Transform { get; private set; }
+    public Vector3 HookingLocalPosition => transform.localPosition + hook.localPosition;
     
     [Inject]
     private void Construct(
