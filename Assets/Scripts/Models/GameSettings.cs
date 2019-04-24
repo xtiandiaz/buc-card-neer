@@ -20,20 +20,13 @@ public class GameSettings
     // Layout
     public int BoardCols { get; } = 5;
     public int BoardRows { get; } = 5;
-    public Vector2 BoardMargins { get; } = new Vector2(0.25f, 0.25f);
+    public Vector2 BoardMargins { get; } = Vector2.one * 0.25f;
     public Vector2 CardSize { get; } = new Vector2(2.5f, 3.5f);
     public Vector2 CardSpacing { get; } = Vector2.zero;
     public Vector2 DisplacementUnit { get; }
     public Vector3 CardOffsetInPile { get; } = new Vector2(0.8f, 0.8f);
     public float CardThickness { get; } = 0.05f;
     public float VisibleCardCountPerRow { get; } = 4f;
-    
-    // Deck
-    public DeckContents DeckContents { get; } = new DeckContents(
-        new CardSet(CardType.Item, 20),
-        new CardSet(CardType.Merchant, 10), 
-        new CardSet(CardType.Pirate, 10) 
-        );
     
     // Rendering
     public string SlotSortingLayerName { get; } = "Slot";

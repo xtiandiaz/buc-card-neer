@@ -8,12 +8,11 @@ public interface ICardSlotController
 {
     CardSlotType Type { get; }
     uint Capacity { get; }
-    Vector3 LocalPosition { get; }
     ICardController Head { get; }
     bool CanBeDealtOn { get; }
     IObservable<Unit> Emptied { get; }
 
-    bool DoesContain(Vector3 worldPoint);
+    bool DoesContain(Vector2 worldCoordinate);
     bool DoesContain(ICardController cardController);
     bool DoesAdmit(ICardController cardController);
     bool DoesMatch(ICardController cardController);
@@ -58,16 +57,15 @@ public class CardSlotController : ICardSlotController
     
     public CardSlotType Type => model.Type;
     public uint Capacity => model.Capacity;
-    public Vector3 LocalPosition => view.Transform.localPosition;
     public bool CanBeDealtOn => guests.Count < model.Capacity;
     public ICardController Head => guests.FirstOrDefault();
     public IObservable<Unit> Emptied => guests.ObserveCountChanged(true)
         .Where(count => count == 0)
         .AsUnitObservable();
     
-    public bool DoesContain(Vector3 worldPoint)
+    public bool DoesContain(Vector2 worldCoordinate)
     {
-        return view.DoesContain(worldPoint);
+        return view.DoesContain(new Vector3(worldCoordinate.x, worldCoordinate.y, view.Transform.position.z));
     }
     
     public bool DoesContain(ICardController cardController)
@@ -80,7 +78,7 @@ public class CardSlotController : ICardSlotController
         return CanBeDealtOn 
                && cardController != null 
                && !DoesContain(cardController) 
-               && model.Type == CardSlotType.Stash;
+               && model.Type == CardSlotType.Resource;
     }
     
     public bool DoesMatch(ICardController cardController)
@@ -94,6 +92,8 @@ public class CardSlotController : ICardSlotController
             return false;
         
         guests.Insert(0, dealtCardController);
+        
+        dealtCardController.Transform.SetParent(view.Transform, false);
         
         dealtCardController.OnMoved(this);
 
@@ -129,7 +129,7 @@ public class CardSlotController : ICardSlotController
         var totalGuests = guests.Count;
         for (var i = 0; i < totalGuests; i++)
         {
-            guests[i].Arrange(view.HookingLocalPosition, i, totalGuests, view.Layout);
+            guests[i].Arrange(Vector3.zero, i, totalGuests, view.Layout);
         }
     }
 }

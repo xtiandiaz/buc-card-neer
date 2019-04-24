@@ -45,29 +45,18 @@ public class CardController : ICardController
 {
     public class Factory : PlaceholderFactory<ICard, ICardView, CardController>
     {
-        private readonly Card.Factory modelFactory;
         private readonly CardView.Factory viewFactory;
-        private readonly ItemCardView.Factory resourceCardViewFactory;
-        private readonly PirateCardView.Factory pirateCardViewFactory;
-        private readonly MerchantCardView.Factory merchantCardViewFactory;
 
-        private Factory(
-            Card.Factory modelFactory,
-            CardView.Factory viewFactory
-            )
+        private Factory(CardView.Factory viewFactory)
         {
-            this.modelFactory = modelFactory;
             this.viewFactory = viewFactory;
         }
         
-        public CardController Create(CardType withType)
+        public CardController Create(ICard forModel)
         {
-            return base.Create(modelFactory.Create(withType), viewFactory.Create(withType));
-        }
-        
-        public CardController Create(ICard fromModel)
-        {
-            return base.Create(fromModel, viewFactory.Create(fromModel.Type));
+            forModel.Initialize();
+            
+            return base.Create(forModel, viewFactory.Create(forModel.Type));
         }
     }
 
@@ -76,6 +65,7 @@ public class CardController : ICardController
     private readonly BoardCamera boardCamera;
     private readonly GameSettings settings;
     private readonly ObservableEventTrigger eventTrigger;
+    private readonly BoxCollider2D hitArea;
     private readonly Subject<CardInteractionEventType> interactionEvent = new Subject<CardInteractionEventType>();
     private readonly CompositeDisposable interactionEventDisposables = new CompositeDisposable();
     
@@ -98,13 +88,15 @@ public class CardController : ICardController
         Destroyed = Observable.FromEvent(
             h => DestroyedEvent += h,
             h => DestroyedEvent -= h);
-
-        IsDraggable = (model.Type & CardType.Item) != 0;
+        
+        IsDraggable = (model.Type & CardType.Foe) != 0;
         
         if (!IsDraggable)
             return;
-        
-        eventTrigger = view.Transform.gameObject.AddComponent<ObservableEventTrigger>();
+
+        var frontGameObject = view.FrontFaceRenderer.gameObject;
+        eventTrigger = frontGameObject.AddComponent<ObservableEventTrigger>();
+        hitArea = frontGameObject.AddComponent<BoxCollider2D>();
 
         InteractionEvent = interactionEvent
             .Select(eventType => new CardInteractionEvent(eventType, this));
@@ -134,7 +126,7 @@ public class CardController : ICardController
 
     public virtual bool DoesMatch(ICardController other)
     {
-        return other != null && (model.Type & other.InteractionMask) != 0;
+        return other != null /*&& (model.Type & other.InteractionMask) != 0*/;
     }
 
     public void Destroy()
@@ -146,8 +138,6 @@ public class CardController : ICardController
     
     private void ToggleUserInteraction(bool on)
     {
-        view.HitArea.enabled = on;
-
         if (!on)
         {
             interactionEventDisposables.Clear();

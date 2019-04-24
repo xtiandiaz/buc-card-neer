@@ -1,63 +1,29 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using Zenject;
 
-public struct CardSet
+[CreateAssetMenu(fileName = "Deck", menuName = "Game/Deck", order = 1)]
+public class Deck : ScriptableObject, IInitializable
 {
-    public CardType type;
-    public int count;
+    [SerializeField] private List<Card> cards;
+    
+    private Queue<ICard> cardQueue;
 
-    public CardSet(CardType type, int count)
+    public void Initialize()
     {
-        this.type = type;
-        this.count = count;
-    }
-}
-
-public struct DeckContents
-{
-    public CardSet[] sets;
-    public int count;
-
-    public DeckContents(params CardSet[] sets)
-    {
-        this.sets = sets;
-        count = sets.Sum(c => c.count);
-    }
-}
-
-public class Deck
-{
-    private readonly Queue<ICard> cards;
-
-    public class Factory : PlaceholderFactory<DeckContents, Deck>
-    {
-    }
-
-    private Deck(
-        DeckContents contents,
-        Card.Factory cardFactory
-    )
-    {      
-        var cardList = new List<ICard>();
-        foreach (var cardSet in contents.sets)
-        {
-            for (var i = 0; i < cardSet.count; i++)
-                cardList.Add(cardFactory.Create(cardSet.type));
-        }
-
-        cardList.Shuffle();
+        cards.Shuffle();
         
-        cards = new Queue<ICard>(cardList);
+        cardQueue = new Queue<ICard>(cards);
     }
 
     public ICard Supply()
     {
-        return cards.Dequeue();
+        return cardQueue.Dequeue();
     }
     
     public void PutBack(ICard card)
     {
-        cards.Enqueue(card);
+        cardQueue.Enqueue(card);
     }
 }

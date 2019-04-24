@@ -5,45 +5,34 @@ public class Installer : MonoInstaller
 {
     [SerializeField] private UserInteractionListener userInteractionListener;
     [SerializeField] private BoardCamera camera;
-    [SerializeField] private BoardView boardView;
     [SerializeField] private CardSlotView cardSlotViewPrefab;
     [SerializeField] private GamePalette palette;
+
+    [Header("Decks")]
+    [SerializeField] private Deck eventDeck;
+
+    [Header("Board")] 
+    [SerializeField] private BoardView boardView;
 
     public override void InstallBindings()
     {
         // Deck
-        Container.BindFactory<DeckContents, Deck, Deck.Factory>().AsSingle();
+        Container.Bind<Deck>().FromInstance(eventDeck);
+        
         Container.BindFactory<Deck, DeckController, DeckController.Factory>().AsSingle();
         
         Container.BindFactory<CardSlotType, uint, CardSlot, CardSlot.Factory>();
-
-        Container.Bind<Card.Factory>().AsSingle();
-        Container.Bind<CardView.Factory>().AsSingle();
-        
-        Container.BindFactory<PlayerCard, PlayerCard.Factory>();
-        Container.BindFactory<string, PlayerCardView, PlayerCardView.Factory>()
-            .FromFactory<PrefabResourceFactory<PlayerCardView>>();
-        
-        Container.BindFactory<ItemCard, ItemCard.Factory>();
-        Container.BindFactory<string, ItemCardView, ItemCardView.Factory>()
-            .FromFactory<PrefabResourceFactory<ItemCardView>>();
-        
-        Container.BindFactory<PirateCard, PirateCard.Factory>();
-        Container.BindFactory<string, PirateCardView, PirateCardView.Factory>()
-            .FromFactory<PrefabResourceFactory<PirateCardView>>();
-        
-        Container.BindFactory<MerchantCard, MerchantCard.Factory>();
-        Container.BindFactory<string, MerchantCardView, MerchantCardView.Factory>()
-            .FromFactory<PrefabResourceFactory<MerchantCardView>>();
-        
         Container.BindFactory<ICardSlot, ICardSlotView, CardSlotController, CardSlotController.Factory>().AsSingle();
+
         Container.BindFactory<ICard, ICardView, CardController, CardController.Factory>().AsSingle();
+        Container.BindFactory<string, CardView, CardView.Factory>().FromFactory<PrefabResourceFactory<CardView>>();
         
         // Board
         Container.BindFactory<Board, Board.Factory>();
-        Container.BindInterfacesAndSelfTo<BoardController>().AsSingle();
-        Container.BindInterfacesAndSelfTo<BoardView>().FromInstance(boardView).AsSingle();
         Container.BindInterfacesAndSelfTo<BoardCamera>().FromInstance(camera).AsSingle();
+        Container.BindInterfacesAndSelfTo<BoardView>().FromInstance(boardView).AsSingle();
+        
+        Container.BindInterfacesAndSelfTo<BoardController>().AsSingle();
         
         // UI
         Container.Bind<UserInteractionListener>().FromInstance(userInteractionListener).AsSingle();

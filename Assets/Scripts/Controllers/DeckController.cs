@@ -4,22 +4,6 @@ public class DeckController
 {
     public class Factory : PlaceholderFactory<Deck, DeckController>
     {
-        private readonly Deck.Factory deckFactory;
-        private readonly GameSettings settings;
-
-        private Factory(
-            Deck.Factory deckFactory,
-            GameSettings settings
-            )
-        {
-            this.deckFactory = deckFactory;
-            this.settings = settings;
-        }
-
-        public DeckController Create()
-        {
-            return base.Create(deckFactory.Create(settings.DeckContents));
-        }
     }
     
     private readonly Deck model;

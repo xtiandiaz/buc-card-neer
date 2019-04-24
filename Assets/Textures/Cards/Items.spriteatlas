@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Items
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 057ef49c2ccb94364bff7c40fbaf4540, type: 3}
+    totalSpriteSurfaceArea: 1200000
+    bindAsDefault: 1
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 0617bfb31863243ce974c2f6b6ae73a6, type: 3}
+  - {fileID: 21300000, guid: 483e3eb7381824761b245f673d0ee3d2, type: 3}
+  - {fileID: 21300002, guid: 483e3eb7381824761b245f673d0ee3d2, type: 3}
+  - {fileID: 21300004, guid: 483e3eb7381824761b245f673d0ee3d2, type: 3}
+  - {fileID: 21300006, guid: 483e3eb7381824761b245f673d0ee3d2, type: 3}
+  - {fileID: 21300008, guid: 483e3eb7381824761b245f673d0ee3d2, type: 3}
+  - {fileID: -7624950995120954534, guid: 5a693d6d101cd4f3289c7ae1a751308f, type: 3}
+  - {fileID: 9021121493683780791, guid: 5a693d6d101cd4f3289c7ae1a751308f, type: 3}
+  - {fileID: 6909190012271465912, guid: 5a693d6d101cd4f3289c7ae1a751308f, type: 3}
+  - {fileID: 2960233865238629150, guid: 5a693d6d101cd4f3289c7ae1a751308f, type: 3}
+  - {fileID: 5237981061218106174, guid: 5a693d6d101cd4f3289c7ae1a751308f, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - CardItem
+  - Items_0
+  - Items_1
+  - Items_2
+  - Items_3
+  - Items_4
+  - SuitIcons_3
+  - SuitIcons_2
+  - SuitIcons_1
+  - SuitIcons_0
+  - SuitIcons_4
+  m_Tag: Items
+  m_IsVariant: 0

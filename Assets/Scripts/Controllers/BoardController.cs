@@ -19,12 +19,12 @@ public interface IBoardController
 
 public class BoardController : IBoardController, IInitializable, IDisposable
 {
-    private readonly IBoard model;
+    private readonly Board model;
     private readonly IBoardView view;
     private readonly DeckController deckController;
     private readonly CardController.Factory cardControllerFactory;
     private readonly GameSettings settings;
-    private readonly PlayerCard playerCard;
+    //private readonly PlayerCardFace playerCard;
     private readonly CompositeDisposable perGameDisposables = new CompositeDisposable();
 
     private IDisposable moveSubscription;
@@ -33,8 +33,6 @@ public class BoardController : IBoardController, IInitializable, IDisposable
         Board.Factory boardFactory,
         IBoardView view,
         DeckController.Factory deckControllerFactory,
-        Card.Factory cardFactory,
-        CardController.Factory cardControllerFactory,
         CardSlotController.Factory cardSlotControllerFactory,
         GameSettings settings
         )
@@ -45,27 +43,27 @@ public class BoardController : IBoardController, IInitializable, IDisposable
         this.settings = settings;
         this.cardControllerFactory = cardControllerFactory;
 
-        deckController = deckControllerFactory.Create();
+        deckController = deckControllerFactory.Create(model.Deck);
         
         ServiceSlots = view.SlotViews
-            .Where(s => s.Type == CardSlotType.Service)
+            .Where(s => s.Type == CardSlotType.Event)
             .Select(slotView => (ICardSlotController) cardSlotControllerFactory.Create(slotView))
             .ToList();
         
         StashSlots = view.SlotViews
-            .Where(s => s.Type == CardSlotType.Stash)
+            .Where(s => s.Type == CardSlotType.Resource)
             .Select(slotView => (ICardSlotController) cardSlotControllerFactory.Create(slotView))
             .ToList();
 
         PlayerSlot = view.SlotViews
-            .Where(s => s.Type == CardSlotType.Player)
+            .Where(s => s.Type == CardSlotType.Encounter)
             .Select(slotView => (ICardSlotController) cardSlotControllerFactory.Create(slotView))
             .First();
 
         PlaySlots = ServiceSlots.ConvertAll(s => s);
         PlaySlots.AddRange(StashSlots);
         
-        playerCard = (PlayerCard) cardFactory.Create(CardType.Player);
+        //playerCard = (PlayerCardFace) cardFactory.Create(CardFaceType.Player);
     }
     
     public List<ICardSlotController> ServiceSlots { get; }
@@ -75,13 +73,36 @@ public class BoardController : IBoardController, IInitializable, IDisposable
 
     public void Initialize()
     {
-        Place(cardControllerFactory.Create(playerCard), PlayerSlot);
+        view.Initialize();
+        
+        //Place(cardControllerFactory.Create(playerCard), PlayerSlot);
         
         perGameDisposables.Add(
             ServiceSlots.Select(s => s.Emptied.Select(_ => s))
                 .Merge()
                 .Delay(TimeSpan.FromSeconds(0.25f))
-                .Subscribe(slot => Deal(slot, (int) slot.Capacity)));
+                .Subscribe(slot => Deal(slot, 1)));
+        
+        perGameDisposables.Add(
+            model.ObservableMode
+                .Subscribe(view.Set));
+
+        Observable.EveryUpdate()
+            .Do(_ => { 
+                if (Input.GetKeyDown(KeyCode.Alpha0))
+                {
+                    model.Mode = BoardMode.Seafaring;
+                }
+                else if (Input.GetKeyDown(KeyCode.Alpha1))
+                {
+                    model.Mode = BoardMode.Trade;
+                }
+                else if (Input.GetKeyDown(KeyCode.Alpha2))
+                {
+                    model.Mode = BoardMode.Combat;
+                }
+                
+            }).Subscribe();
     }
 
     public void Dispose()
@@ -107,8 +128,6 @@ public class BoardController : IBoardController, IInitializable, IDisposable
     public void Place(ICardController card, ICardSlotController onSlot)
     {
         onSlot.Take(card);
-            
-        view.Parent(card.Transform);
 
         if (!card.IsDraggable)
             return;

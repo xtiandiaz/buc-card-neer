@@ -6,9 +6,10 @@ using Zenject;
 
 public enum CardSlotType
 {
-    Service,
-    Player,
-    Stash
+    Event,
+    Encounter,
+    Defense,
+    Resource
 }
 
 public interface ICardSlot

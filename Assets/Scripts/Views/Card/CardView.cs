@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using DG.Tweening;
 using UnityEngine;
-using Zenject;
-using UniRx;
-using UniRx.Triggers;
-using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
-using Random = UnityEngine.Random;
+using Zenject;
 
 public interface ICardView
 {
+    SpriteRenderer FrontFaceRenderer { get; }
+    SpriteRenderer BackFaceRenderer { get; }
     Transform Transform { get; }
-    BoxCollider2D HitArea { get; }
     
     void Destroy();
     void Arrange(Vector3 atLocalPos, int andIndexInStack, int withStackCount, CardStackLayout andLayout);
@@ -21,58 +17,19 @@ public interface ICardView
     void OnDrop();
 }
 
-public abstract class CardView : MonoBehaviour, ICardView
+public class CardView : MonoBehaviour, ICardView
 {
-    public class Factory : IFactory<CardType, CardView>
+    public class Factory : PlaceholderFactory<string, CardView>
     {
-        private readonly PlayerCardView.Factory playerCardViewFactory;
-        private readonly ItemCardView.Factory resourceCardViewFactory;
-        private readonly PirateCardView.Factory pirateCardViewFactory;
-        private readonly MerchantCardView.Factory merchantCardViewFactory;
-        
-        private Factory(
-            PlayerCardView.Factory playerCardViewFactory,
-            ItemCardView.Factory resourceCardViewFactory,
-            PirateCardView.Factory pirateCardViewFactory,
-            MerchantCardView.Factory merchantCardViewFactory
-            )
-        {
-            this.playerCardViewFactory = playerCardViewFactory;
-            this.resourceCardViewFactory = resourceCardViewFactory;
-            this.pirateCardViewFactory = pirateCardViewFactory;
-            this.merchantCardViewFactory = merchantCardViewFactory;
-        }
-        
         public CardView Create(CardType withType)
         {
-            switch (withType)
-            {
-                case CardType.Player:
-                    return playerCardViewFactory.Create(GetResourceName(withType));
-                case CardType.Item:
-                    return resourceCardViewFactory.Create(GetResourceName(withType));
-                case CardType.Merchant:
-                    return merchantCardViewFactory.Create(GetResourceName(withType));
-                case CardType.Pirate:
-                    return pirateCardViewFactory.Create(GetResourceName(withType));
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-        
-        private static string GetResourceName(CardType cardType)
-        {
-            return $"Prefabs/Cards/{cardType.ToString()}";
+            return base.Create($"Prefabs/Card{withType.ToString()}");
         }
     }
-    
-    [SerializeField] protected SpriteRenderer frontFace;
-    [SerializeField] protected SpriteRenderer backFace;
-    [SerializeField] protected SortingGroup sortingGroup;
-    [SerializeField] private BoxCollider2D hitArea;
-    [Header("Text")]
-    [SerializeField] private MeshRenderer[] textRenderers;
-    [SerializeField] private int textSortingOrder;
+
+    [SerializeField] private SortingGroup sortingGroup;
+    [SerializeField] private SpriteRenderer frontFaceRenderer;
+    [SerializeField] private SpriteRenderer backFaceRenderer;
     
     private GameSettings settings;
     private MeshRenderer textMeshRenderer;
@@ -81,44 +38,23 @@ public abstract class CardView : MonoBehaviour, ICardView
     private Vector3 defaultLocalPosition;
     private bool isFirstArrangement = true;
 
+    public SpriteRenderer FrontFaceRenderer => frontFaceRenderer;
+    public SpriteRenderer BackFaceRenderer => backFaceRenderer;
     public Transform Transform { get; private set; }
-    public BoxCollider2D HitArea => hitArea;
     
     [Inject]
-    private void Construct(
-        GameSettings settings
-        )
+    private void Construct(GameSettings settings)
     {
         this.settings = settings;
         
         Transform = transform;
-    }
 
-    private void Awake()
-    {
-        foreach (var textRenderer in textRenderers)
-        {
-            textRenderer.sortingLayerName = settings.CardSortingLayerName;
-            textRenderer.sortingOrder = textSortingOrder;
-        }
-
-        Transform.rotation = Quaternion.Euler(0, 180f, 0);
-    }
-
-    private void Start()
-    {
-        Transform.DORotate(Vector3.zero, (float) settings.CardReturnDuration.TotalSeconds)
-            .SetEase(Ease.InOutQuint)
-            .OnComplete(() =>
-            {
-                backFace.enabled = false;
-            });
+        sortingGroup.enabled = false;
     }
 
     public void Arrange(Vector3 atLocalPos, int andIndexInStack, int withStackCount, CardStackLayout andLayout)
     {
-        sortingGroup.sortingOrder = 
-            defaultSortingOrder = withStackCount - andIndexInStack - 1;
+        defaultSortingOrder = withStackCount - andIndexInStack - 1;
         
         var positionOffset = andLayout == CardStackLayout.Vertical
             ? Vector3.up * andIndexInStack * settings.CardOffsetInPile.y
@@ -142,22 +78,28 @@ public abstract class CardView : MonoBehaviour, ICardView
 
     public void OnBeginDrag()
     {
+        sortingGroup.enabled = true;
         sortingGroup.sortingOrder = settings.FloatingCardSortingOrder;
 
         locationTween?.Kill();
+
+        // TODO Animate lift
+        Transform.localPosition += Vector3.back;
     }
 
     public void OnDrag(Vector3 deltaPosition)
     {
-        transform.localPosition += deltaPosition;
+        Transform.localPosition += deltaPosition;
     }
 
     public void OnDrop()
     {
+        sortingGroup.enabled = false;
+        
         Move(
             defaultLocalPosition, 
-            settings.CardReturnDuration, 
-            () => sortingGroup.sortingOrder = defaultSortingOrder);
+            settings.CardReturnDuration,
+            () => sortingGroup.enabled = false);
     }
 
     private void Move(Vector3 toLocalPosition, TimeSpan during, TweenCallback andDoOncomplete = null)

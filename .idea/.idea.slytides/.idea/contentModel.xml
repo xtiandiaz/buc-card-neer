@@ -745,12 +745,10 @@
           <e p="Installer.cs" t="Include" />
           <e p="Models" t="Include">
             <e p="Board.cs" t="Include" />
-            <e p="Card" t="Include">
+            <e p="Cards" t="Include">
               <e p="Card.cs" t="Include" />
-              <e p="ItemCard.cs" t="Include" />
-              <e p="MerchantCard.cs" t="Include" />
-              <e p="PirateCard.cs" t="Include" />
-              <e p="PlayerCard.cs" t="Include" />
+              <e p="CardFoe.cs" t="Include" />
+              <e p="CardMerchant.cs" t="Include" />
             </e>
             <e p="CardSlot.cs" t="Include" />
             <e p="Deck.cs" t="Include" />
@@ -761,15 +759,20 @@
           </e>
           <e p="UserInteractionListener.cs" t="Include" />
           <e p="Views" t="Include">
-            <e p="BoardCamera.cs" t="Include" />
-            <e p="BoardView.cs" t="Include" />
+            <e p="Board" t="Include">
+              <e p="BoardCamera.cs" t="Include" />
+              <e p="BoardView.cs" t="Include" />
+              <e p="MerchantShipView.cs" t="Include" />
+              <e p="OceanView.cs" t="Include" />
+              <e p="OwnShipView.cs" t="Include" />
+              <e p="PirateShipView.cs" t="Include" />
+              <e p="ShipView.cs" t="Include" />
+            </e>
             <e p="Card" t="Include">
+              <e p="CardFoeView.cs" t="Include" />
+              <e p="CardMerchantView.cs" t="Include" />
               <e p="CardStatView.cs" t="Include" />
               <e p="CardView.cs" t="Include" />
-              <e p="ItemCardView.cs" t="Include" />
-              <e p="MerchantCardView.cs" t="Include" />
-              <e p="PirateCardView.cs" t="Include" />
-              <e p="PlayerCardView.cs" t="Include" />
             </e>
             <e p="CardSlotImage.cs" t="Include" />
             <e p="CardSlotView.cs" t="Include" />
