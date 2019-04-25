@@ -780,8 +780,9 @@
           </e>
         </e>
         <e p="Shaders" t="Include">
-          <e p="Font-OneSided.shader" t="Include" />
-          <e p="Sprites-OneSided.shader" t="Include" />
+          <e p="FontOneSided.shader" t="Include" />
+          <e p="Ocean.shader" t="Include" />
+          <e p="SpritesOneSided.shader" t="Include" />
         </e>
       </e>
       <e p="Library" t="ExcludeRecursive" />
