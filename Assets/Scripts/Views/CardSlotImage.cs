@@ -3,8 +3,8 @@
 public class CardSlotImage : MonoBehaviour
 {
     [SerializeField] private uint capacity;
-    [SerializeField] private CardSlotType type;
+    [SerializeField] private SlotType type;
 
     public uint Capacity => capacity;
-    public CardSlotType Type => type;
+    public SlotType Type => type;
 }

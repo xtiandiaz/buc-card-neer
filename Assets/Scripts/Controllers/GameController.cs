@@ -4,20 +4,26 @@ using Zenject;
 
 public class GameController : IInitializable
 {
-    private readonly BoardController boardController;
+    private readonly BoardFactory boardFactory;
+    private readonly IBoardView boardView;
     private readonly GameSettings settings;
 
     public GameController(
-        BoardController boardController, 
+        BoardFactory boardFactory,
+        IBoardView boardView, 
         GameSettings settings
     )
     {
-        this.boardController = boardController;
+        this.boardFactory = boardFactory;
+        this.boardView = boardView;
         this.settings = settings;
     }
 
     public void Initialize()
     {
         Application.targetFrameRate = 50;
+
+        boardFactory.Create(boardView);
+       
     }
 }

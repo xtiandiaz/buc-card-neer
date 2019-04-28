@@ -2,15 +2,15 @@
 using UnityEngine;
 using Zenject;
 
-public interface IBoardCamera
+public interface ICamera
 {
     Vector3 Position { get; }
     
     Rect GetFrustumRect(float forTargetCoordinateZ);
-    Vector3 GetWorldPosition(Vector2 fromScreenPosition);
+    Vector3 GetWorldPoint(Vector2 fromScreenPoint);
 }
 
-public class BoardCamera : MonoBehaviour, IBoardCamera, IInitializable
+public class BoardCamera : MonoBehaviour, ICamera, IInitializable
 {
     [SerializeField] private Camera[] supportingCameras;
     
@@ -52,9 +52,9 @@ public class BoardCamera : MonoBehaviour, IBoardCamera, IInitializable
         return new Rect(0, 0, frustumHeight * camera.aspect, frustumHeight);
     }
 
-    public Vector3 GetWorldPosition(Vector2 fromScreenPosition)
+    public Vector3 GetWorldPoint(Vector2 fromScreenPoint)
     {
-        return camera.ScreenToWorldPoint(new Vector3(fromScreenPosition.x, fromScreenPosition.y,
+        return camera.ScreenToWorldPoint(new Vector3(fromScreenPoint.x, fromScreenPoint.y,
             -camera.transform.localPosition.z));
     }
 }

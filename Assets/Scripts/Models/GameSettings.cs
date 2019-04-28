@@ -14,6 +14,7 @@ public class GameSettings
     public int MaxCardCountPerPlaySlot { get; } = 3;
     
     // Interaction
+    public TimeSpan CardMoveDuration { get; } = TimeSpan.FromSeconds(0.5f);
     public TimeSpan CardReturnDuration { get; } = TimeSpan.FromSeconds(0.5f);
     public TimeSpan CardArrangementDuration { get; } = TimeSpan.FromSeconds(0.2);
     

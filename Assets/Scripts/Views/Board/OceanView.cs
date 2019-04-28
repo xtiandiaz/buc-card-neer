@@ -3,12 +3,17 @@ using UnityEngine;
 using Zenject;
 using DG.Tweening;
 
-public class OceanView : MonoBehaviour
+public interface IOceanView
+{
+    IEnumerable<ISlotView> Slots { get; }
+}
+
+public class OceanView : MonoBehaviour, IOceanView
 {
     private static readonly int Curvature = Shader.PropertyToID("_Curvature");
     private static readonly int PivotOffset = Shader.PropertyToID("_PivotOffset");
     
-    [SerializeField] private List<CardSlotView> slots;
+    [SerializeField] private List<SlotView> slots;
     [SerializeField] private Transform slotWrapper;
     [SerializeField] private MeshRenderer background;
     
@@ -18,6 +23,7 @@ public class OceanView : MonoBehaviour
     private Sequence projectionSequence;
 
     public float Height => settings.CardSize.y;
+    public IEnumerable<ISlotView> Slots => slots;
 
     [Inject]
     private void Construct(

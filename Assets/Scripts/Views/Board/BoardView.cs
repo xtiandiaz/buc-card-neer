@@ -7,7 +7,9 @@ using UniRx;
 
 public interface IBoardView
 {
-    IEnumerable<CardSlotView> SlotViews { get; }
+    IEnumerable<IShipView> Ships { get; }
+    IEnumerable<IDeck> Decks { get; }
+    IOceanView Ocean { get; }
 
     void Initialize();
     void Set(BoardMode mode);
@@ -18,19 +20,21 @@ public class BoardView : MonoBehaviour, IBoardView
     private const float ProjectionDurationInSeconds = 1f;
     private const float DockingDurationInSeconds = 1f;
     private const float SailingDurationInSeconds = 0.75f;
-
-    [SerializeField] private List<CardSlotView> slotViews;
+    
+    [SerializeField] private List<Deck> decks;
     [SerializeField] private OceanView ocean;
-    [SerializeField] private OwnShipView ownShip;
-    [SerializeField] private MerchantShipView merchantShip;
-    [SerializeField] private PirateShipView pirateShip;
+    [SerializeField] private ShipPlayerView shipPlayer;
+    [SerializeField] private ShipMerchantView shipMerchant;
+    [SerializeField] private ShipPirateView shipPirate;
 
     private BoardCamera boardCamera;
     private GameSettings settings;
     private Rect viewRect;
     private BoardMode lastMode;
 
-    public IEnumerable<CardSlotView> SlotViews => slotViews;
+    public IEnumerable<IShipView> Ships => new IShipView[] {shipPlayer, shipMerchant, shipPirate};
+    public IEnumerable<IDeck> Decks => decks;
+    public IOceanView Ocean => ocean;
 
     [Inject]
     private void Construct(
@@ -50,17 +54,17 @@ public class BoardView : MonoBehaviour, IBoardView
         viewRect = boardCamera.GetFrustumRect(position.z);
         
         ocean.Initialize(viewRect.height);
-        ownShip.Initialize(viewRect.height);
-        pirateShip.Initialize(viewRect.height);
-        merchantShip.Initialize(viewRect.height);
+        shipPlayer.Initialize(viewRect.height);
+        shipPirate.Initialize(viewRect.height);
+        shipMerchant.Initialize(viewRect.height);
         
         thisTransform.position = Vector3.down * (viewRect.height * 0.5f);
         
-        ownShip.transform.localPosition = Vector3.up * ownShip.Height * 0.5f;
-        ocean.transform.localPosition = Vector3.up * (ownShip.Height + ocean.Height);
+        shipPlayer.transform.localPosition = Vector3.up * shipPlayer.Height * 0.5f;
+        ocean.transform.localPosition = Vector3.up * (shipPlayer.Height + ocean.Height);
         
-        merchantShip.gameObject.SetActive(false);
-        pirateShip.gameObject.SetActive(false);
+        shipMerchant.gameObject.SetActive(false);
+        shipPirate.gameObject.SetActive(false);
 
         //thisTransform.position += Vector3.down * settings.CardSize.y * 0.5f;
     }
@@ -73,13 +77,13 @@ public class BoardView : MonoBehaviour, IBoardView
         {
             case BoardMode.Trade:
                 
-                merchantShip.SetSail(SailingDurationInSeconds);
+                shipMerchant.SetSail(SailingDurationInSeconds);
                 projectionDelay = SailingDurationInSeconds * 0.85f;
                 
                 break;
             case BoardMode.Combat:
                 
-                pirateShip.SetSail(SailingDurationInSeconds);
+                shipPirate.SetSail(SailingDurationInSeconds);
                 projectionDelay = SailingDurationInSeconds * 0.85f;
                 
                 break;
@@ -95,9 +99,9 @@ public class BoardView : MonoBehaviour, IBoardView
             case BoardMode.Trade:
                 
                 ocean.ToggleProjection(false, DockingDurationInSeconds);
-                merchantShip.gameObject.SetActive(true);
-                merchantShip.Dock(
-                    Vector3.up * (ownShip.Height + merchantShip.Height * 0.5f), 
+                shipMerchant.gameObject.SetActive(true);
+                shipMerchant.Dock(
+                    Vector3.up * (shipPlayer.Height + shipMerchant.Height * 0.5f), 
                     DockingDurationInSeconds,
                     ProjectionDurationInSeconds * 0.85f);
                 
@@ -105,9 +109,9 @@ public class BoardView : MonoBehaviour, IBoardView
             case BoardMode.Combat:
                 
                 ocean.ToggleProjection(false, DockingDurationInSeconds);
-                pirateShip.gameObject.SetActive(true);
-                pirateShip.Dock(
-                    Vector3.up * (ownShip.Height + pirateShip.Height * 0.5f + 1f),
+                shipPirate.gameObject.SetActive(true);
+                shipPirate.Dock(
+                    Vector3.up * (shipPlayer.Height + shipPirate.Height * 0.5f + 1f),
                     DockingDurationInSeconds,
                     ProjectionDurationInSeconds * 0.85f);
                 

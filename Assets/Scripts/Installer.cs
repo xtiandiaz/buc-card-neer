@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using Zenject;
 
 public class Installer : MonoInstaller
@@ -6,31 +7,45 @@ public class Installer : MonoInstaller
     [SerializeField] private BoardCamera camera;
     [SerializeField] private GamePalette palette;
 
-    [Header("Decks")]
-    [SerializeField] private Deck eventDeck;
-
     [Header("Board")] 
     [SerializeField] private BoardView boardView;
 
     public override void InstallBindings()
     {
+        // Main factories
+        Container.Bind<BoardFactory>().AsSingle();
+        Container.Bind<ShipFactory>().AsSingle();
+        Container.Bind<OceanFactory>().AsSingle();
+        Container.Bind<DeckFactory>().AsSingle();
+        Container.Bind<CardFactory>().AsSingle();
+        Container.Bind<SlotFactory>().AsSingle();
+        
+        //Sub-factories
+        Container.BindFactory<IOcean, IEnumerable<IShip>, IEnumerable<IDeck>, Board, Board.Factory>().AsSingle();
+        Container.BindFactory<IBoard, IBoardView, BoardController, BoardController.Factory>().AsSingle();
+        
+        Container.BindFactory<IEnumerable<ISlot>, ShipPlayer, ShipPlayer.Factory>().AsSingle();
+        Container.BindFactory<IShip, IShipView, ShipController, ShipController.Factory>().AsSingle();
+
+        Container.BindFactory<IDeck, DeckController, DeckController.Factory>().AsSingle();
+
+        Container.BindFactory<IEnumerable<ISlot>, Ocean, Ocean.Factory>().AsSingle();
+        Container.BindFactory<IOcean, IOceanView, OceanController, OceanController.Factory>().AsSingle();
+        
         // Deck
-        Container.Bind<Deck>().FromInstance(eventDeck);
-        
-        Container.BindFactory<Deck, DeckController, DeckController.Factory>().AsSingle();
-        
-        Container.BindFactory<CardSlotType, uint, CardSlot, CardSlot.Factory>();
-        Container.BindFactory<ICardSlot, ICardSlotView, CardSlotController, CardSlotController.Factory>().AsSingle();
+        Container.BindFactory<uint, SlotBoarding, SlotBoarding.Factory>();
+        Container.BindFactory<uint, SlotDefense, SlotDefense.Factory>();
+        Container.BindFactory<uint, SlotEvent, SlotEvent.Factory>();
+        Container.BindFactory<uint, SlotPlayer, SlotPlayer.Factory>();
+        Container.BindFactory<uint, SlotResource, SlotResource.Factory>();
+        Container.BindFactory<ISlot, ISlotView, SlotController, SlotController.Factory>().AsSingle();
 
         Container.BindFactory<ICard, ICardView, CardController, CardController.Factory>().AsSingle();
         Container.BindFactory<string, CardView, CardView.Factory>().FromFactory<PrefabResourceFactory<CardView>>();
         
-        // Board
-        Container.BindFactory<Board, Board.Factory>();
+        // Board 
         Container.BindInterfacesAndSelfTo<BoardCamera>().FromInstance(camera).AsSingle();
         Container.BindInterfacesAndSelfTo<BoardView>().FromInstance(boardView).AsSingle();
-        
-        Container.BindInterfacesAndSelfTo<BoardController>().AsSingle();
         
         // Game
         Container.Bind<GameSettings>().AsSingle();

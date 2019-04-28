@@ -1,32 +1,35 @@
+using System;
+using UniRx;
 using Zenject;
 
-public class DeckController
+public class DeckController : IDisposable
 {
-    public class Factory : PlaceholderFactory<Deck, DeckController>
+    public class Factory : PlaceholderFactory<IDeck, DeckController>
     {
     }
     
-    private readonly Deck model;
-    private readonly CardController.Factory cardControllerFactory;
+    private readonly IDeck model;
+    private readonly CardFactory cardFactory;
+    private readonly CompositeDisposable disposables = new CompositeDisposable();
     
     private DeckController(
-        Deck model,
-        CardController.Factory cardControllerFactory
+        IDeck model,
+        CardFactory cardFactory
         )
     {
         this.model = model;
-        this.cardControllerFactory = cardControllerFactory;
-    }
-    
-    public ICardController Draw()
-    {
-        var cardModel = model.Supply();
-        
-        return cardModel == null ? null : cardControllerFactory.Create(cardModel);
+        this.cardFactory = cardFactory;
     }
 
-    public void PutBack(ICard card)
+    public void Initialize()
     {
-        model.PutBack(card);
+        disposables.Add(
+            model.Supplied
+                .Subscribe(card => cardFactory.Create(card)));
+    }
+
+    public void Dispose()
+    {
+        disposables?.Dispose();
     }
 }

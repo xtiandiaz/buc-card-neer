@@ -737,46 +737,76 @@
           <e p="Controllers" t="Include">
             <e p="BoardController.cs" t="Include" />
             <e p="CardController.cs" t="Include" />
-            <e p="CardSlotController.cs" t="Include" />
             <e p="DeckController.cs" t="Include" />
             <e p="GameController.cs" t="Include" />
+            <e p="OceanController.cs" t="Include" />
+            <e p="ShipController.cs" t="Include" />
+            <e p="SlotController.cs" t="Include" />
           </e>
           <e p="Extensions.cs" t="Include" />
+          <e p="Factories" t="Include">
+            <e p="BoardFactory.cs" t="Include" />
+            <e p="CardFactory.cs" t="Include" />
+            <e p="DeckFactory.cs" t="Include" />
+            <e p="OceanFactory.cs" t="Include" />
+            <e p="ShipFactory.cs" t="Include" />
+            <e p="SlotFactory.cs" t="Include" />
+          </e>
           <e p="Installer.cs" t="Include" />
+          <e p="Managers" t="Include">
+            <e p="CardInteractionManager.cs" t="Include" />
+            <e p="DraggingManager.cs" t="Include" />
+          </e>
           <e p="Models" t="Include">
-            <e p="Board.cs" t="Include" />
-            <e p="Cards" t="Include">
+            <e p="Board" t="Include">
+              <e p="Board.cs" t="Include" />
+              <e p="Ocean.cs" t="Include" />
+            </e>
+            <e p="Card" t="Include">
               <e p="Card.cs" t="Include" />
               <e p="CardFoe.cs" t="Include" />
               <e p="CardMerchant.cs" t="Include" />
             </e>
-            <e p="CardSlot.cs" t="Include" />
             <e p="Deck.cs" t="Include" />
             <e p="Direction.cs" t="Include" />
             <e p="GamePalette.cs" t="Include" />
             <e p="GameSettings.cs" t="Include" />
             <e p="GameState.cs" t="Include" />
+            <e p="Ship" t="Include">
+              <e p="Ship.cs" t="Include" />
+              <e p="ShipPlayer.cs" t="Include" />
+            </e>
+            <e p="Slot" t="Include">
+              <e p="Slot.cs" t="Include" />
+              <e p="SlotBoarding.cs" t="Include" />
+              <e p="SlotDefense.cs" t="Include" />
+              <e p="SlotEvent.cs" t="Include" />
+              <e p="SlotPlayer.cs" t="Include" />
+              <e p="SlotResource.cs" t="Include" />
+            </e>
           </e>
           <e p="UserInteractionListener.cs" t="Include" />
           <e p="Views" t="Include">
             <e p="Board" t="Include">
               <e p="BoardCamera.cs" t="Include" />
               <e p="BoardView.cs" t="Include" />
-              <e p="MerchantShipView.cs" t="Include" />
               <e p="OceanView.cs" t="Include" />
-              <e p="OwnShipView.cs" t="Include" />
-              <e p="PirateShipView.cs" t="Include" />
-              <e p="ShipView.cs" t="Include" />
             </e>
             <e p="Card" t="Include">
               <e p="CardFoeView.cs" t="Include" />
               <e p="CardMerchantView.cs" t="Include" />
               <e p="CardStatView.cs" t="Include" />
               <e p="CardView.cs" t="Include" />
+              <e p="SlotView.cs" t="Include" />
             </e>
             <e p="CardSlotImage.cs" t="Include" />
-            <e p="CardSlotView.cs" t="Include" />
             <e p="FocusLight.cs" t="Include" />
+            <e p="Ship" t="Include">
+              <e p="ShipMerchantView.cs" t="Include" />
+              <e p="ShipPirateView.cs" t="Include" />
+              <e p="ShipPlayerView.cs" t="Include" />
+              <e p="ShipView.cs" t="Include" />
+            </e>
           </e>
         </e>
         <e p="Shaders" t="Include">

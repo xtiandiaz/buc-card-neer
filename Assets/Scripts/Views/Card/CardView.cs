@@ -8,23 +8,20 @@ public interface ICardView
 {
     SpriteRenderer FrontFaceRenderer { get; }
     SpriteRenderer BackFaceRenderer { get; }
-    Transform Transform { get; }
+    Vector3 Position { get; set; }
     
+    void OnPicked();
+    void OnDragged(Vector3 deltaPosition);
+    void OnDropped();
+    void Set(Vector3 positionAnimated, TimeSpan during);
     void Destroy();
-    void Arrange(Vector3 atLocalPos, int andIndexInStack, int withStackCount, CardStackLayout andLayout);
-    void OnBeginDrag();
-    void OnDrag(Vector3 deltaPosition);
-    void OnDrop();
+    T AddComponent<T>() where T : Component;
 }
 
 public class CardView : MonoBehaviour, ICardView
 {
     public class Factory : PlaceholderFactory<string, CardView>
     {
-        public CardView Create(CardType withType)
-        {
-            return base.Create($"Prefabs/Card{withType.ToString()}");
-        }
     }
 
     [SerializeField] private SortingGroup sortingGroup;
@@ -33,82 +30,79 @@ public class CardView : MonoBehaviour, ICardView
     
     private GameSettings settings;
     private MeshRenderer textMeshRenderer;
-    private Tween locationTween;
-    private int defaultSortingOrder;
-    private Vector3 defaultLocalPosition;
-    private bool isFirstArrangement = true;
+    private Transform thisTransform;
+    private Tween positionTween;
 
     public SpriteRenderer FrontFaceRenderer => frontFaceRenderer;
     public SpriteRenderer BackFaceRenderer => backFaceRenderer;
-    public Transform Transform { get; private set; }
-    
+
+    public Vector3 Position
+    {
+        get => thisTransform.position;
+        set
+        {
+            positionTween?.Kill();
+            thisTransform.position = value;
+        }
+    }
+
     [Inject]
     private void Construct(GameSettings settings)
     {
         this.settings = settings;
         
-        Transform = transform;
+        thisTransform = transform;
 
         sortingGroup.enabled = false;
     }
 
-    public void Arrange(Vector3 atLocalPos, int andIndexInStack, int withStackCount, CardStackLayout andLayout)
+    public void OnPicked()
     {
-        defaultSortingOrder = withStackCount - andIndexInStack - 1;
-        
-        var positionOffset = andLayout == CardStackLayout.Vertical
-            ? Vector3.up * andIndexInStack * settings.CardOffsetInPile.y
-            : Vector3.right * defaultSortingOrder * settings.CardOffsetInPile.x;
+        sortingGroup.enabled = true;
+        sortingGroup.sortingOrder = settings.FloatingCardSortingOrder;
 
-        defaultLocalPosition = atLocalPos + positionOffset;
-
-        if (isFirstArrangement)
-        {
-            transform.localPosition = defaultLocalPosition;
-            isFirstArrangement = false;
-        }
-        else
-            Move(defaultLocalPosition, settings.CardArrangementDuration);
+        positionTween?.Kill();
     }
 
+    public void OnDragged(Vector3 deltaPosition)
+    {
+        thisTransform.localPosition += deltaPosition;
+    }
+
+    public void OnDropped()
+    {
+        sortingGroup.enabled = false;
+    }
+
+    public void Set(Vector3 position)
+    {
+        positionTween?.Kill();
+        
+        thisTransform.position = position;
+    }
+
+    public void Set(Vector3 positionAnimated, TimeSpan during)
+    {
+        Move(positionAnimated, during);
+    }
+    
     public void Destroy()
     {
         Destroy(gameObject);
     }
 
-    public void OnBeginDrag()
+    public T AddComponent<T>() where T : Component
     {
-        sortingGroup.enabled = true;
-        sortingGroup.sortingOrder = settings.FloatingCardSortingOrder;
-
-        locationTween?.Kill();
-
-        // TODO Animate lift
-        Transform.localPosition += Vector3.back;
+        return gameObject.AddComponent<T>();
     }
 
-    public void OnDrag(Vector3 deltaPosition)
+    private void Move(Vector3 toPosition, TimeSpan during, TweenCallback andDoOncomplete = null)
     {
-        Transform.localPosition += deltaPosition;
-    }
-
-    public void OnDrop()
-    {
-        sortingGroup.enabled = false;
-        
-        Move(
-            defaultLocalPosition, 
-            settings.CardReturnDuration,
-            () => sortingGroup.enabled = false);
-    }
-
-    private void Move(Vector3 toLocalPosition, TimeSpan during, TweenCallback andDoOncomplete = null)
-    {
-        locationTween?.Kill();
-        locationTween = Transform.DOLocalMove(toLocalPosition, (float) during.TotalSeconds)
+        positionTween?.Kill();
+        positionTween = thisTransform.DOLocalMove(toPosition, (float) during.TotalSeconds)
             .SetEase(Ease.OutQuint);
 
         if (andDoOncomplete != null)
-            locationTween.OnComplete(andDoOncomplete);
+            positionTween.OnComplete(andDoOncomplete);
     }
 }

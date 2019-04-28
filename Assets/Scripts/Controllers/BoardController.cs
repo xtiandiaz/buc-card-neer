@@ -7,102 +7,31 @@ using UniRx;
 
 public interface IBoardController
 {
-    List<ICardSlotController> ServiceSlots { get; }
-    List<ICardSlotController> StashSlots { get; }
-    ICardSlotController PlayerSlot { get; }
-    List<ICardSlotController> PlaySlots { get; }
-
-    void Deal(ICardSlotController onSlot, int count);
-    void Place(ICardController card, ICardSlotController onSlot);
-    void TryMatching(ICardController card, ICardController withAnother);
 }
 
 public class BoardController : IBoardController, IInitializable, IDisposable
 {
-    private readonly Board model;
-    private readonly IBoardView view;
-    private readonly DeckController deckController;
-    private readonly CardController.Factory cardControllerFactory;
-    private readonly GameSettings settings;
-    //private readonly PlayerCardFace playerCard;
-    private readonly CompositeDisposable perGameDisposables = new CompositeDisposable();
-
-    private IDisposable moveSubscription;
-
-    private BoardController(
-        Board.Factory boardFactory,
-        IBoardView view,
-        DeckController.Factory deckControllerFactory,
-        CardSlotController.Factory cardSlotControllerFactory,
-        GameSettings settings
-        )
+    public class Factory : PlaceholderFactory<IBoard, IBoardView, BoardController>
     {
-        model = boardFactory.Create();
-        
-        this.view = view;
-        this.settings = settings;
-        this.cardControllerFactory = cardControllerFactory;
-
-        deckController = deckControllerFactory.Create(model.Deck);
-        
-        ServiceSlots = view.SlotViews
-            .Where(s => s.Type == CardSlotType.Event)
-            .Select(slotView => (ICardSlotController) cardSlotControllerFactory.Create(slotView))
-            .ToList();
-        
-        StashSlots = view.SlotViews
-            .Where(s => s.Type == CardSlotType.Resource)
-            .Select(slotView => (ICardSlotController) cardSlotControllerFactory.Create(slotView))
-            .ToList();
-
-        PlayerSlot = view.SlotViews
-            .Where(s => s.Type == CardSlotType.Encounter)
-            .Select(slotView => (ICardSlotController) cardSlotControllerFactory.Create(slotView))
-            .First();
-
-        PlaySlots = ServiceSlots.ConvertAll(s => s);
-        PlaySlots.AddRange(StashSlots);
-        
-        //playerCard = (PlayerCardFace) cardFactory.Create(CardFaceType.Player);
     }
     
-    public List<ICardSlotController> ServiceSlots { get; }
-    public List<ICardSlotController> StashSlots { get; }
-    public ICardSlotController PlayerSlot { get; }
-    public List<ICardSlotController> PlaySlots { get; }
+    private readonly IBoard model;
+    private readonly IBoardView view;
+    private readonly GameSettings settings;
+    private readonly CompositeDisposable perGameDisposables = new CompositeDisposable();
+
+    private BoardController(
+        IBoard model,
+        IBoardView view
+        )
+    {
+        this.model = model;
+        this.view = view;
+    }
 
     public void Initialize()
     {
-        view.Initialize();
-        
-        //Place(cardControllerFactory.Create(playerCard), PlayerSlot);
-        
-        perGameDisposables.Add(
-            ServiceSlots.Select(s => s.Emptied.Select(_ => s))
-                .Merge()
-                .Delay(TimeSpan.FromSeconds(0.25f))
-                .Subscribe(slot => Deal(slot, 1)));
-        
-        perGameDisposables.Add(
-            model.ObservableMode
-                .Subscribe(view.Set));
-
-        Observable.EveryUpdate()
-            .Do(_ => { 
-                if (Input.GetKeyDown(KeyCode.Alpha0))
-                {
-                    model.Mode = BoardMode.Seafaring;
-                }
-                else if (Input.GetKeyDown(KeyCode.Alpha1))
-                {
-                    model.Mode = BoardMode.Trade;
-                }
-                else if (Input.GetKeyDown(KeyCode.Alpha2))
-                {
-                    model.Mode = BoardMode.Combat;
-                }
-                
-            }).Subscribe();
+        //shipController.Board(cardControllerFactory.Create(model.Deck.Supply()));
     }
 
     public void Dispose()
@@ -110,7 +39,7 @@ public class BoardController : IBoardController, IInitializable, IDisposable
         perGameDisposables.Dispose();
     }
 
-    public void Deal(ICardSlotController onSlot, int count)
+    /*public void Deal(ICardSlotController onSlot, int count)
     {
         for (var i = 0; i < count; i++)
         {
@@ -142,8 +71,8 @@ public class BoardController : IBoardController, IInitializable, IDisposable
         if (!card.DoesMatch(withAnother))
             return;
         
-        card.Destroy();
-        withAnother.Destroy();
+        //card.Destroy();
+        //withAnother.Destroy();
     }
 
     private void OnCardInteraction(CardInteractionEvent withEvent)
@@ -154,7 +83,7 @@ public class BoardController : IBoardController, IInitializable, IDisposable
         {
             case CardInteractionEventType.Pick:
 
-                ToggleSlotHighlight(true, s => s.DoesAdmit(card) || s.DoesMatch(card));
+                ToggleSlotHighlight(true, s => card.SlotMask.Contains(s.Type));
                 
                 break;
             case CardInteractionEventType.Drop:
@@ -184,5 +113,5 @@ public class BoardController : IBoardController, IInitializable, IDisposable
         
         foreach (var slot in slotSelection)
             slot.ToggleHighlight(on);
-    }
+    }*/
 }
