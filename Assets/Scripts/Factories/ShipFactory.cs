@@ -29,7 +29,7 @@ public class ShipFactory : IFactory<IShipView, IShip>
 
     private IShip CreateModel(IShipView fromView)
     {
-        var slots = fromView.Slots.Select(sv => slotFactory.Create(sv));
+        var slots = fromView.Slots.Select(sv => slotFactory.Create(sv)).ToArray();
         
         switch (fromView.Type)
         {

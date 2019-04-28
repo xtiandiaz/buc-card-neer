@@ -7,8 +7,8 @@ using UniRx;
 
 public interface IBoardView
 {
-    IEnumerable<IShipView> Ships { get; }
-    IEnumerable<IDeck> Decks { get; }
+    IShipView[] Ships { get; }
+    IDeck[] Decks { get; }
     IOceanView Ocean { get; }
 
     void Initialize();
@@ -21,7 +21,7 @@ public class BoardView : MonoBehaviour, IBoardView
     private const float DockingDurationInSeconds = 1f;
     private const float SailingDurationInSeconds = 0.75f;
     
-    [SerializeField] private List<Deck> decks;
+    [SerializeField] private Deck[] decks;
     [SerializeField] private OceanView ocean;
     [SerializeField] private ShipPlayerView shipPlayer;
     [SerializeField] private ShipMerchantView shipMerchant;
@@ -32,8 +32,8 @@ public class BoardView : MonoBehaviour, IBoardView
     private Rect viewRect;
     private BoardMode lastMode;
 
-    public IEnumerable<IShipView> Ships => new IShipView[] {shipPlayer, shipMerchant, shipPirate};
-    public IEnumerable<IDeck> Decks => decks;
+    public IShipView[] Ships => new IShipView[] {shipPlayer, shipMerchant, shipPirate};
+    public IDeck[] Decks => decks;
     public IOceanView Ocean => ocean;
 
     [Inject]

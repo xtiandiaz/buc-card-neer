@@ -8,6 +8,8 @@ public class GameController : IInitializable
     private readonly IBoardView boardView;
     private readonly GameSettings settings;
 
+    private IBoard board;
+
     public GameController(
         BoardFactory boardFactory,
         IBoardView boardView, 
@@ -23,7 +25,8 @@ public class GameController : IInitializable
     {
         Application.targetFrameRate = 50;
 
-        boardFactory.Create(boardView);
-       
+        board = boardFactory.Create(boardView);
+
+        board.Deal();
     }
 }

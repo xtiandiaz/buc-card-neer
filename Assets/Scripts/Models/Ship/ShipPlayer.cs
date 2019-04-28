@@ -4,11 +4,11 @@ using Zenject;
 
 public class ShipPlayer : Ship
 {
-    public class Factory : PlaceholderFactory<IEnumerable<ISlot>, ShipPlayer>
+    public class Factory : PlaceholderFactory<ISlot[], ShipPlayer>
     {
     }
 
-    public ShipPlayer(IEnumerable<ISlot> slots) : base(slots)
+    public ShipPlayer(ISlot[] slots) : base(ShipType.Player, slots)
     {
         BoardingSlot = Slots.FirstOrDefault(s => s.Type == SlotType.Boarding);
     }

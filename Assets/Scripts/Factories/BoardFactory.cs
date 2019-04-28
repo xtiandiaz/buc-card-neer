@@ -1,4 +1,5 @@
 using System.Linq;
+using UnityEngine;
 using Zenject;
 
 public class BoardFactory : IFactory<IBoardView, IBoard>
@@ -30,8 +31,8 @@ public class BoardFactory : IFactory<IBoardView, IBoard>
         
         var model = modelFactory.Create(
             oceanFactory.Create(withView.Ocean),
-            withView.Ships.Select(sv => shipFactory.Create(sv)),
-            withView.Decks.Select(d => deckFactory.Create(d)));
+            withView.Ships.Select(sv => shipFactory.Create(sv)).ToArray(),
+            withView.Decks.Select(d => deckFactory.Create(d)).ToArray());
         
         model.Initialize();
         

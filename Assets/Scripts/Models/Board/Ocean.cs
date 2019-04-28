@@ -8,13 +8,13 @@ public interface IOcean
 
 public class Ocean : IOcean
 {
-    private readonly IEnumerable<ISlot> slots;
+    private readonly ISlot[] slots;
 
-    public class Factory : PlaceholderFactory<IEnumerable<ISlot>, Ocean>
+    public class Factory : PlaceholderFactory<ISlot[], Ocean>
     {
     }
 
-    private Ocean(IEnumerable<ISlot> slots)
+    private Ocean(ISlot[] slots)
     {
         this.slots = slots;
     }

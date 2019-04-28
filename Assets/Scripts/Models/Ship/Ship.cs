@@ -9,7 +9,8 @@ public enum ShipType
 
 public interface IShip
 {
-    IEnumerable<ISlot> Slots { get; }
+    ShipType Type { get; }
+    ISlot[] Slots { get; }
     
     void Board(ICard card);
 }
@@ -17,13 +18,16 @@ public interface IShip
 public abstract class Ship : IShip
 {
     protected Ship(
-        IEnumerable<ISlot> slots
+        ShipType type,
+        ISlot[] slots
     )
     {
+        Type = type;
         Slots = slots;
     }
     
-    public IEnumerable<ISlot> Slots { get; }
+    public ShipType Type { get; }
+    public ISlot[] Slots { get; }
 
     public abstract void Board(ICard card);
 }

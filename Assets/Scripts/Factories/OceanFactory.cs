@@ -20,7 +20,7 @@ public class OceanFactory : IFactory<IOceanView, IOcean>
 
     public IOcean Create(IOceanView withView)
     {
-        var model = modelFactory.Create(withView.Slots.Select(sv => slotFactory.Create(sv)));
+        var model = modelFactory.Create(withView.Slots.Select(sv => slotFactory.Create(sv)).ToArray());
         var controller = controllerFactory.Create(model, withView);
 
         return model;

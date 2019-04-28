@@ -8,7 +8,7 @@ public interface IShipView
 {
     ShipType Type { get; }
     float Height { get; }
-    IEnumerable<ISlotView> Slots { get; }
+    ISlotView[] Slots { get; }
 }
 
 public abstract class ShipView : MonoBehaviour, IShipView
@@ -17,14 +17,14 @@ public abstract class ShipView : MonoBehaviour, IShipView
 
     [SerializeField] private ShipType type;
     [SerializeField] private float height;
-    [SerializeField] private List<SlotView> slots;
+    [SerializeField] private SlotView[] slots;
 
     private Sequence transitionSequence;
     private Vector3 outOfViewPosition;
 
     public ShipType Type => type;
     public float Height => height;
-    public IEnumerable<ISlotView> Slots => slots;
+    public ISlotView[] Slots => slots;
 
     public void Initialize(float withBoardHeight)
     {

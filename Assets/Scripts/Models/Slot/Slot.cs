@@ -22,18 +22,23 @@ public interface ISlot
     uint Capacity { get; }
     SlotType Type { get; }
     CardType EntryMask { get; }
-    CardType MatchMask { get; }
+    CardType InteractionMask { get; }
     Vector3 Position { get; set; }
+    
     IObservable<ICard> Took { get; }
+    IObservable<bool> Highlighted { get; }
 
     void Initialize(Vector3 atPosition);
     void Take(ICard card);
+    void ToggleHighlight(bool on);
 }
 
 public abstract class Slot : ISlot
 {
     private readonly List<ICard> cards = new List<ICard>();
     private readonly Subject<ICard> took = new Subject<ICard>();
+    private readonly Subject<bool> highlighted = new Subject<bool>();
+    
     private Vector3 position;
     
     protected Slot(SlotType type, uint capacity)
@@ -45,7 +50,7 @@ public abstract class Slot : ISlot
     public abstract CardType EntryMask { get; }
     public uint Capacity { get; }
     public SlotType Type { get; }
-    public CardType MatchMask => cards.Count > 0 ? cards.First().InteractionMask : EntryMask;
+    public CardType InteractionMask => cards.Count > 0 ? cards.First().InteractionMask : EntryMask;
 
     public Vector3 Position
     {
@@ -58,6 +63,7 @@ public abstract class Slot : ISlot
     }
 
     public IObservable<ICard> Took => took;
+    public IObservable<bool> Highlighted => highlighted.DistinctUntilChanged();
 
     public void Initialize(Vector3 atPosition)
     {
@@ -70,5 +76,10 @@ public abstract class Slot : ISlot
         took.OnNext(card);
 
         card.Position = Position;
+    }
+
+    public void ToggleHighlight(bool on)
+    {
+        highlighted.OnNext(on);
     }
 }

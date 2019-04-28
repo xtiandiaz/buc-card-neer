@@ -36,6 +36,9 @@ public class SlotController : ISlotController, IDisposable
 
     public void Initialize()
     {
+        disposables.Add(
+            model.Highlighted
+                .Subscribe(view.ToggleHighlight));
     }
 
     public void Dispose()

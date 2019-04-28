@@ -21,15 +21,15 @@ public class Installer : MonoInstaller
         Container.Bind<SlotFactory>().AsSingle();
         
         //Sub-factories
-        Container.BindFactory<IOcean, IEnumerable<IShip>, IEnumerable<IDeck>, Board, Board.Factory>().AsSingle();
+        Container.BindFactory<IOcean, IShip[], IDeck[], Board, Board.Factory>().AsSingle();
         Container.BindFactory<IBoard, IBoardView, BoardController, BoardController.Factory>().AsSingle();
         
-        Container.BindFactory<IEnumerable<ISlot>, ShipPlayer, ShipPlayer.Factory>().AsSingle();
+        Container.BindFactory<ISlot[], ShipPlayer, ShipPlayer.Factory>().AsSingle();
         Container.BindFactory<IShip, IShipView, ShipController, ShipController.Factory>().AsSingle();
 
         Container.BindFactory<IDeck, DeckController, DeckController.Factory>().AsSingle();
 
-        Container.BindFactory<IEnumerable<ISlot>, Ocean, Ocean.Factory>().AsSingle();
+        Container.BindFactory<ISlot[], Ocean, Ocean.Factory>().AsSingle();
         Container.BindFactory<IOcean, IOceanView, OceanController, OceanController.Factory>().AsSingle();
         
         // Deck

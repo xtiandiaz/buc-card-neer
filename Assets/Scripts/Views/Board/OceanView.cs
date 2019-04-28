@@ -5,7 +5,7 @@ using DG.Tweening;
 
 public interface IOceanView
 {
-    IEnumerable<ISlotView> Slots { get; }
+    ISlotView[] Slots { get; }
 }
 
 public class OceanView : MonoBehaviour, IOceanView
@@ -13,7 +13,7 @@ public class OceanView : MonoBehaviour, IOceanView
     private static readonly int Curvature = Shader.PropertyToID("_Curvature");
     private static readonly int PivotOffset = Shader.PropertyToID("_PivotOffset");
     
-    [SerializeField] private List<SlotView> slots;
+    [SerializeField] private SlotView[] slots;
     [SerializeField] private Transform slotWrapper;
     [SerializeField] private MeshRenderer background;
     
@@ -23,7 +23,7 @@ public class OceanView : MonoBehaviour, IOceanView
     private Sequence projectionSequence;
 
     public float Height => settings.CardSize.y;
-    public IEnumerable<ISlotView> Slots => slots;
+    public ISlotView[] Slots => slots;
 
     [Inject]
     private void Construct(
