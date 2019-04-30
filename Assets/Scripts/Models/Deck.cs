@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UniRx;
 using UnityEngine;
 
@@ -15,7 +16,7 @@ public interface IDeck
     IObservable<ICard> Supplied { get; }
 
     void Initialize();
-    ICard Supply();
+    ICard Supply(bool facingDown);
     void TakeBack(ICard card);
 }
 
@@ -34,17 +35,20 @@ public class Deck : ScriptableObject, IDeck
 
     public void Initialize()
     {
-        cards.Shuffle();
-        cards.ForEach(c => c.Initialize());
+        var playCards = cards.Select(card => card.Clone()).ToList();
         
-        queue = new Queue<ICard>(cards);
+        playCards.Shuffle();
+        
+        queue = new Queue<ICard>(playCards);
     }
 
-    public ICard Supply()
+    public ICard Supply(bool facingDown)
     {
         var card = queue.Dequeue();
         if (card == null)
             return null;
+        
+        card.Flip(facingDown ? CardFace.Back : CardFace.Front);
         
         supplied.OnNext(card);
 

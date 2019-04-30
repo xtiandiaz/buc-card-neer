@@ -1,28 +1,35 @@
 using System;
 using System.Linq;
-using Zenject;
 
-public class ShipFactory : IFactory<IShipView, IShip>
+public class ShipFactory : IShipFactory
 {
     private readonly ShipPlayer.Factory shipPlayerFactory;
+    private readonly ShipMerchant.Factory shipMerchantFactory;
+    private readonly ShipPirate.Factory shipPirateFactory;
     private readonly ShipController.Factory controllerFactory;
-    private readonly SlotFactory slotFactory;
+    private readonly ISlotFactory slotFactory;
 
     private ShipFactory(
         ShipPlayer.Factory shipPlayerFactory,
+        ShipMerchant.Factory shipMerchantFactory,
+        ShipPirate.Factory shipPirateFactory,
         ShipController.Factory controllerFactory,
-        SlotFactory slotFactory
+        ISlotFactory slotFactory
     )
     {
         this.shipPlayerFactory = shipPlayerFactory;
+        this.shipMerchantFactory = shipMerchantFactory;
+        this.shipPirateFactory = shipPirateFactory;
         this.controllerFactory = controllerFactory;
         this.slotFactory = slotFactory;
     }
     
-    public IShip Create(IShipView withView)
+    public IShip Create(IShipView forModel)
     {
-        var model = CreateModel(withView);
-        var controller = controllerFactory.Create(model, withView);
+        var model = CreateModel(forModel);
+        var controller = controllerFactory.Create(model, forModel);
+        
+        controller.Initialize();
 
         return model;
     }
@@ -38,9 +45,12 @@ public class ShipFactory : IFactory<IShipView, IShip>
                 return shipPlayerFactory.Create(slots);
 
             case ShipType.Pirate:
+
+                return shipPirateFactory.Create(slots);
+                
             case ShipType.Merchant:
 
-                return null;
+                return shipMerchantFactory.Create(slots);
                 
             default:
                 throw new ArgumentOutOfRangeException(nameof(fromView.Type), fromView.Type, null);

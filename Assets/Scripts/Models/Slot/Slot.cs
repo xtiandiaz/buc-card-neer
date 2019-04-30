@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UniRx;
 using UnityEngine;
-using Zenject;
 
 [Flags]
 public enum SlotType
@@ -20,24 +19,32 @@ public enum SlotType
 public interface ISlot
 {
     uint Capacity { get; }
+    bool HasRoom { get; }
+    bool IsVisible { get; set; }
     SlotType Type { get; }
     CardType EntryMask { get; }
-    CardType InteractionMask { get; }
-    Vector3 Position { get; set; }
-    
-    IObservable<ICard> Took { get; }
-    IObservable<bool> Highlighted { get; }
+    Bounds Bounds { get; set; }
+    ICardArrangement Arrangement { get; set; }
+    ICard[] Cards { get; }
 
-    void Initialize(Vector3 atPosition);
-    void Take(ICard card);
+    IObservable<ICard> Lodged { get; }
+    IObservable<bool> BecameHighlighted { get; }
+    IObservable<bool> BecameVisible { get; }
+
+    void Initialize();
+    bool CanLodge(ICard card);
+    void Lodge(ICard card);
+    void Release(ICard card);
     void ToggleHighlight(bool on);
+    bool DoesContain(Vector3 worldPoint);
 }
 
 public abstract class Slot : ISlot
 {
-    private readonly List<ICard> cards = new List<ICard>();
-    private readonly Subject<ICard> took = new Subject<ICard>();
+    private readonly Stack<ICard> cards = new Stack<ICard>();
+    private readonly Subject<ICard> lodged = new Subject<ICard>();
     private readonly Subject<bool> highlighted = new Subject<bool>();
+    private readonly ReactiveProperty<bool> isVisible = new ReactiveProperty<bool>(true);
     
     private Vector3 position;
     
@@ -49,37 +56,56 @@ public abstract class Slot : ISlot
 
     public abstract CardType EntryMask { get; }
     public uint Capacity { get; }
+    public bool HasRoom => cards.Count < Capacity;
+    public bool IsVisible
+    {
+        get => isVisible.Value;
+        set => isVisible.Value = value;
+    }
+
     public SlotType Type { get; }
-    public CardType InteractionMask => cards.Count > 0 ? cards.First().InteractionMask : EntryMask;
+    public Bounds Bounds { get; set; }
+    public ICardArrangement Arrangement { get; set; }
+    public ICard[] Cards => cards.ToArray();
 
-    public Vector3 Position
+    public IObservable<ICard> Lodged => lodged;
+    public IObservable<bool> BecameHighlighted => highlighted.DistinctUntilChanged();
+    public IObservable<bool> BecameVisible => isVisible;
+
+    public void Initialize()
     {
-        get => position;
-        set
+    }
+
+    public bool CanLodge(ICard card)
+    {
+        return HasRoom && !cards.Contains(card) && (EntryMask & card.Type) != 0;
+    }
+
+    public void Lodge(ICard card)
+    {
+        if (!CanLodge(card))
         {
-            position = value;
-            cards.ForEach(c => c.Position = position);
+            Debug.LogWarning($"[Slot] Card '{card.Name}' couldn't be lodged.");
+            return;
         }
+
+        cards.Push(card);
+        
+        lodged.OnNext(card);
     }
 
-    public IObservable<ICard> Took => took;
-    public IObservable<bool> Highlighted => highlighted.DistinctUntilChanged();
-
-    public void Initialize(Vector3 atPosition)
+    public void Release(ICard card)
     {
-        position = atPosition;
-    }
-
-    public void Take(ICard card)
-    {
-        cards.Add(card);
-        took.OnNext(card);
-
-        card.Position = Position;
+        cards.Pop();
     }
 
     public void ToggleHighlight(bool on)
     {
         highlighted.OnNext(on);
+    }
+
+    public bool DoesContain(Vector3 worldPoint)
+    {
+        return Bounds.Contains(worldPoint);
     }
 }

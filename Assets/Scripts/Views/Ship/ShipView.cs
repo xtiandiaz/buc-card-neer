@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 
@@ -8,32 +5,44 @@ public interface IShipView
 {
     ShipType Type { get; }
     float Height { get; }
+    float ViewportHeight { get; }
+    Vector3 Position { get; set; }
     ISlotView[] Slots { get; }
+
+    void Dock(Vector3 atLocalPosition, float withDurationInSeconds, float andDelayInSeconds = 0);
+    void SetSail(Vector3 toPosition, float withDurationInSeconds);
 }
 
 public abstract class ShipView : MonoBehaviour, IShipView
 {
-    protected float boardHeight;
-
     [SerializeField] private ShipType type;
     [SerializeField] private float height;
     [SerializeField] private SlotView[] slots;
 
+    private Transform thisTransform;
     private Sequence transitionSequence;
-    private Vector3 outOfViewPosition;
 
     public ShipType Type => type;
     public float Height => height;
-    public ISlotView[] Slots => slots;
-
-    public void Initialize(float withBoardHeight)
+    public float ViewportHeight { get; private set; }
+    
+    public Vector3 Position
     {
-        boardHeight = withBoardHeight;
-        outOfViewPosition = Vector3.up * (boardHeight + Height * 0.5f);
-
-        transform.localPosition = outOfViewPosition;
+        get => thisTransform.position;
+        set
+        {
+            transitionSequence?.Kill();
+            thisTransform.position = value;
+        }
     }
     
+    public ISlotView[] Slots => slots;
+
+    protected virtual void Awake()
+    {
+        thisTransform = transform;
+    }
+
     public void Dock(Vector3 atLocalPosition, float withDurationInSeconds, float andDelayInSeconds = 0)
     {
         ClearTransition();
@@ -45,12 +54,12 @@ public abstract class ShipView : MonoBehaviour, IShipView
         transitionSequence.SetEase(Ease.OutQuart);
     }
 
-    public void SetSail(float withDurationInSeconds)
+    public void SetSail(Vector3 toPosition, float withDurationInSeconds)
     {
         ClearTransition();
         
         transitionSequence.Join(
-            transform.DOLocalMove(outOfViewPosition, withDurationInSeconds));
+            transform.DOLocalMove(toPosition, withDurationInSeconds));
 
         transitionSequence.SetEase(Ease.InQuart);
     }

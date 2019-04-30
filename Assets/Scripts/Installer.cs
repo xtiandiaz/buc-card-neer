@@ -13,24 +13,30 @@ public class Installer : MonoInstaller
     public override void InstallBindings()
     {
         // Main factories
-        Container.Bind<BoardFactory>().AsSingle();
-        Container.Bind<ShipFactory>().AsSingle();
-        Container.Bind<OceanFactory>().AsSingle();
-        Container.Bind<DeckFactory>().AsSingle();
-        Container.Bind<CardFactory>().AsSingle();
-        Container.Bind<SlotFactory>().AsSingle();
+        Container.Bind<IBoardFactory>().To<BoardFactory>().AsSingle();
+        Container.Bind<IShipFactory>().To<ShipFactory>().AsSingle();
+        Container.Bind<ISeaFactory>().To<SeaFactory>().AsSingle();
+        Container.Bind<IDeckFactory>().To<DeckFactory>().AsSingle();
+        Container.Bind<ICardFactory>().To<CardFactory>().AsSingle();
+        Container.Bind<ISlotFactory>().To<SlotFactory>().AsSingle();
         
         //Sub-factories
-        Container.BindFactory<IOcean, IShip[], IDeck[], Board, Board.Factory>().AsSingle();
+        Container.BindFactory<ISea, IShip[], IDeck[], Board, Board.Factory>().AsSingle();
         Container.BindFactory<IBoard, IBoardView, BoardController, BoardController.Factory>().AsSingle();
+        /*Container.BindFactory<IOcean, IShip[], IDeck[], Board, Board.Factory, IBoardFactory>()
+            .AsSingle();
+        Container.BindFactoryCustomInterface<IBoard, IBoardView, BoardController, BoardController.Factory, IBoardControllerFactory>()
+            .AsSingle();*/
         
         Container.BindFactory<ISlot[], ShipPlayer, ShipPlayer.Factory>().AsSingle();
+        Container.BindFactory<ISlot[], ShipMerchant, ShipMerchant.Factory>().AsSingle();
+        Container.BindFactory<ISlot[], ShipPirate, ShipPirate.Factory>().AsSingle();
         Container.BindFactory<IShip, IShipView, ShipController, ShipController.Factory>().AsSingle();
 
         Container.BindFactory<IDeck, DeckController, DeckController.Factory>().AsSingle();
 
-        Container.BindFactory<ISlot[], Ocean, Ocean.Factory>().AsSingle();
-        Container.BindFactory<IOcean, IOceanView, OceanController, OceanController.Factory>().AsSingle();
+        Container.BindFactory<ISlot[], Sea, Sea.Factory>().AsSingle();
+        Container.BindFactory<ISea, ISeaView, SeaController, SeaController.Factory>().AsSingle();
         
         // Deck
         Container.BindFactory<uint, SlotBoarding, SlotBoarding.Factory>();
@@ -40,7 +46,11 @@ public class Installer : MonoInstaller
         Container.BindFactory<uint, SlotResource, SlotResource.Factory>();
         Container.BindFactory<ISlot, ISlotView, SlotController, SlotController.Factory>().AsSingle();
 
-        Container.BindFactory<ICard, ICardView, CardController, CardController.Factory>().AsSingle();
+        Container.BindFactory<CardFoe, CardFoeView, CardFoeController, CardFoeController.Factory>().AsSingle();
+        Container.BindFactory<CardMerchant, CardMerchantView, CardMerchantController, CardMerchantController.Factory>()
+            .AsSingle();
+        Container.BindFactory<CardResource, CardResourceView, CardResourceController, CardResourceController.Factory>()
+            .AsSingle();
         Container.BindFactory<string, CardView, CardView.Factory>().FromFactory<PrefabResourceFactory<CardView>>();
         
         // Board 

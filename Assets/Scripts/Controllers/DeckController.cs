@@ -10,12 +10,12 @@ public class DeckController : IDisposable
     }
     
     private readonly IDeck model;
-    private readonly CardFactory cardFactory;
+    private readonly ICardFactory cardFactory;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
     
     private DeckController(
         IDeck model,
-        CardFactory cardFactory
+        ICardFactory cardFactory
         )
     {
         this.model = model;
@@ -24,9 +24,7 @@ public class DeckController : IDisposable
 
     public void Initialize()
     {
-        disposables.Add(
-            model.Supplied
-                .Subscribe(card => cardFactory.Create(card)));
+        disposables.Add(model.Supplied.Subscribe(card => cardFactory.Create(card)));
     }
 
     public void Dispose()

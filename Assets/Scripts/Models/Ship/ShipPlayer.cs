@@ -14,11 +14,4 @@ public class ShipPlayer : Ship
     }
     
     public ISlot BoardingSlot { get; }
-
-    public override void Board(ICard card)
-    {
-        card.Flip();
-        
-        BoardingSlot.Take(card);
-    }
 }

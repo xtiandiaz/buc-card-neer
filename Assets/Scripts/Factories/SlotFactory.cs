@@ -1,7 +1,6 @@
 using System;
-using Zenject;
 
-public class SlotFactory : IFactory<ISlotView, ISlot>
+public class SlotFactory : ISlotFactory
 {
     private readonly SlotBoarding.Factory modelBoardingFactory;
     private readonly SlotDefense.Factory modelDefenseFactory;
@@ -27,12 +26,12 @@ public class SlotFactory : IFactory<ISlotView, ISlot>
         this.controllerFactory = controllerFactory;
     }
     
-    public ISlot Create(ISlotView withView)
+    public ISlot Create(ISlotView forModel)
     {
-        var model = CreateModel(withView.Type, withView.Capacity);
-        var controller = controllerFactory.Create(model, withView);
+        var model = CreateModel(forModel.Type, forModel.Capacity);
+        var controller = controllerFactory.Create(model, forModel);
         
-        model.Initialize(withView.Transform.position);
+        model.Initialize();
         controller.Initialize();
 
         return model;

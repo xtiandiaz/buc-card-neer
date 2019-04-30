@@ -1,4 +1,8 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using UniRx;
+using UnityEngine;
 
 public enum ShipType
 {
@@ -12,15 +16,21 @@ public interface IShip
     ShipType Type { get; }
     ISlot[] Slots { get; }
     
-    void Board(ICard card);
+    IObservable<ICard> Boarded { get; }
+    IObservable<(ICard, ISlot)> Lodged { get; }
+    IObservable<Vector3> Docked { get; }
+    IObservable<Vector3> Sailed { get; }
+
+    void Dock(Vector3 atPosition);
+    void SetSail(Vector3 toPosition);
 }
 
 public abstract class Ship : IShip
 {
-    protected Ship(
-        ShipType type,
-        ISlot[] slots
-    )
+    private readonly Subject<Vector3> docked = new Subject<Vector3>();
+    private readonly Subject<Vector3> sailed = new Subject<Vector3>();
+    
+    protected Ship(ShipType type, ISlot[] slots)
     {
         Type = type;
         Slots = slots;
@@ -29,5 +39,18 @@ public abstract class Ship : IShip
     public ShipType Type { get; }
     public ISlot[] Slots { get; }
 
-    public abstract void Board(ICard card);
+    public IObservable<(ICard, ISlot)> Lodged => Slots.Select(slot => slot.Lodged.Select(card => (card, slot))).Merge();
+    public IObservable<ICard> Boarded => Slots.Where(s => s.Type == SlotType.Boarding).Select(s => s.Lodged).Merge();
+    public IObservable<Vector3> Docked => docked; 
+    public IObservable<Vector3> Sailed => sailed; 
+    
+    public void Dock(Vector3 atPosition)
+    {
+        docked.OnNext(atPosition);
+    }
+
+    public void SetSail(Vector3 toPosition)
+    {
+        sailed.OnNext(toPosition);
+    }
 }

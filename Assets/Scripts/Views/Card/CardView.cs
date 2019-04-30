@@ -1,21 +1,27 @@
 using System;
 using DG.Tweening;
+using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Zenject;
 
 public interface ICardView
 {
-    SpriteRenderer FrontFaceRenderer { get; }
-    SpriteRenderer BackFaceRenderer { get; }
-    Vector3 Position { get; set; }
+    Sprite FrontFace { set; }
+    Sprite BackFace { set; }
+    Vector3 LocalPosition { get; set; }
+    IObservable<Unit> DragStarted { get; }
+    IObservable<Vector3> Dragged { get; }
+    IObservable<Vector3> DragEnded { get; }
     
     void OnPicked();
-    void OnDragged(Vector3 deltaPosition);
     void OnDropped();
-    void Set(Vector3 positionAnimated, TimeSpan during);
+    void Flip(CardFace to, bool animated);
+    void ToggleVisibility(bool on);
+    void ToggleDragging(bool on);
+    void SetParent(Transform asTransform);
+    void SetLocalPosition(Vector3 to, float duringSeconds);
     void Destroy();
-    T AddComponent<T>() where T : Component;
 }
 
 public class CardView : MonoBehaviour, ICardView
@@ -24,25 +30,41 @@ public class CardView : MonoBehaviour, ICardView
     {
     }
 
+    [Header("Rendering")]
+    [SerializeField] private int textSortingOrder;
+    [SerializeField] private MeshRenderer[] textRenderers;
+    
     [SerializeField] private SortingGroup sortingGroup;
     [SerializeField] private SpriteRenderer frontFaceRenderer;
     [SerializeField] private SpriteRenderer backFaceRenderer;
+    [SerializeField] private DraggingManager draggingManager;
     
     private GameSettings settings;
-    private MeshRenderer textMeshRenderer;
     private Transform thisTransform;
     private Tween positionTween;
+    private Sequence flipSequence;
 
-    public SpriteRenderer FrontFaceRenderer => frontFaceRenderer;
-    public SpriteRenderer BackFaceRenderer => backFaceRenderer;
-
-    public Vector3 Position
+    public Sprite FrontFace
     {
-        get => thisTransform.position;
+        set => frontFaceRenderer.sprite = value;
+    }
+    
+    public Sprite BackFace
+    {
+        set => backFaceRenderer.sprite = value;
+    }
+    
+    public IObservable<Unit> DragStarted => draggingManager.DragStarted;
+    public IObservable<Vector3> Dragged => draggingManager.Dragged;
+    public IObservable<Vector3> DragEnded => draggingManager.DragEnded;
+
+    public Vector3 LocalPosition
+    {
+        get => thisTransform.localPosition;
         set
         {
             positionTween?.Kill();
-            thisTransform.position = value;
+            thisTransform.localPosition = value;
         }
     }
 
@@ -54,6 +76,12 @@ public class CardView : MonoBehaviour, ICardView
         thisTransform = transform;
 
         sortingGroup.enabled = false;
+        
+        foreach (var renderer in textRenderers)
+        {
+            renderer.sortingLayerName = settings.CardSortingLayerName;
+            renderer.sortingOrder = textSortingOrder;
+        }
     }
 
     public void OnPicked()
@@ -64,26 +92,51 @@ public class CardView : MonoBehaviour, ICardView
         positionTween?.Kill();
     }
 
-    public void OnDragged(Vector3 deltaPosition)
-    {
-        thisTransform.localPosition += deltaPosition;
-    }
-
     public void OnDropped()
     {
         sortingGroup.enabled = false;
     }
 
-    public void Set(Vector3 position)
+    public void ToggleVisibility(bool on)
     {
-        positionTween?.Kill();
-        
-        thisTransform.position = position;
+        gameObject.SetActive(on);
     }
 
-    public void Set(Vector3 positionAnimated, TimeSpan during)
+    public void SetParent(Transform asTransform)
     {
-        Move(positionAnimated, during);
+        thisTransform.SetParent(asTransform, true);
+    }
+    
+    public void SetLocalPosition(Vector3 to, float duringSeconds)
+    {
+        Move(to, duringSeconds);
+    }
+
+    public void Flip(CardFace to, bool animated)
+    {
+        var destEulerAngles = new Vector3(0, to == CardFace.Back ? 180f : 0, 0);
+
+        if (!animated)
+        {
+            thisTransform.eulerAngles = destEulerAngles;
+            return;
+        }            
+        
+        flipSequence?.Kill();
+
+        var tweenDuration = (float) settings.CardFlipDuration.TotalSeconds;
+        
+        flipSequence = DOTween.Sequence();
+        flipSequence.Append(transform.DORotate(destEulerAngles, tweenDuration));
+        
+        //TODO: Also lift the card while rotating
+        
+        flipSequence.SetEase(Ease.InOutQuint);
+    }
+
+    public void ToggleDragging(bool on)
+    {
+        draggingManager.ToggleDragging(on);
     }
     
     public void Destroy()
@@ -91,15 +144,10 @@ public class CardView : MonoBehaviour, ICardView
         Destroy(gameObject);
     }
 
-    public T AddComponent<T>() where T : Component
-    {
-        return gameObject.AddComponent<T>();
-    }
-
-    private void Move(Vector3 toPosition, TimeSpan during, TweenCallback andDoOncomplete = null)
+    private void Move(Vector3 toPosition, float duringSeconds, TweenCallback andDoOncomplete = null)
     {
         positionTween?.Kill();
-        positionTween = thisTransform.DOLocalMove(toPosition, (float) during.TotalSeconds)
+        positionTween = thisTransform.DOLocalMove(toPosition, duringSeconds)
             .SetEase(Ease.OutQuint);
 
         if (andDoOncomplete != null)

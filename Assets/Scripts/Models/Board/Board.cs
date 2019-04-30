@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
+using UnityEngine;
 using Zenject;
 
 public enum BoardMode
@@ -13,14 +14,15 @@ public enum BoardMode
 
 public interface IBoard
 {
-    IOcean Ocean { get; }
+    ISea Sea { get; }
     IShip[] Ships { get; }
     IDeck[] Decks { get; }
-    IObservable<ICard> CardPicked { get; }
-    IObservable<ICard> CardDropped { get; }
-
-    IShip ShipPlayer { get; }
+    BoardMode Mode { get; set; }
     ISlot[] PlaySlots { get; }
+    
+    IObservable<ICard> CardPicked { get; }
+    IObservable<(ICard, Vector3)> CardDropped { get; }
+    IObservable<BoardMode> ModeChanged { get; }
 
     void Initialize();
     void Deal();
@@ -28,21 +30,16 @@ public interface IBoard
 
 public class Board : IBoard
 {
-    public class Factory : PlaceholderFactory<IOcean, IShip[], IDeck[], Board>
+    public class Factory : PlaceholderFactory<ISea, IShip[], IDeck[], Board>
     {
     }
     
     private readonly ReactiveProperty<BoardMode> mode = new ReactiveProperty<BoardMode>(BoardMode.Seafaring);
-    private readonly CompositeDisposable disposables = new CompositeDisposable();
     private readonly IDeck eventDeck;
     
-    private Board(
-        IOcean ocean,
-        IShip[] ships,
-        IDeck[] decks
-        )
+    private Board(ISea sea, IShip[] ships, IDeck[] decks)
     {
-        Ocean = ocean;
+        Sea = sea;
         Ships = ships;
         Decks = decks;
 
@@ -55,28 +52,37 @@ public class Board : IBoard
         set => mode.Value = value;
     }
 
-    public IObservable<BoardMode> ObservableMode => mode;
+    public IObservable<BoardMode> ModeChanged => mode;
 
-    public IOcean Ocean { get; }
+    public ISea Sea { get; }
     public IShip[] Ships { get; }
     public IDeck[] Decks { get; }
+    public ISlot[] PlaySlots { get; private set; }
 
     public IObservable<ICard> CardPicked => 
         Decks.Select(d => d.Supplied).Merge().SelectMany(c => c.Picked.Select(_ => c));
-    public IObservable<ICard> CardDropped =>
-        Decks.Select(d => d.Supplied).Merge().SelectMany(c => c.Dropped.Select(_ => c));
     
-    public IShip ShipPlayer { get; private set; }
-    public ISlot[] PlaySlots { get; private set; }
+    public IObservable<(ICard, Vector3)> CardDropped =>
+        Decks.Select(d => d.Supplied).Merge().SelectMany(c => c.Dropped.Select(dropPosition => (c, dropPosition)));
+    
+    public ShipPlayer ShipPlayer { get; private set; }
+    public ShipMerchant ShipMerchant { get; private set; }
+    public ShipPirate ShipPirate { get; private set; }
 
     public void Initialize()
     {
-        ShipPlayer = Ships.First(s => s.Type == ShipType.Player);
-        PlaySlots = ShipPlayer.Slots;
+        ShipPlayer = (ShipPlayer) Ships.First(s => s.Type == ShipType.Player);
+        ShipMerchant = (ShipMerchant) Ships.First(s => s.Type == ShipType.Merchant);
+        ShipPirate = (ShipPirate) Ships.First(s => s.Type == ShipType.Pirate);
+        
+        var playSlots = ShipPlayer.Slots.ToList();
+        playSlots.AddRange(Sea.Slots);
+        
+        PlaySlots = playSlots.ToArray();
     }
 
     public void Deal()
     {
-        Ocean.Populate(eventDeck);
+        Sea.Populate(eventDeck);
     }
 }

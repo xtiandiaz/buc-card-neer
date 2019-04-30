@@ -19,13 +19,6 @@ public static class Extensions
         }  
     }
     
-    public static bool Contains(this Enum flagSet, Enum flag)
-    {
-        var flagValue = Convert.ToInt32(flag);
-        
-        return (Convert.ToInt32(flagSet) & flagValue) == flagValue;
-    }
-    
     public static Vector3 GetVector(this Direction direction)
     {
         switch (direction)

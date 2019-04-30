@@ -14,9 +14,10 @@ public class GameSettings
     public int MaxCardCountPerPlaySlot { get; } = 3;
     
     // Interaction
-    public TimeSpan CardMoveDuration { get; } = TimeSpan.FromSeconds(0.5f);
-    public TimeSpan CardReturnDuration { get; } = TimeSpan.FromSeconds(0.5f);
+    public TimeSpan CardMoveDuration { get; } = TimeSpan.FromSeconds(0.5);
+    public TimeSpan CardReturnDuration { get; } = TimeSpan.FromSeconds(0.5);
     public TimeSpan CardArrangementDuration { get; } = TimeSpan.FromSeconds(0.2);
+    public TimeSpan CardFlipDuration { get; } = TimeSpan.FromSeconds(0.5);
     
     // Layout
     public int BoardCols { get; } = 5;

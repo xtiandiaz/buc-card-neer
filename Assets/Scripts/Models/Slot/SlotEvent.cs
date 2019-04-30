@@ -10,5 +10,5 @@ public class SlotEvent : Slot
     {
     }
 
-    public override CardType EntryMask { get; }
+    public override CardType EntryMask => CardType.Foe | CardType.Merchant | CardType.Resource;
 }

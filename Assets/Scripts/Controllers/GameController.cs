@@ -4,14 +4,14 @@ using Zenject;
 
 public class GameController : IInitializable
 {
-    private readonly BoardFactory boardFactory;
+    private readonly IBoardFactory boardFactory;
     private readonly IBoardView boardView;
     private readonly GameSettings settings;
 
     private IBoard board;
 
     public GameController(
-        BoardFactory boardFactory,
+        IBoardFactory boardFactory,
         IBoardView boardView, 
         GameSettings settings
     )

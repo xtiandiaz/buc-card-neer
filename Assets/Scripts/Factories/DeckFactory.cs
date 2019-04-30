@@ -1,6 +1,4 @@
-using Zenject;
-
-public class DeckFactory : IFactory<IDeck, IDeck>
+public class DeckFactory : IDeckFactory
 {
     private readonly DeckController.Factory controllerFactory;
 
@@ -11,13 +9,13 @@ public class DeckFactory : IFactory<IDeck, IDeck>
         this.controllerFactory = controllerFactory;
     }
     
-    public IDeck Create(IDeck fromModel)
+    public IDeck Create(IDeck forModel)
     {
-        var controller = controllerFactory.Create(fromModel);
+        var controller = controllerFactory.Create(forModel);
         
-        fromModel.Initialize();
+        forModel.Initialize();
         controller.Initialize();
         
-        return fromModel;
+        return forModel;
     }
 }

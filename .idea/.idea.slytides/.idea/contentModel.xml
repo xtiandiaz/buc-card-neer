@@ -736,11 +736,18 @@
         <e p="Scripts" t="Include">
           <e p="Controllers" t="Include">
             <e p="BoardController.cs" t="Include" />
-            <e p="CardController.cs" t="Include" />
+            <e p="Card" t="Include">
+              <e p="CardController.cs" t="Include" />
+              <e p="CardFoeController.cs" t="Include" />
+              <e p="CardMerchantController.cs" t="Include" />
+              <e p="CardResourceController.cs" t="Include" />
+            </e>
             <e p="DeckController.cs" t="Include" />
             <e p="GameController.cs" t="Include" />
-            <e p="OceanController.cs" t="Include" />
-            <e p="ShipController.cs" t="Include" />
+            <e p="SeaController.cs" t="Include" />
+            <e p="Ship" t="Include">
+              <e p="ShipController.cs" t="Include" />
+            </e>
             <e p="SlotController.cs" t="Include" />
           </e>
           <e p="Extensions.cs" t="Include" />
@@ -748,7 +755,13 @@
             <e p="BoardFactory.cs" t="Include" />
             <e p="CardFactory.cs" t="Include" />
             <e p="DeckFactory.cs" t="Include" />
-            <e p="OceanFactory.cs" t="Include" />
+            <e p="IBoardFactory.cs" t="Include" />
+            <e p="ICardFactory.cs" t="Include" />
+            <e p="IDeckFactory.cs" t="Include" />
+            <e p="ISeaFactory.cs" t="Include" />
+            <e p="IShipFactory.cs" t="Include" />
+            <e p="ISlotFactory.cs" t="Include" />
+            <e p="SeaFactory.cs" t="Include" />
             <e p="ShipFactory.cs" t="Include" />
             <e p="SlotFactory.cs" t="Include" />
           </e>
@@ -760,12 +773,16 @@
           <e p="Models" t="Include">
             <e p="Board" t="Include">
               <e p="Board.cs" t="Include" />
-              <e p="Ocean.cs" t="Include" />
+              <e p="Sea.cs" t="Include" />
             </e>
             <e p="Card" t="Include">
+              <e p="Arrangement" t="Include">
+                <e p="CardArrangement.cs" t="Include" />
+              </e>
               <e p="Card.cs" t="Include" />
               <e p="CardFoe.cs" t="Include" />
               <e p="CardMerchant.cs" t="Include" />
+              <e p="CardResource.cs" t="Include" />
             </e>
             <e p="Deck.cs" t="Include" />
             <e p="Direction.cs" t="Include" />
@@ -774,6 +791,8 @@
             <e p="GameState.cs" t="Include" />
             <e p="Ship" t="Include">
               <e p="Ship.cs" t="Include" />
+              <e p="ShipMerchant.cs" t="Include" />
+              <e p="ShipPirate.cs" t="Include" />
               <e p="ShipPlayer.cs" t="Include" />
             </e>
             <e p="Slot" t="Include">
@@ -790,16 +809,15 @@
             <e p="Board" t="Include">
               <e p="BoardCamera.cs" t="Include" />
               <e p="BoardView.cs" t="Include" />
-              <e p="OceanView.cs" t="Include" />
+              <e p="SeaView.cs" t="Include" />
             </e>
             <e p="Card" t="Include">
               <e p="CardFoeView.cs" t="Include" />
               <e p="CardMerchantView.cs" t="Include" />
+              <e p="CardResourceView.cs" t="Include" />
               <e p="CardStatView.cs" t="Include" />
               <e p="CardView.cs" t="Include" />
-              <e p="SlotView.cs" t="Include" />
             </e>
-            <e p="CardSlotImage.cs" t="Include" />
             <e p="FocusLight.cs" t="Include" />
             <e p="Ship" t="Include">
               <e p="ShipMerchantView.cs" t="Include" />
@@ -807,11 +825,14 @@
               <e p="ShipPlayerView.cs" t="Include" />
               <e p="ShipView.cs" t="Include" />
             </e>
+            <e p="Slot" t="Include">
+              <e p="SlotView.cs" t="Include" />
+            </e>
           </e>
         </e>
         <e p="Shaders" t="Include">
           <e p="FontOneSided.shader" t="Include" />
-          <e p="Ocean.shader" t="Include" />
+          <e p="Sea.shader" t="Include" />
           <e p="SpritesOneSided.shader" t="Include" />
         </e>
       </e>

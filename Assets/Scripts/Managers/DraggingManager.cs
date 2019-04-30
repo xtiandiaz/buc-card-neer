@@ -2,13 +2,14 @@ using System;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
+using Zenject;
 
 [RequireComponent(typeof(Collider2D))]
 public class DraggingManager : MonoBehaviour
 {
     private readonly Subject<Unit> dragStarted = new Subject<Unit>();
     private readonly Subject<Vector3> dragged = new Subject<Vector3>();
-    private readonly Subject<Unit> dragEnded = new Subject<Unit>();
+    private readonly Subject<Vector3> dragEnded = new Subject<Vector3>();
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private ObservableEventTrigger eventTrigger;
@@ -16,11 +17,13 @@ public class DraggingManager : MonoBehaviour
     
     public IObservable<Unit> DragStarted => dragStarted;
     public IObservable<Vector3> Dragged => dragged;
-    public IObservable<Unit> DragEnded => dragEnded;
+    public IObservable<Vector3> DragEnded => dragEnded;
 
-    public void Initialize(ICamera withCamera)
+    [Inject]
+    private void Construct(ICamera camera)
     {
-        camera = withCamera;
+        this.camera = camera;
+        
         eventTrigger = gameObject.AddComponent<ObservableEventTrigger>();
     }
 
@@ -59,7 +62,7 @@ public class DraggingManager : MonoBehaviour
         disposables.Add(
             eventTrigger
                 .OnEndDragAsObservable()
-                .Subscribe(_ => dragEnded.OnNext(Unit.Default)));
+                .Subscribe(_ => dragEnded.OnNext(lastWorldPos)));
     }
 
     private void OnDestroy()
