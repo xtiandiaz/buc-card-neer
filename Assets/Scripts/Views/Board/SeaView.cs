@@ -40,7 +40,7 @@ public class SeaView : MonoBehaviour, ISeaView
         var backgroundTransform = background.transform;
         
         backgroundTransform.localScale = new Vector3(withBoardHeight * 1.25f, withBoardHeight * 1.25f, 1f);
-        backgroundTransform.localPosition = Vector3.forward * settings.CardSize.x;
+        //backgroundTransform.localPosition = Vector3.forward * settings.CardSize.x;
         
         oceanMaterial = background.sharedMaterial;
         oceanMaterial.SetFloat(PivotOffset, - (Height / withBoardHeight) * 0.5f);

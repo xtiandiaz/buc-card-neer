@@ -1,3 +1,4 @@
 public class ShipPirateView : ShipView
 {
+    
 }

@@ -2,170 +2,29 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5cce57e1-16b4-468e-baea-dfaf179c2bf5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/Card.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/Card/CardFoeController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/Card/CardFoeController.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/Card/CardMerchantController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/Card/CardMerchantController.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/Card/CardResourceController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/Card/CardResourceController.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/SeaController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/Ship.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/Ship/ShipController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Factories/IBoardFactory.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Factories/IBoardFactory.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Factories/ICardFactory.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Factories/ICardFactory.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Factories/IDeckFactory.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Factories/IDeckFactory.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Factories/ISeaFactory.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Factories/ISeaFactory.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Factories/IShipFactory.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Factories/IShipFactory.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Factories/ISlotFactory.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Factories/ISlotFactory.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Factories/SeaFactory.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Board/Sea.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Card/Arrangement.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Card/Arrangement/CardArrangement.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Card/Arrangement/CardArrangement.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Card/CardResource.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Card/CardResource.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Ship/ShipMerchant.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Ship/ShipMerchant.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Ship/ShipPirate.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Ship/ShipPirate.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Views/Card/CardResourceView.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Views/Card/CardResourceView.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Views/Slot.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Views/Card/CardFaceView.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Views/Card/CardFaceView.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.slytides/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.slytides/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.slytides/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.slytides/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Faces.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Faces/BlankFace.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Faces/BlankFace.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Faces/ItemFaceA.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Faces/ItemFaceA.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Faces/ItemFaceB.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Faces/ItemFaceB.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Faces/ItemFaceC.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Faces/ItemFaceC.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Faces/ItemFaceD.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Faces/ItemFaceD.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Faces/Pirate.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Faces/Pirate.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Faces/PirateShip.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Faces/PirateShip.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/ItemA.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/ItemA.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/ItemB.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/ItemB.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/ItemC.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/ItemC.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/ItemD.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/ItemD.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/MerchantA.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/MerchantA.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/MerchantB.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/MerchantB.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/MerchantC.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/MerchantC.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Pirate3.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Pirate3.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Pirate5.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Pirate5.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Pirate7.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Cards/Pirate7.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/Decks/Events.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Data/Decks/Events.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Materials/Ocean.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Materials/Ocean.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Zenject/Source/Factories/IFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/Zenject/Source/Factories/IFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Zenject/Source/Factories/PlaceholderFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/Zenject/Source/Factories/PlaceholderFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Zenject/Source/Factories/Pooling/MemoryPool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/Zenject/Source/Factories/Pooling/MemoryPool.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Zenject/Source/Factories/Pooling/PoolFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/Zenject/Source/Factories/Pooling/PoolFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Zenject/Source/Factories/PrefabFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/Zenject/Source/Factories/PrefabFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Zenject/Source/Factories/PrefabResourceFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/Zenject/Source/Factories/PrefabResourceFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/Prefabs/Card.prefab" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/Prefabs/Card.prefab.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/Prefabs/CardFaceBlank.prefab" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/Prefabs/CardFaceBlank.prefab.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/Prefabs/CardFaceEvent.prefab" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/Prefabs/CardFaceEvent.prefab.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/Prefabs/CardFaceFoe.prefab" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/Prefabs/CardFaceFoe.prefab.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/Prefabs/CardFaceItem.prefab" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/Prefabs/CardFaceItem.prefab.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/Prefabs/CardFacePlayer.prefab" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/Prefabs/CardFacePlayer.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Materials/Sea.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Materials/Sea.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/BoardCamera.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/BoardCamera.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/CardSlot.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/CardSlot.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/CardSlotImage.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/CardSlotImage.prefab.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Resources/Prefabs/CardFoe.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Prefabs/CardFoe.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/Prefabs/CardMerchant.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Prefabs/CardMerchant.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Prototype.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Prototype.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Controllers/BoardController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/BoardController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Controllers/CardController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/Card/CardController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Controllers/CardController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/Card/CardController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Controllers/DeckController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/DeckController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Controllers/GameController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/GameController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Controllers/OceanController.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Controllers/OceanController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/SeaController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Controllers/ShipController.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Controllers/ShipController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/Ship/ShipController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Controllers/SlotController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/SlotController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Extensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Extensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Factories/BoardFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Factories/BoardFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Factories/CardFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Factories/CardFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Factories/DeckFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Factories/DeckFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Factories/OceanFactory.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Factories/OceanFactory.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Factories/SeaFactory.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Factories/ShipFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Factories/ShipFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Factories/SlotFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Factories/SlotFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Installer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Installer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Managers/DraggingManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Managers/DraggingManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Models/Board/Board.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Board/Board.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Models/Board/Ocean.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Models/Board/Ocean.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Board/Sea.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Models/Card/Card.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Card/Card.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Models/Card/CardFoe.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Card/CardFoe.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Models/Card/CardMerchant.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Card/CardMerchant.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Models/Deck.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Deck.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Models/GameSettings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Models/GameSettings.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Models/Ship/Ship.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Ship/Ship.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Models/Ship/ShipPlayer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Ship/ShipPlayer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Models/Slot/Slot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Slot/Slot.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Models/Slot/SlotBoarding.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Slot/SlotBoarding.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Models/Slot/SlotEvent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Models/Slot/SlotEvent.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/Board/BoardView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/Board/BoardView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/Board/OceanView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/Board/SeaView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/Board/OceanView.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/Board/SeaView.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/Card/CardFoeView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/Card/CardFoeView.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/Board/BoardCamera.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/Board/BoardCamera.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/Board/SeaView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/Board/SeaView.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/Card/CardView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/Card/CardView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/Card/SlotView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/Slot/SlotView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/Card/SlotView.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/Slot/SlotView.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/CardSlotImage.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/CardSlotImage.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/Ship/ShipView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/Ship/ShipView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Shaders/Ocean.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Shaders/Sea.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Shaders/Ocean.shader.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Shaders/Sea.shader.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/Ship/ShipPirateView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/Ship/ShipPirateView.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Allies/CardMerchant.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Cards/Allies/CardMerchant.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Allies/CardMerchantShip.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Cards/Allies/CardMerchantShip.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/CardPlayer.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/CardPlayer.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Events.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Events.spriteatlas" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Events.spriteatlas.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Events/CardEventTreasure.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Events/CardEventTreasure.png.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Foes/CardPirate.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Cards/Foes/CardPirate.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Foes/CardPirateShip.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Cards/Foes/CardPirateShip.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Items.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Items.spriteatlas" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Items.spriteatlas.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Items/CardItem.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Items/CardItem.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Items/Items.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Items/Items.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Items/SuitIcons.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Items/SuitIcons.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Other.spriteatlas" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Cards/Other.spriteatlas" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Resources/CardChest.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Cards/Resources/CardChest.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Textures/Cards/Resources/CardItem.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Cards/Resources/CardItem.png" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -176,154 +35,75 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Assets/Scripts/Models/Slot/Slot.cs">
+        <entry file="file://$PROJECT_DIR$/Assets/Scripts/Views/Card/CardFoeView.cs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="669">
-              <caret line="86" column="9" selection-start-line="86" selection-start-column="9" selection-end-line="86" selection-end-column="9" />
+            <state relative-caret-position="30">
+              <caret line="2" column="32" selection-start-line="2" selection-start-column="32" selection-end-line="2" selection-end-column="32" />
               <folding>
-                <marker date="1556628980775" expanded="true" signature="6:98" ph="..." />
-                <marker date="1556628980775" expanded="true" signature="128:314" ph="{...}" />
-                <marker date="1556628980775" expanded="true" signature="338:917" ph="{...}" />
-                <marker date="1556628980775" expanded="true" signature="953:2701" ph="{...}" />
-                <marker date="1556628980775" expanded="true" signature="1333:1395" ph="{...}" />
-                <marker date="1556628980775" expanded="true" signature="1555:1639" ph="{...}" />
-                <marker date="1556628980775" expanded="true" signature="2034:2046" ph="{...}" />
-                <marker date="1556628980775" expanded="true" signature="2084:2177" ph="{...}" />
-                <marker date="1556628980775" expanded="true" signature="2212:2438" ph="{...}" />
-                <marker date="1556628980775" expanded="true" signature="2247:2367" ph="{...}" />
-                <marker date="1556628980775" expanded="true" signature="2475:2508" ph="{...}" />
-                <marker date="1556628980775" expanded="true" signature="2550:2594" ph="{...}" />
-                <marker date="1556628980775" expanded="true" signature="2643:2699" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Assets/Scripts/Controllers/SlotController.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="780">
-              <caret line="56" column="62" lean-forward="true" selection-start-line="56" selection-start-column="62" selection-end-line="56" selection-end-column="62" />
-              <folding>
-                <marker date="1556630371465" expanded="false" signature="6:79" ph="..." />
-                <marker date="1556630371465" expanded="true" signature="113:160" ph="{...}" />
-                <marker date="1556630371465" expanded="true" signature="220:1595" ph="{...}" />
-                <marker date="1556630371465" expanded="true" signature="302:314" ph="{...}" />
-                <marker date="1556630371465" expanded="true" signature="529:595" ph="{...}" />
-                <marker date="1556630371465" expanded="true" signature="625:1296" ph="{...}" />
-                <marker date="1556630371465" expanded="true" signature="775:890" ph="{...}" />
-                <marker date="1556630371465" expanded="true" signature="1009:1117" ph="{...}" />
-                <marker date="1556630371465" expanded="true" signature="1323:1522" ph="{...}" />
-                <marker date="1556630371465" expanded="true" signature="1549:1593" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Assets/Scripts/Models/Card/Card.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="735">
-              <caret line="86" column="38" lean-forward="true" selection-start-line="86" selection-start-column="38" selection-end-line="86" selection-end-column="38" />
-              <folding>
-                <marker date="1556627983723" expanded="false" signature="6:45" ph="..." />
-                <marker date="1556627983723" expanded="true" signature="75:178" ph="{...}" />
-                <marker date="1556627983723" expanded="true" signature="200:224" ph="{...}" />
-                <marker date="1556627983723" expanded="true" signature="248:965" ph="{...}" />
-                <marker date="1556627983723" expanded="true" signature="1019:3111" ph="{...}" />
-                <marker date="1556627983723" expanded="true" signature="1857:1949" ph="{...}" />
-                <marker date="1556627983723" expanded="true" signature="1976:2060" ph="{...}" />
-                <marker date="1556627983723" expanded="true" signature="2598:2643" ph="{...}" />
-                <marker date="1556627983723" expanded="true" signature="2667:2716" ph="{...}" />
-                <marker date="1556627983723" expanded="true" signature="2758:2806" ph="{...}" />
-                <marker date="1556627983723" expanded="true" signature="2841:2878" ph="{...}" />
-                <marker date="1556627983723" expanded="true" signature="2924:2972" ph="{...}" />
-                <marker date="1556627983723" expanded="true" signature="2998:3109" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Assets/Scripts/Models/Board/Sea.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="615">
-              <caret line="44" column="27" lean-forward="true" selection-start-line="44" selection-start-column="27" selection-end-line="44" selection-end-column="27" />
-              <folding>
-                <marker date="1556627881907" expanded="false" signature="6:60" ph="..." />
-                <marker date="1556627881907" expanded="true" signature="83:249" ph="{...}" />
-                <marker date="1556627881907" expanded="true" signature="274:1335" ph="{...}" />
-                <marker date="1556627881907" expanded="true" signature="336:348" ph="{...}" />
-                <marker date="1556627881907" expanded="true" signature="477:512" ph="{...}" />
-                <marker date="1556627881907" expanded="true" signature="657:1156" ph="{...}" />
-                <marker date="1556627881907" expanded="true" signature="699:1150" ph="{...}" />
-                <marker date="1556627881907" expanded="true" signature="761:1140" ph="{...}" />
-                <marker date="1556627881907" expanded="true" signature="938:1091" ph="{...}" />
-                <marker date="1556627881907" expanded="true" signature="1199:1333" ph="{...}" />
-                <marker date="1556627881907" expanded="true" signature="1274:1327" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Assets/Scripts/Views/Card/CardView.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="394">
-              <caret line="77" column="37" selection-start-line="77" selection-start-column="37" selection-end-line="77" selection-end-column="37" />
-              <folding>
-                <marker date="1556627086763" expanded="false" signature="6:108" ph="..." />
-                <marker date="1556627086763" expanded="true" signature="136:652" ph="{...}" />
-                <marker date="1556627086763" expanded="true" signature="702:4052" ph="{...}" />
-                <marker date="1556627086763" expanded="true" signature="768:780" ph="{...}" />
-                <marker date="1556627086763" expanded="true" signature="1339:1400" ph="{...}" />
-                <marker date="1556627086763" expanded="true" signature="1432:1492" ph="{...}" />
-                <marker date="1556627086763" expanded="true" signature="1744:1916" ph="{...}" />
-                <marker date="1556627086763" expanded="true" signature="1806:1910" ph="{...}" />
-                <marker date="1556627086763" expanded="true" signature="1980:2311" ph="{...}" />
-                <marker date="1556627086763" expanded="true" signature="2160:2305" ph="{...}" />
-                <marker date="1556627086763" expanded="true" signature="2339:2491" ph="{...}" />
-                <marker date="1556627086763" expanded="true" signature="2520:2570" ph="{...}" />
-                <marker date="1556627086763" expanded="true" signature="2613:2659" ph="{...}" />
-                <marker date="1556627086763" expanded="true" signature="2709:2773" ph="{...}" />
-                <marker date="1556627086763" expanded="true" signature="2844:2889" ph="{...}" />
-                <marker date="1556627086763" expanded="true" signature="2939:3529" ph="{...}" />
-                <marker date="1556627086763" expanded="true" signature="3050:3147" ph="{...}" />
-                <marker date="1556627086763" expanded="true" signature="3570:3626" ph="{...}" />
-                <marker date="1556627086763" expanded="true" signature="3657:3698" ph="{...}" />
-                <marker date="1556627086763" expanded="true" signature="3800:4050" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Assets/Scripts/Controllers/SeaController.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="17" column="32" lean-forward="true" selection-start-line="17" selection-start-column="32" selection-end-line="17" selection-end-column="32" />
-              <folding>
-                <marker date="1556631351873" expanded="false" signature="6:41" ph="..." />
-                <marker date="1556631351873" expanded="true" signature="74:101" ph="{...}" />
-                <marker date="1556631351873" expanded="true" signature="159:875" ph="{...}" />
-                <marker date="1556631351873" expanded="true" signature="238:250" ph="{...}" />
-                <marker date="1556631351873" expanded="true" signature="519:585" ph="{...}" />
-                <marker date="1556631351873" expanded="true" signature="615:802" ph="{...}" />
-                <marker date="1556631351873" expanded="true" signature="829:873" ph="{...}" />
+                <marker date="1556526966546" expanded="true" signature="55:196" ph="{...}" />
+                <marker date="1556526966546" expanded="true" signature="132:194" ph="{...}" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Assets/Scripts/Models/Card/Arrangement/CardArrangement.cs">
+        <entry file="file://$PROJECT_DIR$/Assets/Scripts/Views/Card/CardView.cs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="15" column="45" selection-start-line="15" selection-start-column="45" selection-end-line="15" selection-end-column="45" />
+            <state relative-caret-position="470">
+              <caret line="134" column="9" lean-forward="true" selection-start-line="134" selection-start-column="9" selection-end-line="134" selection-end-column="9" />
               <folding>
-                <marker date="1556631985999" expanded="true" signature="53:115" ph="{...}" />
-                <marker date="1556631985999" expanded="true" signature="277:702" ph="{...}" />
-                <marker date="1556631985999" expanded="true" signature="453:700" ph="{...}" />
+                <marker date="1556650315566" expanded="false" signature="6:108" ph="..." />
+                <marker date="1556650315566" expanded="true" signature="136:652" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="702:5143" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="768:780" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="1382:1435" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="1467:1519" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="1771:1943" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="1833:1937" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="2007:2338" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="2187:2332" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="2366:2654" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="2683:2843" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="2886:2932" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="2982:3046" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="3117:3162" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="3212:4459" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="3399:3541" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="3565:3711" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="4500:4556" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="4587:4628" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="4699:4789" ph="{...}" />
+                <marker date="1556650315566" expanded="true" signature="4891:5141" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Assets/Scripts/Models/GameSettings.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="270">
+              <caret line="19" column="72" selection-start-line="19" selection-start-column="72" selection-end-line="19" selection-end-column="72" />
+              <folding>
+                <marker date="1556649416044" expanded="false" signature="6:32" ph="..." />
+                <marker date="1556649416044" expanded="true" signature="59:1365" ph="{...}" />
+                <marker date="1556649416044" expanded="true" signature="88:151" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Assets/Scripts/Views/Card/CardFaceView.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="315">
+              <caret line="21" column="1" lean-forward="true" selection-start-line="21" selection-start-column="1" selection-end-line="21" selection-end-column="1" />
+              <folding>
+                <marker date="1556648013859" expanded="true" signature="50:117" ph="{...}" />
+                <marker date="1556648013859" expanded="true" signature="175:408" ph="{...}" />
+                <marker date="1556648013859" expanded="true" signature="261:317" ph="{...}" />
+                <marker date="1556648013859" expanded="true" signature="360:406" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -389,6 +169,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/3B14123E-EC64-49DC-BDCE-6FE247C0F416/27/004c348b/SpriteRenderer.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/3B14123E-EC64-49DC-BDCE-6FE247C0F416/ba/a936babc/ScriptableObject.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Plugins/UniRx/Scripts/Observer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Views/Card/CardFaceView.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Views/Board/SeaView.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Models/Slot/SlotResource.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Factories/CardFactory.cs" root0="FORCE_HIGHLIGHTING" />
@@ -438,11 +219,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/Assets/Scripts/Views/Card/CardResourceView.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Controllers/Card/CardResourceController.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Controllers/Card/CardMerchantController.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Controllers/Card/CardFoeController.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Models/GameSettings.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Controllers/OceanController.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Controllers/ShipController.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Models/Ship/ShipPlayer.cs" />
@@ -455,7 +231,6 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/Factories/OceanFactory.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Models/Card/ICard.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Models/Card/CardType.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Views/Ship/ShipView.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Views/Board/BoardView.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Controllers/BoardController.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Controllers/Ship/ShipController.cs" />
@@ -487,8 +262,14 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/Models/Card/Arrangement/ICardArrangement.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Controllers/SlotController.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Controllers/SeaController.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Views/Card/CardView.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Models/Card/Arrangement/CardArrangement.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Views/Board/BoardCamera.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Views/Board/SeaView.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Views/Ship/ShipPirateView.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Views/Ship/ShipView.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Views/Card/CardFaceView.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Models/GameSettings.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Views/Card/CardView.cs" />
       </list>
     </option>
   </component>
@@ -508,7 +289,7 @@
       <pane id="SolutionExplorer">
         <option name="show-all-files" value="false" />
       </pane>
-      <pane id="AssemblyExplorer" />
+      <pane id="FileSystemExplorer" />
       <pane id="UnityExplorer">
         <subPane>
           <expand>
@@ -644,7 +425,7 @@
         <option name="show-hidden-items" value="false" />
         <option name="show-project-names" value="true" />
       </pane>
-      <pane id="FileSystemExplorer" />
+      <pane id="AssemblyExplorer" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -693,12 +474,13 @@
       <workItem from="1555577949969" duration="46616000" />
       <workItem from="1555942429623" duration="91824000" />
       <workItem from="1556483387156" duration="35133000" />
-      <workItem from="1556607569851" duration="12436000" />
+      <workItem from="1556607569851" duration="12623000" />
+      <workItem from="1556634778665" duration="4208000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="237072000" />
+    <option name="totallyTimeSpent" value="241467000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -713,7 +495,7 @@
     <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1929182" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1953602" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Capture Tool" order="3" />
@@ -767,24 +549,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Factories/IDeckFactory.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <marker date="1556572326322" expanded="true" signature="70:74" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Factories/IBoardFactory.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <marker date="1556572338544" expanded="true" signature="77:81" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/Factories/IShipFactory.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -858,18 +622,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Models/GameSettings.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="3" column="13" selection-start-line="3" selection-start-column="13" selection-end-line="3" selection-end-column="13" />
-          <folding>
-            <marker date="1556492045532" expanded="false" signature="6:32" ph="..." />
-            <marker date="1556492045532" expanded="true" signature="59:1359" ph="{...}" />
-            <marker date="1556492045532" expanded="true" signature="88:151" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/Models/Ship/ShipMerchant.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
@@ -906,24 +658,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Views/Ship/ShipView.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="456">
-          <caret line="42" column="34" selection-start-line="42" selection-start-column="34" selection-end-line="42" selection-end-column="34" />
-          <folding>
-            <marker date="1556575791685" expanded="false" signature="6:37" ph="..." />
-            <marker date="1556575791685" expanded="true" signature="65:388" ph="{...}" />
-            <marker date="1556575791685" expanded="true" signature="447:1887" ph="{...}" />
-            <marker date="1556575791685" expanded="true" signature="819:986" ph="{...}" />
-            <marker date="1556575791685" expanded="true" signature="876:980" ph="{...}" />
-            <marker date="1556575791685" expanded="true" signature="1066:1113" ph="{...}" />
-            <marker date="1556575791685" expanded="true" signature="1218:1475" ph="{...}" />
-            <marker date="1556575791685" expanded="true" signature="1549:1752" ph="{...}" />
-            <marker date="1556575791685" expanded="true" signature="1788:1885" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/Controllers/BoardController.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="381">
@@ -945,21 +679,6 @@
             <marker date="1556604284762" expanded="true" signature="1230:1274" ph="{...}" />
             <marker date="1556604284762" expanded="true" signature="1332:1645" ph="{...}" />
             <marker date="1556604284762" expanded="true" signature="1405:1639" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Views/Board/BoardCamera.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <marker date="1556259730778" expanded="false" signature="6:52" ph="..." />
-            <marker date="1556259730778" expanded="true" signature="78:222" ph="{...}" />
-            <marker date="1556259730778" expanded="true" signature="289:1784" ph="{...}" />
-            <marker date="1556259730778" expanded="true" signature="591:637" ph="{...}" />
-            <marker date="1556259730778" expanded="true" signature="667:1222" ph="{...}" />
-            <marker date="1556259730778" expanded="true" signature="1282:1571" ph="{...}" />
-            <marker date="1556259730778" expanded="true" signature="1630:1782" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -987,13 +706,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Models/Card/Organizer/CardOrganizerSea.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" selection-start-line="2" selection-end-line="11" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Models/Card/Organizer/CardOrganizerSea.cs" />
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/Views/Slot/SlotView.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="600">
@@ -1231,21 +944,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Views/Board/SeaView.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
-          <folding>
-            <marker date="1556627273716" expanded="false" signature="6:86" ph="..." />
-            <marker date="1556627273716" expanded="true" signature="113:269" ph="{...}" />
-            <marker date="1556627273716" expanded="true" signature="317:2204" ph="{...}" />
-            <marker date="1556627273716" expanded="true" signature="922:968" ph="{...}" />
-            <marker date="1556627273716" expanded="true" signature="1019:1429" ph="{...}" />
-            <marker date="1556627273716" expanded="true" signature="1530:2202" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/Controllers/Card/CardResourceController.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="345">
@@ -1266,17 +964,6 @@
           <folding>
             <marker date="1556526978294" expanded="true" signature="60:201" ph="{...}" />
             <marker date="1556526978294" expanded="true" signature="137:199" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Views/Card/CardFoeView.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
-          <folding>
-            <marker date="1556526966546" expanded="true" signature="55:196" ph="{...}" />
-            <marker date="1556526966546" expanded="true" signature="132:194" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -1311,12 +998,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Models/Card/Arrangement/ICardArrangement.cs" />
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/Models/Slot/Slot.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="669">
+        <state relative-caret-position="1230">
           <caret line="86" column="9" selection-start-line="86" selection-start-column="9" selection-end-line="86" selection-end-column="9" />
           <folding>
-            <marker date="1556628980775" expanded="true" signature="6:98" ph="..." />
+            <marker date="1556628980775" expanded="false" signature="6:98" ph="..." />
             <marker date="1556628980775" expanded="true" signature="128:314" ph="{...}" />
             <marker date="1556628980775" expanded="true" signature="338:917" ph="{...}" />
             <marker date="1556628980775" expanded="true" signature="953:2701" ph="{...}" />
@@ -1333,13 +1021,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Models/Card/Arrangement/ICardArrangement.cs">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/Controllers/SlotController.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="780">
-          <caret line="56" column="62" lean-forward="true" selection-start-line="56" selection-start-column="62" selection-end-line="56" selection-end-column="62" />
+          <caret line="56" column="62" selection-start-line="56" selection-start-column="62" selection-end-line="56" selection-end-column="62" />
           <folding>
             <marker date="1556630371465" expanded="false" signature="6:79" ph="..." />
             <marker date="1556630371465" expanded="true" signature="113:160" ph="{...}" />
@@ -1357,8 +1042,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/Models/Card/Card.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="735">
-          <caret line="86" column="38" lean-forward="true" selection-start-line="86" selection-start-column="38" selection-end-line="86" selection-end-column="38" />
+        <state relative-caret-position="1260">
+          <caret line="86" column="38" selection-start-line="86" selection-start-column="38" selection-end-line="86" selection-end-column="38" />
           <folding>
             <marker date="1556627983723" expanded="false" signature="6:45" ph="..." />
             <marker date="1556627983723" expanded="true" signature="75:178" ph="{...}" />
@@ -1380,7 +1065,7 @@
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/Models/Board/Sea.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="615">
-          <caret line="44" column="27" lean-forward="true" selection-start-line="44" selection-start-column="27" selection-end-line="44" selection-end-column="27" />
+          <caret line="44" column="27" selection-start-line="44" selection-start-column="27" selection-end-line="44" selection-end-column="27" />
           <folding>
             <marker date="1556627881907" expanded="false" signature="6:60" ph="..." />
             <marker date="1556627881907" expanded="true" signature="83:249" ph="{...}" />
@@ -1397,10 +1082,41 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Views/Board/SeaView.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="36" lean-forward="true" selection-start-line="36" selection-end-line="36" />
+          <folding>
+            <marker date="1556635435805" expanded="false" signature="6:86" ph="..." />
+            <marker date="1556635435805" expanded="true" signature="113:269" ph="{...}" />
+            <marker date="1556635435805" expanded="true" signature="317:2206" ph="{...}" />
+            <marker date="1556635435805" expanded="true" signature="922:968" ph="{...}" />
+            <marker date="1556635435805" expanded="true" signature="1019:1431" ph="{...}" />
+            <marker date="1556635435805" expanded="true" signature="1532:2204" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Views/Board/BoardCamera.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="10" column="1" lean-forward="true" selection-start-line="10" selection-start-column="1" selection-end-line="10" selection-end-column="1" />
+          <folding>
+            <marker date="1556634885114" expanded="false" signature="6:52" ph="..." />
+            <marker date="1556634885114" expanded="true" signature="78:222" ph="{...}" />
+            <marker date="1556634885114" expanded="true" signature="289:1898" ph="{...}" />
+            <marker date="1556634885114" expanded="true" signature="591:637" ph="{...}" />
+            <marker date="1556634885114" expanded="true" signature="667:1336" ph="{...}" />
+            <marker date="1556634885114" expanded="true" signature="1396:1685" ph="{...}" />
+            <marker date="1556634885114" expanded="true" signature="1744:1896" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/Controllers/SeaController.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="225">
-          <caret line="17" column="32" lean-forward="true" selection-start-line="17" selection-start-column="32" selection-end-line="17" selection-end-column="32" />
+          <caret line="17" column="32" selection-start-line="17" selection-start-column="32" selection-end-line="17" selection-end-column="32" />
           <folding>
             <marker date="1556631351873" expanded="false" signature="6:41" ph="..." />
             <marker date="1556631351873" expanded="true" signature="74:101" ph="{...}" />
@@ -1413,43 +1129,109 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Views/Card/CardView.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="394">
-          <caret line="77" column="37" selection-start-line="77" selection-start-column="37" selection-end-line="77" selection-end-column="37" />
-          <folding>
-            <marker date="1556627086763" expanded="false" signature="6:108" ph="..." />
-            <marker date="1556627086763" expanded="true" signature="136:652" ph="{...}" />
-            <marker date="1556627086763" expanded="true" signature="702:4052" ph="{...}" />
-            <marker date="1556627086763" expanded="true" signature="768:780" ph="{...}" />
-            <marker date="1556627086763" expanded="true" signature="1339:1400" ph="{...}" />
-            <marker date="1556627086763" expanded="true" signature="1432:1492" ph="{...}" />
-            <marker date="1556627086763" expanded="true" signature="1744:1916" ph="{...}" />
-            <marker date="1556627086763" expanded="true" signature="1806:1910" ph="{...}" />
-            <marker date="1556627086763" expanded="true" signature="1980:2311" ph="{...}" />
-            <marker date="1556627086763" expanded="true" signature="2160:2305" ph="{...}" />
-            <marker date="1556627086763" expanded="true" signature="2339:2491" ph="{...}" />
-            <marker date="1556627086763" expanded="true" signature="2520:2570" ph="{...}" />
-            <marker date="1556627086763" expanded="true" signature="2613:2659" ph="{...}" />
-            <marker date="1556627086763" expanded="true" signature="2709:2773" ph="{...}" />
-            <marker date="1556627086763" expanded="true" signature="2844:2889" ph="{...}" />
-            <marker date="1556627086763" expanded="true" signature="2939:3529" ph="{...}" />
-            <marker date="1556627086763" expanded="true" signature="3050:3147" ph="{...}" />
-            <marker date="1556627086763" expanded="true" signature="3570:3626" ph="{...}" />
-            <marker date="1556627086763" expanded="true" signature="3657:3698" ph="{...}" />
-            <marker date="1556627086763" expanded="true" signature="3800:4050" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/Models/Card/Arrangement/CardArrangement.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="15" column="45" selection-start-line="15" selection-start-column="45" selection-end-line="15" selection-end-column="45" />
+        <state relative-caret-position="315">
+          <caret line="21" column="5" selection-start-line="21" selection-start-column="5" selection-end-line="21" selection-end-column="5" />
           <folding>
             <marker date="1556631985999" expanded="true" signature="53:115" ph="{...}" />
             <marker date="1556631985999" expanded="true" signature="277:702" ph="{...}" />
             <marker date="1556631985999" expanded="true" signature="453:700" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Views/Ship/ShipPirateView.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="33" lean-forward="true" selection-start-column="33" selection-end-column="33" />
+          <folding>
+            <marker date="1556635691676" expanded="true" signature="38:47" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Views/Ship/ShipView.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="25" column="10" lean-forward="true" selection-start-line="25" selection-start-column="10" selection-end-line="25" selection-end-column="10" />
+          <folding>
+            <marker date="1556575791685" expanded="false" signature="6:37" ph="..." />
+            <marker date="1556575791685" expanded="true" signature="65:388" ph="{...}" />
+            <marker date="1556575791685" expanded="true" signature="447:1887" ph="{...}" />
+            <marker date="1556575791685" expanded="true" signature="819:986" ph="{...}" />
+            <marker date="1556575791685" expanded="true" signature="876:980" ph="{...}" />
+            <marker date="1556575791685" expanded="true" signature="1066:1113" ph="{...}" />
+            <marker date="1556575791685" expanded="true" signature="1218:1475" ph="{...}" />
+            <marker date="1556575791685" expanded="true" signature="1549:1752" ph="{...}" />
+            <marker date="1556575791685" expanded="true" signature="1788:1885" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Views/Card/CardFoeView.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="32" selection-start-line="2" selection-start-column="32" selection-end-line="2" selection-end-column="32" />
+          <folding>
+            <marker date="1556526966546" expanded="true" signature="55:196" ph="{...}" />
+            <marker date="1556526966546" expanded="true" signature="132:194" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Views/Card/CardFaceView.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="315">
+          <caret line="21" column="1" lean-forward="true" selection-start-line="21" selection-start-column="1" selection-end-line="21" selection-end-column="1" />
+          <folding>
+            <marker date="1556648013859" expanded="true" signature="50:117" ph="{...}" />
+            <marker date="1556648013859" expanded="true" signature="175:408" ph="{...}" />
+            <marker date="1556648013859" expanded="true" signature="261:317" ph="{...}" />
+            <marker date="1556648013859" expanded="true" signature="360:406" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Models/GameSettings.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="19" column="72" selection-start-line="19" selection-start-column="72" selection-end-line="19" selection-end-column="72" />
+          <folding>
+            <marker date="1556649416044" expanded="false" signature="6:32" ph="..." />
+            <marker date="1556649416044" expanded="true" signature="59:1365" ph="{...}" />
+            <marker date="1556649416044" expanded="true" signature="88:151" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Views/Card/CardView.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="470">
+          <caret line="134" column="9" lean-forward="true" selection-start-line="134" selection-start-column="9" selection-end-line="134" selection-end-column="9" />
+          <folding>
+            <marker date="1556650315566" expanded="false" signature="6:108" ph="..." />
+            <marker date="1556650315566" expanded="true" signature="136:652" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="702:5143" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="768:780" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="1382:1435" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="1467:1519" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="1771:1943" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="1833:1937" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="2007:2338" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="2187:2332" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="2366:2654" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="2683:2843" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="2886:2932" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="2982:3046" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="3117:3162" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="3212:4459" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="3399:3541" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="3565:3711" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="4500:4556" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="4587:4628" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="4699:4789" ph="{...}" />
+            <marker date="1556650315566" expanded="true" signature="4891:5141" ph="{...}" />
           </folding>
         </state>
       </provider>

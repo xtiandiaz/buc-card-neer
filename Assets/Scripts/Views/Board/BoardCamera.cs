@@ -33,7 +33,9 @@ public class BoardCamera : MonoBehaviour, ICamera, IInitializable
         camera = GetComponent<Camera>();
         
         var thisTransform = transform;
-        var desiredViewWidth = settings.CardSize.x * settings.VisibleCardCountPerRow + settings.BoardMargins.x * 2f;
+        var desiredViewWidth = (settings.CardSize.x + settings.CardSpacing.x) * settings.VisibleCardCountPerRow
+                               - settings.CardSpacing.x
+                               + settings.BoardMargins.x * 2f;
         
         thisTransform.position = new Vector3(
             0, 

@@ -812,6 +812,7 @@
               <e p="SeaView.cs" t="Include" />
             </e>
             <e p="Card" t="Include">
+              <e p="CardFaceView.cs" t="Include" />
               <e p="CardFoeView.cs" t="Include" />
               <e p="CardMerchantView.cs" t="Include" />
               <e p="CardResourceView.cs" t="Include" />
