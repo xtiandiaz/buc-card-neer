@@ -7,7 +7,7 @@ public enum CardType
 {
     Player     = 1 << 0,
     Resource   = 1 << 1,
-    Foe        = 1 << 2,
+    Pirate        = 1 << 2,
     Merchant   = 1 << 3
 }
 
@@ -36,7 +36,6 @@ public interface ICard
     IObservable<bool> BecameVisible { get; }
     IObservable<Vector3> ChangedLocalPosition { get; }
     
-    void Initialize();
     void Pick();
     void Drop(Vector3 atPosition);
     void Flip(CardFace to);
@@ -57,10 +56,10 @@ public abstract class Card : ScriptableObject, ICard
     private readonly Subject<Transform> lodged = new Subject<Transform>();
 
     public abstract int Value { get; }
+    public abstract CardType Type { get; }
     public abstract CardType InteractionMask { get; }
     public string Name => name;
     public CardFace Face => face.Value;
-    public CardType Type { get; private set; }
     
     public Vector3 LocalPosition
     {
@@ -83,13 +82,6 @@ public abstract class Card : ScriptableObject, ICard
     public IObservable<CardFace> ChangedFace => face.DistinctUntilChanged();
     public IObservable<bool> BecameVisible => isVisible;
     public IObservable<Vector3> ChangedLocalPosition => localPosition;
-    
-    public abstract void Initialize();
-
-    protected void Initialize(CardType withType)
-    {        
-        Type = withType;
-    }
 
     public void Pick()
     {
@@ -113,10 +105,6 @@ public abstract class Card : ScriptableObject, ICard
 
     public ICard Clone()
     {
-        var clone = Instantiate(this);
-        
-        clone.Initialize();
-
-        return clone;
+        return Instantiate(this);
     }
 }

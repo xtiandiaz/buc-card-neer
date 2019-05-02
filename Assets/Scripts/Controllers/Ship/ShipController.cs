@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -14,10 +13,6 @@ public class ShipController : IShipController, IDisposable
     public class Factory : PlaceholderFactory<IShip, IShipView, ShipController>
     {
     }
-    
-    private const float DockingDurationInSeconds = 1f;
-    private const float DockingDelayInSeconds = 1f;
-    private const float SailingDurationInSeconds = 1f;
     
     private readonly IShip model;
     private readonly IShipView view;
@@ -34,9 +29,8 @@ public class ShipController : IShipController, IDisposable
         var viewHidingPosition = Vector3.up * (view.ViewportHeight + view.Height * 0.5f);
         
         disposables.Add(model.Lodged.Subscribe(OnLodged));
-        disposables.Add(model.Docked.Subscribe(atPosition =>
-            view.Dock(atPosition, DockingDurationInSeconds, DockingDelayInSeconds)));
-        disposables.Add(model.Sailed.Subscribe(_ => view.SetSail(viewHidingPosition, SailingDurationInSeconds)));
+        disposables.Add(model.Docked.Subscribe(atPosition => view.Dock(atPosition)));
+        disposables.Add(model.Sailed.Subscribe(_ => view.SetSail(viewHidingPosition)));
     }
 
     public void Dispose()

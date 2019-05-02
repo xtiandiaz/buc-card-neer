@@ -10,5 +10,5 @@ public class SlotBoarding : Slot
     {
     }
 
-    public override CardType EntryMask => CardType.Foe | CardType.Merchant | CardType.Resource;
+    public override CardType EntryMask => CardType.Pirate | CardType.Merchant | CardType.Resource;
 }

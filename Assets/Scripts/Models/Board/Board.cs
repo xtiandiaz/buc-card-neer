@@ -24,7 +24,6 @@ public interface IBoard
     IObservable<(ICard, Vector3)> CardDropped { get; }
     IObservable<BoardMode> ModeChanged { get; }
 
-    void Initialize();
     void Deal();
 }
 
@@ -44,6 +43,15 @@ public class Board : IBoard
         Decks = decks;
 
         eventDeck = Decks.FirstOrDefault(d => d.Type == DeckType.Events);
+        
+        ShipPlayer = (ShipPlayer) Ships.First(s => s.Type == ShipType.Player);
+        ShipMerchant = (ShipMerchant) Ships.First(s => s.Type == ShipType.Merchant);
+        ShipPirate = (ShipPirate) Ships.First(s => s.Type == ShipType.Pirate);
+        
+        var playSlots = ShipPlayer.Slots.ToList();
+        playSlots.AddRange(Sea.Slots);
+        
+        PlaySlots = playSlots.ToArray();
     }
     
     public BoardMode Mode
@@ -68,18 +76,6 @@ public class Board : IBoard
     public ShipPlayer ShipPlayer { get; private set; }
     public ShipMerchant ShipMerchant { get; private set; }
     public ShipPirate ShipPirate { get; private set; }
-
-    public void Initialize()
-    {
-        ShipPlayer = (ShipPlayer) Ships.First(s => s.Type == ShipType.Player);
-        ShipMerchant = (ShipMerchant) Ships.First(s => s.Type == ShipType.Merchant);
-        ShipPirate = (ShipPirate) Ships.First(s => s.Type == ShipType.Pirate);
-        
-        var playSlots = ShipPlayer.Slots.ToList();
-        playSlots.AddRange(Sea.Slots);
-        
-        PlaySlots = playSlots.ToArray();
-    }
 
     public void Deal()
     {

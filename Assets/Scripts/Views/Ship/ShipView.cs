@@ -9,8 +9,8 @@ public interface IShipView
     Vector3 Position { get; set; }
     ISlotView[] Slots { get; }
 
-    void Dock(Vector3 atLocalPosition, float withDurationInSeconds, float andDelayInSeconds = 0);
-    void SetSail(Vector3 toPosition, float withDurationInSeconds);
+    void Dock(Vector3 atLocalPosition);
+    void SetSail(Vector3 toLocalPosition);
 }
 
 public abstract class ShipView : MonoBehaviour, IShipView
@@ -18,9 +18,10 @@ public abstract class ShipView : MonoBehaviour, IShipView
     [SerializeField] private ShipType type;
     [SerializeField] private float height;
     [SerializeField] private SlotView[] slots;
+    [SerializeField] private ShipAnimationSettings animatorSettings;
 
     private Transform thisTransform;
-    private Sequence transitionSequence;
+    private IShipAnimator animator;
 
     public ShipType Type => type;
     public float Height => height;
@@ -31,42 +32,28 @@ public abstract class ShipView : MonoBehaviour, IShipView
         get => thisTransform.position;
         set
         {
-            transitionSequence?.Kill();
+            animator.KillMove();
             thisTransform.position = value;
         }
     }
     
     public ISlotView[] Slots => slots;
 
-    protected virtual void Awake()
+    private void Awake()
     {
         thisTransform = transform;
-    }
-
-    public void Dock(Vector3 atLocalPosition, float withDurationInSeconds, float andDelayInSeconds = 0)
-    {
-        ClearTransition();
-
-        transitionSequence.Join(
-            transform.DOLocalMove(atLocalPosition, withDurationInSeconds));
-
-        transitionSequence.SetDelay(andDelayInSeconds);
-        transitionSequence.SetEase(Ease.OutQuart);
-    }
-
-    public void SetSail(Vector3 toPosition, float withDurationInSeconds)
-    {
-        ClearTransition();
         
-        transitionSequence.Join(
-            transform.DOLocalMove(toPosition, withDurationInSeconds));
-
-        transitionSequence.SetEase(Ease.InQuart);
+        animator = GetComponent<IShipAnimator>() ?? gameObject.AddComponent<ShipAnimator>();
+        animator.Initialize(animatorSettings);
     }
 
-    private void ClearTransition()
+    public void Dock(Vector3 atLocalPosition)
     {
-        transitionSequence?.Kill();
-        transitionSequence = DOTween.Sequence();
+        animator.Dock(atLocalPosition);
+    }
+
+    public void SetSail(Vector3 toLocalPosition)
+    {
+        animator.SetSail(toLocalPosition);
     }
 }

@@ -734,6 +734,11 @@
           </e>
         </e>
         <e p="Scripts" t="Include">
+          <e p="Components" t="Include">
+            <e p="CardAnimator.cs" t="Include" />
+            <e p="DraggingManager.cs" t="Include" />
+            <e p="ShipAnimator.cs" t="Include" />
+          </e>
           <e p="Controllers" t="Include">
             <e p="BoardController.cs" t="Include" />
             <e p="Card" t="Include">
@@ -766,10 +771,6 @@
             <e p="SlotFactory.cs" t="Include" />
           </e>
           <e p="Installer.cs" t="Include" />
-          <e p="Managers" t="Include">
-            <e p="CardInteractionManager.cs" t="Include" />
-            <e p="DraggingManager.cs" t="Include" />
-          </e>
           <e p="Models" t="Include">
             <e p="Board" t="Include">
               <e p="Board.cs" t="Include" />
@@ -780,8 +781,8 @@
                 <e p="CardArrangement.cs" t="Include" />
               </e>
               <e p="Card.cs" t="Include" />
-              <e p="CardFoe.cs" t="Include" />
               <e p="CardMerchant.cs" t="Include" />
+              <e p="CardPirate.cs" t="Include" />
               <e p="CardResource.cs" t="Include" />
             </e>
             <e p="Deck.cs" t="Include" />
@@ -789,6 +790,10 @@
             <e p="GamePalette.cs" t="Include" />
             <e p="GameSettings.cs" t="Include" />
             <e p="GameState.cs" t="Include" />
+            <e p="Settings" t="Include">
+              <e p="CardAnimationSettings.cs" t="Include" />
+              <e p="ShipAnimationSettings.cs" t="Include" />
+            </e>
             <e p="Ship" t="Include">
               <e p="Ship.cs" t="Include" />
               <e p="ShipMerchant.cs" t="Include" />

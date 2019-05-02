@@ -549,6 +549,8 @@ MonoBehaviour:
   camera: {fileID: 534669906}
   palette: {fileID: 5523121}
   boardView: {fileID: 1969069925}
+  cardAnimationSettings: {fileID: 11400000, guid: 82c18c688b13c467c9b2c21f495c904d,
+    type: 2}
 --- !u!4 &278240158
 Transform:
   m_ObjectHideFlags: 0
@@ -690,6 +692,7 @@ MonoBehaviour:
   type: 1
   height: 8.5
   slots: []
+  animatorSettings: {fileID: 11400000, guid: 82ca78fe7b49d43118f65abbebefc582, type: 2}
 --- !u!114 &463998803 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4629558531078662713, guid: 2fbe541c3947b49e9898dc04ca06b96e,
@@ -2109,6 +2112,7 @@ MonoBehaviour:
   - {fileID: 463998803}
   - {fileID: 627679443}
   - {fileID: 1120951110}
+  animatorSettings: {fileID: 11400000, guid: 82ca78fe7b49d43118f65abbebefc582, type: 2}
 --- !u!4 &1586207630
 Transform:
   m_ObjectHideFlags: 0
@@ -2528,6 +2532,7 @@ MonoBehaviour:
   type: 2
   height: 11.5
   slots: []
+  animatorSettings: {fileID: 11400000, guid: 82ca78fe7b49d43118f65abbebefc582, type: 2}
 --- !u!1 &1851111357
 GameObject:
   m_ObjectHideFlags: 0
@@ -2725,7 +2730,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   decks:
-  - {fileID: 11400000, guid: 7f21ab33bce044d228aaa4fa9caa33f0, type: 2}
+  - {fileID: 11400000, guid: 69ff2cd9b1ffa47b1a4c98f3c721c4b6, type: 2}
   sea: {fileID: 1851111359}
   shipPlayer: {fileID: 1586207629}
   shipMerchant: {fileID: 1799396279}

@@ -34,9 +34,9 @@ public class CardFactory : ICardFactory
     {
         switch (forModel.Type)
         {
-            case CardType.Foe:
+            case CardType.Pirate:
                 
-                return controllerFactoryFoe.Create((CardFoe) forModel, (CardFoeView) andView);
+                return controllerFactoryFoe.Create((CardPirate) forModel, (CardFoeView) andView);
             
             case CardType.Merchant:
                 

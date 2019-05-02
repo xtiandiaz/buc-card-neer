@@ -4,8 +4,17 @@ using UniRx.Triggers;
 using UnityEngine;
 using Zenject;
 
+public interface IDraggingManager
+{
+    IObservable<Unit> DragStarted { get; }
+    IObservable<Vector3> Dragged { get; }
+    IObservable<Vector3> DragEnded { get; }
+    
+    void ToggleDragging(bool on);
+}
+
 [RequireComponent(typeof(Collider2D))]
-public class DraggingManager : MonoBehaviour
+public class DraggingManager : MonoBehaviour, IDraggingManager
 {
     private readonly Subject<Unit> dragStarted = new Subject<Unit>();
     private readonly Subject<Vector3> dragged = new Subject<Vector3>();

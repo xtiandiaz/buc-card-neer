@@ -10,6 +10,9 @@ public class Installer : MonoInstaller
     [Header("Board")] 
     [SerializeField] private BoardView boardView;
 
+    [Header("Settings")] 
+    [SerializeField] private CardAnimationSettings cardAnimationSettings;
+
     public override void InstallBindings()
     {
         // Main factories
@@ -46,7 +49,7 @@ public class Installer : MonoInstaller
         Container.BindFactory<uint, SlotResource, SlotResource.Factory>();
         Container.BindFactory<ISlot, ISlotView, SlotController, SlotController.Factory>().AsSingle();
 
-        Container.BindFactory<CardFoe, CardFoeView, CardFoeController, CardFoeController.Factory>().AsSingle();
+        Container.BindFactory<CardPirate, CardFoeView, CardFoeController, CardFoeController.Factory>().AsSingle();
         Container.BindFactory<CardMerchant, CardMerchantView, CardMerchantController, CardMerchantController.Factory>()
             .AsSingle();
         Container.BindFactory<CardResource, CardResourceView, CardResourceController, CardResourceController.Factory>()
@@ -56,6 +59,9 @@ public class Installer : MonoInstaller
         // Board 
         Container.BindInterfacesAndSelfTo<BoardCamera>().FromInstance(camera).AsSingle();
         Container.BindInterfacesAndSelfTo<BoardView>().FromInstance(boardView).AsSingle();
+        
+        // Extras
+        Container.Bind<CardAnimationSettings>().FromInstance(cardAnimationSettings);
         
         // Game
         Container.Bind<GameSettings>().AsSingle();

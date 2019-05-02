@@ -66,7 +66,7 @@ public class BoardController : IBoardController, IDisposable
     {
         switch (withCard.Type)
         {
-            case CardType.Foe:
+            case CardType.Pirate:
                 
                 model.Sea.ToggleProjection(false);
                 model.ShipPirate.Dock(view.PirateDockingPosition);

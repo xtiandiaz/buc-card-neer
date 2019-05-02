@@ -23,18 +23,17 @@ public class BoardFactory : IBoardFactory
         this.deckFactory = deckFactory;
     }
     
-    public IBoard Create(IBoardView forModel)
+    public IBoard Create(IBoardView fromView)
     {
-        forModel.Initialize();
+        fromView.Initialize();
         
         var model = modelFactory.Create(
-            seaFactory.Create(forModel.Sea),
-            forModel.Ships.Select(sv => shipFactory.Create(sv)).ToArray(),
-            forModel.Decks.Select(d => deckFactory.Create(d)).ToArray());
+            seaFactory.Create(fromView.Sea),
+            fromView.Ships.Select(sv => shipFactory.Create(sv)).ToArray(),
+            fromView.Decks.Select(d => deckFactory.Create(d)).ToArray());
         
-        model.Initialize();
+        var controller = controllerFactory.Create(model, fromView);
         
-        var controller = controllerFactory.Create(model, forModel);
         controller.Initialize();
         
         return model;

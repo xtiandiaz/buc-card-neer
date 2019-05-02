@@ -31,7 +31,6 @@ public class SlotFactory : ISlotFactory
         var model = CreateModel(forModel.Type, forModel.Capacity);
         var controller = controllerFactory.Create(model, forModel);
         
-        model.Initialize();
         controller.Initialize();
 
         return model;

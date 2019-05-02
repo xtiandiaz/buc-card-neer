@@ -31,7 +31,6 @@ public interface ISlot
     IObservable<bool> BecameHighlighted { get; }
     IObservable<bool> BecameVisible { get; }
 
-    void Initialize();
     bool CanLodge(ICard card);
     void Lodge(ICard card);
     void Release(ICard card);
@@ -71,10 +70,6 @@ public abstract class Slot : ISlot
     public IObservable<ICard> Lodged => lodged;
     public IObservable<bool> BecameHighlighted => highlighted.DistinctUntilChanged();
     public IObservable<bool> BecameVisible => isVisible;
-
-    public void Initialize()
-    {
-    }
 
     public bool CanLodge(ICard card)
     {

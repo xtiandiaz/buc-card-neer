@@ -170,7 +170,6 @@ GameObject:
   - component: {fileID: 4141944539622565620}
   - component: {fileID: 4107266590706619294}
   - component: {fileID: 8484668480346012549}
-  - component: {fileID: 4392323036171971475}
   m_Layer: 0
   m_Name: CardMerchant
   m_TagString: Untagged
@@ -219,10 +218,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textSortingOrder: 0
   textRenderers: []
+  contentWrapper: {fileID: 0}
   sortingGroup: {fileID: 4141944539622565620}
-  frontFaceRenderer: {fileID: 5816174328690173628}
-  backFaceRenderer: {fileID: 5304362483095993766}
-  draggingManager: {fileID: 4392323036171971475}
+  frontFace: {fileID: 0}
+  backFace: {fileID: 0}
 --- !u!61 &8484668480346012549
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -249,15 +248,3 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2.5, y: 3.5}
   m_EdgeRadius: 0
---- !u!114 &4392323036171971475
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4639396434572544147}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3dd88dbf2bc348d786d80b9163d22ca3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

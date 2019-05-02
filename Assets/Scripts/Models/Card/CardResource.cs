@@ -16,12 +16,9 @@ public class CardResource : Card
     [SerializeField] private ResourceType type;
     [SerializeField] private int value;
 
-    public override CardType InteractionMask => CardType.Foe | CardType.Merchant | CardType.Player;
     public override int Value => value;
-
-    public override void Initialize()
-    {
-        base.Initialize(CardType.Resource);
-    }
+    public override CardType Type => CardType.Resource;
+    public override CardType InteractionMask => CardType.Pirate | CardType.Merchant | CardType.Player;
+    public ResourceType ResourceType => type;
 
 }
