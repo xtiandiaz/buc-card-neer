@@ -1,29 +1,31 @@
 ﻿using DG.Tweening;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using Zenject;
 
 public interface ICamera
-{    
-    Rect GetFrustumRect(float forTargetCoordinateZ);
+{
     Vector3 GetWorldPoint(Vector2 fromScreenPoint);
 }
 
-public class BoardCamera : MonoBehaviour, ICamera
+public class BoardCamera : MonoBehaviour, ICamera, IViewportProvider, IWorldPointProvider
 {
     [SerializeField] private Camera[] supportingCameras;
     
     private new Camera camera;
-    private Tween scrollingTween;
+    private BoardLayoutSettings layoutSettings;
 
-    public void Initialize(BoardLayoutSettings withLayoutSettings)
+    [Inject]
+    public void Construct(BoardLayoutSettings withLayoutSettings)
     {
+        layoutSettings = withLayoutSettings;
         camera = GetComponent<Camera>();
         
         var thisTransform = transform;
-        var desiredViewWidth = (withLayoutSettings.CardSize.x + withLayoutSettings.CardSpacing.x) 
-                               * withLayoutSettings.MaxCardCountInRow
-                               - withLayoutSettings.CardSpacing.x
-                               + withLayoutSettings.Margins.x * 2f;
+        var desiredViewWidth = (layoutSettings.CardSize.x + layoutSettings.CardSpacing.x) 
+                               * layoutSettings.MaxCardCountInRow
+                               - layoutSettings.CardSpacing.x
+                               + layoutSettings.Margins.x * 2f;
         
         thisTransform.position = new Vector3(
             0, 
@@ -34,12 +36,12 @@ public class BoardCamera : MonoBehaviour, ICamera
             supportCamera.transform.position = thisTransform.position;
     }
 
-    public Rect GetFrustumRect(float forTargetCoordinateZ)
+    public Viewport GetViewport(float atDepth)
     {
-        var distance = Mathf.Abs(camera.transform.localPosition.z - forTargetCoordinateZ);
+        var distance = Mathf.Abs(camera.transform.localPosition.z - atDepth);
         var frustumHeight = 2.0f * distance * Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad);
         
-        return new Rect(0, 0, frustumHeight * camera.aspect, frustumHeight);
+        return new Viewport(frustumHeight * camera.aspect, frustumHeight);
     }
 
     public Vector3 GetWorldPoint(Vector2 fromScreenPoint)

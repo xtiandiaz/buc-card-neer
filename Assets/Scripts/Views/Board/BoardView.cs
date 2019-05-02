@@ -28,16 +28,18 @@ public class BoardView : MonoBehaviour, IBoardView
     public Vector3 MerchantSailingDestination { get; private set; }
 
     [Inject]
-    private void Construct(Rect boardRect)
+    private void Construct(IViewportProvider viewportProvider)
     {
-        transform.position = Vector3.down * (boardRect.height * 0.5f);
+        var viewportHeight = viewportProvider.GetViewport(0).Size.y;
+        
+        transform.position = Vector3.down * (viewportHeight * 0.5f);
 
         shipPlayer.transform.localPosition = Vector3.up * shipPlayer.Height * 0.5f;
         sea.transform.localPosition = Vector3.up * (shipPlayer.Height + sea.Height);
 
         PirateDockingPosition = Vector3.up * (shipPlayer.Height + shipPirate.Height * 0.5f + 1f);
         MerchantDockingPosition = Vector3.up * (shipPlayer.Height + shipMerchant.Height * 0.5f);
-        PirateSailingDestination = Vector3.up * (boardRect.height + shipPirate.Height * 0.5f);
-        MerchantSailingDestination = Vector3.up * (boardRect.height + shipMerchant.Height * 0.5f);
+        PirateSailingDestination = Vector3.up * (viewportHeight + shipPirate.Height * 0.5f);
+        MerchantSailingDestination = Vector3.up * (viewportHeight + shipMerchant.Height * 0.5f);
     }
 }

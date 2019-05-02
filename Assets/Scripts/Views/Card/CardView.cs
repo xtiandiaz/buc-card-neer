@@ -18,7 +18,6 @@ public interface ICardView
     void OnDropped();
     void Flip(CardFace to, bool animated);
     void ToggleVisibility(bool on);
-    void ToggleDragging(bool on);
     void SetParent(Transform asTransform);
     void SetLocalPosition(Vector3 to, float duringSeconds);
     void Destroy();
@@ -30,7 +29,8 @@ public class CardView : MonoBehaviour, ICardView
     {
     }
 
-    [Header("Rendering")] [SerializeField] private int textSortingOrder;
+    [Header("Rendering")] 
+    [SerializeField] private int textSortingOrder;
     [SerializeField] private MeshRenderer[] textRenderers;
 
     [SerializeField] private Transform contentWrapper;
@@ -41,7 +41,6 @@ public class CardView : MonoBehaviour, ICardView
     private IDraggingManager draggingManager;
     private ICardAnimator animator;
     private BoardLayoutSettings layoutSettings;
-    private Transform thisTransform;
 
     public Sprite FrontFace
     {
@@ -59,29 +58,28 @@ public class CardView : MonoBehaviour, ICardView
 
     public Vector3 LocalPosition
     {
-        get => thisTransform.localPosition;
+        get => transform.localPosition;
         set
         {
             animator.Kill(CardAnimationType.Move);
-            thisTransform.localPosition = value;
+            transform.localPosition = value;
         }
     }
 
     [Inject]
     private void Construct(
         CardAnimationSettings animationSettings, 
-        BoardLayoutSettings layoutSettings
+        BoardLayoutSettings layoutSettings,
+        IWorldPointProvider worldPointProvider
         )
     {
         this.layoutSettings = layoutSettings;
         
         draggingManager = GetComponent<IDraggingManager>() ?? gameObject.AddComponent<DraggingManager>();
+        draggingManager.Initialize(worldPointProvider);
         
         animator = GetComponent<ICardAnimator>() ?? gameObject.AddComponent<CardAnimator>();
         animator.Initialize(animationSettings, contentWrapper);
-        
-
-        thisTransform = transform;
 
         sortingGroup.enabled = false;
 
@@ -115,7 +113,7 @@ public class CardView : MonoBehaviour, ICardView
 
     public void SetParent(Transform asTransform)
     {
-        thisTransform.SetParent(asTransform, true);
+        transform.SetParent(asTransform, true);
     }
 
     public void SetLocalPosition(Vector3 to, float duringSeconds)
@@ -130,11 +128,6 @@ public class CardView : MonoBehaviour, ICardView
             frontFace.ToggleVisibility(to == CardFace.Front);
             backFace.ToggleVisibility(to == CardFace.Back);
         });
-    }
-
-    public void ToggleDragging(bool on)
-    {
-        //draggingManager.ToggleDragging(on);
     }
 
     public void Destroy()

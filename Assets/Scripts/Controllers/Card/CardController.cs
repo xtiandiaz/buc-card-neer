@@ -55,8 +55,6 @@ public abstract class CardController : ICardController, IDisposable
         disposables.Add(view.DragStarted.Subscribe(_ => model.Pick()));
         disposables.Add(view.Dragged.Subscribe(worldPositionDelta => view.LocalPosition += worldPositionDelta));
         disposables.Add(view.DragEnded.Subscribe(dropPosition => model.Drop(dropPosition)));
-        
-        view.ToggleDragging(true);
     }
 
     public virtual void Dispose()

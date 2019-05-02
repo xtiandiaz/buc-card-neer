@@ -28,14 +28,15 @@ public class SeaView : MonoBehaviour, ISeaView
     public ISlotView[] Slots => slots;
 
     [Inject]
-    private void Construct(Rect boardRect)
+    private void Construct(IViewportProvider viewportProvider)
     {
+        var viewportHeight = viewportProvider.GetViewport(0).Size.y;
         var backgroundTransform = background.transform;
 
-        backgroundTransform.localScale = new Vector3(boardRect.height * 1.25f, boardRect.height * 1.25f, 1f);
+        backgroundTransform.localScale = new Vector3(viewportHeight * 1.25f, viewportHeight * 1.25f, 1f);
         
         oceanMaterial = background.sharedMaterial;
-        oceanMaterial.SetFloat(PivotOffset, - (Height / boardRect.height) * 0.5f);
+        oceanMaterial.SetFloat(PivotOffset, - (Height / viewportHeight) * 0.5f);
     }
 
     public void ToggleProjection(bool on, float withDurationInSeconds, float andDelayInSeconds = 0)
