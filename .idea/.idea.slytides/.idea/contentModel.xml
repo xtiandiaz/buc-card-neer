@@ -736,6 +736,7 @@
         <e p="Scripts" t="Include">
           <e p="Components" t="Include">
             <e p="CardAnimator.cs" t="Include" />
+            <e p="CardShader.cs" t="Include" />
             <e p="DraggingManager.cs" t="Include" />
             <e p="ShipAnimator.cs" t="Include" />
             <e p="UserInteractionListener.cs" t="Include" />
@@ -756,7 +757,10 @@
             </e>
             <e p="SlotController.cs" t="Include" />
           </e>
-          <e p="Extensions.cs" t="Include" />
+          <e p="Extensions" t="Include">
+            <e p="ColorExtensions.cs" t="Include" />
+            <e p="Extensions.cs" t="Include" />
+          </e>
           <e p="Factories" t="Include">
             <e p="BoardFactory.cs" t="Include" />
             <e p="CardFactory.cs" t="Include" />

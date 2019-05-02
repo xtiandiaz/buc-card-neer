@@ -1,5 +1,4 @@
 using System;
-using DG.Tweening;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -13,13 +12,16 @@ public interface ICardView
     IObservable<Unit> DragStarted { get; }
     IObservable<Vector3> Dragged { get; }
     IObservable<Vector3> DragEnded { get; }
-    
+
+    void Lodge(Vector3 atLocalPosition);
     void OnPicked();
     void OnDropped();
     void Flip(CardFace to, bool animated);
     void ToggleVisibility(bool on);
     void SetParent(Transform asTransform);
-    void SetLocalPosition(Vector3 to, float duringSeconds);
+    void Fade(float toAlphaValue);
+    void Tint(Color withColor, float byFactor);
+    void Fog(Color withColor, float byFactor);
     void Destroy();
 }
 
@@ -40,7 +42,10 @@ public class CardView : MonoBehaviour, ICardView
     
     private IDraggingManager draggingManager;
     private ICardAnimator animator;
+    private ICardShader shader;
+    private CardAnimationSettings animationSettings;
     private BoardLayoutSettings layoutSettings;
+    private Vector3 lastLodgingPosition;
 
     public Sprite FrontFace
     {
@@ -73,6 +78,7 @@ public class CardView : MonoBehaviour, ICardView
         IWorldPointProvider worldPointProvider
         )
     {
+        this.animationSettings = animationSettings;
         this.layoutSettings = layoutSettings;
         
         draggingManager = GetComponent<IDraggingManager>() ?? gameObject.AddComponent<DraggingManager>();
@@ -81,6 +87,8 @@ public class CardView : MonoBehaviour, ICardView
         animator = GetComponent<ICardAnimator>() ?? gameObject.AddComponent<CardAnimator>();
         animator.Initialize(animationSettings, contentWrapper);
 
+        shader = GetComponent<ICardShader>();
+
         sortingGroup.enabled = false;
 
         foreach (var renderer in textRenderers)
@@ -88,6 +96,11 @@ public class CardView : MonoBehaviour, ICardView
             renderer.sortingLayerName = layoutSettings.CardSortingLayerName;
             renderer.sortingOrder = textSortingOrder;
         }
+    }
+
+    public void Lodge(Vector3 atLocalPosition)
+    {
+        LocalPosition = lastLodgingPosition = atLocalPosition;
     }
 
     public void OnPicked()
@@ -101,7 +114,8 @@ public class CardView : MonoBehaviour, ICardView
 
     public void OnDropped()
     {
-        animator.PutDown();
+        animator.Drop();
+        animator.Move(lastLodgingPosition, animationSettings.ReturnToLocationWerePickedDuration);
 
         sortingGroup.enabled = false;
     }
@@ -111,14 +125,19 @@ public class CardView : MonoBehaviour, ICardView
         gameObject.SetActive(on);
     }
 
-    public void SetParent(Transform asTransform)
+    public void Fade(float toAlphaValue)
     {
-        transform.SetParent(asTransform, true);
+        shader.Fade(toAlphaValue);
     }
 
-    public void SetLocalPosition(Vector3 to, float duringSeconds)
+    public void Tint(Color withColor, float byFactor)
     {
-        animator.Move(to, duringSeconds);
+        shader.Tint(withColor, byFactor);
+    }
+    
+    public void Fog(Color withColor, float byFactor)
+    {
+        shader.Fog(withColor, byFactor);
     }
 
     public void Flip(CardFace to, bool animated)
@@ -128,6 +147,11 @@ public class CardView : MonoBehaviour, ICardView
             frontFace.ToggleVisibility(to == CardFace.Front);
             backFace.ToggleVisibility(to == CardFace.Back);
         });
+    }
+    
+    public void SetParent(Transform asTransform)
+    {
+        transform.SetParent(asTransform, true);
     }
 
     public void Destroy()

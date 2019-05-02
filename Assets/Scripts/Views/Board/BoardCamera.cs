@@ -1,17 +1,8 @@
-﻿using DG.Tweening;
-using UnityEditor.Experimental.GraphView;
-using UnityEngine;
+﻿using UnityEngine;
 using Zenject;
 
-public interface ICamera
-{
-    Vector3 GetWorldPoint(Vector2 fromScreenPoint);
-}
-
-public class BoardCamera : MonoBehaviour, ICamera, IViewportProvider, IWorldPointProvider
-{
-    [SerializeField] private Camera[] supportingCameras;
-    
+public class BoardCamera : MonoBehaviour, IViewportProvider, IWorldPointProvider
+{   
     private new Camera camera;
     private BoardLayoutSettings layoutSettings;
 
@@ -21,19 +12,15 @@ public class BoardCamera : MonoBehaviour, ICamera, IViewportProvider, IWorldPoin
         layoutSettings = withLayoutSettings;
         camera = GetComponent<Camera>();
         
-        var thisTransform = transform;
         var desiredViewWidth = (layoutSettings.CardSize.x + layoutSettings.CardSpacing.x) 
                                * layoutSettings.MaxCardCountInRow
                                - layoutSettings.CardSpacing.x
                                + layoutSettings.Margins.x * 2f;
         
-        thisTransform.position = new Vector3(
+        transform.position = new Vector3(
             0, 
             0, 
             - (desiredViewWidth / camera.aspect) * 0.5f / Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad));
-        
-        foreach (var supportCamera in supportingCameras)
-            supportCamera.transform.position = thisTransform.position;
     }
 
     public Viewport GetViewport(float atDepth)

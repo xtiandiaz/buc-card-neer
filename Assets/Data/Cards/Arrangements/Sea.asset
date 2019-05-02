@@ -37,3 +37,4 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  fog: {r: 0, g: 1, b: 0.89610386, a: 1}

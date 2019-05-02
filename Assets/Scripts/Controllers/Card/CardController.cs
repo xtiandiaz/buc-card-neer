@@ -12,9 +12,6 @@ public interface ICardController
 
 public abstract class CardController : ICardController, IDisposable
 {
-    private const float CardMoveDurationInSeconds = 0.5f;
-    private const float CardReturnDurationInSeconds = 0.25f;
-    
     private readonly ICard model;
     private readonly ICardView view;
     private readonly BoardCamera boardCamera;
@@ -34,6 +31,11 @@ public abstract class CardController : ICardController, IDisposable
         
         disposables.Add(model.ChangedLocalPosition.Subscribe(localPosition => view.LocalPosition = localPosition));
         disposables.Add(model.BecameVisible.Subscribe(view.ToggleVisibility));
+        disposables.Add(model.Faded.Subscribe(view.Fade));
+        disposables.Add(model.Tinted.Subscribe(withColorByFactor =>
+            view.Tint(withColorByFactor.Item1, withColorByFactor.Item2)));
+        disposables.Add(model.Fogged.Subscribe(withColorByFactor =>
+            view.Fog(withColorByFactor.Item1, withColorByFactor.Item2)));
         
         view.Flip(model.Face, false);
         disposables.Add(model.ChangedFace.Skip(1).Subscribe(face => view.Flip(face, true)));
@@ -42,15 +44,11 @@ public abstract class CardController : ICardController, IDisposable
             model.Lodged.Subscribe(transform =>
             {    
                 view.SetParent(transform);
-                view.SetLocalPosition(model.LocalPosition, CardReturnDurationInSeconds);
+                view.LocalPosition = model.LocalPosition;
             }));
         
         disposables.Add(model.Picked.Subscribe(_ => view.OnPicked()));
-        disposables.Add(model.Dropped.Subscribe(_ =>
-            {
-                view.OnDropped();
-                view.SetLocalPosition(Vector3.zero, CardReturnDurationInSeconds);
-            }));
+        disposables.Add(model.Dropped.Subscribe(_ => view.OnDropped()));
         
         disposables.Add(view.DragStarted.Subscribe(_ => model.Pick()));
         disposables.Add(view.Dragged.Subscribe(worldPositionDelta => view.LocalPosition += worldPositionDelta));

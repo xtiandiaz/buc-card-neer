@@ -290,8 +290,9 @@ GameObject:
   - component: {fileID: 4141944539622565620}
   - component: {fileID: 6603574188678882180}
   - component: {fileID: 587552024921909178}
+  - component: {fileID: 9099243857038372407}
   m_Layer: 0
-  m_Name: CardFoe
+  m_Name: CardPirate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -369,6 +370,22 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2.5, y: 3.5}
   m_EdgeRadius: 0
+--- !u!114 &9099243857038372407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4639396434572544147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1aef73f82fdb4f86893bc90e724a6085, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetRenderers:
+  - {fileID: 5816174328690173628}
+  - {fileID: 5304362483095993766}
+  - {fileID: 3919300728649846905}
 --- !u!1 &6016101693786946334
 GameObject:
   m_ObjectHideFlags: 0

@@ -35,11 +35,17 @@ public interface ICard
     IObservable<CardFace> ChangedFace { get; }
     IObservable<bool> BecameVisible { get; }
     IObservable<Vector3> ChangedLocalPosition { get; }
+    IObservable<float> Faded { get; }
+    IObservable<(Color, float)> Tinted { get; }
+    IObservable<(Color, float)> Fogged { get; }
     
     void Pick();
     void Drop(Vector3 atPosition);
     void Flip(CardFace to);
     void Lodge(Transform inTransform);
+    void Fade(float toAlphaValue);
+    void Tint(Color withColor, float byFactor);
+    void Fog(Color withColor, float byFactor);
     ICard Clone();
 }
 
@@ -54,6 +60,9 @@ public abstract class Card : ScriptableObject, ICard
     private readonly Subject<Unit> picked = new Subject<Unit>();
     private readonly Subject<Vector3> dropped = new Subject<Vector3>();
     private readonly Subject<Transform> lodged = new Subject<Transform>();
+    private readonly Subject<float> faded = new Subject<float>();
+    private readonly Subject<(Color, float)> tinted = new Subject<(Color, float)>();
+    private readonly Subject<(Color, float)> fogged = new Subject<(Color, float)>();
 
     public abstract int Value { get; }
     public abstract CardType Type { get; }
@@ -82,6 +91,9 @@ public abstract class Card : ScriptableObject, ICard
     public IObservable<CardFace> ChangedFace => face.DistinctUntilChanged();
     public IObservable<bool> BecameVisible => isVisible;
     public IObservable<Vector3> ChangedLocalPosition => localPosition;
+    public IObservable<float> Faded => faded;
+    public IObservable<(Color, float)> Tinted => tinted;
+    public IObservable<(Color, float)> Fogged => fogged;
 
     public void Pick()
     {
@@ -101,6 +113,21 @@ public abstract class Card : ScriptableObject, ICard
     public void Lodge(Transform inTransform)
     {
         lodged.OnNext(inTransform);
+    }
+
+    public void Fade(float toAlphaValue)
+    {
+        faded.OnNext(toAlphaValue);
+    }
+
+    public void Tint(Color withColor, float byFactor)
+    {
+        tinted.OnNext((withColor, byFactor));
+    }
+    
+    public void Fog(Color withColor, float byFactor)
+    {
+        fogged.OnNext((withColor, byFactor));
     }
 
     public ICard Clone()

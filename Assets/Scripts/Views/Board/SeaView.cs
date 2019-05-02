@@ -20,7 +20,8 @@ public class SeaView : MonoBehaviour, ISeaView
     [SerializeField] private Transform slotWrapper;
     [SerializeField] private MeshRenderer background;
     [SerializeField] private float height;
-    
+
+    private IViewportProvider viewportProvider;
     private Material oceanMaterial;
     private Sequence projectionSequence;
 
@@ -29,6 +30,11 @@ public class SeaView : MonoBehaviour, ISeaView
 
     [Inject]
     private void Construct(IViewportProvider viewportProvider)
+    {
+        this.viewportProvider = viewportProvider;
+    }
+
+    private void Awake()
     {
         var viewportHeight = viewportProvider.GetViewport(0).Size.y;
         var backgroundTransform = background.transform;

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ShipAnimationSettings
   m_EditorClassIdentifier: 
   dockingDuration: 1
-  dockingDelay: 0
+  dockingDelay: 1
   sailingDuration: 1
   dockingEase: 12
   sailingEase: 11

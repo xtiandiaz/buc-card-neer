@@ -13,10 +13,10 @@ public interface ICardAnimator
 {
     void Initialize(CardAnimationSettings withSettings, Transform andContentWrapper);
     void Lift();
-    void PutDown();
+    void Drop();
     void Flip(CardFace toFace, bool whileAnimating, Action andDoAmidFlip = null);
+    void Move(Vector3 toLocalPosition, float duringSeconds);
     void Kill(CardAnimationType animationType);
-    void Move(Vector3 toLocalPosition, float duringSeconds, Action andDoOnComplete = null);
 }
 
 public class CardAnimator : MonoBehaviour, ICardAnimator
@@ -38,7 +38,7 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
         liftTween = Lift(settings.LiftDepth, settings.LiftDuration);
     }
 
-    public void PutDown()
+    public void Drop()
     {
         Kill(CardAnimationType.Lift);
         liftTween = Lift(0, settings.LiftDuration);
@@ -101,15 +101,12 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
         }
     }
 
-    public void Move(Vector3 toLocalPosition, float duringSeconds, Action andDoOnComplete = null)
+    public void Move(Vector3 toLocalPosition, float duringSeconds)
     {
         Kill(CardAnimationType.Move);
         
         moveTween = transform.DOLocalMove(toLocalPosition, duringSeconds)
-            .SetEase(Ease.OutQuint);
-
-        if (andDoOnComplete != null)
-            moveTween.OnComplete(() => andDoOnComplete());
+            .SetEase(settings.OutEase);
     }
     
     private Tween Lift(float toDepth, float inSeconds)

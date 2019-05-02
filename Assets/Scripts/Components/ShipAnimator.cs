@@ -23,8 +23,8 @@ public class ShipAnimator : MonoBehaviour, IShipAnimator
     {
         ClearTransition();
 
-        transitionSequence.Join(Move(atLocalPosition, settings.DockingDuration));
-        transitionSequence.SetDelay(settings.DockingDelay);
+        transitionSequence.Join(
+            Move(atLocalPosition, settings.DockingDuration).SetDelay(settings.DockingDelay));
         transitionSequence.SetEase(settings.DockingEase);
     }
 
