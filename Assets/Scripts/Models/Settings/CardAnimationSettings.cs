@@ -1,7 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CardAnimationSettings", menuName = "Game/Extras/Card Animation Settings", order = 1)]
+[CreateAssetMenu(fileName = "CardAnimationSettings", menuName = "Game/Settings/Card Animation Settings", order = 1)]
 public class CardAnimationSettings : ScriptableObject
 {
     [SerializeField] private float flipDurationSeconds = 0.5f;

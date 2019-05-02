@@ -1,7 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ShipAnimationSettings", menuName = "Game/Extras/Ship Animation Settings", order = 1)]
+[CreateAssetMenu(fileName = "ShipAnimationSettings", menuName = "Game/Settings/Ship Animation Settings", order = 1)]
 public class ShipAnimationSettings : ScriptableObject
 {
     [SerializeField] private float dockingDuration = 1f;

@@ -551,6 +551,8 @@ MonoBehaviour:
   boardView: {fileID: 1969069925}
   cardAnimationSettings: {fileID: 11400000, guid: 82c18c688b13c467c9b2c21f495c904d,
     type: 2}
+  boardLayoutSettings: {fileID: 11400000, guid: 828e180d359954817af172a5c69c03ec,
+    type: 2}
 --- !u!4 &278240158
 Transform:
   m_ObjectHideFlags: 0
@@ -837,7 +839,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 30
+  far clip plane: 40
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -2585,6 +2587,7 @@ MonoBehaviour:
   - {fileID: 992031278}
   slotWrapper: {fileID: 873621017}
   background: {fileID: 2038039560}
+  height: 3.5
 --- !u!1001 &1945900559
 PrefabInstance:
   m_ObjectHideFlags: 0

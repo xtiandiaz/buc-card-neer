@@ -21,8 +21,7 @@ public class SlotView : MonoBehaviour, ISlotView
     [SerializeField] private CardArrangement arrangement;
 
     private Color defaultFaceColor;
-    private GamePalette palette;
-    private GameSettings settings;
+    private BoardLayoutSettings layoutSettings;
 
     public uint Capacity => capacity;
     public SlotType Type => type;
@@ -32,28 +31,26 @@ public class SlotView : MonoBehaviour, ISlotView
 
     [Inject]
     private void Construct(
-        GamePalette palette,
-        GameSettings settings
+        BoardLayoutSettings layoutSettings
         )
     {
-        defaultFaceColor = faceRenderer.color;
+        this.layoutSettings = layoutSettings;
         
-        this.palette = palette;
-        this.settings = settings;
+        defaultFaceColor = faceRenderer.color;
     }
 
     public void ToggleHighlight(bool on)
     {
         if (on)
         {
-            faceRenderer.color = palette.SlotHighlight;
-            faceRenderer.sortingLayerName = settings.CardSortingLayerName;
-            faceRenderer.sortingOrder = settings.FloatingCardSortingOrder - 1;
+            faceRenderer.color = Color.cyan;
+            faceRenderer.sortingLayerName = layoutSettings.CardSortingLayerName;
+            faceRenderer.sortingOrder = layoutSettings.FloatingCardSortingOrder - 1;
         }
         else
         {
             faceRenderer.color = defaultFaceColor;
-            faceRenderer.sortingLayerName = settings.SlotSortingLayerName;
+            faceRenderer.sortingLayerName = layoutSettings.SlotSortingLayerName;
             faceRenderer.sortingOrder = 0;
         }
     }

@@ -22,7 +22,6 @@ public class BoardController : IBoardController, IDisposable
     
     private readonly Board model;
     private readonly BoardView view;
-    private readonly GameSettings settings;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private BoardController(

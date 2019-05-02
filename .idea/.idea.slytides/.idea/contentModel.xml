@@ -738,6 +738,7 @@
             <e p="CardAnimator.cs" t="Include" />
             <e p="DraggingManager.cs" t="Include" />
             <e p="ShipAnimator.cs" t="Include" />
+            <e p="UserInteractionListener.cs" t="Include" />
           </e>
           <e p="Controllers" t="Include">
             <e p="BoardController.cs" t="Include" />
@@ -788,9 +789,9 @@
             <e p="Deck.cs" t="Include" />
             <e p="Direction.cs" t="Include" />
             <e p="GamePalette.cs" t="Include" />
-            <e p="GameSettings.cs" t="Include" />
             <e p="GameState.cs" t="Include" />
             <e p="Settings" t="Include">
+              <e p="BoardLayoutSettings.cs" t="Include" />
               <e p="CardAnimationSettings.cs" t="Include" />
               <e p="ShipAnimationSettings.cs" t="Include" />
             </e>
@@ -809,7 +810,6 @@
               <e p="SlotResource.cs" t="Include" />
             </e>
           </e>
-          <e p="UserInteractionListener.cs" t="Include" />
           <e p="Views" t="Include">
             <e p="Board" t="Include">
               <e p="BoardCamera.cs" t="Include" />

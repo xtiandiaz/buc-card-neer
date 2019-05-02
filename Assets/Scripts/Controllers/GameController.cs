@@ -6,19 +6,16 @@ public class GameController : IInitializable
 {
     private readonly IBoardFactory boardFactory;
     private readonly IBoardView boardView;
-    private readonly GameSettings settings;
 
     private IBoard board;
 
     public GameController(
         IBoardFactory boardFactory,
-        IBoardView boardView, 
-        GameSettings settings
+        IBoardView boardView
     )
     {
         this.boardFactory = boardFactory;
         this.boardView = boardView;
-        this.settings = settings;
     }
 
     public void Initialize()

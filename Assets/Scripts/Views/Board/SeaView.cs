@@ -19,31 +19,23 @@ public class SeaView : MonoBehaviour, ISeaView
     [SerializeField] private SlotView[] slots;
     [SerializeField] private Transform slotWrapper;
     [SerializeField] private MeshRenderer background;
+    [SerializeField] private float height;
     
-    private GameSettings settings;
     private Material oceanMaterial;
     private Sequence projectionSequence;
 
-    public float Height => settings.CardSize.y;
+    public float Height => height;
     public ISlotView[] Slots => slots;
 
     [Inject]
-    private void Construct(
-        GameSettings settings
-    )
-    {
-        this.settings = settings;
-    }
-
-    public void Initialize(float withBoardHeight)
+    private void Construct(Rect boardRect)
     {
         var backgroundTransform = background.transform;
-        
-        backgroundTransform.localScale = new Vector3(withBoardHeight * 1.25f, withBoardHeight * 1.25f, 1f);
-        //backgroundTransform.localPosition = Vector3.forward * settings.CardSize.x;
+
+        backgroundTransform.localScale = new Vector3(boardRect.height * 1.25f, boardRect.height * 1.25f, 1f);
         
         oceanMaterial = background.sharedMaterial;
-        oceanMaterial.SetFloat(PivotOffset, - (Height / withBoardHeight) * 0.5f);
+        oceanMaterial.SetFloat(PivotOffset, - (Height / boardRect.height) * 0.5f);
     }
 
     public void ToggleProjection(bool on, float withDurationInSeconds, float andDelayInSeconds = 0)

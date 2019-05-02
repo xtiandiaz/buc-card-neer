@@ -3,39 +3,27 @@ using UnityEngine;
 using Zenject;
 
 public interface ICamera
-{
-    Vector3 Position { get; }
-    
+{    
     Rect GetFrustumRect(float forTargetCoordinateZ);
     Vector3 GetWorldPoint(Vector2 fromScreenPoint);
 }
 
-public class BoardCamera : MonoBehaviour, ICamera, IInitializable
+public class BoardCamera : MonoBehaviour, ICamera
 {
     [SerializeField] private Camera[] supportingCameras;
     
     private new Camera camera;
-    private GameSettings settings;
     private Tween scrollingTween;
 
-    public Vector3 Position => transform.position;
-    
-    [Inject]
-    private void Construct(
-        GameSettings settings
-        )
-    {
-        this.settings = settings;
-    }
-
-    public void Initialize()
+    public void Initialize(BoardLayoutSettings withLayoutSettings)
     {
         camera = GetComponent<Camera>();
         
         var thisTransform = transform;
-        var desiredViewWidth = (settings.CardSize.x + settings.CardSpacing.x) * settings.VisibleCardCountPerRow
-                               - settings.CardSpacing.x
-                               + settings.BoardMargins.x * 2f;
+        var desiredViewWidth = (withLayoutSettings.CardSize.x + withLayoutSettings.CardSpacing.x) 
+                               * withLayoutSettings.MaxCardCountInRow
+                               - withLayoutSettings.CardSpacing.x
+                               + withLayoutSettings.Margins.x * 2f;
         
         thisTransform.position = new Vector3(
             0, 

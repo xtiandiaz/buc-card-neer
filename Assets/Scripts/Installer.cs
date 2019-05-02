@@ -1,17 +1,15 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Zenject;
 
 public class Installer : MonoInstaller
 {
     [SerializeField] private BoardCamera camera;
     [SerializeField] private GamePalette palette;
-
-    [Header("Board")] 
     [SerializeField] private BoardView boardView;
 
     [Header("Settings")] 
     [SerializeField] private CardAnimationSettings cardAnimationSettings;
+    [SerializeField] private BoardLayoutSettings boardLayoutSettings;
 
     public override void InstallBindings()
     {
@@ -58,15 +56,23 @@ public class Installer : MonoInstaller
         
         // Board 
         Container.BindInterfacesAndSelfTo<BoardCamera>().FromInstance(camera).AsSingle();
+        Container.Bind<Rect>().FromMethod(GetBoardRect).AsSingle();
+        Container.Bind<BoardLayoutSettings>().FromInstance(boardLayoutSettings).AsSingle();
         Container.BindInterfacesAndSelfTo<BoardView>().FromInstance(boardView).AsSingle();
         
         // Extras
         Container.Bind<CardAnimationSettings>().FromInstance(cardAnimationSettings);
         
         // Game
-        Container.Bind<GameSettings>().AsSingle();
         Container.Bind<GameState>().AsSingle();
         Container.Bind<GamePalette>().FromInstance(palette);
         Container.BindInterfacesAndSelfTo<GameController>().AsSingle();
+    }
+
+    private Rect GetBoardRect(InjectContext context)
+    {
+        camera.Initialize(boardLayoutSettings);
+        
+        return camera.GetFrustumRect(0);
     }
 }

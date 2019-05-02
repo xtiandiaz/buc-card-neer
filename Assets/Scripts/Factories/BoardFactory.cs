@@ -25,8 +25,6 @@ public class BoardFactory : IBoardFactory
     
     public IBoard Create(IBoardView fromView)
     {
-        fromView.Initialize();
-        
         var model = modelFactory.Create(
             seaFactory.Create(fromView.Sea),
             fromView.Ships.Select(sv => shipFactory.Create(sv)).ToArray(),

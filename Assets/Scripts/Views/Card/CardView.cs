@@ -40,7 +40,7 @@ public class CardView : MonoBehaviour, ICardView
     
     private IDraggingManager draggingManager;
     private ICardAnimator animator;
-    private GameSettings settings;
+    private BoardLayoutSettings layoutSettings;
     private Transform thisTransform;
 
     public Sprite FrontFace
@@ -69,16 +69,17 @@ public class CardView : MonoBehaviour, ICardView
 
     [Inject]
     private void Construct(
-        CardAnimationSettings animationSettings,
-        GameSettings settings
+        CardAnimationSettings animationSettings, 
+        BoardLayoutSettings layoutSettings
         )
     {
+        this.layoutSettings = layoutSettings;
+        
         draggingManager = GetComponent<IDraggingManager>() ?? gameObject.AddComponent<DraggingManager>();
         
         animator = GetComponent<ICardAnimator>() ?? gameObject.AddComponent<CardAnimator>();
         animator.Initialize(animationSettings, contentWrapper);
         
-        this.settings = settings;
 
         thisTransform = transform;
 
@@ -86,7 +87,7 @@ public class CardView : MonoBehaviour, ICardView
 
         foreach (var renderer in textRenderers)
         {
-            renderer.sortingLayerName = settings.CardSortingLayerName;
+            renderer.sortingLayerName = layoutSettings.CardSortingLayerName;
             renderer.sortingOrder = textSortingOrder;
         }
     }
@@ -97,7 +98,7 @@ public class CardView : MonoBehaviour, ICardView
         animator.Lift();
 
         sortingGroup.enabled = true;
-        sortingGroup.sortingOrder = settings.FloatingCardSortingOrder;
+        sortingGroup.sortingOrder = layoutSettings.FloatingCardSortingOrder;
     }
 
     public void OnDropped()
