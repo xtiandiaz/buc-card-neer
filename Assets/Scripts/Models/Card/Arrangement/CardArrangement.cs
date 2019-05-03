@@ -1,7 +1,10 @@
+using System;
 using UnityEngine;
 
 public interface ICardArrangement
 {
+    Action<ICard, int, int> Decorate { get; }
+    
     Vector3 Transform(Vector3 position, int forIndex, int inCount);
 }
 
@@ -10,9 +13,15 @@ public class CardArrangement : ScriptableObject, ICardArrangement
 {
     [SerializeField] private Vector3 offset;
     [SerializeField] private AnimationCurve offsetFunction;
+    [SerializeField] [Range(0, 1f)] private float fogDamping = 0.5f;
     [SerializeField] private Color fog;
-    
-    //toCard.Fog(fog, offsetT * 0.5f);
+
+    public Action<ICard, int, int> Decorate => (card, atIndex, inCount) =>
+    {
+        var t = atIndex / (float) inCount;
+        
+        card.Fog(fog, t * (1f - fogDamping));
+    };
 
     public Vector3 Transform(Vector3 position, int forIndex, int inCount)
     {

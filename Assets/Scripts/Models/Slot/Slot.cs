@@ -104,7 +104,9 @@ public abstract class Slot : ISlot
         for (var i = cardCountM1; i >= 0; i--)
         {
             var index = cardCountM1 - i;
+            
             cards[i].Arrange(Arrangement.Transform(Position, index, capacity), index);
+            Arrangement.Decorate(cards[i], index, capacity);
         }
     }
 
