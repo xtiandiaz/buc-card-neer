@@ -7,7 +7,6 @@ using Zenject;
 public interface ISlotController
 {
     void Initialize();
-    void Arrange();
 }
 
 public class SlotController : ISlotController, IDisposable
@@ -16,6 +15,7 @@ public class SlotController : ISlotController, IDisposable
     {
     }
     
+    private static readonly Subject<(ICard, ISlot)> Lodged = new Subject<(ICard, ISlot)>();
     private readonly ISlot model;
     private readonly ISlotView view;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
@@ -30,31 +30,16 @@ public class SlotController : ISlotController, IDisposable
     {
         model.Bounds = view.Bounds;
         model.Arrangement = view.Arrangement;
-
-        disposables.Add(
-            model.Lodged.Do(card =>
-                {
-                    card.Lodge(view.Transform);
-                    Arrange();
-                })
-                .SelectMany(card => card.Lodged.Skip(1).Take(1).Select(_ => card))
-                .Subscribe(card =>
-                {
-                    model.Release(card);
-                    Arrange();
-                }));
+        model.Position = view.Position;
+        
+        disposables.Add(model.Lodged.Subscribe(card => Lodged.OnNext((card, model))));
+        
+        disposables.Add(Lodged
+            .Where(cardInSlot => cardInSlot.Item2 != model && model.DoesContain(cardInSlot.Item1))
+            .Subscribe(cardInSlot => model.Release(cardInSlot.Item1)));
         
         disposables.Add(model.BecameHighlighted.Subscribe(view.ToggleHighlight));
         disposables.Add(model.BecameVisible.Subscribe(view.ToggleVisibility));
-    }
-
-    public void Arrange()
-    {
-        var cards = model.Cards;
-        var cardCount = cards.Length;
-        
-        for (var i = 0; i < cardCount; i++)
-            model.Arrangement.Arrange(cards[i], i, cardCount);
     }
 
     public void Dispose()

@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Zenject;
 using UniRx;
+using UnityEngine.Tilemaps;
 using Debug = System.Diagnostics.Debug;
 
 public interface IBoardController
@@ -11,7 +12,6 @@ public interface IBoardController
     void Initialize();
     void OnPicked(ICard card);
     void OnDropped((ICard, Vector3) cardAtPosition);
-    void OnBoardedPlayer(ICard withCard);
 }
 
 public class BoardController : IBoardController, IDisposable
@@ -37,7 +37,26 @@ public class BoardController : IBoardController, IDisposable
     {
         disposables.Add(model.CardPicked.Subscribe(OnPicked));
         disposables.Add(model.CardDropped.Subscribe(OnDropped));
-        disposables.Add(model.ShipPlayer.Boarded.Subscribe(OnBoardedPlayer));
+        disposables.Add(model.ShipPlayer.Boarded
+            .Where(card => (card.Type & (CardType.Pirate | CardType.Merchant)) != 0)
+            .Subscribe(card =>
+            {
+                switch (card.Type)
+                {
+                    case CardType.Pirate:
+                
+                        model.ShipPirate.Dock(view.PirateDockingPosition);
+                
+                        break;
+                    case CardType.Merchant:
+                
+                        model.ShipMerchant.Dock(view.MerchantDockingPosition);
+                
+                        break;
+                }
+                
+                model.Sea.ToggleProjection(false);
+            }));
     }
 
     public void OnPicked(ICard card)
@@ -47,7 +66,7 @@ public class BoardController : IBoardController, IDisposable
             slot.ToggleHighlight(slot.CanLodge(card));
         }
     }
-    
+
     public void OnDropped((ICard, Vector3) cardAtPosition)
     {
         foreach (var slot in model.PlaySlots)
@@ -59,27 +78,6 @@ public class BoardController : IBoardController, IDisposable
 
         model.PlaySlots.FirstOrDefault(s => s.DoesContain(dropPosition) && s.CanLodge(card))?
             .Lodge(card);
-    }
-
-    public void OnBoardedPlayer(ICard withCard)
-    {
-        switch (withCard.Type)
-        {
-            case CardType.Pirate:
-                
-                model.Sea.ToggleProjection(false);
-                model.ShipPirate.Dock(view.PirateDockingPosition);
-                
-                break;
-            case CardType.Merchant:
-                
-                model.Sea.ToggleProjection(false);
-                model.ShipMerchant.Dock(view.MerchantDockingPosition);
-                
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
     }
 
     public void Dispose()

@@ -1,5 +1,6 @@
 using System;
 using DG.Tweening;
+using UniRx;
 using UnityEngine;
 
 public enum CardAnimationType
@@ -15,7 +16,8 @@ public interface ICardAnimator
     void Lift();
     void Drop();
     void Flip(CardFace toFace, bool whileAnimating, Action andDoAmidFlip = null);
-    void Move(Vector3 toLocalPosition, float duringSeconds);
+    void Move(Vector3 toPosition, float duringSeconds);
+    IObservable<Unit> MoveAsObservable(Vector3 toPosition, float duringSeconds);
     void Kill(CardAnimationType animationType);
 }
 
@@ -59,7 +61,7 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
             return;
         }
 
-        var halfTweenDuration = settings.FlipDurationSeconds * 0.5f;
+        var halfTweenDuration = settings.FlipDuration * 0.5f;
 
         flipSequence = DOTween.Sequence();
         
@@ -100,13 +102,29 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
                 throw new ArgumentOutOfRangeException(nameof(animationType), animationType, null);
         }
     }
-
-    public void Move(Vector3 toLocalPosition, float duringSeconds)
+    
+    public void Move(Vector3 toPosition, float duringSeconds)
     {
         Kill(CardAnimationType.Move);
         
-        moveTween = transform.DOLocalMove(toLocalPosition, duringSeconds)
+        moveTween = transform.DOMove(toPosition, duringSeconds)
             .SetEase(settings.OutEase);
+    }
+    
+    public IObservable<Unit> MoveAsObservable(Vector3 toPosition, float duringSeconds)
+    {
+        return Observable.Create<Unit>(observer =>
+        {
+            var tween = transform.DOMove(toPosition, duringSeconds)
+                .SetEase(settings.OutEase)
+                .OnComplete(() =>
+                {
+                    observer.OnNext(Unit.Default);
+                    observer.OnCompleted();
+                });
+
+            return Disposable.Create(() => tween.Kill());
+        });
     }
     
     private Tween Lift(float toDepth, float inSeconds)

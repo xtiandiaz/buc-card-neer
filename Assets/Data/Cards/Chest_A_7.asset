@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   frontFace: {fileID: 21300000, guid: 0617bfb31863243ce974c2f6b6ae73a6, type: 3}
   backFace: {fileID: 21300000, guid: 365e4437cedda4a8a972e0b0f354905e, type: 3}
-  type: 0
+  type: 4
   value: 7

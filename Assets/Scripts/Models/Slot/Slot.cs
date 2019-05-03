@@ -23,9 +23,9 @@ public interface ISlot
     bool IsVisible { get; set; }
     SlotType Type { get; }
     CardType EntryMask { get; }
+    Vector3 Position { get; set; }
     Bounds Bounds { get; set; }
     ICardArrangement Arrangement { get; set; }
-    ICard[] Cards { get; }
 
     IObservable<ICard> Lodged { get; }
     IObservable<bool> BecameHighlighted { get; }
@@ -34,22 +34,22 @@ public interface ISlot
     bool CanLodge(ICard card);
     void Lodge(ICard card);
     void Release(ICard card);
+    void ArrangeCards();
     void ToggleHighlight(bool on);
+    bool DoesContain(ICard card);
     bool DoesContain(Vector3 worldPoint);
 }
 
 public abstract class Slot : ISlot
 {
-    private readonly Stack<ICard> cards = new Stack<ICard>();
+    private readonly List<ICard> cards = new List<ICard>();
     private readonly Subject<ICard> lodged = new Subject<ICard>();
     private readonly Subject<bool> highlighted = new Subject<bool>();
     private readonly ReactiveProperty<bool> isVisible = new ReactiveProperty<bool>(true);
     
-    private Vector3 position;
-    
     protected Slot(SlotType type, uint capacity)
     {
-        Capacity = capacity;
+        Capacity = capacity > 0 ? capacity : uint.MaxValue;
         Type = type;
     }
 
@@ -63,15 +63,15 @@ public abstract class Slot : ISlot
     }
 
     public SlotType Type { get; }
+    public Vector3 Position { get; set; }
     public Bounds Bounds { get; set; }
     public ICardArrangement Arrangement { get; set; }
-    public ICard[] Cards => cards.ToArray();
 
     public IObservable<ICard> Lodged => lodged;
     public IObservable<bool> BecameHighlighted => highlighted.DistinctUntilChanged();
     public IObservable<bool> BecameVisible => isVisible;
 
-    public bool CanLodge(ICard card)
+    public virtual bool CanLodge(ICard card)
     {
         return HasRoom && !cards.Contains(card) && (EntryMask & card.Type) != 0;
     }
@@ -83,15 +83,29 @@ public abstract class Slot : ISlot
             Debug.LogWarning($"[Slot] Card '{card.Name}' couldn't be lodged.");
             return;
         }
-
-        cards.Push(card);
         
+        cards.Add(card);
         lodged.OnNext(card);
+        
+        ArrangeCards();
     }
 
     public void Release(ICard card)
     {
-        cards.Pop();
+        if (cards.Remove(card))
+            ArrangeCards();
+    }
+    
+    public void ArrangeCards()
+    {
+        var cardCountM1 = cards.Count - 1;
+        var capacity = (int) Capacity;
+
+        for (var i = cardCountM1; i >= 0; i--)
+        {
+            var index = cardCountM1 - i;
+            cards[i].Arrange(Arrangement.Transform(Position, index, capacity), index);
+        }
     }
 
     public void ToggleHighlight(bool on)
@@ -99,6 +113,11 @@ public abstract class Slot : ISlot
         highlighted.OnNext(on);
     }
 
+    public bool DoesContain(ICard card)
+    {
+        return cards.Contains(card);
+    }
+    
     public bool DoesContain(Vector3 worldPoint)
     {
         return Bounds.Contains(worldPoint);

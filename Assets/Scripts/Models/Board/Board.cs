@@ -68,10 +68,10 @@ public class Board : IBoard
     public ISlot[] PlaySlots { get; private set; }
 
     public IObservable<ICard> CardPicked => 
-        Decks.Select(d => d.Supplied).Merge().SelectMany(c => c.Picked.Select(_ => c));
+        Decks.Select(d => d.Supplied).Merge().SelectMany(c => c.Picking.Select(_ => c));
     
     public IObservable<(ICard, Vector3)> CardDropped =>
-        Decks.Select(d => d.Supplied).Merge().SelectMany(c => c.Dropped.Select(dropPosition => (c, dropPosition)));
+        Decks.Select(d => d.Supplied).Merge().SelectMany(c => c.Dropping.Select(dropPosition => (c, dropPosition)));
     
     public ShipPlayer ShipPlayer { get; private set; }
     public ShipMerchant ShipMerchant { get; private set; }

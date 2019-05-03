@@ -28,27 +28,20 @@ public abstract class CardController : ICardController, IDisposable
     {
         view.FrontFace = model.FrontFace;
         view.BackFace = model.BackFace;
-        
-        disposables.Add(model.ChangedLocalPosition.Subscribe(localPosition => view.LocalPosition = localPosition));
-        disposables.Add(model.BecameVisible.Subscribe(view.ToggleVisibility));
-        disposables.Add(model.Faded.Subscribe(view.Fade));
-        disposables.Add(model.Tinted.Subscribe(withColorByFactor =>
+
+        disposables.Add(model.Arranging.Subscribe(_ => view.Move(model.Position)));
+        disposables.Add(model.Visibility.Subscribe(view.ToggleVisibility));
+        disposables.Add(model.Fading.Subscribe(view.Fade));
+        disposables.Add(model.Tinting.Subscribe(withColorByFactor =>
             view.Tint(withColorByFactor.Item1, withColorByFactor.Item2)));
-        disposables.Add(model.Fogged.Subscribe(withColorByFactor =>
+        disposables.Add(model.Fogging.Subscribe(withColorByFactor =>
             view.Fog(withColorByFactor.Item1, withColorByFactor.Item2)));
         
         view.Flip(model.Face, false);
-        disposables.Add(model.ChangedFace.Skip(1).Subscribe(face => view.Flip(face, true)));
+        disposables.Add(model.Facing.Skip(1).Subscribe(face => view.Flip(face, true)));
         
-        disposables.Add(
-            model.Lodged.Subscribe(transform =>
-            {    
-                view.SetParent(transform);
-                view.LocalPosition = model.LocalPosition;
-            }));
-        
-        disposables.Add(model.Picked.Subscribe(_ => view.OnPicked()));
-        disposables.Add(model.Dropped.Subscribe(_ => view.OnDropped()));
+        disposables.Add(model.Picking.Subscribe(_ => view.OnPicked()));
+        disposables.Add(model.Dropping.Subscribe(_ => view.OnDropped()));
         
         disposables.Add(view.DragStarted.Subscribe(_ => model.Pick()));
         disposables.Add(view.Dragged.Subscribe(worldPositionDelta => view.LocalPosition += worldPositionDelta));

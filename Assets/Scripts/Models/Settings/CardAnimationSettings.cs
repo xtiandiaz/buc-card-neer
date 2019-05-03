@@ -4,17 +4,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "CardAnimationSettings", menuName = "Game/Settings/Card Animation Settings", order = 1)]
 public class CardAnimationSettings : ScriptableObject
 {
-    [SerializeField] private float flipDurationSeconds = 0.5f;
-    [SerializeField] private float liftDepth = 2.5f;
-    [SerializeField] private float liftDuration = 0.2f;
-    [SerializeField] private float returnToLocationWerePickedDuration = 0.5f;
-    [SerializeField] private Ease inEase = Ease.InQuart;
-    [SerializeField] private Ease outEase = Ease.OutQuart;
-    
-    public float FlipDurationSeconds => flipDurationSeconds;
-    public float LiftDepth => liftDepth;
-    public float LiftDuration => liftDuration;
-    public float ReturnToLocationWerePickedDuration => returnToLocationWerePickedDuration;
-    public Ease InEase => inEase;
-    public Ease OutEase => outEase;
+    [field: SerializeField] public float FlipDuration { get; private set; } = 0.5f;
+    [field: SerializeField] public float LiftDepth { get; private set; } = 2.5f;
+    [field: SerializeField] public float LiftDuration { get; private set; } = 0.2f;
+    [field: SerializeField] public float ReturnToLocationWerePickedDuration { get; private set; } = 0.5f;
+    [field: SerializeField] public float BoardingDelay { get; private set; }
+    [field: SerializeField] public Ease InEase { get; private set; } = Ease.InQuart;
+    [field: SerializeField] public Ease OutEase { get; private set; } = Ease.OutQuart;
 }

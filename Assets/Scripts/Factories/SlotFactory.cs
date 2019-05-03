@@ -26,33 +26,36 @@ public class SlotFactory : ISlotFactory
         this.controllerFactory = controllerFactory;
     }
     
-    public ISlot Create(ISlotView forModel)
+    public ISlot Create(ISlotView fromView)
     {
-        var model = CreateModel(forModel.Type, forModel.Capacity);
-        var controller = controllerFactory.Create(model, forModel);
+        var model = CreateModel(fromView);
+        var controller = controllerFactory.Create(model, fromView);
         
         controller.Initialize();
 
         return model;
     }
 
-    private ISlot CreateModel(SlotType forType, uint withCapacity)
+    private ISlot CreateModel(ISlotView fromView)
     {
-        switch (forType)
+        var type = fromView.Type;
+        var capacity = fromView.Capacity;
+        
+        switch (type)
         {
             case SlotType.Event:
-                return modelEventFactory.Create(withCapacity);
+                return modelEventFactory.Create(capacity);
             case SlotType.Boarding:
-                return modelBoardingFactory.Create(withCapacity);
+                return modelBoardingFactory.Create(capacity);
             case SlotType.Defense:
-                return modelDefenseFactory.Create(withCapacity);
+                return modelDefenseFactory.Create(capacity);
             case SlotType.Resource:
-                return modelResourceFactory.Create(withCapacity);
+                return modelResourceFactory.Create(fromView.ResourceMask, capacity);
             case SlotType.Player:
-                return modelPlayerFactory.Create(withCapacity);
+                return modelPlayerFactory.Create(capacity);
             case SlotType.All:
             default:
-                throw new ArgumentOutOfRangeException(nameof(forType), forType, null);
+                throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
     }
 }

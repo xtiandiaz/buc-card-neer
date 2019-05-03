@@ -7,7 +7,7 @@ public enum CardType
 {
     Player     = 1 << 0,
     Resource   = 1 << 1,
-    Pirate        = 1 << 2,
+    Pirate     = 1 << 2,
     Merchant   = 1 << 3
 }
 
@@ -20,29 +20,29 @@ public enum CardFace
 public interface ICard
 {
     int Value { get; }
+    int IndexInSlot { get; }
     string Name { get; }
     CardType Type { get; }
     CardType InteractionMask { get; }
     CardFace Face { get; }
-    Vector3 LocalPosition { get; set; }
+    Vector3 Position { get; }
     bool IsVisible { get; set; }
     Sprite FrontFace { get; }
     Sprite BackFace { get; }
     
-    IObservable<Unit> Picked { get; }
-    IObservable<Vector3> Dropped { get; }
-    IObservable<Transform> Lodged { get; }
-    IObservable<CardFace> ChangedFace { get; }
-    IObservable<bool> BecameVisible { get; }
-    IObservable<Vector3> ChangedLocalPosition { get; }
-    IObservable<float> Faded { get; }
-    IObservable<(Color, float)> Tinted { get; }
-    IObservable<(Color, float)> Fogged { get; }
+    IObservable<Unit> Arranging { get; }
+    IObservable<Unit> Picking { get; }
+    IObservable<Vector3> Dropping { get; }
+    IObservable<CardFace> Facing { get; }
+    IObservable<bool> Visibility { get; }
+    IObservable<float> Fading { get; }
+    IObservable<(Color, float)> Tinting { get; }
+    IObservable<(Color, float)> Fogging { get; }
     
     void Pick();
     void Drop(Vector3 atPosition);
     void Flip(CardFace to);
-    void Lodge(Transform inTransform);
+    void Arrange(Vector3 atPosition, int withIndex);
     void Fade(float toAlphaValue);
     void Tint(Color withColor, float byFactor);
     void Fog(Color withColor, float byFactor);
@@ -54,80 +54,77 @@ public abstract class Card : ScriptableObject, ICard
     [SerializeField] private Sprite frontFace;
     [SerializeField] private Sprite backFace;
     
-    private readonly ReactiveProperty<Vector3> localPosition = new ReactiveProperty<Vector3>();
-    private readonly ReactiveProperty<CardFace> face = new ReactiveProperty<CardFace>();
-    private readonly ReactiveProperty<bool> isVisible = new ReactiveProperty<bool>(true);
-    private readonly Subject<Unit> picked = new Subject<Unit>();
-    private readonly Subject<Vector3> dropped = new Subject<Vector3>();
-    private readonly Subject<Transform> lodged = new Subject<Transform>();
-    private readonly Subject<float> faded = new Subject<float>();
-    private readonly Subject<(Color, float)> tinted = new Subject<(Color, float)>();
-    private readonly Subject<(Color, float)> fogged = new Subject<(Color, float)>();
+    private readonly ReactiveProperty<CardFace> facing = new ReactiveProperty<CardFace>();
+    private readonly ReactiveProperty<bool> visibility = new ReactiveProperty<bool>(true);
+    private readonly Subject<Unit> arranging = new Subject<Unit>();
+    private readonly Subject<Unit> picking = new Subject<Unit>();
+    private readonly Subject<Vector3> dropping = new Subject<Vector3>();
+    private readonly Subject<float> fading = new Subject<float>();
+    private readonly Subject<(Color, float)> tinting = new Subject<(Color, float)>();
+    private readonly Subject<(Color, float)> fogging = new Subject<(Color, float)>();
 
     public abstract int Value { get; }
     public abstract CardType Type { get; }
     public abstract CardType InteractionMask { get; }
+    public int IndexInSlot { get; private set; }
     public string Name => name;
-    public CardFace Face => face.Value;
-    
-    public Vector3 LocalPosition
-    {
-        get => localPosition.Value;
-        set => localPosition.Value = value;
-    }
+    public CardFace Face => facing.Value;
+    public Vector3 Position { get; private set; }
 
     public bool IsVisible
     {
-        get => isVisible.Value;
-        set => isVisible.Value = value;
+        get => visibility.Value;
+        set => visibility.Value = value;
     }
     
     public Sprite FrontFace => frontFace;
     public Sprite BackFace => backFace;
 
-    public IObservable<Unit> Picked => picked;
-    public IObservable<Vector3> Dropped => dropped;
-    public IObservable<Transform> Lodged => lodged;
-    public IObservable<CardFace> ChangedFace => face.DistinctUntilChanged();
-    public IObservable<bool> BecameVisible => isVisible;
-    public IObservable<Vector3> ChangedLocalPosition => localPosition;
-    public IObservable<float> Faded => faded;
-    public IObservable<(Color, float)> Tinted => tinted;
-    public IObservable<(Color, float)> Fogged => fogged;
+    public IObservable<Unit> Arranging => arranging;
+    public IObservable<Unit> Picking => picking;
+    public IObservable<Vector3> Dropping => dropping;
+    public IObservable<CardFace> Facing => facing.DistinctUntilChanged();
+    public IObservable<bool> Visibility => visibility;
+    public IObservable<float> Fading => fading;
+    public IObservable<(Color, float)> Tinting => tinting;
+    public IObservable<(Color, float)> Fogging => fogging;
 
     public void Pick()
     {
-        picked.OnNext(Unit.Default);
+        picking.OnNext(Unit.Default);
     }
 
     public void Drop(Vector3 atPosition)
     {
-        dropped.OnNext(atPosition);
+        dropping.OnNext(atPosition);
     }
 
     public void Flip(CardFace to)
     {
-        face.Value = to;
+        facing.Value = to;
     }
 
-    public void Lodge(Transform inTransform)
+    public void Arrange(Vector3 atPosition, int withIndex)
     {
-        lodged.OnNext(inTransform);
+        Position = atPosition;
+        IndexInSlot = withIndex;
+        
+        arranging.OnNext(Unit.Default);
     }
-
+    
     public void Fade(float toAlphaValue)
     {
-        faded.OnNext(toAlphaValue);
+        fading.OnNext(toAlphaValue);
     }
 
     public void Tint(Color withColor, float byFactor)
     {
-        tinted.OnNext((withColor, byFactor));
+        tinting.OnNext((withColor, byFactor));
     }
     
     public void Fog(Color withColor, float byFactor)
     {
-        fogged.OnNext((withColor, byFactor));
+        fogging.OnNext((withColor, byFactor));
     }
 
     public ICard Clone()

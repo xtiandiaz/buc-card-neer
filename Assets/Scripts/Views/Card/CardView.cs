@@ -12,11 +12,14 @@ public interface ICardView
     IObservable<Unit> DragStarted { get; }
     IObservable<Vector3> Dragged { get; }
     IObservable<Vector3> DragEnded { get; }
+    CardAnimationSettings AnimationSettings { get; }
 
     void Lodge(Vector3 atLocalPosition);
     void OnPicked();
     void OnDropped();
     void Flip(CardFace to, bool animated);
+    void Move(Vector3 toPosition);
+    IObservable<Unit> MoveAsObservable(Vector3 toPosition);
     void ToggleVisibility(bool on);
     void SetParent(Transform asTransform);
     void Fade(float toAlphaValue);
@@ -43,7 +46,6 @@ public class CardView : MonoBehaviour, ICardView
     private IDraggingManager draggingManager;
     private ICardAnimator animator;
     private ICardShader shader;
-    private CardAnimationSettings animationSettings;
     private BoardLayoutSettings layoutSettings;
     private Vector3 lastLodgingPosition;
 
@@ -60,6 +62,7 @@ public class CardView : MonoBehaviour, ICardView
     public IObservable<Unit> DragStarted => draggingManager.DragStarted;
     public IObservable<Vector3> Dragged => draggingManager.Dragged;
     public IObservable<Vector3> DragEnded => draggingManager.DragEnded;
+    public CardAnimationSettings AnimationSettings { get; private set; }
 
     public Vector3 LocalPosition
     {
@@ -78,7 +81,7 @@ public class CardView : MonoBehaviour, ICardView
         IWorldPointProvider worldPointProvider
         )
     {
-        this.animationSettings = animationSettings;
+        AnimationSettings = animationSettings;
         this.layoutSettings = layoutSettings;
         
         draggingManager = GetComponent<IDraggingManager>() ?? gameObject.AddComponent<DraggingManager>();
@@ -115,7 +118,6 @@ public class CardView : MonoBehaviour, ICardView
     public void OnDropped()
     {
         animator.Drop();
-        animator.Move(lastLodgingPosition, animationSettings.ReturnToLocationWerePickedDuration);
 
         sortingGroup.enabled = false;
     }
@@ -147,6 +149,16 @@ public class CardView : MonoBehaviour, ICardView
             frontFace.ToggleVisibility(to == CardFace.Front);
             backFace.ToggleVisibility(to == CardFace.Back);
         });
+    }
+
+    public void Move(Vector3 toPosition)
+    {
+        animator.Move(toPosition, 0.5f);
+    }
+    
+    public IObservable<Unit> MoveAsObservable(Vector3 toPosition)
+    {
+        return animator.MoveAsObservable(toPosition, 0.5f);
     }
     
     public void SetParent(Transform asTransform)

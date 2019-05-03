@@ -15,14 +15,15 @@ public interface IShip
 {
     ShipType Type { get; }
     ISlot[] Slots { get; }
-    
-    IObservable<ICard> Boarded { get; }
-    IObservable<(ICard, ISlot)> Lodged { get; }
+    IDictionary<ResourceType, ISlotResource> Storage { get; }
+
     IObservable<Vector3> Docked { get; }
     IObservable<Vector3> Sailed { get; }
+    IObservable<ICard> Boarded { get; }
 
     void Dock(Vector3 atPosition);
     void SetSail(Vector3 toPosition);
+    void Store(IResourceCard card);
 }
 
 public abstract class Ship : IShip
@@ -34,15 +35,17 @@ public abstract class Ship : IShip
     {
         Type = type;
         Slots = slots;
+        Storage = slots.Where(slot => slot.Type == SlotType.Resource).Cast<ISlotResource>()
+            .ToDictionary(resSlot => resSlot.ResourceMask, resSlot => resSlot);
     }
     
     public ShipType Type { get; }
     public ISlot[] Slots { get; }
+    public IDictionary<ResourceType, ISlotResource> Storage { get; }
 
-    public IObservable<(ICard, ISlot)> Lodged => Slots.Select(slot => slot.Lodged.Select(card => (card, slot))).Merge();
-    public IObservable<ICard> Boarded => Slots.Where(s => s.Type == SlotType.Boarding).Select(s => s.Lodged).Merge();
     public IObservable<Vector3> Docked => docked; 
     public IObservable<Vector3> Sailed => sailed; 
+    public IObservable<ICard> Boarded => Slots.Where(s => s.Type == SlotType.Boarding).Select(s => s.Lodged).Merge();
     
     public void Dock(Vector3 atPosition)
     {
@@ -52,5 +55,16 @@ public abstract class Ship : IShip
     public void SetSail(Vector3 toPosition)
     {
         sailed.OnNext(toPosition);
+    }
+
+    public void Store(IResourceCard card)
+    {
+        if (!Storage.ContainsKey(card.ResourceType))
+        {
+            Debug.LogError($"[Ship] There's no storage Slot for Card with Resource Type {card.ResourceType}");
+            return;
+        }
+        
+        Storage[card.ResourceType].Lodge(card);
     }
 }

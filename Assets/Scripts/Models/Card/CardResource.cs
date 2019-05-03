@@ -1,17 +1,25 @@
+using System;
 using UnityEngine;
 
+[Flags]
 public enum ResourceType
 {
-    Food, 
-    Artifact,
-    Gem,
-    ArtilleryWeapon,
-    MeleeWeapon,
-    Money
+    None                = 0, 
+    Food                = 1 << 0, 
+    Artifact            = 1 << 1,
+    Gem                 = 1 << 2,
+    ArtilleryWeapon     = 1 << 3,
+    MeleeWeapon         = 1 << 4,
+    Money               = 1 << 5
+}
+
+public interface IResourceCard : ICard
+{
+    ResourceType ResourceType { get; }
 }
 
 [CreateAssetMenu(fileName = "CardResource", menuName = "Game/Card/Resource", order = 1)]
-public class CardResource : Card
+public class CardResource : Card, IResourceCard
 {
     [SerializeField] private ResourceType type;
     [SerializeField] private int value;
