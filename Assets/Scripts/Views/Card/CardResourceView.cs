@@ -2,10 +2,21 @@ using UnityEngine;
 
 public class CardResourceView : CardView
 {
-    [SerializeField] private TextMesh valueText;
-    
-    public int Value
+    [SerializeField] private SpriteRenderer suitRenderer;
+    [SerializeField] private SpriteRenderer itemRenderer;
+
+    public Sprite Item
     {
-        set => valueText.text = value.ToString();
+        set => itemRenderer.sprite = value;
+    }
+
+    public ISuit Suit
+    {
+        set
+        {
+            suitRenderer.sprite = value.Icon;
+            suitRenderer.color = value.Color;
+            cardValue.SetColor(value.Color);
+        }
     }
 }

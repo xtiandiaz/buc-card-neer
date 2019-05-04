@@ -10,8 +10,6 @@ using Debug = System.Diagnostics.Debug;
 public interface IBoardController
 {
     void Initialize();
-    void OnPicked(ICard card);
-    void OnDropped((ICard, Vector3) cardAtPosition);
 }
 
 public class BoardController : IBoardController, IDisposable
@@ -35,8 +33,6 @@ public class BoardController : IBoardController, IDisposable
 
     public void Initialize()
     {
-        disposables.Add(model.CardPicked.Subscribe(OnPicked));
-        disposables.Add(model.CardDropped.Subscribe(OnDropped));
         disposables.Add(model.ShipPlayer.Boarded
             .Where(card => (card.Type & (CardType.Pirate | CardType.Merchant)) != 0)
             .Subscribe(card =>
@@ -57,27 +53,6 @@ public class BoardController : IBoardController, IDisposable
                 
                 model.Sea.ToggleProjection(false);
             }));
-    }
-
-    public void OnPicked(ICard card)
-    {
-        foreach (var slot in model.PlaySlots)
-        {
-            slot.ToggleHighlight(slot.CanLodge(card));
-        }
-    }
-
-    public void OnDropped((ICard, Vector3) cardAtPosition)
-    {
-        foreach (var slot in model.PlaySlots)
-        {
-            slot.ToggleHighlight(false);
-        }
-
-        var (card, dropPosition) = cardAtPosition;
-
-        model.PlaySlots.FirstOrDefault(s => s.DoesContain(dropPosition) && s.CanLodge(card))?
-            .Lodge(card);
     }
 
     public void Dispose()

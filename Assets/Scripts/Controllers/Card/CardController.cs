@@ -29,7 +29,12 @@ public abstract class CardController : ICardController, IDisposable
         view.FrontFace = model.FrontFace;
         view.BackFace = model.BackFace;
 
-        disposables.Add(model.Arranging.Subscribe(_ => view.Move(model.Position)));
+        disposables.Add(model.Arranging.Subscribe(_ =>
+        {
+            view.Move(model.Position);
+            view.SortingOrder = -model.IndexInSlot;
+        }));
+        
         disposables.Add(model.Visibility.Subscribe(view.ToggleVisibility));
         disposables.Add(model.Fading.Subscribe(view.Fade));
         disposables.Add(model.Tinting.Subscribe(withColorByFactor =>
@@ -41,17 +46,17 @@ public abstract class CardController : ICardController, IDisposable
         disposables.Add(model.Facing.Skip(1).Subscribe(face => view.Flip(face, true)));
         
         disposables.Add(model.Picking.Subscribe(_ => view.OnPicked()));
-        disposables.Add(model.Dropping.Subscribe(_ => view.OnDropped()));
-        
-        disposables.Add(view.DragStarted.Subscribe(_ => model.Pick()));
-        disposables.Add(view.Dragged.Subscribe(worldPositionDelta => view.LocalPosition += worldPositionDelta));
-        disposables.Add(view.DragEnded.Subscribe(dropPosition => model.Drop(dropPosition)));
+        disposables.Add(model.Dragging.Subscribe(_ => view.Position = model.Position));
+        disposables.Add(model.Dropping.Subscribe(_ => 
+        {
+            view.OnDropped();
+            view.Move(model.Position);
+        }));
     }
 
     public virtual void Dispose()
     {
         disposables?.Dispose();
-        view.Destroy();
     }
 }
 

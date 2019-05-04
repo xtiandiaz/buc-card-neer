@@ -29,9 +29,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 3613834855205833882}
-  - {fileID: 5409458127472248234}
-  - {fileID: 2533706284673583927}
+  - {fileID: 7864990087495052822}
   m_Father: {fileID: 481732668797973513}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -96,6 +94,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   faceRenderer: {fileID: 5816174328690173628}
+  contentWrapper: {fileID: 7573384818590592576}
 --- !u!1 &684478429683352594
 GameObject:
   m_ObjectHideFlags: 0
@@ -189,6 +188,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   faceRenderer: {fileID: 5304362483095993766}
+  contentWrapper: {fileID: 0}
 --- !u!1 &757259911829361398
 GameObject:
   m_ObjectHideFlags: 0
@@ -217,7 +217,7 @@ Transform:
   m_LocalPosition: {x: -0.75, y: 1.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 8778606942855900467}
+  m_Father: {fileID: 7864990087495052822}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4273950628521150157
@@ -298,7 +298,7 @@ Transform:
   m_LocalPosition: {x: 0.95, y: 0.95, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 8778606942855900467}
+  m_Father: {fileID: 7864990087495052822}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &4646353274661442325
@@ -403,8 +403,8 @@ GameObject:
   - component: {fileID: 8007272462152954247}
   - component: {fileID: 4141944539622565620}
   - component: {fileID: 6560927429145502690}
-  - component: {fileID: 8484668480346012549}
   - component: {fileID: 6974834733811567500}
+  - component: {fileID: 4038689470109362295}
   m_Layer: 0
   m_Name: CardResource
   m_TagString: Untagged
@@ -434,10 +434,10 @@ SortingGroup:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4639396434572544147}
-  m_Enabled: 0
+  m_Enabled: 1
   m_SortingLayerID: 1266636441
   m_SortingLayer: 3
-  m_SortingOrder: 4
+  m_SortingOrder: -100
 --- !u!114 &6560927429145502690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -450,40 +450,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1db30a74872d4a6884cc61a16a44ddb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textSortingOrder: 3
-  textRenderers:
-  - {fileID: 4646353274661442325}
+  cardValue: {fileID: 4038689470109362295}
   contentWrapper: {fileID: 481732668797973513}
   sortingGroup: {fileID: 4141944539622565620}
   frontFace: {fileID: 48035879172936117}
   backFace: {fileID: 1986598855785608113}
-  valueText: {fileID: 8840121596520852176}
---- !u!61 &8484668480346012549
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4639396434572544147}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 2.5, y: 3.5}
-  m_EdgeRadius: 0
+  suitRenderer: {fileID: 4273950628521150157}
+  itemRenderer: {fileID: 5680537882834299515}
 --- !u!114 &6974834733811567500
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -498,6 +471,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetRenderers:
   - {fileID: 5304362483095993766}
+--- !u!114 &4038689470109362295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4639396434572544147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6884406bede44218f61d29735b31362, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textRenderers:
+  - {fileID: 8840121596520852176}
+  sortingLayerName: Card
+  sortingOrder: 4
 --- !u!1 &5146925509634939122
 GameObject:
   m_ObjectHideFlags: 0
@@ -526,7 +515,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.84999996, y: 0.84999996, z: 1}
   m_Children: []
-  m_Father: {fileID: 8778606942855900467}
+  m_Father: {fileID: 7864990087495052822}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &5680537882834299515
@@ -577,3 +566,36 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &7573384818590592576
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7864990087495052822}
+  m_Layer: 0
+  m_Name: Content
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7864990087495052822
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7573384818590592576}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 3613834855205833882}
+  - {fileID: 5409458127472248234}
+  - {fileID: 2533706284673583927}
+  m_Father: {fileID: 8778606942855900467}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

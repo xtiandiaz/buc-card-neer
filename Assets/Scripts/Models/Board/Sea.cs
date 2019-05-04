@@ -45,7 +45,7 @@ public class Sea : ISea
                     return;
                 }
 
-                slot.Lodge(card);
+                slot.Take(card);
             }
         }
     }

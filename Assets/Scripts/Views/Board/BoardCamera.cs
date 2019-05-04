@@ -33,7 +33,7 @@ public class BoardCamera : MonoBehaviour, IViewportProvider, IWorldPointProvider
 
     public Vector3 GetWorldPoint(Vector2 fromScreenPoint)
     {
-        return camera.ScreenToWorldPoint(new Vector3(fromScreenPoint.x, fromScreenPoint.y,
-            -camera.transform.localPosition.z));
+        return camera.ScreenToWorldPoint(
+            new Vector3(fromScreenPoint.x, fromScreenPoint.y, -camera.transform.localPosition.z));
     }
 }

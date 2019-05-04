@@ -15,7 +15,7 @@ public interface IShip
 {
     ShipType Type { get; }
     ISlot[] Slots { get; }
-    IDictionary<ResourceType, ISlotResource> Storage { get; }
+    IDictionary<ResourceType, ISlotStorage> Storage { get; }
 
     IObservable<Vector3> Docked { get; }
     IObservable<Vector3> Sailed { get; }
@@ -35,17 +35,17 @@ public abstract class Ship : IShip
     {
         Type = type;
         Slots = slots;
-        Storage = slots.Where(slot => slot.Type == SlotType.Resource).Cast<ISlotResource>()
+        Storage = slots.Where(slot => slot.Type == SlotType.Storage).Cast<ISlotStorage>()
             .ToDictionary(resSlot => resSlot.ResourceMask, resSlot => resSlot);
     }
     
     public ShipType Type { get; }
     public ISlot[] Slots { get; }
-    public IDictionary<ResourceType, ISlotResource> Storage { get; }
+    public IDictionary<ResourceType, ISlotStorage> Storage { get; }
 
     public IObservable<Vector3> Docked => docked; 
     public IObservable<Vector3> Sailed => sailed; 
-    public IObservable<ICard> Boarded => Slots.Where(s => s.Type == SlotType.Boarding).Select(s => s.Lodged).Merge();
+    public IObservable<ICard> Boarded => Slots.Where(s => s.Type == SlotType.Boarding).Select(s => s.Taking).Merge();
     
     public void Dock(Vector3 atPosition)
     {
@@ -65,6 +65,6 @@ public abstract class Ship : IShip
             return;
         }
         
-        Storage[card.ResourceType].Lodge(card);
+        Storage[card.ResourceType].Take(card);
     }
 }

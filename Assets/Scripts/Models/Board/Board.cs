@@ -20,8 +20,8 @@ public interface IBoard
     BoardMode Mode { get; set; }
     ISlot[] PlaySlots { get; }
     
-    IObservable<ICard> CardPicked { get; }
-    IObservable<(ICard, Vector3)> CardDropped { get; }
+    IObservable<ICard> CardPicking { get; }
+    IObservable<(ICard, Vector3)> CardDropping { get; }
     IObservable<BoardMode> ModeChanged { get; }
 
     void Deal();
@@ -67,10 +67,10 @@ public class Board : IBoard
     public IDeck[] Decks { get; }
     public ISlot[] PlaySlots { get; private set; }
 
-    public IObservable<ICard> CardPicked => 
+    public IObservable<ICard> CardPicking => 
         Decks.Select(d => d.Supplied).Merge().SelectMany(c => c.Picking.Select(_ => c));
     
-    public IObservable<(ICard, Vector3)> CardDropped =>
+    public IObservable<(ICard, Vector3)> CardDropping =>
         Decks.Select(d => d.Supplied).Merge().SelectMany(c => c.Dropping.Select(dropPosition => (c, dropPosition)));
     
     public ShipPlayer ShipPlayer { get; private set; }

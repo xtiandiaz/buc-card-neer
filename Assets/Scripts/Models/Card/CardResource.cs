@@ -16,17 +16,27 @@ public enum ResourceType
 public interface IResourceCard : ICard
 {
     ResourceType ResourceType { get; }
+    Sprite Item { get; }
+    ISuit Suit { get; }
+    bool IsTreasure { get; }
+    bool WasPaidFor { get; set; }
 }
 
 [CreateAssetMenu(fileName = "CardResource", menuName = "Game/Card/Resource", order = 1)]
 public class CardResource : Card, IResourceCard
 {
-    [SerializeField] private ResourceType type;
     [SerializeField] private int value;
+    [SerializeField] private Sprite item;
+    [SerializeField] private Suit suit;
+    [SerializeField] private bool isTreasure;
 
     public override int Value => value;
     public override CardType Type => CardType.Resource;
     public override CardType InteractionMask => CardType.Pirate | CardType.Merchant | CardType.Player;
-    public ResourceType ResourceType => type;
-
+    
+    public ResourceType ResourceType => suit.ResourceType;
+    public Sprite Item => item;
+    public ISuit Suit => suit;
+    public bool IsTreasure => isTreasure;
+    public bool WasPaidFor { get; set; }
 }

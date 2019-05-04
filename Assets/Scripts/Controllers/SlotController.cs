@@ -15,7 +15,10 @@ public class SlotController : ISlotController, IDisposable
     {
     }
     
-    private static readonly Subject<(ICard, ISlot)> Lodged = new Subject<(ICard, ISlot)>();
+    private static readonly Subject<(ICard, ISlot)> Picking = new Subject<(ICard, ISlot)>();
+    private static readonly Subject<(ICard, ISlot, Vector3)> Dropping = new Subject<(ICard, ISlot, Vector3)>();
+    private static readonly Subject<(ICard, ISlot)> Taking = new Subject<(ICard, ISlot)>();
+    
     private readonly ISlot model;
     private readonly ISlotView view;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
@@ -29,21 +32,70 @@ public class SlotController : ISlotController, IDisposable
     public void Initialize()
     {
         model.Bounds = view.Bounds;
-        model.Arrangement = view.Arrangement;
+        model.ArrangementSettings = view.ArrangementSettings;
         model.Position = view.Position;
         
-        disposables.Add(model.Lodged.Subscribe(card => Lodged.OnNext((card, model))));
+        disposables.Add(model.Highlighting.Subscribe(view.ToggleHighlight));
+        disposables.Add(model.Visibility.Subscribe(view.ToggleVisibility));
+        disposables.Add(model.Taking.Subscribe(card => Taking.OnNext((card, model))));
         
-        disposables.Add(Lodged
-            .Where(cardInSlot => cardInSlot.Item2 != model && model.DoesContain(cardInSlot.Item1))
-            .Subscribe(cardInSlot => model.Release(cardInSlot.Item1)));
+        disposables.Add(Taking
+            .Where(cardInSlot =>
+            {
+                var (card, slot) = cardInSlot;
+                return slot != model && model.DoesContain(card);
+            })
+            .Select(cardInSlot => cardInSlot.Item1)
+            .Subscribe(card => model.Release(card)));
+
+        disposables.Add(Picking
+            .Subscribe(cardFromSlot =>
+            {
+                var (card, slot) = cardFromSlot;
+                model.ToggleHighlight(model.CanTake(card, slot));
+            }));
         
-        disposables.Add(model.BecameHighlighted.Subscribe(view.ToggleHighlight));
-        disposables.Add(model.BecameVisible.Subscribe(view.ToggleVisibility));
+        disposables.Add(Dropping
+            .Do(_ => model.ToggleHighlight(false))
+            .Where(cardFromSlotAtPosition => model.DoesContain(cardFromSlotAtPosition.Item3))
+            .Subscribe(cardFromSlotAtPosition =>
+            {
+                var (card, slot, position) = cardFromSlotAtPosition;
+
+                if (model.CanTake(card, slot))
+                    model.Take(card);
+            }));
+
+        #region Dragging
+
+        disposables.Add(view.DraggingStart
+            .SkipWhile(_ => model.CardCount == 0)
+            .Subscribe(_ =>
+            {
+                model.TopCard.Pick();
+                    
+                Picking.OnNext((model.TopCard, model));            
+            }));
+        
+        disposables.Add(view.Dragging
+            .SkipWhile(_ => model.CardCount == 0)
+            .Subscribe(position => model.TopCard.Drag(position)));
+        
+        disposables.Add(view.DraggingEnd
+            .SkipWhile(_ => model.CardCount == 0)
+            .Subscribe(position =>
+            {
+                model.TopCard.Drop(position);
+                model.ArrangeCards();
+                    
+                Dropping.OnNext((model.TopCard, model, position));
+            }));
+
+        #endregion
     }
 
     public void Dispose()
     {
-        disposables?.Dispose();
+        disposables.Dispose();
     }
 }

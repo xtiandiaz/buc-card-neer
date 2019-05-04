@@ -2,14 +2,14 @@ using Zenject;
 
 public class CardFoeController : CardController
 {
-    public class Factory : PlaceholderFactory<CardPirate, CardFoeView, CardFoeController>
+    public class Factory : PlaceholderFactory<CardPirate, CardPirateView, CardFoeController>
     {
     }
     
     private readonly CardPirate model;
-    private readonly CardFoeView view;
+    private readonly CardPirateView view;
     
-    public CardFoeController(CardPirate model, CardFoeView view) : base(model, view)
+    public CardFoeController(CardPirate model, CardPirateView view) : base(model, view)
     {
         this.model = model;
         this.view = view;

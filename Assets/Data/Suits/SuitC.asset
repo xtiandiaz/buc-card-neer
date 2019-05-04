@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c367d214a56c4f5a937c565107e6a6c, type: 3}
+  m_Script: {fileID: 11500000, guid: c09d5aa2d7774994982771bace4d72f9, type: 3}
   m_Name: SuitC
   m_EditorClassIdentifier: 
-  color: {r: 0.9019608, g: 0.49411765, b: 0.13333334, a: 1}
-  iconSprite: {fileID: 9021121493683780791, guid: 5a693d6d101cd4f3289c7ae1a751308f,
-    type: 3}
+  resourceType: 4
+  icon: {fileID: -7624950995120954534, guid: 5a693d6d101cd4f3289c7ae1a751308f, type: 3}
+  color: {r: 0.18039216, g: 0.8, b: 0.44313726, a: 1}

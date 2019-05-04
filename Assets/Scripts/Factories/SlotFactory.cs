@@ -5,7 +5,7 @@ public class SlotFactory : ISlotFactory
     private readonly SlotBoarding.Factory modelBoardingFactory;
     private readonly SlotDefense.Factory modelDefenseFactory;
     private readonly SlotPlayer.Factory modelPlayerFactory;
-    private readonly SlotResource.Factory modelResourceFactory;
+    private readonly SlotStorage.Factory modelResourceFactory;
     private readonly SlotEvent.Factory modelEventFactory;
     private readonly SlotController.Factory controllerFactory;
 
@@ -13,7 +13,7 @@ public class SlotFactory : ISlotFactory
         SlotBoarding.Factory modelBoardingFactory,
         SlotDefense.Factory modelDefenseFactory,
         SlotPlayer.Factory modelPlayerFactory,
-        SlotResource.Factory modelResourceFactory,
+        SlotStorage.Factory modelResourceFactory,
         SlotEvent.Factory modelEventFactory,
         SlotController.Factory controllerFactory
         )
@@ -49,11 +49,10 @@ public class SlotFactory : ISlotFactory
                 return modelBoardingFactory.Create(capacity);
             case SlotType.Defense:
                 return modelDefenseFactory.Create(capacity);
-            case SlotType.Resource:
+            case SlotType.Storage:
                 return modelResourceFactory.Create(fromView.ResourceMask, capacity);
             case SlotType.Player:
                 return modelPlayerFactory.Create(capacity);
-            case SlotType.All:
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }

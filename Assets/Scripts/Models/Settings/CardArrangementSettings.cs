@@ -1,27 +1,29 @@
 using System;
 using UnityEngine;
 
-public interface ICardArrangement
+public interface ICardArrangementSettings
 {
-    Action<ICard, int, int> Decorate { get; }
+    bool ShouldFog { get; }
+    Color FogColor { get; }
+    float FogDamping { get; }
     
     Vector3 Transform(Vector3 position, int forIndex, int inCount);
 }
 
-[CreateAssetMenu(fileName = "CardArrangement", menuName = "Game/Card Arrangement", order = 1)]
-public class CardArrangement : ScriptableObject, ICardArrangement
+[CreateAssetMenu(fileName = "CardArrangementSettings", menuName = "Game/Settings/Card Arrangement", order = 1)]
+public class CardArrangementSettings : ScriptableObject, ICardArrangementSettings
 {
     [SerializeField] private Vector3 offset;
     [SerializeField] private AnimationCurve offsetFunction;
+    
+    [Header("Fogging")]
+    [SerializeField] private bool shouldFog;
+    [SerializeField] private Color fogColor = Color.white;
     [SerializeField] [Range(0, 1f)] private float fogDamping = 0.5f;
-    [SerializeField] private Color fog;
 
-    public Action<ICard, int, int> Decorate => (card, atIndex, inCount) =>
-    {
-        var t = atIndex / (float) inCount;
-        
-        card.Fog(fog, t * (1f - fogDamping));
-    };
+    public bool ShouldFog => shouldFog;
+    public Color FogColor => fogColor;
+    public float FogDamping => fogDamping;
 
     public Vector3 Transform(Vector3 position, int forIndex, int inCount)
     {

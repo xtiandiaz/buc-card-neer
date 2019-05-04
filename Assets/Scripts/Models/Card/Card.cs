@@ -32,6 +32,7 @@ public interface ICard
     
     IObservable<Unit> Arranging { get; }
     IObservable<Unit> Picking { get; }
+    IObservable<Unit> Dragging { get; }
     IObservable<Vector3> Dropping { get; }
     IObservable<CardFace> Facing { get; }
     IObservable<bool> Visibility { get; }
@@ -40,9 +41,10 @@ public interface ICard
     IObservable<(Color, float)> Fogging { get; }
     
     void Pick();
+    void Drag(Vector3 toPosition);
     void Drop(Vector3 atPosition);
     void Flip(CardFace to);
-    void Arrange(Vector3 atPosition, int withIndex);
+    void Arrange(Vector3 atPosition, int withIndex, int fromTotal, ICardArrangementSettings andWithSettings);
     void Fade(float toAlphaValue);
     void Tint(Color withColor, float byFactor);
     void Fog(Color withColor, float byFactor);
@@ -58,6 +60,7 @@ public abstract class Card : ScriptableObject, ICard
     private readonly ReactiveProperty<bool> visibility = new ReactiveProperty<bool>(true);
     private readonly Subject<Unit> arranging = new Subject<Unit>();
     private readonly Subject<Unit> picking = new Subject<Unit>();
+    private readonly Subject<Unit> dragging = new Subject<Unit>();
     private readonly Subject<Vector3> dropping = new Subject<Vector3>();
     private readonly Subject<float> fading = new Subject<float>();
     private readonly Subject<(Color, float)> tinting = new Subject<(Color, float)>();
@@ -82,6 +85,7 @@ public abstract class Card : ScriptableObject, ICard
 
     public IObservable<Unit> Arranging => arranging;
     public IObservable<Unit> Picking => picking;
+    public IObservable<Unit> Dragging => dragging;
     public IObservable<Vector3> Dropping => dropping;
     public IObservable<CardFace> Facing => facing.DistinctUntilChanged();
     public IObservable<bool> Visibility => visibility;
@@ -91,11 +95,22 @@ public abstract class Card : ScriptableObject, ICard
 
     public void Pick()
     {
+        Position = new Vector3(Position.x, Position.y, 0);
+        
         picking.OnNext(Unit.Default);
+    }
+    
+    public void Drag(Vector3 toPosition)
+    {
+        Position = new Vector3(toPosition.x, toPosition.y, Position.z);
+        
+        dragging.OnNext(Unit.Default);
     }
 
     public void Drop(Vector3 atPosition)
     {
+        Position = atPosition;
+        
         dropping.OnNext(atPosition);
     }
 
@@ -104,10 +119,13 @@ public abstract class Card : ScriptableObject, ICard
         facing.Value = to;
     }
 
-    public void Arrange(Vector3 atPosition, int withIndex)
+    public void Arrange(Vector3 atPosition, int withIndex, int fromTotal, ICardArrangementSettings andWithSettings)
     {
-        Position = atPosition;
+        Position = andWithSettings.Transform(atPosition, withIndex, fromTotal);
         IndexInSlot = withIndex;
+
+        if (andWithSettings.ShouldFog)
+            Fog(andWithSettings.FogColor, andWithSettings.FogDamping * withIndex / fromTotal);
         
         arranging.OnNext(Unit.Default);
     }

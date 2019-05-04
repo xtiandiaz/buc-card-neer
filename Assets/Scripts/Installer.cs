@@ -44,10 +44,10 @@ public class Installer : MonoInstaller
         Container.BindFactory<uint, SlotDefense, SlotDefense.Factory>();
         Container.BindFactory<uint, SlotEvent, SlotEvent.Factory>();
         Container.BindFactory<uint, SlotPlayer, SlotPlayer.Factory>();
-        Container.BindFactory<ResourceType, uint, SlotResource, SlotResource.Factory>();
+        Container.BindFactory<ResourceType, uint, SlotStorage, SlotStorage.Factory>();
         Container.BindFactory<ISlot, ISlotView, SlotController, SlotController.Factory>().AsSingle();
 
-        Container.BindFactory<CardPirate, CardFoeView, CardFoeController, CardFoeController.Factory>().AsSingle();
+        Container.BindFactory<CardPirate, CardPirateView, CardFoeController, CardFoeController.Factory>().AsSingle();
         Container.BindFactory<CardMerchant, CardMerchantView, CardMerchantController, CardMerchantController.Factory>()
             .AsSingle();
         Container.BindFactory<CardResource, CardResourceView, CardResourceController, CardResourceController.Factory>()
