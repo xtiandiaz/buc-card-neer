@@ -5,10 +5,17 @@ using UnityEngine;
 [Flags]
 public enum CardType
 {
-    Player     = 1 << 0,
-    Resource   = 1 << 1,
-    Pirate     = 1 << 2,
-    Merchant   = 1 << 3
+    Player             = 1 << 0,
+    Pirate             = 1 << 1,
+    Merchant           = 1 << 2,
+    Food               = 1 << 3,
+    Artifact           = 1 << 4,
+    Gem                = 1 << 5,
+    MeleeWeapon        = 1 << 6,
+    ArtilleryWeapon    = 1 << 7,
+    Money              = 1 << 8,
+                         
+    Resource           = Food | Gem | Artifact | MeleeWeapon | ArtilleryWeapon
 }
 
 public enum CardFace

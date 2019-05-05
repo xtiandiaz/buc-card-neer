@@ -22,7 +22,7 @@ public class CardFactory : ICardFactory
     
     public ICard Create(ICard forModel)
     {
-        var view = viewFactory.Create($"Prefabs/Card{forModel.Type.ToString()}");
+        var view = viewFactory.Create(GetViewResourcePath(forModel.Type));
         var controller = CreateController(forModel, view);
         
         controller.Initialize();
@@ -41,14 +41,34 @@ public class CardFactory : ICardFactory
             case CardType.Merchant:
                 
                 return controllerFactoryMerchant.Create((CardMerchant) forModel, (CardMerchantView) andView);
-                
-            case CardType.Resource:
-
-                return controllerFactoryResource.Create((CardResource) forModel, (CardResourceView) andView); 
             
-            case CardType.Player:
             default:
+                
+                if ((forModel.Type & CardType.Resource) != 0)
+                    return controllerFactoryResource.Create((CardResource) forModel, (CardResourceView) andView); 
+                
                 throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private string GetViewResourcePath(CardType forCardType)
+    {
+        const string basePath = "Prefabs/Card";
+        
+        switch (forCardType)
+        {
+            case CardType.Player:
+            case CardType.Pirate:
+            case CardType.Merchant:
+
+                return basePath + forCardType;
+
+            default:
+                
+                if ((forCardType & CardType.Resource) != 0)
+                    return basePath + "Resource"; 
+                
+                throw new ArgumentOutOfRangeException(nameof(forCardType), forCardType, null);
         }
     }
 }

@@ -4,13 +4,13 @@ using UnityEngine;
 [Flags]
 public enum ResourceType
 {
-    None                = 0, 
-    Food                = 1 << 0, 
-    Artifact            = 1 << 1,
-    Gem                 = 1 << 2,
-    ArtilleryWeapon     = 1 << 3,
-    MeleeWeapon         = 1 << 4,
-    Money               = 1 << 5
+    None                = 0,
+    Food                = CardType.Food,
+    Artifact            = CardType.Artifact,
+    Gem                 = CardType.Gem,
+    ArtilleryWeapon     = CardType.ArtilleryWeapon,
+    MeleeWeapon         = CardType.MeleeWeapon,
+    Money               = CardType.Money
 }
 
 public interface IResourceCard : ICard
@@ -31,7 +31,7 @@ public class CardResource : Card, IResourceCard
     [SerializeField] private bool isTreasure;
 
     public override int Value => value;
-    public override CardType Type => CardType.Resource;
+    public override CardType Type => (CardType) ResourceType;
     public override CardType InteractionMask => CardType.Pirate | CardType.Merchant | CardType.Player;
     
     public ResourceType ResourceType => suit.ResourceType;

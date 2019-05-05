@@ -14,6 +14,6 @@ public class SlotEvent : Slot
 
     public override bool CanTake(ICard card, ISlot fromSlot)
     {
-        return false;
+        return fromSlot.Type == SlotType.Storage & card.Type == CardType.ArtilleryWeapon;
     }
 }

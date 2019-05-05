@@ -39,7 +39,7 @@ public class ShipController : IShipController, IDisposable
         disposables.Add(model.Boarded
             .Do(card =>  card.Flip(CardFace.Front))
             .Delay(TimeSpan.FromSeconds(cardAnimationSettings.BoardingDelay))
-            .Where(card => card.Type == CardType.Resource)
+            .Where(card => (card.Type & CardType.Resource) != 0)
             .Do(card => model.Store((IResourceCard) card))
             .Subscribe());
     }

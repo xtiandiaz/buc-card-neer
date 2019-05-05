@@ -3,7 +3,6 @@ using System;
 public class SlotFactory : ISlotFactory
 {
     private readonly SlotBoarding.Factory modelBoardingFactory;
-    private readonly SlotDefense.Factory modelDefenseFactory;
     private readonly SlotPlayer.Factory modelPlayerFactory;
     private readonly SlotStorage.Factory modelResourceFactory;
     private readonly SlotEvent.Factory modelEventFactory;
@@ -11,7 +10,6 @@ public class SlotFactory : ISlotFactory
 
     private SlotFactory(
         SlotBoarding.Factory modelBoardingFactory,
-        SlotDefense.Factory modelDefenseFactory,
         SlotPlayer.Factory modelPlayerFactory,
         SlotStorage.Factory modelResourceFactory,
         SlotEvent.Factory modelEventFactory,
@@ -19,7 +17,6 @@ public class SlotFactory : ISlotFactory
         )
     {
         this.modelBoardingFactory = modelBoardingFactory;
-        this.modelDefenseFactory = modelDefenseFactory;
         this.modelPlayerFactory = modelPlayerFactory;
         this.modelResourceFactory = modelResourceFactory;
         this.modelEventFactory = modelEventFactory;
@@ -47,8 +44,6 @@ public class SlotFactory : ISlotFactory
                 return modelEventFactory.Create(capacity);
             case SlotType.Boarding:
                 return modelBoardingFactory.Create(capacity);
-            case SlotType.Defense:
-                return modelDefenseFactory.Create(capacity);
             case SlotType.Storage:
                 return modelResourceFactory.Create(fromView.ResourceMask, capacity);
             case SlotType.Player:

@@ -16,6 +16,6 @@ MonoBehaviour:
   <LiftDepth>k__BackingField: 2.5
   <LiftDuration>k__BackingField: 0.2
   <ReturnToLocationWerePickedDuration>k__BackingField: 0.5
-  <BoardingDelay>k__BackingField: 0.75
+  <BoardingDelay>k__BackingField: 0.65
   <InEase>k__BackingField: 11
   <OutEase>k__BackingField: 12

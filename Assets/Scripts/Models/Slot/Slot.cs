@@ -9,9 +9,8 @@ public enum SlotType
 {
     Event     = 1 << 0,
     Boarding  = 1 << 1,
-    Defense   = 1 << 2,
-    Storage   = 1 << 3,
-    Player    = 1 << 4
+    Storage   = 1 << 2,
+    Player    = 1 << 3
 }
 
 public interface ISlot

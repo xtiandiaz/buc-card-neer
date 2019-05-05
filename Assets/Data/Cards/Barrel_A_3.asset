@@ -17,3 +17,4 @@ MonoBehaviour:
   value: 3
   item: {fileID: 21300000, guid: 483e3eb7381824761b245f673d0ee3d2, type: 3}
   suit: {fileID: 11400000, guid: 83397d50a3fc04695a825c34932e8b14, type: 2}
+  isTreasure: 1

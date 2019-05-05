@@ -41,7 +41,6 @@ public class Installer : MonoInstaller
         
         // Deck
         Container.BindFactory<uint, SlotBoarding, SlotBoarding.Factory>();
-        Container.BindFactory<uint, SlotDefense, SlotDefense.Factory>();
         Container.BindFactory<uint, SlotEvent, SlotEvent.Factory>();
         Container.BindFactory<uint, SlotPlayer, SlotPlayer.Factory>();
         Container.BindFactory<ResourceType, uint, SlotStorage, SlotStorage.Factory>();
