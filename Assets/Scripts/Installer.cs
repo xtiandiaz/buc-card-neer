@@ -58,6 +58,7 @@ public class Installer : MonoInstaller
         
         // Board 
         Container.BindInterfacesAndSelfTo<BoardCamera>().FromInstance(camera).AsSingle();
+        Container.Bind<Viewport>().FromMethod(() => camera.GetViewport(0)).AsSingle();
         Container.Bind<BoardLayoutSettings>().FromInstance(boardLayoutSettings).AsSingle();
         Container.BindInterfacesAndSelfTo<BoardView>().FromInstance(boardView).AsSingle();
         

@@ -31,12 +31,13 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 057ef49c2ccb94364bff7c40fbaf4540, type: 3}
-    totalSpriteSurfaceArea: 2600000
+    totalSpriteSurfaceArea: 3650000
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 5c6e2271b332941f39adc6f1e3ef225e, type: 3}
   - {fileID: 21300000, guid: 7a434bc10d38f48d282de428a5842b2a, type: 3}
+  - {fileID: 21300000, guid: 6522bb42bfd0941dfaa47b6ae7b5d3a5, type: 3}
   - {fileID: 21300000, guid: 0617bfb31863243ce974c2f6b6ae73a6, type: 3}
   - {fileID: 21300000, guid: 365e4437cedda4a8a972e0b0f354905e, type: 3}
   - {fileID: 21300000, guid: 483e3eb7381824761b245f673d0ee3d2, type: 3}
@@ -44,7 +45,9 @@ SpriteAtlas:
   - {fileID: 21300004, guid: 483e3eb7381824761b245f673d0ee3d2, type: 3}
   - {fileID: 21300006, guid: 483e3eb7381824761b245f673d0ee3d2, type: 3}
   - {fileID: 21300008, guid: 483e3eb7381824761b245f673d0ee3d2, type: 3}
+  - {fileID: 21300000, guid: 35ad02d7340304d4cba0d0c0f2c906c9, type: 3}
   - {fileID: 21300000, guid: 0322a7f8a66e9444e9885337a5ec4d40, type: 3}
+  - {fileID: 21300000, guid: b45d4a9a19d8c4b1da98eaab45c2c82a, type: 3}
   - {fileID: -7624950995120954534, guid: 5a693d6d101cd4f3289c7ae1a751308f, type: 3}
   - {fileID: 9021121493683780791, guid: 5a693d6d101cd4f3289c7ae1a751308f, type: 3}
   - {fileID: 6909190012271465912, guid: 5a693d6d101cd4f3289c7ae1a751308f, type: 3}
@@ -53,6 +56,7 @@ SpriteAtlas:
   m_PackedSpriteNamesToIndex:
   - CardBack
   - CardCrate
+  - CardWeaponMelee
   - CardItem
   - CardChest
   - Items_0
@@ -60,7 +64,9 @@ SpriteAtlas:
   - Items_2
   - Items_3
   - Items_4
+  - CardWeaponArtilleryBack
   - CardBarrel
+  - CardWeaponArtilleryFront
   - SuitIcons_3
   - SuitIcons_2
   - SuitIcons_1

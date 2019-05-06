@@ -15,7 +15,7 @@ public class CardResourceController : CardController
         this.view = view;
     }
 
-    public override void Initialize()
+    protected override void Initialize()
     {
         base.Initialize();
 

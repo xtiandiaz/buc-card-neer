@@ -7,7 +7,6 @@ using Zenject;
 
 public interface ICardController
 {
-    void Initialize();
 }
 
 public abstract class CardController : ICardController, IDisposable
@@ -18,17 +17,22 @@ public abstract class CardController : ICardController, IDisposable
     private readonly ObservableEventTrigger eventTrigger;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
+    [Inject] private Viewport viewport;
+    [Inject] private BoardLayoutSettings layoutSettings;
+
     protected CardController(ICard model, ICardView view)
     {
         this.model = model;
         this.view = view;
     }
-
-    public virtual void Initialize()
+    
+    [Inject]
+    protected virtual void Initialize()
     {
         view.FrontFace = model.FrontFace;
         view.BackFace = model.BackFace;
         view.Value = model.Value;
+        view.Position = Vector2.up * (viewport.Size.y + layoutSettings.CardSize.y) * 0.5f;
 
         disposables.Add(model.Arranging.Subscribe(_ =>
         {
@@ -37,11 +41,6 @@ public abstract class CardController : ICardController, IDisposable
         }));
         
         disposables.Add(model.Visibility.Subscribe(view.ToggleVisibility));
-        disposables.Add(model.Fading.Subscribe(view.Fade));
-        disposables.Add(model.Tinting.Subscribe(withColorByFactor =>
-            view.Tint(withColorByFactor.Item1, withColorByFactor.Item2)));
-        disposables.Add(model.Fogging.Subscribe(withColorByFactor =>
-            view.Fog(withColorByFactor.Item1, withColorByFactor.Item2)));
         
         view.Flip(model.Face, false);
         disposables.Add(model.Facing.Skip(1).Subscribe(face => view.Flip(face, true)));
@@ -67,6 +66,18 @@ public abstract class CardController : ICardController, IDisposable
             view.Destroy();
             Dispose();
         }));
+
+        #region Effects
+
+        disposables.Add(model.Fading.Subscribe(view.Fade));
+        
+        disposables.Add(model.Tinting.Subscribe(withColorByFactor => 
+            view.Tint(withColorByFactor.Item1, withColorByFactor.Item2)));
+        
+        disposables.Add(model.Fogging.Subscribe(withColorByFactor =>
+            view.Fog(withColorByFactor.Item1, withColorByFactor.Item2)));
+
+        #endregion
     }
 
     public virtual void Dispose()

@@ -11,11 +11,11 @@ public enum CardType
     Food               = 1 << 3,
     Artifact           = 1 << 4,
     Gem                = 1 << 5,
-    MeleeWeapon        = 1 << 6,
-    ArtilleryWeapon    = 1 << 7,
+    WeaponMelee        = 1 << 6,
+    WeaponArtillery    = 1 << 7,
     Money              = 1 << 8,
                          
-    Resource           = Food | Gem | Artifact | MeleeWeapon | ArtilleryWeapon
+    Resource           = Food | Gem | Artifact | WeaponMelee | WeaponArtillery
 }
 
 public enum CardFace

@@ -10,8 +10,8 @@ public enum ResourceType
     Food                = CardType.Food,
     Artifact            = CardType.Artifact,
     Gem                 = CardType.Gem,
-    ArtilleryWeapon     = CardType.ArtilleryWeapon,
-    MeleeWeapon         = CardType.MeleeWeapon,
+    WeaponArtillery     = CardType.WeaponArtillery,
+    WeaponMelee         = CardType.WeaponMelee,
     Money               = CardType.Money
 }
 
