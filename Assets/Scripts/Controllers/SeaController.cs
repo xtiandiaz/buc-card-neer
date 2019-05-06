@@ -29,7 +29,7 @@ public class SeaController : ISeaController, IDisposable
     {
         disposables.Add(
             model.UpdatedProjectionState
-                .Subscribe(isProjected => view.ToggleProjection(isProjected, ProjectionDurationInSeconds)));
+                .Subscribe(isProjected => view.ToggleProjection(isProjected, ProjectionDurationInSeconds, 0.65f)));
     }
 
     public void Dispose()

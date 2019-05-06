@@ -4,18 +4,20 @@ using Zenject;
 
 public class ShipPlayerController : ShipController
 {
-    public class Factory : PlaceholderFactory<IShipPlayer, ShipPlayerView, ShipPlayerController>
+    public class Factory : PlaceholderFactory<IShipPlayer, ShipPlayerView, ICardPlayer, ShipPlayerController>
     {
     }
     
     private readonly IShipPlayer model;
     private readonly ShipPlayerView view;
+    private readonly ICardPlayer playerCard;
     private CardAnimationSettings cardAnimationSettings;
     
-    private ShipPlayerController(IShipPlayer model, ShipPlayerView view) : base(model, view)
+    private ShipPlayerController(IShipPlayer model, ShipPlayerView view, ICardPlayer playerCard) : base(model, view)
     {
         this.model = model;
         this.view = view;
+        this.playerCard = playerCard;
     }
 
     [Inject]
@@ -27,6 +29,8 @@ public class ShipPlayerController : ShipController
     public override void Initialize()
     {
         base.Initialize();
+        
+        model.PlayerSlot.Take(playerCard);
             
         disposables.Add(model.Boarding
             .Do(card =>  card.Flip(CardFace.Front))

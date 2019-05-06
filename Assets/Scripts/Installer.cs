@@ -35,7 +35,8 @@ public class Installer : MonoInstaller
         Container.BindFactory<ISlot[], ShipPirate, ShipPirate.Factory>().AsSingle();
         
         Container.BindFactory<IShip, IShipView, ShipController, ShipController.Factory>().AsSingle();
-        Container.BindFactory<IShipPlayer, ShipPlayerView, ShipPlayerController, ShipPlayerController.Factory>().AsSingle();
+        Container.BindFactory<IShipPlayer, ShipPlayerView, ICardPlayer, ShipPlayerController, ShipPlayerController.Factory>()
+            .AsSingle();
 
         Container.BindFactory<IDeck, DeckController, DeckController.Factory>().AsSingle();
 

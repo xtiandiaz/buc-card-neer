@@ -15,6 +15,8 @@ public class ShipFactory : IShipFactory
     private readonly ShipController.Factory controllerFactory;
     private readonly ShipPlayerController.Factory controllerFactoryPlayer;
     private readonly ISlotFactory slotFactory;
+    private readonly ICardFactory cardFactory;
+    private readonly ICardPlayer cardPlayer;
 
     private ShipFactory(
         ShipPlayer.Factory modelFactoryPlayer,
@@ -22,7 +24,9 @@ public class ShipFactory : IShipFactory
         ShipPirate.Factory modelFactoryPirate,    
         ShipController.Factory controllerFactory,
         ShipPlayerController.Factory controllerFactoryPlayer,
-        ISlotFactory slotFactory
+        ISlotFactory slotFactory,
+        ICardFactory cardFactory,
+        ICardPlayer cardPlayer
     )
     {
         this.modelFactoryPlayer = modelFactoryPlayer;
@@ -33,6 +37,8 @@ public class ShipFactory : IShipFactory
         this.controllerFactoryPlayer = controllerFactoryPlayer;
         
         this.slotFactory = slotFactory;
+        this.cardFactory = cardFactory;
+        this.cardPlayer = cardPlayer;
     }
     
     public IShip Create(IShipView fromView)
@@ -73,8 +79,11 @@ public class ShipFactory : IShipFactory
         switch (withModel.Type)
         {
             case ShipType.Player:
-
-                return controllerFactoryPlayer.Create((IShipPlayer) withModel, (ShipPlayerView) andView);
+                
+                return controllerFactoryPlayer.Create(
+                    (IShipPlayer) withModel, 
+                    (ShipPlayerView) andView,
+                    (ICardPlayer) cardFactory.Create(cardPlayer));
 
             default:
 

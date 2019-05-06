@@ -9,7 +9,7 @@ public interface ISea
     
     IObservable<bool> UpdatedProjectionState { get; }
     
-    void Populate(IDeck fromDeck);
+    void Deal(IDeck fromDeck);
     void ToggleProjection(bool on);
 }
 
@@ -29,7 +29,7 @@ public class Sea : ISea
     public ISlot[] Slots { get; }
     public IObservable<bool> UpdatedProjectionState => isProjected;
 
-    public void Populate(IDeck fromDeck)
+    public void Deal(IDeck fromDeck)
     {
         foreach (var slot in Slots)
         {

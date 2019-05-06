@@ -35,6 +35,7 @@ public class Board : IBoard
     
     private readonly ReactiveProperty<BoardMode> mode = new ReactiveProperty<BoardMode>(BoardMode.Seafaring);
     private readonly IDeck eventDeck;
+    private readonly IDeck resourceDeck;
     
     private Board(ISea sea, IShip[] ships, IDeck[] decks)
     {
@@ -43,6 +44,7 @@ public class Board : IBoard
         Decks = decks;
 
         eventDeck = Decks.FirstOrDefault(d => d.Type == DeckType.Events);
+        resourceDeck = Decks.FirstOrDefault(d => d.Type == DeckType.Resources);
         
         ShipPlayer = (ShipPlayer) Ships.First(s => s.Type == ShipType.Player);
         ShipMerchant = (ShipMerchant) Ships.First(s => s.Type == ShipType.Merchant);
@@ -79,6 +81,7 @@ public class Board : IBoard
 
     public void Deal()
     {
-        Sea.Populate(eventDeck);
+        Sea.Deal(eventDeck);
+        ShipPlayer.Supply(resourceDeck, 5);
     }
 }

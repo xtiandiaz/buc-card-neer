@@ -15,27 +15,17 @@ public class BoardController : IBoardController, IDisposable
     
     private readonly Board model;
     private readonly BoardView view;
-    private readonly ICardFactory cardFactory;
     private readonly ICardPlayer playerCard;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
-    private BoardController(
-        Board model,
-        BoardView view, 
-        ICardFactory cardFactory, 
-        ICardPlayer playerCard
-        )
+    private BoardController(Board model, BoardView view)
     {
         this.model = model;
         this.view = view;
-        this.cardFactory = cardFactory;
-        this.playerCard = playerCard;
     }
 
     public void Initialize()
     {
-        model.ShipPlayer.PlayerSlot.Take(cardFactory.Create(playerCard));
-
         #region Ship Docking & Sailing
 
         disposables.Add(model.ShipPlayer.PirateBoarding

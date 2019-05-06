@@ -2733,6 +2733,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   decks:
   - {fileID: 11400000, guid: 21c0d3a12db394182b1bc2861f9571c9, type: 2}
+  - {fileID: 11400000, guid: c855d934f6dbe48dd98dec7ed328d3b3, type: 2}
   sea: {fileID: 1851111359}
   shipPlayer: {fileID: 1586207629}
   shipMerchant: {fileID: 1799396279}

@@ -22,6 +22,7 @@ public interface IShip
     IObservable<Vector3> Sailing { get; }
     IObservable<ICard> Boarding { get; }
 
+    void Supply(IDeck fromDeck, int count);
     void Dock(Vector3 atPosition);
     void SetSail(Vector3 toPosition);
     void Store(IResourceCard card);
@@ -49,7 +50,19 @@ public abstract class Ship : IShip
     public IObservable<Vector3> Docking => docking; 
     public IObservable<Vector3> Sailing => sailing;
     public IObservable<ICard> Boarding => BoardingSlot.Taking;
-    
+
+    public void Supply(IDeck fromDeck, int count)
+    {
+        for (var i = 0; i < count; i++)
+        {
+            var card = fromDeck.Supply(false);
+            if (card == null)
+                break;
+            
+            Store((IResourceCard) card);
+        }
+    }
+
     public void Dock(Vector3 atPosition)
     {
         docking.OnNext(atPosition);
