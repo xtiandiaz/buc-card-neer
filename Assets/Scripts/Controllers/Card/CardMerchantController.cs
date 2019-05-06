@@ -14,9 +14,4 @@ public class CardMerchantController : CardController
         this.model = model;
         this.view = view;
     }
-
-    public override void Initialize()
-    {
-        base.Initialize();
-    }
 }

@@ -15,11 +15,12 @@ public interface IShip
 {
     ShipType Type { get; }
     ISlot[] Slots { get; }
+    ISlot BoardingSlot { get; }
     IDictionary<ResourceType, ISlotStorage> Storage { get; }
 
-    IObservable<Vector3> Docked { get; }
-    IObservable<Vector3> Sailed { get; }
-    IObservable<ICard> Boarded { get; }
+    IObservable<Vector3> Docking { get; }
+    IObservable<Vector3> Sailing { get; }
+    IObservable<ICard> Boarding { get; }
 
     void Dock(Vector3 atPosition);
     void SetSail(Vector3 toPosition);
@@ -28,33 +29,35 @@ public interface IShip
 
 public abstract class Ship : IShip
 {
-    private readonly Subject<Vector3> docked = new Subject<Vector3>();
-    private readonly Subject<Vector3> sailed = new Subject<Vector3>();
+    private readonly Subject<Vector3> docking = new Subject<Vector3>();
+    private readonly Subject<Vector3> sailing = new Subject<Vector3>();
     
     protected Ship(ShipType type, ISlot[] slots)
     {
         Type = type;
         Slots = slots;
+        BoardingSlot = Slots.FirstOrDefault(slot => slot.Type == SlotType.Boarding);
         Storage = slots.Where(slot => slot.Type == SlotType.Storage).Cast<ISlotStorage>()
             .ToDictionary(resSlot => resSlot.ResourceMask, resSlot => resSlot);
     }
     
     public ShipType Type { get; }
     public ISlot[] Slots { get; }
+    public ISlot BoardingSlot { get; }
     public IDictionary<ResourceType, ISlotStorage> Storage { get; }
 
-    public IObservable<Vector3> Docked => docked; 
-    public IObservable<Vector3> Sailed => sailed; 
-    public IObservable<ICard> Boarded => Slots.Where(s => s.Type == SlotType.Boarding).Select(s => s.Taking).Merge();
+    public IObservable<Vector3> Docking => docking; 
+    public IObservable<Vector3> Sailing => sailing;
+    public IObservable<ICard> Boarding => BoardingSlot.Taking;
     
     public void Dock(Vector3 atPosition)
     {
-        docked.OnNext(atPosition);
+        docking.OnNext(atPosition);
     }
 
     public void SetSail(Vector3 toPosition)
     {
-        sailed.OnNext(toPosition);
+        sailing.OnNext(toPosition);
     }
 
     public void Store(IResourceCard card)

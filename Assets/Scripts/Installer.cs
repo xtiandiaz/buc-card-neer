@@ -6,6 +6,7 @@ public class Installer : MonoInstaller
     [SerializeField] private BoardCamera camera;
     [SerializeField] private GamePalette palette;
     [SerializeField] private BoardView boardView;
+    [SerializeField] private CardPlayer playerCard;
 
     [Header("Settings")] 
     [SerializeField] private CardAnimationSettings cardAnimationSettings;
@@ -32,7 +33,9 @@ public class Installer : MonoInstaller
         Container.BindFactory<ISlot[], ShipPlayer, ShipPlayer.Factory>().AsSingle();
         Container.BindFactory<ISlot[], ShipMerchant, ShipMerchant.Factory>().AsSingle();
         Container.BindFactory<ISlot[], ShipPirate, ShipPirate.Factory>().AsSingle();
+        
         Container.BindFactory<IShip, IShipView, ShipController, ShipController.Factory>().AsSingle();
+        Container.BindFactory<IShipPlayer, ShipPlayerView, ShipPlayerController, ShipPlayerController.Factory>().AsSingle();
 
         Container.BindFactory<IDeck, DeckController, DeckController.Factory>().AsSingle();
 
@@ -46,11 +49,10 @@ public class Installer : MonoInstaller
         Container.BindFactory<ResourceType, uint, SlotStorage, SlotStorage.Factory>();
         Container.BindFactory<ISlot, ISlotView, SlotController, SlotController.Factory>().AsSingle();
 
-        Container.BindFactory<CardPirate, CardPirateView, CardFoeController, CardFoeController.Factory>().AsSingle();
-        Container.BindFactory<CardMerchant, CardMerchantView, CardMerchantController, CardMerchantController.Factory>()
-            .AsSingle();
-        Container.BindFactory<CardResource, CardResourceView, CardResourceController, CardResourceController.Factory>()
-            .AsSingle();
+        Container.BindFactory<CardPirate, CardPirateView, CardPirateController, CardPirateController.Factory>().AsSingle();
+        Container.BindFactory<CardMerchant, CardMerchantView, CardMerchantController, CardMerchantController.Factory>().AsSingle();
+        Container.BindFactory<CardResource, CardResourceView, CardResourceController, CardResourceController.Factory>().AsSingle();
+        Container.BindFactory<CardPlayer, CardPlayerView, CardPlayerController, CardPlayerController.Factory>().AsSingle();
         Container.BindFactory<string, CardView, CardView.Factory>().FromFactory<PrefabResourceFactory<CardView>>();
         
         // Board 
@@ -58,8 +60,9 @@ public class Installer : MonoInstaller
         Container.Bind<BoardLayoutSettings>().FromInstance(boardLayoutSettings).AsSingle();
         Container.BindInterfacesAndSelfTo<BoardView>().FromInstance(boardView).AsSingle();
         
-        // Extras
+        // Single Cards & Extras
         Container.Bind<CardAnimationSettings>().FromInstance(cardAnimationSettings);
+        Container.Bind(typeof(ICardPlayer), typeof(IPlayerStats)).FromInstance(playerCard.Clone()).AsSingle();
         
         // Game
         Container.Bind<GameState>().AsSingle();

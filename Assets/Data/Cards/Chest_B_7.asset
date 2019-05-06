@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5adb07559524e4f956679be71fcfc98, type: 3}
   m_Name: Chest_B_7
   m_EditorClassIdentifier: 
+  value:
+    value: 7
   frontFace: {fileID: 21300000, guid: 0617bfb31863243ce974c2f6b6ae73a6, type: 3}
   backFace: {fileID: 21300000, guid: 365e4437cedda4a8a972e0b0f354905e, type: 3}
-  value: 7
   item: {fileID: 21300002, guid: 483e3eb7381824761b245f673d0ee3d2, type: 3}
   suit: {fileID: 11400000, guid: d0ae5989adafa491fb5bfc71a3337137, type: 2}
   isTreasure: 1

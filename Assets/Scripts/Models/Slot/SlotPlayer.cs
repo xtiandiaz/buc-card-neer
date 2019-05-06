@@ -10,5 +10,10 @@ public class SlotPlayer : Slot
     {
     }
 
-    public override CardType EntryMask { get; }
+    public override CardType EntryMask => CardType.Player | CardType.Pirate;
+
+    public override bool CanTake(ICard card, ISlot fromSlot)
+    {
+        return (fromSlot.Type & SlotType.Boarding) != 0;
+    }
 }

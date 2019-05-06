@@ -748,8 +748,9 @@
             <e p="BoardController.cs" t="Include" />
             <e p="Card" t="Include">
               <e p="CardController.cs" t="Include" />
-              <e p="CardFoeController.cs" t="Include" />
               <e p="CardMerchantController.cs" t="Include" />
+              <e p="CardPirateController.cs" t="Include" />
+              <e p="CardPlayerController.cs" t="Include" />
               <e p="CardResourceController.cs" t="Include" />
             </e>
             <e p="DeckController.cs" t="Include" />
@@ -757,6 +758,7 @@
             <e p="SeaController.cs" t="Include" />
             <e p="Ship" t="Include">
               <e p="ShipController.cs" t="Include" />
+              <e p="ShipPlayerController.cs" t="Include" />
             </e>
             <e p="SlotController.cs" t="Include" />
           </e>
@@ -769,10 +771,8 @@
             <e p="CardFactory.cs" t="Include" />
             <e p="DeckFactory.cs" t="Include" />
             <e p="IBoardFactory.cs" t="Include" />
-            <e p="ICardFactory.cs" t="Include" />
             <e p="IDeckFactory.cs" t="Include" />
             <e p="ISeaFactory.cs" t="Include" />
-            <e p="IShipFactory.cs" t="Include" />
             <e p="ISlotFactory.cs" t="Include" />
             <e p="SeaFactory.cs" t="Include" />
             <e p="ShipFactory.cs" t="Include" />
@@ -788,6 +788,7 @@
               <e p="Card.cs" t="Include" />
               <e p="CardMerchant.cs" t="Include" />
               <e p="CardPirate.cs" t="Include" />
+              <e p="CardPlayer.cs" t="Include" />
               <e p="CardResource.cs" t="Include" />
             </e>
             <e p="Deck.cs" t="Include" />
@@ -813,6 +814,9 @@
               <e p="SlotPlayer.cs" t="Include" />
               <e p="SlotStorage.cs" t="Include" />
             </e>
+            <e p="Stats" t="Include">
+              <e p="IPlayerStats.cs" t="Include" />
+            </e>
             <e p="Suit.cs" t="Include" />
             <e p="Viewport.cs" t="Include" />
           </e>
@@ -830,6 +834,7 @@
               <e p="CardFaceView.cs" t="Include" />
               <e p="CardMerchantView.cs" t="Include" />
               <e p="CardPirateView.cs" t="Include" />
+              <e p="CardPlayerView.cs" t="Include" />
               <e p="CardResourceView.cs" t="Include" />
               <e p="CardStatView.cs" t="Include" />
               <e p="CardView.cs" t="Include" />

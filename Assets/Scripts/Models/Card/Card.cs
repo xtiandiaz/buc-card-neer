@@ -26,7 +26,7 @@ public enum CardFace
 
 public interface ICard
 {
-    int Value { get; }
+    int Value { get; set; }
     int IndexInSlot { get; }
     string Name { get; }
     CardType Type { get; }
@@ -37,6 +37,7 @@ public interface ICard
     Sprite FrontFace { get; }
     Sprite BackFace { get; }
     
+    IObservable<int> Worth { get; }
     IObservable<Unit> Arranging { get; }
     IObservable<Unit> Picking { get; }
     IObservable<Unit> Dragging { get; }
@@ -46,7 +47,10 @@ public interface ICard
     IObservable<float> Fading { get; }
     IObservable<(Color, float)> Tinting { get; }
     IObservable<(Color, float)> Fogging { get; }
-    
+    IObservable<Unit> Destruction { get; }
+
+    bool DoesConsume(ICard other);
+    void Lodge(ISlot inSlot);
     void Pick();
     void Drag(Vector3 toPosition);
     void Drop(Vector3 atPosition);
@@ -56,12 +60,15 @@ public interface ICard
     void Tint(Color withColor, float byFactor);
     void Fog(Color withColor, float byFactor);
     ICard Clone();
+    void Destroy();
 }
 
 public abstract class Card : ScriptableObject, ICard
 {
+    [SerializeField] protected IntReactiveProperty value = new IntReactiveProperty();
     [SerializeField] private Sprite frontFace;
     [SerializeField] private Sprite backFace;
+    private ISlot slot;
     
     private readonly ReactiveProperty<CardFace> facing = new ReactiveProperty<CardFace>();
     private readonly ReactiveProperty<bool> visibility = new ReactiveProperty<bool>(true);
@@ -72,10 +79,17 @@ public abstract class Card : ScriptableObject, ICard
     private readonly Subject<float> fading = new Subject<float>();
     private readonly Subject<(Color, float)> tinting = new Subject<(Color, float)>();
     private readonly Subject<(Color, float)> fogging = new Subject<(Color, float)>();
+    private readonly Subject<Unit> destruction = new Subject<Unit>();
 
-    public abstract int Value { get; }
     public abstract CardType Type { get; }
     public abstract CardType InteractionMask { get; }
+    
+    public virtual int Value
+    {
+        get => value.Value;
+        set => this.value.Value = value;
+    }
+
     public int IndexInSlot { get; private set; }
     public string Name => name;
     public CardFace Face => facing.Value;
@@ -90,6 +104,7 @@ public abstract class Card : ScriptableObject, ICard
     public Sprite FrontFace => frontFace;
     public Sprite BackFace => backFace;
 
+    public IObservable<int> Worth => value;
     public IObservable<Unit> Arranging => arranging;
     public IObservable<Unit> Picking => picking;
     public IObservable<Unit> Dragging => dragging;
@@ -99,6 +114,19 @@ public abstract class Card : ScriptableObject, ICard
     public IObservable<float> Fading => fading;
     public IObservable<(Color, float)> Tinting => tinting;
     public IObservable<(Color, float)> Fogging => fogging;
+    public IObservable<Unit> Destruction => destruction;
+
+    public abstract bool DoesConsume(ICard other);
+
+    public void Lodge(ISlot inSlot)
+    {
+        if (slot == inSlot)
+            return;
+        
+        slot?.Release(this);
+        
+        slot = inSlot;
+    }
 
     public void Pick()
     {
@@ -155,5 +183,13 @@ public abstract class Card : ScriptableObject, ICard
     public ICard Clone()
     {
         return Instantiate(this);
+    }
+
+    public void Destroy()
+    {
+        slot?.Release(this);
+        
+        destruction.OnNext(Unit.Default);
+        destruction.OnCompleted();
     }
 }

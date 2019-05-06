@@ -5,7 +5,6 @@ public interface IShipView
 {
     ShipType Type { get; }
     float Height { get; }
-    float ViewportHeight { get; }
     Vector3 Position { get; set; }
     ISlotView[] Slots { get; }
 
@@ -25,7 +24,6 @@ public abstract class ShipView : MonoBehaviour, IShipView
 
     public ShipType Type => type;
     public float Height => height;
-    public float ViewportHeight { get; private set; }
     
     public Vector3 Position
     {

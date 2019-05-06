@@ -14,34 +14,21 @@ public class ShipController : IShipController, IDisposable
     {
     }
     
+    protected readonly CompositeDisposable disposables = new CompositeDisposable();
+    
     private readonly IShip model;
     private readonly IShipView view;
-    private readonly CardAnimationSettings cardAnimationSettings;
-    private readonly CompositeDisposable disposables = new CompositeDisposable();
 
-    private ShipController(
-        IShip model, 
-        IShipView view, 
-        CardAnimationSettings cardAnimationSettings)
+    protected ShipController(IShip model, IShipView view)
     {
         this.model = model;
         this.view = view;
-        this.cardAnimationSettings = cardAnimationSettings;
     }
 
-    public void Initialize()
+    public virtual void Initialize()
     {
-        var viewHidingPosition = Vector3.up * (view.ViewportHeight + view.Height * 0.5f);
-        
-        disposables.Add(model.Docked.Subscribe(atPosition => view.Dock(atPosition)));
-        disposables.Add(model.Sailed.Subscribe(_ => view.SetSail(viewHidingPosition)));
-        
-        disposables.Add(model.Boarded
-            .Do(card =>  card.Flip(CardFace.Front))
-            .Delay(TimeSpan.FromSeconds(cardAnimationSettings.BoardingDelay))
-            .Where(card => (card.Type & CardType.Resource) != 0)
-            .Do(card => model.Store((IResourceCard) card))
-            .Subscribe());
+        disposables.Add(model.Docking.Subscribe(position => view.Dock(position)));
+        disposables.Add(model.Sailing.Subscribe(position => view.SetSail(position)));
     }
 
     public void Dispose()

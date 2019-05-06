@@ -195,7 +195,7 @@ PrefabInstance:
     - target: {fileID: 4629558531078662713, guid: 2fbe541c3947b49e9898dc04ca06b96e,
         type: 3}
       propertyPath: capacity
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4629558531078662713, guid: 2fbe541c3947b49e9898dc04ca06b96e,
         type: 3}
@@ -220,6 +220,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: a1ff005481e9547a58cb6e788a859292,
         type: 2}
+    - target: {fileID: 4629558531078662713, guid: 2fbe541c3947b49e9898dc04ca06b96e,
+        type: 3}
+      propertyPath: shouldStartLocked
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3296003705870509419, guid: 2fbe541c3947b49e9898dc04ca06b96e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -555,6 +560,7 @@ MonoBehaviour:
   camera: {fileID: 534669906}
   palette: {fileID: 5523121}
   boardView: {fileID: 1969069925}
+  playerCard: {fileID: 11400000, guid: 155e51e0940104ebaab177e4c174ea4d, type: 2}
   cardAnimationSettings: {fileID: 11400000, guid: 82c18c688b13c467c9b2c21f495c904d,
     type: 2}
   boardLayoutSettings: {fileID: 11400000, guid: 828e180d359954817af172a5c69c03ec,

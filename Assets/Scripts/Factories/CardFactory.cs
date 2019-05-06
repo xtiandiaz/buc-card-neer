@@ -1,23 +1,32 @@
 using System;
+using Zenject;
+
+public interface ICardFactory : IFactory<ICard, ICard>
+{
+    ICard Create(ICard forModel);
+}
 
 public class CardFactory : ICardFactory
 {
     private readonly CardView.Factory viewFactory;
-    private readonly CardFoeController.Factory controllerFactoryFoe;
+    private readonly CardPirateController.Factory controllerFactoryFoe;
     private readonly CardMerchantController.Factory controllerFactoryMerchant;
     private readonly CardResourceController.Factory controllerFactoryResource;
+    private readonly CardPlayerController.Factory controllerFactoryPlayer;
 
     private CardFactory(
         CardView.Factory viewFactory,
-        CardFoeController.Factory controllerFactoryFoe,
+        CardPirateController.Factory controllerFactoryFoe,
         CardMerchantController.Factory controllerFactoryMerchant, 
-        CardResourceController.Factory controllerFactoryResource
+        CardResourceController.Factory controllerFactoryResource, 
+        CardPlayerController.Factory controllerFactoryPlayer
         )
     {
         this.viewFactory = viewFactory;
         this.controllerFactoryFoe = controllerFactoryFoe;
         this.controllerFactoryMerchant = controllerFactoryMerchant;
         this.controllerFactoryResource = controllerFactoryResource;
+        this.controllerFactoryPlayer = controllerFactoryPlayer;
     }
     
     public ICard Create(ICard forModel)
@@ -41,6 +50,10 @@ public class CardFactory : ICardFactory
             case CardType.Merchant:
                 
                 return controllerFactoryMerchant.Create((CardMerchant) forModel, (CardMerchantView) andView);
+            
+            case CardType.Player:
+                
+                return controllerFactoryPlayer.Create((CardPlayer) forModel, (CardPlayerView) andView);
             
             default:
                 

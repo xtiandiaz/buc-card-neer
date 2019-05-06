@@ -19,7 +19,6 @@ public class CardResourceController : CardController
     {
         base.Initialize();
 
-        view.Value = model.Value;
         view.Suit = model.Suit;
         view.Item = model.Item;
     }

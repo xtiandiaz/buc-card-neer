@@ -17,7 +17,6 @@ public class SlotController : ISlotController, IDisposable
     
     private static readonly Subject<(ICard, ISlot)> Picking = new Subject<(ICard, ISlot)>();
     private static readonly Subject<(ICard, ISlot, Vector3)> Dropping = new Subject<(ICard, ISlot, Vector3)>();
-    private static readonly Subject<(ICard, ISlot)> Taking = new Subject<(ICard, ISlot)>();
     
     private readonly ISlot model;
     private readonly ISlotView view;
@@ -34,19 +33,12 @@ public class SlotController : ISlotController, IDisposable
         model.Bounds = view.Bounds;
         model.ArrangementSettings = view.ArrangementSettings;
         model.Position = view.Position;
+        model.IsLocked = view.ShouldStartLocked;
         
         disposables.Add(model.Highlighting.Subscribe(view.ToggleHighlight));
         disposables.Add(model.Visibility.Subscribe(view.ToggleVisibility));
-        disposables.Add(model.Taking.Subscribe(card => Taking.OnNext((card, model))));
-        
-        disposables.Add(Taking
-            .Where(cardInSlot =>
-            {
-                var (card, slot) = cardInSlot;
-                return slot != model && model.DoesContain(card);
-            })
-            .Select(cardInSlot => cardInSlot.Item1)
-            .Subscribe(card => model.Release(card)));
+
+        #region Picking & Dropping
 
         disposables.Add(Picking
             .Subscribe(cardFromSlot =>
@@ -66,10 +58,12 @@ public class SlotController : ISlotController, IDisposable
                     model.Take(card);
             }));
 
+        #endregion
+
         #region Dragging
 
         disposables.Add(view.DraggingStart
-            .SkipWhile(_ => model.CardCount == 0)
+            .SkipWhile(_ => model.CardCount == 0 || model.IsLocked)
             .Subscribe(_ =>
             {
                 model.TopCard.Pick();
@@ -78,11 +72,11 @@ public class SlotController : ISlotController, IDisposable
             }));
         
         disposables.Add(view.Dragging
-            .SkipWhile(_ => model.CardCount == 0)
+            .SkipWhile(_ => model.CardCount == 0 || model.IsLocked)
             .Subscribe(position => model.TopCard.Drag(position)));
         
         disposables.Add(view.DraggingEnd
-            .SkipWhile(_ => model.CardCount == 0)
+            .SkipWhile(_ => model.CardCount == 0 || model.IsLocked)
             .Subscribe(position =>
             {
                 model.TopCard.Drop(position);

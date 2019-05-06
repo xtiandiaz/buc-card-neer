@@ -17,6 +17,7 @@ public class BoardView : MonoBehaviour, IBoardView
     [SerializeField] private ShipPirateView shipPirate;
 
     private BoardMode lastMode;
+    private IViewportProvider viewportProvider;
 
     public IShipView[] Ships => new IShipView[] {shipPlayer, shipMerchant, shipPirate};
     public IDeck[] Decks => decks;
@@ -29,6 +30,11 @@ public class BoardView : MonoBehaviour, IBoardView
 
     [Inject]
     private void Construct(IViewportProvider viewportProvider)
+    {
+        this.viewportProvider = viewportProvider;
+    }
+
+    private void Awake()
     {
         var viewportHeight = viewportProvider.GetViewport(0).Size.y;
         

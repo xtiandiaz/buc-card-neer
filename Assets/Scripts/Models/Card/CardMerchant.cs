@@ -6,4 +6,12 @@ public class CardMerchant : Card
     public override int Value => 1;
     public override CardType Type => CardType.Merchant;
     public override CardType InteractionMask => CardType.Resource;
+
+    public override bool DoesConsume(ICard other)
+    {
+        if (other is IResourceCard resourceCard && resourceCard.WasPaidFor)
+            return resourceCard.Sell();
+
+        return false;
+    }
 }

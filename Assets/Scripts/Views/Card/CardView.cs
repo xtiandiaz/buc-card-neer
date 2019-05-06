@@ -46,9 +46,13 @@ public class CardView : MonoBehaviour, ICardView
 
     public int Value
     {
-        set => cardValue.SetValue(value);
+        set
+        {
+            if (cardValue != null)
+                cardValue.SetValue(value);
+        }
     }
-    
+
     public Sprite FrontFace
     {
         set => frontFace.Sprite = value;

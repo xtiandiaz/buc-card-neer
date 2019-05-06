@@ -28,6 +28,7 @@ public abstract class CardController : ICardController, IDisposable
     {
         view.FrontFace = model.FrontFace;
         view.BackFace = model.BackFace;
+        view.Value = model.Value;
 
         disposables.Add(model.Arranging.Subscribe(_ =>
         {
@@ -51,6 +52,20 @@ public abstract class CardController : ICardController, IDisposable
         {
             view.OnDropped();
             view.Move(model.Position);
+        }));
+        
+        disposables.Add(model.Worth.Subscribe(value =>
+        {
+            view.Value = value;
+
+            if (value <= 0)
+                model.Destroy();
+        }));
+        
+        disposables.Add(model.Destruction.Subscribe(_ =>
+        {
+            view.Destroy();
+            Dispose();
         }));
     }
 

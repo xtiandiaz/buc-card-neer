@@ -19,6 +19,7 @@ public interface ISlot
     int CardCount { get; }
     bool HasRoom { get; }
     bool IsVisible { get; set; }
+    bool IsLocked { get; set; }
     SlotType Type { get; }
     CardType EntryMask { get; }
     Vector3 Position { get; set; }
@@ -29,15 +30,13 @@ public interface ISlot
     IObservable<ICard> Taking { get; }
     IObservable<bool> Highlighting { get; }
     IObservable<bool> Visibility { get; }
-    IObservable<int> LodgingCounting { get; }
-    IObservable<Unit> Emptying { get; }
+    IObservable<bool> Locking { get; }
 
     bool CanTake(ICard card);
     bool CanTake(ICard card, ISlot fromSlot);
     void Take(ICard card);
     void Release(ICard card);
     void ToggleHighlight(bool on);
-    bool DoesContain(ICard card);
     bool DoesContain(Vector3 worldPoint);
     void ArrangeCards();
 }
@@ -47,7 +46,8 @@ public abstract class Slot : ISlot
     private readonly List<ICard> cards = new List<ICard>();
     private readonly Subject<bool> highlighting = new Subject<bool>();
     private readonly Subject<ICard> taking = new Subject<ICard>();
-    private readonly ReactiveProperty<bool> visibility = new ReactiveProperty<bool>(true);
+    private readonly ReactiveProperty<bool> isVisible = new ReactiveProperty<bool>(true);
+    private readonly ReactiveProperty<bool> isLocked = new ReactiveProperty<bool>(false);
     
     protected Slot(SlotType type, uint capacity)
     {
@@ -61,8 +61,14 @@ public abstract class Slot : ISlot
     public bool HasRoom => cards.Count < Capacity;
     public bool IsVisible
     {
-        get => visibility.Value;
-        set => visibility.Value = value;
+        get => isVisible.Value;
+        set => isVisible.Value = value;
+    }
+    
+    public bool IsLocked
+    {
+        get => isLocked.Value;
+        set => isLocked.Value = value;
     }
 
     public SlotType Type { get; }
@@ -73,9 +79,8 @@ public abstract class Slot : ISlot
 
     public IObservable<ICard> Taking => taking;
     public IObservable<bool> Highlighting => highlighting.DistinctUntilChanged();
-    public IObservable<bool> Visibility => visibility;
-    public IObservable<int> LodgingCounting => null;
-    public IObservable<Unit> Emptying => LodgingCounting.Where(count => count == 0).AsUnitObservable();
+    public IObservable<bool> Visibility => isVisible;
+    public IObservable<bool> Locking => isLocked;
 
     public virtual bool CanTake(ICard card)
     {        
@@ -91,11 +96,16 @@ public abstract class Slot : ISlot
     {
         if (!CanTake(card))
         {
-            Debug.LogError($"[Slot] Can't take {card.Name} by in SlotName");
+            Debug.LogError($"[Slot] Can't take {card.Name} by SlotName");
             return;
         }
 
+        if (TopCard?.DoesConsume(card) == true)
+            return;
+        
         cards.Add(card);
+        card.Lodge(this);
+        
         taking.OnNext(card);
 
         ArrangeCards();
@@ -110,11 +120,6 @@ public abstract class Slot : ISlot
     public void ToggleHighlight(bool on)
     {
         highlighting.OnNext(on);
-    }
-
-    public bool DoesContain(ICard card)
-    {
-        return cards.Contains(card);
     }
     
     public bool DoesContain(Vector3 worldPoint)

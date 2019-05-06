@@ -1,5 +1,7 @@
 using System;
+using System.Reflection;
 using UnityEngine;
+using Zenject;
 
 [Flags]
 public enum ResourceType
@@ -20,17 +22,19 @@ public interface IResourceCard : ICard
     ISuit Suit { get; }
     bool IsTreasure { get; }
     bool WasPaidFor { get; set; }
+
+    bool Buy();
+    bool Sell();
 }
 
 [CreateAssetMenu(fileName = "CardResource", menuName = "Game/Card/Resource", order = 1)]
 public class CardResource : Card, IResourceCard
 {
-    [SerializeField] private int value;
     [SerializeField] private Sprite item;
     [SerializeField] private Suit suit;
     [SerializeField] private bool isTreasure;
+    private IPlayerStats playerStats;
 
-    public override int Value => value;
     public override CardType Type => (CardType) ResourceType;
     public override CardType InteractionMask => CardType.Pirate | CardType.Merchant | CardType.Player;
     
@@ -39,4 +43,32 @@ public class CardResource : Card, IResourceCard
     public ISuit Suit => suit;
     public bool IsTreasure => isTreasure;
     public bool WasPaidFor { get; set; }
+
+    [Inject]
+    private void Construct(IPlayerStats playerStats)
+    {
+        this.playerStats = playerStats;
+    }
+
+    public override bool DoesConsume(ICard other)
+    {
+        return false;
+    }
+
+    public bool Buy()
+    {
+        if (playerStats.Coins < Value)
+            return false;
+        
+        playerStats.Coins -= Value;
+
+        return true;
+    }
+
+    public bool Sell()
+    {
+        playerStats.Coins += Value;
+
+        return true;
+    }
 }
