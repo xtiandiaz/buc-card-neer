@@ -2,6 +2,7 @@ using System;
 
 public class SlotFactory : ISlotFactory
 {
+    private readonly Pile.Factory pileFactory;
     private readonly SlotBoarding.Factory modelBoardingFactory;
     private readonly SlotPlayer.Factory modelPlayerFactory;
     private readonly SlotStorage.Factory modelResourceFactory;
@@ -9,6 +10,7 @@ public class SlotFactory : ISlotFactory
     private readonly SlotController.Factory controllerFactory;
 
     private SlotFactory(
+        Pile.Factory pileFactory,
         SlotBoarding.Factory modelBoardingFactory,
         SlotPlayer.Factory modelPlayerFactory,
         SlotStorage.Factory modelResourceFactory,
@@ -16,6 +18,7 @@ public class SlotFactory : ISlotFactory
         SlotController.Factory controllerFactory
         )
     {
+        this.pileFactory = pileFactory;
         this.modelBoardingFactory = modelBoardingFactory;
         this.modelPlayerFactory = modelPlayerFactory;
         this.modelResourceFactory = modelResourceFactory;
@@ -36,18 +39,19 @@ public class SlotFactory : ISlotFactory
     private ISlot CreateModel(ISlotView fromView)
     {
         var type = fromView.Type;
-        var capacity = fromView.Capacity;
+        uint? pileExtent = fromView.Capacity > 0 ? fromView.Capacity : default;
+        var pile = pileFactory.Create(fromView.CardArrangement, pileExtent);
         
         switch (type)
         {
             case SlotType.Event:
-                return modelEventFactory.Create(capacity);
+                return modelEventFactory.Create(pile);
             case SlotType.Boarding:
-                return modelBoardingFactory.Create(capacity);
+                return modelBoardingFactory.Create(pile);
             case SlotType.Storage:
-                return modelResourceFactory.Create(fromView.ResourceMask, capacity);
+                return modelResourceFactory.Create(fromView.ResourceMask, pile);
             case SlotType.Player:
-                return modelPlayerFactory.Create(capacity);
+                return modelPlayerFactory.Create(pile);
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }

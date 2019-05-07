@@ -7,11 +7,11 @@ public interface ISlotStorage : ISlot
 
 public class SlotStorage : Slot, ISlotStorage
 {
-    public class Factory : PlaceholderFactory<ResourceType, uint, SlotStorage>
+    public class Factory : PlaceholderFactory<ResourceType, IPile, SlotStorage>
     {
     }
 
-    public SlotStorage(ResourceType resourceMask, uint capacity) : base(SlotType.Storage, capacity)
+    public SlotStorage(ResourceType resourceMask, IPile pile) : base(SlotType.Storage, pile)
     {
         ResourceMask = resourceMask;
     }
@@ -19,7 +19,7 @@ public class SlotStorage : Slot, ISlotStorage
     public override CardType EntryMask => CardType.Resource;
     public ResourceType ResourceMask { get; }
 
-    public override bool CanTake(ICard card)
+    public override bool CanLodge(ICard card)
     {
         if (card is IResourceCard resourceCard)
             return CanTake(resourceCard);
@@ -27,7 +27,7 @@ public class SlotStorage : Slot, ISlotStorage
         return false;
     }
     
-    public override bool CanTake(ICard card, ISlot fromSlot)
+    public override bool CanLodge(ICard card, ISlot fromSlot)
     {
         switch (fromSlot.Type)
         {

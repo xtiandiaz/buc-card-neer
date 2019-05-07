@@ -43,13 +43,17 @@ public class Installer : MonoInstaller
         Container.BindFactory<ISlot[], Sea, Sea.Factory>().AsSingle();
         Container.BindFactory<ISea, ISeaView, SeaController, SeaController.Factory>().AsSingle();
         
-        // Deck
-        Container.BindFactory<uint, SlotBoarding, SlotBoarding.Factory>();
-        Container.BindFactory<uint, SlotEvent, SlotEvent.Factory>();
-        Container.BindFactory<uint, SlotPlayer, SlotPlayer.Factory>();
-        Container.BindFactory<ResourceType, uint, SlotStorage, SlotStorage.Factory>();
+        // Slot
+        Container.BindFactory<IPile, SlotBoarding, SlotBoarding.Factory>();
+        Container.BindFactory<IPile, SlotEvent, SlotEvent.Factory>();
+        Container.BindFactory<IPile, SlotPlayer, SlotPlayer.Factory>();
+        Container.BindFactory<ResourceType, IPile, SlotStorage, SlotStorage.Factory>();
         Container.BindFactory<ISlot, ISlotView, SlotController, SlotController.Factory>().AsSingle();
+        
+        // Pile
+        Container.BindFactory<ICardArrangement, uint?, Pile, Pile.Factory>();
 
+        // Card
         Container.BindFactory<CardPirate, CardPirateView, CardPirateController, CardPirateController.Factory>().AsSingle();
         Container.BindFactory<CardMerchant, CardMerchantView, CardMerchantController, CardMerchantController.Factory>().AsSingle();
         Container.BindFactory<CardResource, CardResourceView, CardResourceController, CardResourceController.Factory>().AsSingle();
@@ -65,6 +69,9 @@ public class Installer : MonoInstaller
         // Single Cards & Extras
         Container.Bind<CardAnimationSettings>().FromInstance(cardAnimationSettings);
         Container.Bind(typeof(ICardPlayer), typeof(IPlayerStats)).FromInstance(playerCard.Clone()).AsSingle();
+        
+        // Managers
+        Container.BindInterfacesAndSelfTo<DealingManager>().AsSingle();
         
         // Game
         Container.Bind<GameState>().AsSingle();

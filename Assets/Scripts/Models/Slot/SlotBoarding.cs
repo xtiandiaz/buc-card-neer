@@ -2,17 +2,17 @@ using Zenject;
 
 public class SlotBoarding : Slot
 {
-    public class Factory : PlaceholderFactory<uint, SlotBoarding>
+    public class Factory : PlaceholderFactory<IPile, SlotBoarding>
     {
     }
 
-    public SlotBoarding(uint capacity) : base(SlotType.Boarding, capacity)
+    public SlotBoarding(IPile pile) : base(SlotType.Boarding, pile)
     {
     }
 
     public override CardType EntryMask => CardType.Pirate | CardType.Merchant | CardType.Resource;
 
-    public override bool CanTake(ICard card, ISlot fromSlot)
+    public override bool CanLodge(ICard card, ISlot fromSlot)
     {
         return fromSlot.Type == SlotType.Event;
     }

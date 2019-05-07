@@ -779,6 +779,9 @@
             <e p="SlotFactory.cs" t="Include" />
           </e>
           <e p="Installer.cs" t="Include" />
+          <e p="Managers" t="Include">
+            <e p="DealingManager.cs" t="Include" />
+          </e>
           <e p="Models" t="Include">
             <e p="Board" t="Include">
               <e p="Board.cs" t="Include" />
@@ -791,10 +794,15 @@
               <e p="CardPlayer.cs" t="Include" />
               <e p="CardResource.cs" t="Include" />
             </e>
+            <e p="CardArrangement" t="Include">
+              <e p="CardArrangement.cs" t="Include" />
+              <e p="SeaCardArrangement.cs" t="Include" />
+            </e>
             <e p="Deck.cs" t="Include" />
             <e p="Direction.cs" t="Include" />
             <e p="GamePalette.cs" t="Include" />
             <e p="GameState.cs" t="Include" />
+            <e p="Pile.cs" t="Include" />
             <e p="Settings" t="Include">
               <e p="BoardLayoutSettings.cs" t="Include" />
               <e p="CardAnimationSettings.cs" t="Include" />

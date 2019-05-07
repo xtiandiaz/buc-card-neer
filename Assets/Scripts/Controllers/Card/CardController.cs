@@ -34,7 +34,7 @@ public abstract class CardController : ICardController, IDisposable
         view.Value = model.Value;
         view.Position = Vector2.up * (viewport.Size.y + layoutSettings.CardSize.y) * 0.5f;
 
-        disposables.Add(model.Arranging.Subscribe(_ =>
+        disposables.Add(model.WhenArranged.Subscribe(_ =>
         {
             view.Move(model.Position);
             view.SortingOrder = -model.IndexInSlot;
@@ -42,16 +42,8 @@ public abstract class CardController : ICardController, IDisposable
         
         disposables.Add(model.Visibility.Subscribe(view.ToggleVisibility));
         
-        view.Flip(model.Face, false);
-        disposables.Add(model.Facing.Skip(1).Subscribe(face => view.Flip(face, true)));
-        
-        disposables.Add(model.Picking.Subscribe(_ => view.OnPicked()));
-        disposables.Add(model.Dragging.Subscribe(_ => view.Position = model.Position));
-        disposables.Add(model.Dropping.Subscribe(_ => 
-        {
-            view.OnDropped();
-            view.Move(model.Position);
-        }));
+        disposables.Add(model.Facing.Subscribe(face => view.Flip(face, false)));
+        disposables.Add(model.Flipping.Subscribe(face => view.Flip(face, true)));
         
         disposables.Add(model.Worth.Subscribe(value =>
         {
@@ -66,6 +58,20 @@ public abstract class CardController : ICardController, IDisposable
             view.Destroy();
             Dispose();
         }));
+
+        #region Interaction
+
+        disposables.Add(model.Picking.Subscribe(_ => view.OnPicked()));
+        
+        disposables.Add(model.Dragging.Subscribe(_ => view.OnDropped()));
+        
+        disposables.Add(model.Dropping.Subscribe(_ => 
+        {
+            view.OnDropped();
+            view.Move(model.Position);
+        }));
+
+        #endregion
 
         #region Effects
 

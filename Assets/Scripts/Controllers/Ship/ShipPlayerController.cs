@@ -30,7 +30,7 @@ public class ShipPlayerController : ShipController
     {
         base.Initialize();
         
-        model.PlayerSlot.Take(playerCard);
+        model.PlayerSlot.Lodge(playerCard);
             
         disposables.Add(model.Boarding
             .Do(card =>  card.Flip(CardFace.Front))

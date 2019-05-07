@@ -20,9 +20,8 @@ public class SeaFactory : ISeaFactory
     public ISea Create(ISeaView forModel)
     {
         var model = modelFactory.Create(forModel.Slots.Select(sv => slotFactory.Create(sv)).ToArray());
-        var controller = controllerFactory.Create(model, forModel);
         
-        controller.Initialize();
+        controllerFactory.Create(model, forModel);
 
         return model;
     }

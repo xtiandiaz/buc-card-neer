@@ -8,14 +8,15 @@ public interface ISlotView
     uint Capacity { get; }
     SlotType Type { get; }
     bool ShouldStartLocked { get; }
+    CardFace SlottingFace { get; }
     ResourceType ResourceMask { get; }
-    ICardArrangementSettings ArrangementSettings { get; }
+    ICardArrangement CardArrangement { get; }
     Vector3 Position { get; }
     Bounds Bounds { get; }
     
-    IObservable<Unit> DraggingStart { get; }
-    IObservable<Vector3> Dragging { get; }
-    IObservable<Vector3> DraggingEnd { get; }
+    IObservable<Unit> WhenStartedDragging { get; }
+    IObservable<Vector3> WhenDragged { get; }
+    IObservable<Vector3> WhenStoppedDragging { get; }
 
     void ToggleHighlight(bool on);
     void ToggleVisibility(bool on);
@@ -27,8 +28,9 @@ public class SlotView : MonoBehaviour, ISlotView
     [SerializeField] private uint capacity;
     [SerializeField] private SlotType type;
     [SerializeField] private bool shouldStartLocked;
+    [SerializeField] private CardFace slottingFace = CardFace.Front;
     [SerializeField] private ResourceType resourceMask;
-    [SerializeField] private CardArrangementSettings arrangementSettings;
+    [SerializeField] private CardArrangement arrangement;
     [SerializeField] private DraggingObserver draggingObserver;
 
     private Color defaultFaceColor;
@@ -38,14 +40,15 @@ public class SlotView : MonoBehaviour, ISlotView
     public uint Capacity => capacity;
     public SlotType Type => type;
     public bool ShouldStartLocked => shouldStartLocked;
+    public CardFace SlottingFace => slottingFace;
     public ResourceType ResourceMask => resourceMask;
-    public ICardArrangementSettings ArrangementSettings => arrangementSettings;
+    public ICardArrangement CardArrangement => arrangement;
     public Vector3 Position => transform.position;
     public Bounds Bounds => faceRenderer.bounds;
     
-    public IObservable<Unit> DraggingStart => draggingObserver.DraggingStart;
-    public IObservable<Vector3> Dragging => draggingObserver.Dragging;
-    public IObservable<Vector3> DraggingEnd => draggingObserver.DraggingEnd;
+    public IObservable<Unit> WhenStartedDragging => draggingObserver.DraggingStart;
+    public IObservable<Vector3> WhenDragged => draggingObserver.Dragging;
+    public IObservable<Vector3> WhenStoppedDragging => draggingObserver.DraggingEnd;
 
     [Inject]
     private void Construct(

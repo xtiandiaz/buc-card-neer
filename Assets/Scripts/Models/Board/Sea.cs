@@ -8,6 +8,7 @@ public interface ISea
     ISlot[] Slots { get; }
     
     IObservable<bool> UpdatedProjectionState { get; }
+    IObservable<IDeck> Dealing { get; }
     
     void Deal(IDeck fromDeck);
     void ToggleProjection(bool on);
@@ -20,6 +21,7 @@ public class Sea : ISea
     }
     
     private readonly ReactiveProperty<bool> isProjected = new ReactiveProperty<bool>(true);
+    private readonly Subject<IDeck> dealing = new Subject<IDeck>();
 
     private Sea(ISlot[] slots)
     {
@@ -28,26 +30,11 @@ public class Sea : ISea
 
     public ISlot[] Slots { get; }
     public IObservable<bool> UpdatedProjectionState => isProjected;
+    public IObservable<IDeck> Dealing => dealing;
 
     public void Deal(IDeck fromDeck)
     {
-        foreach (var slot in Slots)
-        {
-            for (var i = 0; i < slot.Capacity; i++)
-            {
-                if (!slot.HasRoom)
-                    break;
-                
-                var card = fromDeck.Supply(true);
-                if (card == null)
-                {
-                    Debug.LogWarning($"[Sea] {fromDeck.Type} Deck supplied null Card.");
-                    return;
-                }
-
-                slot.Take(card);
-            }
-        }
+        dealing.OnNext(fromDeck);
     }
 
     public void ToggleProjection(bool on)

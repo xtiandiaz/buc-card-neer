@@ -55,7 +55,7 @@ public abstract class Ship : IShip
     {
         for (var i = 0; i < count; i++)
         {
-            var card = fromDeck.Supply(false);
+            var card = fromDeck.Supply();
             if (card == null)
                 break;
             
@@ -81,6 +81,6 @@ public abstract class Ship : IShip
             return;
         }
         
-        Storage[card.ResourceType].Take(card);
+        Storage[card.ResourceType].Lodge(card);
     }
 }

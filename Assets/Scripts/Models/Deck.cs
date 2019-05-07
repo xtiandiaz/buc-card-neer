@@ -16,7 +16,7 @@ public interface IDeck
     IObservable<ICard> Supplied { get; }
 
     void Initialize();
-    ICard Supply(bool facingDown);
+    ICard Supply();
     void TakeBack(ICard card);
 }
 
@@ -42,15 +42,12 @@ public class Deck : ScriptableObject, IDeck
         queue = new Queue<ICard>(playCards);
     }
 
-    public ICard Supply(bool facingDown)
+    public ICard Supply()
     {
         var card = queue.Dequeue();
-        if (card == null)
-            return null;
         
-        card.Flip(facingDown ? CardFace.Back : CardFace.Front);
-        
-        supplied.OnNext(card);
+        if (card != null)
+            supplied.OnNext(card);
 
         return card;
     }
