@@ -33,7 +33,6 @@ public class ShipPlayerController : ShipController
         model.PlayerSlot.Lodge(playerCard);
             
         disposables.Add(model.Boarding
-            .Do(card =>  card.Flip(CardFace.Front))
             .Delay(TimeSpan.FromSeconds(cardAnimationSettings.BoardingDelay))
             .Where(card => (card.Type & CardType.Resource) != 0)
             .Do(card => model.Store((IResourceCard) card))

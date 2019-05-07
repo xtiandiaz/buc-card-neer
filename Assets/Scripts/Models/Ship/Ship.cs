@@ -49,7 +49,7 @@ public abstract class Ship : IShip
 
     public IObservable<Vector3> Docking => docking; 
     public IObservable<Vector3> Sailing => sailing;
-    public IObservable<ICard> Boarding => BoardingSlot.Taking;
+    public IObservable<ICard> Boarding => BoardingSlot.WhenLodged;
 
     public void Supply(IDeck fromDeck, int count)
     {

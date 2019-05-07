@@ -63,7 +63,7 @@ public abstract class CardController : ICardController, IDisposable
 
         disposables.Add(model.Picking.Subscribe(_ => view.OnPicked()));
         
-        disposables.Add(model.Dragging.Subscribe(_ => view.OnDropped()));
+        disposables.Add(model.Dragging.Subscribe(_ => view.Position = model.Position));
         
         disposables.Add(model.Dropping.Subscribe(_ => 
         {

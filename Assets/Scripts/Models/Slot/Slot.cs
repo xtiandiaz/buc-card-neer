@@ -22,9 +22,8 @@ public interface ISlot : ICardBind
     Bounds Bounds { get; set; }
     ICardArrangement Arrangement { get; set; }
 
-    IObservable<(ICard, ISlot)> WhenCardPicked { get; }
-    IObservable<(ICard, ISlot, Vector3)> WhenCardDropped { get; }
-    IObservable<ICard> Taking { get; }
+    IObservable<ICard> WhenCardPicked { get; }
+    IObservable<ICard> WhenLodged { get; }
     IObservable<bool> Highlighting { get; }
     IObservable<bool> Visibility { get; }
     IObservable<bool> Locking { get; }
@@ -44,14 +43,12 @@ public interface ICardBind
     void Release(ICard card);
 }
 
-public abstract class Slot : ISlot, ICardBind
+public abstract class Slot : ISlot
 {
-    private static readonly Subject<(ICard, ISlot)> Picking = new Subject<(ICard, ISlot)>();
-    private static readonly Subject<(ICard, ISlot, Vector3)> Dropping = new Subject<(ICard, ISlot, Vector3)>();
-    
     private readonly IPile pile;
+    private readonly Subject<ICard> picking = new Subject<ICard>();
+    private readonly Subject<ICard> lodging = new Subject<ICard>();
     private readonly Subject<bool> highlighting = new Subject<bool>();
-    private readonly Subject<ICard> taking = new Subject<ICard>();
     private readonly ReactiveProperty<bool> isVisible = new ReactiveProperty<bool>(true);
     private readonly ReactiveProperty<bool> isLocked = new ReactiveProperty<bool>(false);
     private Vector3 position;
@@ -63,7 +60,6 @@ public abstract class Slot : ISlot, ICardBind
     }
 
     public abstract CardType EntryMask { get; }
-    public uint Capacity { get; }
     public bool IsVisible
     {
         get => isVisible.Value;
@@ -88,9 +84,8 @@ public abstract class Slot : ISlot, ICardBind
     public Bounds Bounds { get; set; }
     public ICardArrangement Arrangement { get; set; }
 
-    public IObservable<(ICard, ISlot)> WhenCardPicked => Picking;
-    public IObservable<(ICard, ISlot, Vector3)> WhenCardDropped => Dropping;
-    public IObservable<ICard> Taking => taking;
+    public IObservable<ICard> WhenCardPicked => picking;
+    public IObservable<ICard> WhenLodged => lodging;
     public IObservable<bool> Highlighting => highlighting.DistinctUntilChanged();
     public IObservable<bool> Visibility => isVisible;
     public IObservable<bool> Locking => isLocked;
@@ -99,10 +94,10 @@ public abstract class Slot : ISlot, ICardBind
     {
         var card = pile.Peek();
         
-        card?.Pick();
+        card?.Pick(); // TODO Consider rename to OnPick
         
         if (card != null)
-            Picking.OnNext((card, this));
+            picking.OnNext(card);
 
         return card;
     }
@@ -133,7 +128,7 @@ public abstract class Slot : ISlot, ICardBind
         
         card.Bind(this);
         
-        taking.OnNext(card);
+        lodging.OnNext(card);
     }
 
     public void Release(ICard card)

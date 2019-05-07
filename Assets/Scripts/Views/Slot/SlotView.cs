@@ -14,9 +14,9 @@ public interface ISlotView
     Vector3 Position { get; }
     Bounds Bounds { get; }
     
-    IObservable<Unit> WhenStartedDragging { get; }
+    IObservable<Unit> WhenDraggingStarted { get; }
     IObservable<Vector3> WhenDragged { get; }
-    IObservable<Vector3> WhenStoppedDragging { get; }
+    IObservable<Vector3> WhenDraggingStopped { get; }
 
     void ToggleHighlight(bool on);
     void ToggleVisibility(bool on);
@@ -46,9 +46,9 @@ public class SlotView : MonoBehaviour, ISlotView
     public Vector3 Position => transform.position;
     public Bounds Bounds => faceRenderer.bounds;
     
-    public IObservable<Unit> WhenStartedDragging => draggingObserver.DraggingStart;
+    public IObservable<Unit> WhenDraggingStarted => draggingObserver.DraggingStart;
     public IObservable<Vector3> WhenDragged => draggingObserver.Dragging;
-    public IObservable<Vector3> WhenStoppedDragging => draggingObserver.DraggingEnd;
+    public IObservable<Vector3> WhenDraggingStopped => draggingObserver.DraggingEnd;
 
     [Inject]
     private void Construct(

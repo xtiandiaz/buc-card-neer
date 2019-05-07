@@ -57,7 +57,7 @@ public interface ICard
     void Bind(ICardBind to);
     void Pick();
     void Drag(Vector3 toPosition);
-    void Drop();
+    void Drop(Vector3 atPosition);
     void Arrange(Vector3 atPosition);
     void Flip(CardFace toFace);
     void Fade(float toAlphaValue);
@@ -167,11 +167,11 @@ public abstract class Card : ScriptableObject, ICard
         dragging.OnNext(Unit.Default);
     }
 
-    public void Drop()
+    public void Drop(Vector3 atPosition)
     {
-        /*Position = atPosition;*/
+        Position = atPosition;
         
-        dropping.OnNext(Vector3.zero);
+        dropping.OnNext(atPosition);
     }
 
     public void Arrange(Vector3 atPosition)

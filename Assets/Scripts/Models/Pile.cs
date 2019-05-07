@@ -43,8 +43,8 @@ public class Pile : IPile
 
     public void Add(ICard card)
     {
-        if (card == null || !CanAdd)
-            return;
+        /*if (card == null || !CanAdd)
+            return;*/
         
         contents.Add(card);
         
