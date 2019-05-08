@@ -51,7 +51,7 @@ public class Installer : MonoInstaller
         Container.BindFactory<ISlot, ISlotView, SlotController, SlotController.Factory>().AsSingle();
         
         // Pile
-        Container.BindFactory<ICardArrangement, uint?, Pile, Pile.Factory>();
+        Container.BindFactory<ICardArrangement, int?, Pile, Pile.Factory>();
 
         // Card
         Container.BindFactory<CardPirate, CardPirateView, CardPirateController, CardPirateController.Factory>().AsSingle();

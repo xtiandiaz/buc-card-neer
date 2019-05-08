@@ -3,18 +3,28 @@ using UnityEngine;
 
 public interface ICardArrangement
 {
-    void Apply(IList<ICard> toCards, Vector3 withAnchorPosition);
+    void Apply(IList<ICard> toCards, Vector3 withAnchorPosition, int? fromTotalCount);
 }
 
-public abstract class CardArrangement : ScriptableObject, ICardArrangement
+[CreateAssetMenu(fileName = "CardArrangement", menuName = "Game/Card Arrangement/Default", order = 1)]
+public class CardArrangement : ScriptableObject, ICardArrangement
 {
-    [SerializeField] protected CardArrangementSettings settings;
+    [SerializeField] protected Vector3 offset;
+    [SerializeField] protected AnimationCurve offsetFunction;
+    [SerializeField] protected CardFace facing;
 
-    public abstract void Apply(IList<ICard> toCards, Vector3 withAnchorPosition);
-
-    protected virtual void Apply(ICard toCard, Vector3 withPosition, float byFactor)
+    public void Apply(IList<ICard> toCards, Vector3 withAnchorPosition, int? fromTotalCount)
     {
-        toCard.Flip(settings.Facing);
-        toCard.Arrange(withPosition);
+        var countM1 = toCards.Count - 1;
+        float total = fromTotalCount ?? toCards.Count;
+
+        for (var i = countM1; i >= 0; i--)
+            Apply(toCards[i], i, i / total, withAnchorPosition);
+    }
+
+    protected virtual void Apply(ICard toCard, int withIndex, float atTime, Vector3 withAnchorPosition)
+    {
+        toCard.Arrange(withAnchorPosition, withIndex);
+        toCard.Flip(facing);
     }
 }

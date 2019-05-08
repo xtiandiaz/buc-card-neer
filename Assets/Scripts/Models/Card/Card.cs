@@ -27,7 +27,7 @@ public enum CardFace
 public interface ICard
 {
     int Value { get; set; }
-    int IndexInSlot { get; }
+    int Index { get; }
     string Name { get; }
     CardType Type { get; }
     CardType InteractionMask { get; }
@@ -36,18 +36,18 @@ public interface ICard
     Sprite FrontFace { get; }
     Sprite BackFace { get; }
     
-    IObservable<int> Worth { get; }
+    IObservable<int> WhenValueChanged { get; }
     IObservable<Unit> WhenArranged { get; }
-    IObservable<Unit> Picking { get; }
-    IObservable<Unit> Dragging { get; }
-    IObservable<Vector3> Dropping { get; }
-    IObservable<CardFace> Facing { get; }
-    IObservable<CardFace> Flipping { get; }
-    IObservable<bool> Visibility { get; }
-    IObservable<float> Fading { get; }
-    IObservable<(Color, float)> Tinting { get; }
-    IObservable<(Color, float)> Fogging { get; }
-    IObservable<Unit> Destruction { get; }
+    IObservable<Unit> WhenPicked { get; }
+    IObservable<Vector3> WhenDragged { get; }
+    IObservable<Unit> WhenDropped { get; }
+    IObservable<CardFace> WhenFaceChanged { get; }
+    IObservable<CardFace> WhenFlipped { get; }
+    IObservable<bool> WhenVisibilityChanged { get; }
+    IObservable<float> WhenFaded { get; }
+    IObservable<(Color, float)> WhenTinted { get; }
+    IObservable<(Color, float)> WhenFogged { get; }
+    IObservable<Unit> WhenDestroyed { get; }
 
     bool DoesConsume(ICard other);
     bool DoesMatch(ICard other);
@@ -57,8 +57,8 @@ public interface ICard
     void Bind(ICardBind to);
     void Pick();
     void Drag(Vector3 toPosition);
-    void Drop(Vector3 atPosition);
-    void Arrange(Vector3 atPosition);
+    void Drop();
+    void Arrange(Vector3 atPosition, int withIndex);
     void Flip(CardFace toFace);
     void Fade(float toAlphaValue);
     void Tint(Color withColor, float byFactor);
@@ -70,14 +70,12 @@ public interface ICard
 public abstract class Card : ScriptableObject, ICard
 {
     [SerializeField] protected IntReactiveProperty value = new IntReactiveProperty();
-    [SerializeField] private Sprite frontFace;
-    [SerializeField] private Sprite backFace;
     
     private readonly ReactiveProperty<bool> isVisible = new ReactiveProperty<bool>(true);
     private readonly Subject<Unit> arranging = new Subject<Unit>();
     private readonly Subject<Unit> picking = new Subject<Unit>();
-    private readonly Subject<Unit> dragging = new Subject<Unit>();
-    private readonly Subject<Vector3> dropping = new Subject<Vector3>();
+    private readonly Subject<Vector3> dragging = new Subject<Vector3>();
+    private readonly Subject<Unit> dropping = new Subject<Unit>();
     private readonly Subject<CardFace> facing = new Subject<CardFace>();
     private readonly Subject<CardFace> flipping = new Subject<CardFace>();
     private readonly Subject<float> fading = new Subject<float>();
@@ -85,8 +83,11 @@ public abstract class Card : ScriptableObject, ICard
     private readonly Subject<(Color, float)> fogging = new Subject<(Color, float)>();
     private readonly Subject<Unit> destruction = new Subject<Unit>();
 
+    [SerializeField] private Sprite frontFace;
+    [SerializeField] private Sprite backFace;
     private CardFace face;
     private ICardBind bind;
+    private float arrangedDepth;
 
     public abstract CardType Type { get; }
     public abstract CardType InteractionMask { get; }
@@ -97,7 +98,7 @@ public abstract class Card : ScriptableObject, ICard
         set => this.value.Value = value;
     }
 
-    public int IndexInSlot { get; private set; }
+    public int Index { get; private set; }
     public string Name => name;
     
     public CardFace Face
@@ -121,18 +122,18 @@ public abstract class Card : ScriptableObject, ICard
     public Sprite FrontFace => frontFace;
     public Sprite BackFace => backFace;
 
-    public IObservable<int> Worth => value;
+    public IObservable<int> WhenValueChanged => value;
     public IObservable<Unit> WhenArranged => arranging;
-    public IObservable<Unit> Picking => picking;
-    public IObservable<Unit> Dragging => dragging;
-    public IObservable<Vector3> Dropping => dropping;
-    public IObservable<CardFace> Facing => facing.DistinctUntilChanged();
-    public IObservable<CardFace> Flipping => flipping.DistinctUntilChanged();
-    public IObservable<bool> Visibility => isVisible;
-    public IObservable<float> Fading => fading;
-    public IObservable<(Color, float)> Tinting => tinting;
-    public IObservable<(Color, float)> Fogging => fogging;
-    public IObservable<Unit> Destruction => destruction;
+    public IObservable<Unit> WhenPicked => picking;
+    public IObservable<Vector3> WhenDragged => dragging;
+    public IObservable<Unit> WhenDropped => dropping;
+    public IObservable<CardFace> WhenFaceChanged => facing.DistinctUntilChanged();
+    public IObservable<CardFace> WhenFlipped => flipping.DistinctUntilChanged();
+    public IObservable<bool> WhenVisibilityChanged => isVisible;
+    public IObservable<float> WhenFaded => fading;
+    public IObservable<(Color, float)> WhenTinted => tinting;
+    public IObservable<(Color, float)> WhenFogged => fogging;
+    public IObservable<Unit> WhenDestroyed => destruction;
 
     public abstract bool DoesConsume(ICard other);
 
@@ -162,21 +163,24 @@ public abstract class Card : ScriptableObject, ICard
     
     public void Drag(Vector3 toPosition)
     {
-        Position = new Vector3(toPosition.x, toPosition.y, Position.z);
+        Position = toPosition = new Vector3(toPosition.x, toPosition.y, Position.z);
         
-        dragging.OnNext(Unit.Default);
+        dragging.OnNext(toPosition);
     }
 
-    public void Drop(Vector3 atPosition)
+    public void Drop()
     {
-        Position = atPosition;
+        Position = new Vector3(Position.x, Position.y, arrangedDepth);
         
-        dropping.OnNext(atPosition);
+        dropping.OnNext(Unit.Default);
     }
 
-    public void Arrange(Vector3 atPosition)
+    public void Arrange(Vector3 atPosition, int withIndex)
     {
         Position = atPosition;
+        Index = withIndex;
+        arrangedDepth = atPosition.z;
+        
         arranging.OnNext(Unit.Default);
     }
 

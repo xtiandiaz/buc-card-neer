@@ -6,7 +6,6 @@ using Zenject;
 
 public interface ISlotController
 {
-    void Initialize();
 }
 
 public class SlotController : ISlotController, IDisposable
@@ -28,12 +27,12 @@ public class SlotController : ISlotController, IDisposable
         this.view = view;
     }
 
-    public void Initialize()
+    [Inject]
+    private void Initialize()
     {
-        model.Bounds = view.Bounds;
-        model.Arrangement = view.CardArrangement;
         model.Position = view.Position;
-        model.SlottingFace = view.SlottingFace;
+        model.Entryway = view.Entryway;
+        model.Bounds = view.Bounds;
         model.IsLocked = view.ShouldStartLocked;
         
         disposables.Add(model.Highlighting.Subscribe(view.ToggleHighlight));
@@ -66,9 +65,14 @@ public class SlotController : ISlotController, IDisposable
                 .Last()
                 .Select(lastDraggingPosition => new { Card = pickedCard, Position = lastDraggingPosition }))
             .RepeatSafe()
-            .Subscribe(droppedCardAtPosition => 
+            .Subscribe(droppedCardAtPosition =>
+            {
+                droppedCardAtPosition.Card.Drop();
+                model.Arrange();
+                
                 // Push Card dropping from Slot at Position:
-                CardDropping.OnNext((droppedCardAtPosition.Card, model, droppedCardAtPosition.Position))));
+                CardDropping.OnNext((droppedCardAtPosition.Card, model, droppedCardAtPosition.Position));
+            }));
 
         #endregion
         

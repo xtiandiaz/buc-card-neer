@@ -1,8 +1,6 @@
 using System;
 using UniRx;
-using UniRx.Triggers;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using Zenject;
 
 public interface ICardController
@@ -14,7 +12,6 @@ public abstract class CardController : ICardController, IDisposable
     private readonly ICard model;
     private readonly ICardView view;
     private readonly BoardCamera boardCamera;
-    private readonly ObservableEventTrigger eventTrigger;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     [Inject] private Viewport viewport;
@@ -33,19 +30,12 @@ public abstract class CardController : ICardController, IDisposable
         view.BackFace = model.BackFace;
         view.Value = model.Value;
         view.Position = Vector2.up * (viewport.Size.y + layoutSettings.CardSize.y) * 0.5f;
-
-        disposables.Add(model.WhenArranged.Subscribe(_ =>
-        {
-            view.Move(model.Position);
-            view.SortingOrder = -model.IndexInSlot;
-        }));
         
-        disposables.Add(model.Visibility.Subscribe(view.ToggleVisibility));
+        disposables.Add(model.WhenVisibilityChanged.Subscribe(view.ToggleVisibility));
+        disposables.Add(model.WhenFaceChanged.Subscribe(face => view.Flip(face, false)));
+        disposables.Add(model.WhenFlipped.Subscribe(face => view.Flip(face, true)));
         
-        disposables.Add(model.Facing.Subscribe(face => view.Flip(face, false)));
-        disposables.Add(model.Flipping.Subscribe(face => view.Flip(face, true)));
-        
-        disposables.Add(model.Worth.Subscribe(value =>
+        disposables.Add(model.WhenValueChanged.Subscribe(value => 
         {
             view.Value = value;
 
@@ -53,7 +43,11 @@ public abstract class CardController : ICardController, IDisposable
                 model.Destroy();
         }));
         
-        disposables.Add(model.Destruction.Subscribe(_ =>
+        disposables.Add(model.WhenArranged
+            .SelectMany(_ => view.MoveAsObservable(model.Position))
+            .Subscribe(_ => SetViewOrder()));
+        
+        disposables.Add(model.WhenDestroyed.Subscribe(_ => 
         {
             view.Destroy();
             Dispose();
@@ -61,26 +55,28 @@ public abstract class CardController : ICardController, IDisposable
 
         #region Interaction
 
-        disposables.Add(model.Picking.Subscribe(_ => view.OnPicked()));
-        
-        disposables.Add(model.Dragging.Subscribe(_ => view.Position = model.Position));
-        
-        disposables.Add(model.Dropping.Subscribe(_ => 
+        disposables.Add(model.WhenPicked.Subscribe(_ => 
         {
-            view.OnDropped();
-            view.Move(model.Position);
+            view.OnPicked();
+            view.SortingOrder = layoutSettings.FloatingCardSortingOrder;
         }));
+        
+        disposables.Add(model.WhenDragged.Subscribe(toPosition => view.Position = toPosition));
+        
+        disposables.Add(model.WhenDropped
+            .SelectMany(_ => view.OnDropped())
+            .Subscribe(_ => SetViewOrder()));
 
         #endregion
 
         #region Effects
 
-        disposables.Add(model.Fading.Subscribe(view.Fade));
+        disposables.Add(model.WhenFaded.Subscribe(view.Fade));
         
-        disposables.Add(model.Tinting.Subscribe(withColorByFactor => 
+        disposables.Add(model.WhenTinted.Subscribe(withColorByFactor => 
             view.Tint(withColorByFactor.Item1, withColorByFactor.Item2)));
         
-        disposables.Add(model.Fogging.Subscribe(withColorByFactor =>
+        disposables.Add(model.WhenFogged.Subscribe(withColorByFactor =>
             view.Fog(withColorByFactor.Item1, withColorByFactor.Item2)));
 
         #endregion
@@ -89,6 +85,11 @@ public abstract class CardController : ICardController, IDisposable
     public virtual void Dispose()
     {
         disposables?.Dispose();
+    }
+
+    private void SetViewOrder()
+    {
+        view.SortingOrder = -model.Index;
     }
 }
 

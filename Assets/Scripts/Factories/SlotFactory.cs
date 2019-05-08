@@ -29,9 +29,8 @@ public class SlotFactory : ISlotFactory
     public ISlot Create(ISlotView fromView)
     {
         var model = CreateModel(fromView);
-        var controller = controllerFactory.Create(model, fromView);
-        
-        controller.Initialize();
+       
+        controllerFactory.Create(model, fromView);
 
         return model;
     }
@@ -39,7 +38,7 @@ public class SlotFactory : ISlotFactory
     private ISlot CreateModel(ISlotView fromView)
     {
         var type = fromView.Type;
-        uint? pileExtent = fromView.Capacity > 0 ? fromView.Capacity : default;
+        var pileExtent = fromView.Capacity > 0 ? (int) fromView.Capacity : default(int?);
         var pile = pileFactory.Create(fromView.CardArrangement, pileExtent);
         
         switch (type)

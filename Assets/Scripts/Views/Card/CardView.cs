@@ -1,4 +1,5 @@
 using System;
+using DG.Tweening;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -13,7 +14,7 @@ public interface ICardView
     int SortingOrder { set; } 
     
     void OnPicked();
-    void OnDropped();
+    IObservable<Unit> OnDropped();
     void Flip(CardFace to, bool animated);
     void Move(Vector3 toPosition);
     IObservable<Unit> MoveAsObservable(Vector3 toPosition);
@@ -107,16 +108,12 @@ public class CardView : MonoBehaviour, ICardView
     public void OnPicked()
     {
         animator.Kill(CardAnimationType.Move);
-        //animator.Lift();
-
-        sortingGroup.sortingOrder = layoutSettings.FloatingCardSortingOrder;
+        animator.Lift();
     }
 
-    public void OnDropped()
+    public IObservable<Unit> OnDropped()
     {
-        //animator.Drop();
-
-        sortingGroup.sortingOrder = sortingOrder;
+        return animator.DropAsObservable();
     }
 
     public void ToggleVisibility(bool on)
@@ -150,7 +147,7 @@ public class CardView : MonoBehaviour, ICardView
 
     public void Move(Vector3 toPosition)
     {
-        animator.Move(toPosition, 0.5f);
+        animator.Move(toPosition);
     }
     
     public IObservable<Unit> MoveAsObservable(Vector3 toPosition)

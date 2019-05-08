@@ -806,7 +806,6 @@
             <e p="Settings" t="Include">
               <e p="BoardLayoutSettings.cs" t="Include" />
               <e p="CardAnimationSettings.cs" t="Include" />
-              <e p="CardArrangementSettings.cs" t="Include" />
               <e p="ShipAnimationSettings.cs" t="Include" />
             </e>
             <e p="Ship" t="Include">

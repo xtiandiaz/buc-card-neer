@@ -11,16 +11,21 @@ public enum SlotType
     Player    = 1 << 3
 }
 
+public enum SlotEntryway
+{
+    Front, 
+    Rear
+}
+
 public interface ISlot : ICardBind
 {
     bool IsVisible { get; set; }
     bool IsLocked { get; set; }
     SlotType Type { get; }
+    SlotEntryway Entryway { get; set; }
     CardType EntryMask { get; }
-    CardFace SlottingFace { get; set; }
     Vector3 Position { get; set; }
     Bounds Bounds { get; set; }
-    ICardArrangement Arrangement { get; set; }
 
     IObservable<ICard> WhenCardPicked { get; }
     IObservable<ICard> WhenLodged { get; }
@@ -29,11 +34,11 @@ public interface ISlot : ICardBind
     IObservable<bool> Locking { get; }
 
     ICard Pick();
-    //void Drop(ICard card);
     bool CanApply(ICard card, ISlot fromSlot);
     void Apply(ICard card);
     bool CanLodge(ICard card, ISlot fromSlot);
     void Lodge(ICard card);
+    void Arrange();
     void ToggleHighlight(bool on);
     bool DoesContain(Vector3 worldPoint);
 }
@@ -60,6 +65,10 @@ public abstract class Slot : ISlot
     }
 
     public abstract CardType EntryMask { get; }
+    public SlotType Type { get; }
+    public SlotEntryway Entryway { get; set; }
+    public Bounds Bounds { get; set; }
+    
     public bool IsVisible
     {
         get => isVisible.Value;
@@ -72,17 +81,11 @@ public abstract class Slot : ISlot
         set => isLocked.Value = value;
     }
 
-    public SlotType Type { get; }
-    public CardFace SlottingFace { get; set; }
-
     public Vector3 Position
     {
         get => position;
         set => position = pile.Position = value;
     }
-    
-    public Bounds Bounds { get; set; }
-    public ICardArrangement Arrangement { get; set; }
 
     public IObservable<ICard> WhenCardPicked => picking;
     public IObservable<ICard> WhenLodged => lodging;
@@ -94,7 +97,7 @@ public abstract class Slot : ISlot
     {
         var card = pile.Peek();
         
-        card?.Pick(); // TODO Consider rename to OnPick
+        card?.Pick();
         
         if (card != null)
             picking.OnNext(card);
@@ -104,7 +107,7 @@ public abstract class Slot : ISlot
     
     public virtual bool CanLodge(ICard card)
     {        
-        return card != null && pile.CanAdd && !pile.DoesContain(card) && (EntryMask & card.Type) != 0;
+        return card != null && pile.CanInsert && !pile.DoesContain(card) && (EntryMask & card.Type) != 0;
     }
 
     public virtual bool CanLodge(ICard card, ISlot fromSlot)
@@ -124,7 +127,7 @@ public abstract class Slot : ISlot
 
     public void Lodge(ICard card)
     {
-        pile.Add(card);
+        pile.Insert(card, Entryway == SlotEntryway.Front ? PileInsertionMode.Unshift : PileInsertionMode.Push);
         
         card.Bind(this);
         
@@ -134,6 +137,11 @@ public abstract class Slot : ISlot
     public void Release(ICard card)
     {
         pile.Remove(card);
+    }
+
+    public void Arrange()
+    {
+        pile.Arrange();
     }
 
     public void ToggleHighlight(bool on)

@@ -1,29 +1,21 @@
-using System.Collections.Generic;
 using UnityEngine;
 
+[CreateAssetMenu(fileName = "SeaCardArrangement", menuName = "Game/Card Arrangement/Sea", order = 1)]
 public class SeaCardArrangement : CardArrangement
 {
-    public override void Apply(IList<ICard> toCards, Vector3 withAnchorPosition)
-    {
-        float count = toCards.Count;
-        
-        for (var i = 0; i < toCards.Count; i++)
-        {
-            var offsetAtIndex = settings.Offset * i;
-            var t = i / count;
-            var arrangedPosition = withAnchorPosition + new Vector3(
-                                       offsetAtIndex.x,
-                                       settings.Offset.y * settings.OffsetFunction.Evaluate(t),
-                                       offsetAtIndex.z);
-            
-            Apply(toCards[i], arrangedPosition, t);
-        }
-    }
+    [SerializeField] private Color fogColor = Color.white;
+    [SerializeField] [Range(0, 1f)] private float fogDamping = 0.5f;
 
-    protected override void Apply(ICard toCard, Vector3 withPosition, float byFactor)
+    protected override void Apply(ICard toCard, int withIndex, float atTime, Vector3 withAnchorPosition)
     {
-        base.Apply(toCard, withPosition, byFactor);
+        var offsetAtIndex = offset * withIndex;
+        var arrangedPosition = withAnchorPosition + new Vector3(
+                                   offsetAtIndex.x,
+                                   offset.y * offsetFunction.Evaluate(atTime),
+                                   offsetAtIndex.z);
         
-        toCard.Fog(settings.FogColor, byFactor);
+        base.Apply(toCard, withIndex, atTime, arrangedPosition);
+        
+        toCard.Fog(fogColor, atTime * fogDamping);
     }
 }

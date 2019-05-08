@@ -1,15 +1,22 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Zenject;
 
+public enum PileInsertionMode
+{
+    Unshift,
+    Push
+}
+
 public interface IPile
 {
-    bool CanAdd { get; }
+    bool CanInsert { get; }
     Vector3 Position { set; }
 
     ICard Peek();
-    void Add(ICard card);
+    void Insert(ICard card, PileInsertionMode withMode);
     bool Remove(ICard card);
     ICard[] Take(int count);
     void Arrange();
@@ -18,22 +25,22 @@ public interface IPile
 
 public class Pile : IPile
 {
-    public class Factory : PlaceholderFactory<ICardArrangement, uint?, Pile>
+    public class Factory : PlaceholderFactory<ICardArrangement, int?, Pile>
     {
     }
     
-    private readonly List<ICard> contents = new List<ICard>();
+    private readonly List<ICard> contents;
     private readonly ICardArrangement arrangement;
-    private readonly uint? extent;
+    private readonly int? extent;
 
-    public Pile(ICardArrangement arrangement, uint? extent)
+    public Pile(ICardArrangement arrangement, int? extent)
     {
         this.arrangement = arrangement;
         this.extent = extent;
+        contents = extent.HasValue ? new List<ICard>(extent.Value) : new List<ICard>();
     }
 
-    public bool CanAdd => !extent.HasValue || contents.Count < extent.Value;
-
+    public bool CanInsert => !extent.HasValue || contents.Count < extent.Value;
     public Vector3 Position { private get; set; }
 
     public ICard Peek()
@@ -41,12 +48,22 @@ public class Pile : IPile
         return contents.FirstOrDefault();
     }
 
-    public void Add(ICard card)
+    public void Insert(ICard card, PileInsertionMode withMode)
     {
-        /*if (card == null || !CanAdd)
-            return;*/
-        
-        contents.Add(card);
+        if (card == null || !CanInsert)
+            return;
+
+        switch (withMode)
+        {
+            case PileInsertionMode.Unshift:
+                contents.Insert(0, card);
+                break;
+            case PileInsertionMode.Push:
+                contents.Add(card);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(withMode), withMode, null);
+        }
         
         Arrange();
     }
@@ -72,7 +89,7 @@ public class Pile : IPile
 
     public void Arrange()
     {
-        arrangement.Apply(contents, Position);
+        arrangement.Apply(contents, Position, extent);
     }
 
     public bool DoesContain(ICard card)

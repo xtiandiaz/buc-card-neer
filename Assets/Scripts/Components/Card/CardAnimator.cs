@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 using DG.Tweening;
 using UniRx;
 using UnityEngine;
@@ -15,8 +16,9 @@ public interface ICardAnimator
     void Initialize(CardAnimationSettings withSettings, Transform andContentWrapper);
     void Lift();
     void Drop();
+    IObservable<Unit> DropAsObservable();
     void Flip(CardFace toFace, bool whileAnimating, Action andDoAmidFlip = null);
-    void Move(Vector3 toPosition, float duringSeconds);
+    Tween Move(Vector3 toPosition);
     IObservable<Unit> MoveAsObservable(Vector3 toPosition, float duringSeconds);
     void Kill(CardAnimationType animationType);
 }
@@ -37,13 +39,23 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
     public void Lift()
     {
         Kill(CardAnimationType.Lift);
-        liftTween = Lift(settings.LiftDepth, settings.LiftDuration);
+        liftTween = Lift(-settings.LiftDepth, settings.LiftDuration);
     }
 
     public void Drop()
     {
         Kill(CardAnimationType.Lift);
-        liftTween = Lift(0, settings.LiftDuration);
+        liftTween = Lift(0, settings.ReturnToLocationWerePickedDuration);
+    }
+    
+    public IObservable<Unit> DropAsObservable()
+    {
+        return Observable.Create<Unit>(observer =>
+        {
+            var tween = Lift(0, settings.LiftDuration);
+
+            return Disposable.Create(() => tween.Kill());
+        });
     }
     
     public void Flip(CardFace toFace, bool whileAnimating, Action andDoAmidFlip = null)
@@ -70,13 +82,12 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
                 .OnComplete(() => andDoAmidFlip?.Invoke())
                 .SetEase(settings.InEase));
 
-        flipSequence.Join(Lift(settings.LiftDepth, halfTweenDuration).SetEase(settings.InEase));
+        flipSequence.Join(Lift(-settings.LiftDepth, halfTweenDuration).SetEase(settings.InEase));
 
         flipSequence.Append(
             contentWrapper.DORotate(destEulerAngles, halfTweenDuration).SetEase(settings.OutEase));
 
-        flipSequence.Join(
-            Lift(0, halfTweenDuration).SetEase(settings.OutEase));
+        flipSequence.Join(Lift(0, halfTweenDuration).SetEase(settings.OutEase));
     }
 
     public void Kill(CardAnimationType animationType)
@@ -103,12 +114,14 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
         }
     }
     
-    public void Move(Vector3 toPosition, float duringSeconds)
+    public Tween Move(Vector3 toPosition)
     {
         Kill(CardAnimationType.Move);
         
-        moveTween = transform.DOMove(toPosition, duringSeconds)
+        moveTween = transform.DOMove(toPosition, settings.MoveDuration)
             .SetEase(settings.OutEase);
+
+        return moveTween;
     }
     
     public IObservable<Unit> MoveAsObservable(Vector3 toPosition, float duringSeconds)

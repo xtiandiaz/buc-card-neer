@@ -34,7 +34,7 @@ public class BoardController : IBoardController, IDisposable
                 model.ShipPirate.Dock(view.PirateDockingPosition);
                 model.Sea.ToggleProjection(false);
             })
-            .SelectMany(card => card.Destruction.Do(_ =>
+            .SelectMany(card => card.WhenDestroyed.Do(_ =>
             {
                 model.ShipPirate.SetSail(view.PirateSailingDestination);
                 model.Sea.ToggleProjection(true);
@@ -47,7 +47,7 @@ public class BoardController : IBoardController, IDisposable
                 model.ShipMerchant.Dock(view.MerchantDockingPosition);
                 model.Sea.ToggleProjection(false);
             })
-            .SelectMany(card => card.Destruction.Do(_ =>
+            .SelectMany(card => card.WhenDestroyed.Do(_ =>
             {
                 model.ShipMerchant.SetSail(view.MerchantDockingPosition);
                 model.Sea.ToggleProjection(true);

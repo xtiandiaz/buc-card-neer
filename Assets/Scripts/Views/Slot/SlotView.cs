@@ -7,8 +7,8 @@ public interface ISlotView
 {
     uint Capacity { get; }
     SlotType Type { get; }
+    SlotEntryway Entryway { get; }
     bool ShouldStartLocked { get; }
-    CardFace SlottingFace { get; }
     ResourceType ResourceMask { get; }
     ICardArrangement CardArrangement { get; }
     Vector3 Position { get; }
@@ -27,8 +27,8 @@ public class SlotView : MonoBehaviour, ISlotView
     [SerializeField] private SpriteRenderer faceRenderer;
     [SerializeField] private uint capacity;
     [SerializeField] private SlotType type;
+    [SerializeField] private SlotEntryway entryway;
     [SerializeField] private bool shouldStartLocked;
-    [SerializeField] private CardFace slottingFace = CardFace.Front;
     [SerializeField] private ResourceType resourceMask;
     [SerializeField] private CardArrangement arrangement;
     [SerializeField] private DraggingObserver draggingObserver;
@@ -39,8 +39,8 @@ public class SlotView : MonoBehaviour, ISlotView
 
     public uint Capacity => capacity;
     public SlotType Type => type;
+    public SlotEntryway Entryway => entryway;
     public bool ShouldStartLocked => shouldStartLocked;
-    public CardFace SlottingFace => slottingFace;
     public ResourceType ResourceMask => resourceMask;
     public ICardArrangement CardArrangement => arrangement;
     public Vector3 Position => transform.position;

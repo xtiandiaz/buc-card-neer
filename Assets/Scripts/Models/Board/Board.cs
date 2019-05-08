@@ -17,12 +17,7 @@ public interface IBoard
     ISea Sea { get; }
     IShip[] Ships { get; }
     IDeck[] Decks { get; }
-    BoardMode Mode { get; set; }
     ISlot[] PlaySlots { get; }
-    
-    IObservable<ICard> CardPicking { get; }
-    IObservable<(ICard, Vector3)> CardDropping { get; }
-    IObservable<BoardMode> ModeChanged { get; }
 
     void Deal();
 }
@@ -33,7 +28,6 @@ public class Board : IBoard
     {
     }
     
-    private readonly ReactiveProperty<BoardMode> mode = new ReactiveProperty<BoardMode>(BoardMode.Seafaring);
     private readonly IDeck eventDeck;
     private readonly IDeck resourceDeck;
     
@@ -55,25 +49,11 @@ public class Board : IBoard
         
         PlaySlots = playSlots.ToArray();
     }
-    
-    public BoardMode Mode
-    {
-        get => mode.Value;
-        set => mode.Value = value;
-    }
-
-    public IObservable<BoardMode> ModeChanged => mode;
 
     public ISea Sea { get; }
     public IShip[] Ships { get; }
     public IDeck[] Decks { get; }
     public ISlot[] PlaySlots { get; private set; }
-
-    public IObservable<ICard> CardPicking => 
-        Decks.Select(d => d.Supplied).Merge().SelectMany(c => c.Picking.Select(_ => c));
-    
-    public IObservable<(ICard, Vector3)> CardDropping =>
-        Decks.Select(d => d.Supplied).Merge().SelectMany(c => c.Dropping.Select(dropPosition => (c, dropPosition)));
     
     public ShipPlayer ShipPlayer { get; private set; }
     public ShipMerchant ShipMerchant { get; private set; }
