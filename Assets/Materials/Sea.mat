@@ -71,7 +71,7 @@ Material:
     - _OcclusionStrength: 1
     - _Opacity: 0.447
     - _Parallax: 0.02
-    - _PivotOffset: -0.08372769
+    - _PivotOffset: -0.08369537
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

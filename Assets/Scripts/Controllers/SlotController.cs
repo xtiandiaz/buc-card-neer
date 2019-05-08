@@ -45,10 +45,11 @@ public class SlotController : ISlotController, IDisposable
             .Subscribe(card => CardPicking.OnNext((card, model))));
         
         disposables.Add(CardPicking
+            .Where(cardFromSlot => model != cardFromSlot.Item2)
             .Subscribe(cardFromSlot =>
             {
                 var (card, slot) = cardFromSlot;
-                model.ToggleHighlight(model.CanLodge(card, slot));
+                model.ToggleHighlight(model.CanMatch(card) || model.CanLodge(card, slot));
             }));
 
         #endregion
@@ -80,12 +81,15 @@ public class SlotController : ISlotController, IDisposable
         
         disposables.Add(CardDropping
             .Do(_ => model.ToggleHighlight(false))
-            .Where(cardFromSlotAtPosition => model.DoesContain(cardFromSlotAtPosition.Item3))
+            .Where(cardFromSlotAtPosition => 
+                model != cardFromSlotAtPosition.Item2 && model.DoesContain(cardFromSlotAtPosition.Item3))
             .Subscribe(cardFromSlotAtPosition =>
             {
                 var (card, slot, position) = cardFromSlotAtPosition;
 
-                if (model.CanLodge(card, slot))
+                if (model.CanMatch(card))
+                    model.Match(card);
+                else if (model.CanLodge(card, slot))
                     model.Lodge(card);
             }));
 

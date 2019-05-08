@@ -1,4 +1,9 @@
 using System.Linq;
+using Zenject;
+
+public interface IBoardFactory : IFactory<IBoardView, IBoard>
+{
+}
 
 public class BoardFactory : IBoardFactory
 {
@@ -27,12 +32,10 @@ public class BoardFactory : IBoardFactory
     {
         var model = modelFactory.Create(
             seaFactory.Create(fromView.Sea),
-            fromView.Ships.Select(sv => shipFactory.Create(sv)).ToArray(),
-            fromView.Decks.Select(d => deckFactory.Create(d)).ToArray());
+            fromView.Ships.Select(shipView => shipFactory.Create(shipView)).ToArray(),
+            fromView.Decks.Select(deck => deckFactory.Create(deck)).ToArray());
         
-        var controller = controllerFactory.Create(model, fromView);
-        
-        controller.Initialize();
+        controllerFactory.Create(model, fromView);
         
         return model;
     }

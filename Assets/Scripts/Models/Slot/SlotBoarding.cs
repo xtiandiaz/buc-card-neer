@@ -10,10 +10,13 @@ public class SlotBoarding : Slot
     {
     }
 
-    public override CardType EntryMask => CardType.Pirate | CardType.Merchant | CardType.Resource;
-
-    public override bool CanLodge(ICard card, ISlot fromSlot)
+    protected override bool CanLodge(ISlot fromSlot)
     {
         return fromSlot.Type == SlotType.Event;
+    }
+
+    protected override bool CanLodge(ICard card)
+    {
+        return (card.Type & (CardType.Resource | CardType.Pirate | CardType.Merchant)) != 0;
     }
 }

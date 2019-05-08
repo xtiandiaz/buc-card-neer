@@ -4,7 +4,6 @@ using UniRx;
 
 public interface IBoardController
 {
-    void Initialize();
 }
 
 public class BoardController : IBoardController, IDisposable
@@ -24,7 +23,8 @@ public class BoardController : IBoardController, IDisposable
         this.view = view;
     }
 
-    public void Initialize()
+    [Inject]
+    private void Initialize()
     {
         #region Ship Docking & Sailing
 

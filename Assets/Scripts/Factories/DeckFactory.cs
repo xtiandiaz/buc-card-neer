@@ -1,21 +1,30 @@
+using Zenject;
+
+public interface IDeckFactory : IFactory<IDeck, IDeck>
+{
+}
+
 public class DeckFactory : IDeckFactory
 {
+    private readonly DiContainer container;
     private readonly DeckController.Factory controllerFactory;
 
     private DeckFactory(
+        DiContainer container,
         DeckController.Factory controllerFactory
     )
     {
+        this.container = container;
         this.controllerFactory = controllerFactory;
     }
     
-    public IDeck Create(IDeck forModel)
+    public IDeck Create(IDeck fromReferenceModel)
     {
-        var controller = controllerFactory.Create(forModel);
+        var model = fromReferenceModel.Clone();
+        container.Inject(model);
         
-        forModel.Initialize();
-        controller.Initialize();
+        controllerFactory.Create(model);
         
-        return forModel;
+        return model;
     }
 }

@@ -30,7 +30,6 @@ public interface ICard
     int Index { get; }
     string Name { get; }
     CardType Type { get; }
-    CardType InteractionMask { get; }
     Vector3 Position { get; }
     bool IsVisible { get; set; }
     Sprite FrontFace { get; }
@@ -49,11 +48,8 @@ public interface ICard
     IObservable<(Color, float)> WhenFogged { get; }
     IObservable<Unit> WhenDestroyed { get; }
 
-    bool DoesConsume(ICard other);
-    bool DoesMatch(ICard other);
-    void Match(ICard to);
-    
-    
+    bool CanMatch(ICard withOther);
+    void Match(ICard withOther);
     void Bind(ICardBind to);
     void Pick();
     void Drag(Vector3 toPosition);
@@ -90,9 +86,8 @@ public abstract class Card : ScriptableObject, ICard
     private float arrangedDepth;
 
     public abstract CardType Type { get; }
-    public abstract CardType InteractionMask { get; }
     
-    public virtual int Value
+    public int Value
     {
         get => value.Value;
         set => this.value.Value = value;
@@ -135,15 +130,9 @@ public abstract class Card : ScriptableObject, ICard
     public IObservable<(Color, float)> WhenFogged => fogging;
     public IObservable<Unit> WhenDestroyed => destruction;
 
-    public abstract bool DoesConsume(ICard other);
+    public abstract bool CanMatch(ICard withOther);
 
-    public bool DoesMatch(ICard other)
-    {
-        return false;
-    }
-    
-    public void Match(ICard to)
-    {}
+    public abstract void Match(ICard withOther);
 
     public void Bind(ICardBind to)
     {

@@ -1,13 +1,14 @@
 using System;
+using UnityEngine;
 using Zenject;
 
 public interface ICardFactory : IFactory<ICard, ICard>
 {
-    ICard Create(ICard forModel);
 }
 
 public class CardFactory : ICardFactory
 {
+    private readonly DiContainer container;
     private readonly CardView.Factory viewFactory;
     private readonly CardPirateController.Factory controllerFactoryFoe;
     private readonly CardMerchantController.Factory controllerFactoryMerchant;
@@ -15,6 +16,7 @@ public class CardFactory : ICardFactory
     private readonly CardPlayerController.Factory controllerFactoryPlayer;
 
     private CardFactory(
+        DiContainer container,
         CardView.Factory viewFactory,
         CardPirateController.Factory controllerFactoryFoe,
         CardMerchantController.Factory controllerFactoryMerchant, 
@@ -22,6 +24,7 @@ public class CardFactory : ICardFactory
         CardPlayerController.Factory controllerFactoryPlayer
         )
     {
+        this.container = container;
         this.viewFactory = viewFactory;
         this.controllerFactoryFoe = controllerFactoryFoe;
         this.controllerFactoryMerchant = controllerFactoryMerchant;
@@ -31,6 +34,8 @@ public class CardFactory : ICardFactory
     
     public ICard Create(ICard forModel)
     {
+        container.Inject(forModel);
+        
         var view = viewFactory.Create(GetViewResourcePath(forModel.Type));
         
         CreateController(forModel, view);

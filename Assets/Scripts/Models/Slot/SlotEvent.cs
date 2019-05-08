@@ -10,10 +10,14 @@ public class SlotEvent : Slot
     {
     }
 
-    public override CardType EntryMask => CardType.Pirate | CardType.Merchant | CardType.Resource;
-
-    public override bool CanLodge(ICard card, ISlot fromSlot)
+    protected override bool CanLodge(ISlot fromSlot)
     {
-        return fromSlot.Type == SlotType.Storage & card.Type == CardType.WeaponArtillery;
+        // Can't lodge from any other Slot but only when dealt on directly
+        return false;
+    }
+
+    protected override bool CanLodge(ICard card)
+    {
+        return (card.Type & (CardType.Resource | CardType.Pirate | CardType.Merchant)) != 0;
     }
 }

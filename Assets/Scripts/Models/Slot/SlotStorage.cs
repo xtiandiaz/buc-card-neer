@@ -16,34 +16,22 @@ public class SlotStorage : Slot, ISlotStorage
         ResourceMask = resourceMask;
     }
 
-    public override CardType EntryMask => CardType.Resource;
     public ResourceType ResourceMask { get; }
 
-    public override bool CanLodge(ICard card)
+    protected override bool CanLodge(ISlot fromSlot)
     {
-        if (card is IResourceCard resourceCard)
-            return CanTake(resourceCard);
-
-        return false;
-    }
-    
-    public override bool CanLodge(ICard card, ISlot fromSlot)
-    {
-        switch (fromSlot.Type)
-        {
-            case SlotType.Boarding:
-
-                if (card is IResourceCard resourceCard)
-                    return resourceCard.IsTreasure || resourceCard.WasPaidFor;
-                
-                break;
-        }
-
-        return false;
+        return (fromSlot.Type & (SlotType.Boarding)) != 0;
     }
 
-    private bool CanTake(IResourceCard resourceCard)
+    protected override bool CanLodge(ICard card)
     {
-        return (ResourceMask & resourceCard.ResourceType) != 0;
+        if (!(card is IResourceCard resourceCard))
+            return false;
+
+        if ((ResourceMask & resourceCard.ResourceType) == 0)
+            return false;
+
+        return true;
+        //return resourceCard.IsTreasure || resourceCard.WasPaidFor;
     }
 }

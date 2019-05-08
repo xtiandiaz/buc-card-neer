@@ -22,9 +22,10 @@ public class DeckController : IDisposable
         this.cardFactory = cardFactory;
     }
 
-    public void Initialize()
+    [Inject]
+    private void Initialize()
     {
-        disposables.Add(model.Supplied.Subscribe(card => cardFactory.Create(card)));
+        disposables.Add(model.WhenSupplied.Subscribe(card => cardFactory.Create(card)));
     }
 
     public void Dispose()

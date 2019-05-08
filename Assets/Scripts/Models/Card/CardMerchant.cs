@@ -3,15 +3,16 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "CardMerchant", menuName = "Game/Card/Merchant", order = 1)]
 public class CardMerchant : Card
 {
-    public override int Value => 1;
     public override CardType Type => CardType.Merchant;
-    public override CardType InteractionMask => CardType.Resource;
 
-    public override bool DoesConsume(ICard other)
+    public override bool CanMatch(ICard withOther)
     {
-        if (other is IResourceCard resourceCard && resourceCard.WasPaidFor)
-            return resourceCard.Sell();
+        return withOther is IResourceCard resourceCard && resourceCard.WasPaidFor;
+    }
 
-        return false;
+    public override void Match(ICard withOther)
+    {
+        if (withOther is IResourceCard resourceCard && resourceCard.WasPaidFor)
+            resourceCard.Sell();
     }
 }

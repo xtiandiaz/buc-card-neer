@@ -16,7 +16,7 @@ public interface IPile
     Vector3 Position { set; }
 
     ICard Peek();
-    void Insert(ICard card, PileInsertionMode withMode);
+    bool Insert(ICard card, PileInsertionMode withMode);
     bool Remove(ICard card);
     ICard[] Take(int count);
     void Arrange();
@@ -48,10 +48,10 @@ public class Pile : IPile
         return contents.FirstOrDefault();
     }
 
-    public void Insert(ICard card, PileInsertionMode withMode)
+    public bool Insert(ICard card, PileInsertionMode withMode)
     {
-        if (card == null || !CanInsert)
-            return;
+        if (card == null || !CanInsert || DoesContain(card))
+            return false;
 
         switch (withMode)
         {
@@ -62,10 +62,12 @@ public class Pile : IPile
                 contents.Add(card);
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(withMode), withMode, null);
+                return false;
         }
         
         Arrange();
+
+        return true;
     }
 
     public bool Remove(ICard card)

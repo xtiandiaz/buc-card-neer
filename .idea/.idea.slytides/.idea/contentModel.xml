@@ -770,8 +770,6 @@
             <e p="BoardFactory.cs" t="Include" />
             <e p="CardFactory.cs" t="Include" />
             <e p="DeckFactory.cs" t="Include" />
-            <e p="IBoardFactory.cs" t="Include" />
-            <e p="IDeckFactory.cs" t="Include" />
             <e p="ISeaFactory.cs" t="Include" />
             <e p="ISlotFactory.cs" t="Include" />
             <e p="SeaFactory.cs" t="Include" />

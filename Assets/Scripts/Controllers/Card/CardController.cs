@@ -82,7 +82,7 @@ public abstract class CardController : ICardController, IDisposable
         #endregion
     }
 
-    public virtual void Dispose()
+    public void Dispose()
     {
         disposables?.Dispose();
     }

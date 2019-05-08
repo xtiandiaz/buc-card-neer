@@ -2,22 +2,22 @@ using System;
 using UniRx;
 using UnityEngine;
 
-public interface ICardPlayer : ICard, IPlayerStats
+public interface ICardPlayer : ICard
 {
+    bool CanPayFor(IResourceCard resourceCard);
 }
 
 [CreateAssetMenu(fileName = "CardPlayer", menuName = "Game/Card/Player", order = 1)]
-public class CardPlayer : Card, ICardPlayer
+public class CardPlayer : Card, ICardPlayer, IPlayerStats
 {
     [SerializeField] private IntReactiveProperty coins = new IntReactiveProperty(10);
     
     public override CardType Type => CardType.Player;
-    public override CardType InteractionMask => CardType.Resource | CardType.Pirate;
 
     public int HealthPoints
     {
-        get => value.Value;
-        set => this.value.Value = value;
+        get => Value;
+        set => Value = value;
     }
 
     public int Coins
@@ -29,21 +29,33 @@ public class CardPlayer : Card, ICardPlayer
     public IObservable<int> Health => value;
     public IObservable<int> Funds => coins;
 
-    public override bool DoesConsume(ICard other)
+    public override bool CanMatch(ICard withOther)
     {
-        if ((other.Type & CardType.Pirate) != 0)
-        {
-            HealthPoints -= other.Value;
-            other.Value = 0;
-
+        if ((withOther.Type & (CardType.Pirate)) != 0)
             return true;
-        }
-        
-        if (other is IResourceCard resourceCard && !resourceCard.WasPaidFor)
-        {
-            return resourceCard.Buy();
-        }
+
+        if (withOther is IResourceCard resourceCard)
+            return !resourceCard.WasPaidFor && CanPayFor(resourceCard);
 
         return false;
+    }
+
+    public override void Match(ICard withOther)
+    {
+        if ((withOther.Type & (CardType.Pirate)) != 0)
+        {
+            HealthPoints -= withOther.Value;
+            withOther.Destroy();
+            
+            return;
+        }
+        
+        if (withOther is IResourceCard resourceCard && !resourceCard.WasPaidFor && CanPayFor(resourceCard))
+            resourceCard.Purchase();
+    }
+
+    public bool CanPayFor(IResourceCard resourceCard)
+    {
+        return resourceCard.Value <= Coins;
     }
 }

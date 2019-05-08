@@ -4,10 +4,18 @@ using UnityEngine;
 public class CardPirate : Card
 {
     public override CardType Type => CardType.Pirate;
-    public override CardType InteractionMask => CardType.Resource;
 
-    public override bool DoesConsume(ICard other)
+    public override bool CanMatch(ICard withOther)
     {
-        return false;
+        return (withOther.Type & CardType.WeaponArtillery) != 0;
+    }
+
+    public override void Match(ICard withOther)
+    {
+        if ((withOther.Type & CardType.WeaponArtillery) != 0)
+        {
+            Value -= withOther.Value;
+            withOther.Destroy();
+        }
     }
 }

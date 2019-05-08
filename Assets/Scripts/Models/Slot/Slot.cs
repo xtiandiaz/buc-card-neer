@@ -2,13 +2,12 @@ using System;
 using UniRx;
 using UnityEngine;
 
-[Flags]
 public enum SlotType
 {
-    Event     = 1 << 0,
-    Boarding  = 1 << 1,
-    Storage   = 1 << 2,
-    Player    = 1 << 3
+    Event,
+    Boarding,
+    Storage,
+    Player
 }
 
 public enum SlotEntryway
@@ -23,9 +22,8 @@ public interface ISlot : ICardBind
     bool IsLocked { get; set; }
     SlotType Type { get; }
     SlotEntryway Entryway { get; set; }
-    CardType EntryMask { get; }
-    Vector3 Position { get; set; }
-    Bounds Bounds { get; set; }
+    Vector3 Position { set; }
+    Bounds Bounds { set; }
 
     IObservable<ICard> WhenCardPicked { get; }
     IObservable<ICard> WhenLodged { get; }
@@ -34,8 +32,8 @@ public interface ISlot : ICardBind
     IObservable<bool> Locking { get; }
 
     ICard Pick();
-    bool CanApply(ICard card, ISlot fromSlot);
-    void Apply(ICard card);
+    bool CanMatch(ICard card);
+    void Match(ICard card);
     bool CanLodge(ICard card, ISlot fromSlot);
     void Lodge(ICard card);
     void Arrange();
@@ -56,7 +54,7 @@ public abstract class Slot : ISlot
     private readonly Subject<bool> highlighting = new Subject<bool>();
     private readonly ReactiveProperty<bool> isVisible = new ReactiveProperty<bool>(true);
     private readonly ReactiveProperty<bool> isLocked = new ReactiveProperty<bool>(false);
-    private Vector3 position;
+    private Bounds bounds;
     
     protected Slot(SlotType type, IPile pile)
     {
@@ -64,10 +62,8 @@ public abstract class Slot : ISlot
         Type = type;
     }
 
-    public abstract CardType EntryMask { get; }
     public SlotType Type { get; }
     public SlotEntryway Entryway { get; set; }
-    public Bounds Bounds { get; set; }
     
     public bool IsVisible
     {
@@ -83,8 +79,12 @@ public abstract class Slot : ISlot
 
     public Vector3 Position
     {
-        get => position;
-        set => position = pile.Position = value;
+        set => pile.Position = value;
+    }
+    
+    public Bounds Bounds
+    {
+        set => bounds = value;
     }
 
     public IObservable<ICard> WhenCardPicked => picking;
@@ -104,30 +104,29 @@ public abstract class Slot : ISlot
 
         return card;
     }
-    
-    public virtual bool CanLodge(ICard card)
-    {        
-        return card != null && pile.CanInsert && !pile.DoesContain(card) && (EntryMask & card.Type) != 0;
-    }
 
-    public virtual bool CanLodge(ICard card, ISlot fromSlot)
+    public bool CanLodge(ICard card, ISlot fromSlot)
     {
-        return CanLodge(card);
+        return card != null && pile.CanInsert && !pile.DoesContain(card) && CanLodge(fromSlot) && CanLodge(card);
     }
 
-    public bool CanApply(ICard card, ISlot fromSlot)
+    public bool CanMatch(ICard card)
     {
-        return pile.Peek()?.DoesMatch(card) == true;
+        return pile.Peek()?.CanMatch(card) == true;
     }
 
-    public void Apply(ICard card)
+    public void Match(ICard card)
     {
         pile.Peek()?.Match(card);
     }
 
     public void Lodge(ICard card)
     {
-        pile.Insert(card, Entryway == SlotEntryway.Front ? PileInsertionMode.Unshift : PileInsertionMode.Push);
+        if (!CanLodge(card))
+            return;
+        
+        if (!pile.Insert(card, Entryway == SlotEntryway.Front ? PileInsertionMode.Unshift : PileInsertionMode.Push))
+            return;
         
         card.Bind(this);
         
@@ -151,6 +150,10 @@ public abstract class Slot : ISlot
     
     public bool DoesContain(Vector3 worldPoint)
     {
-        return Bounds.Contains(worldPoint);
+        return bounds.Contains(worldPoint);
     }
+
+    protected abstract bool CanLodge(ICard card);
+    
+    protected abstract bool CanLodge(ISlot fromSlot);
 }

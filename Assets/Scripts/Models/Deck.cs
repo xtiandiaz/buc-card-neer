@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UniRx;
 using UnityEngine;
+using Zenject;
+using Object = UnityEngine.Object;
 
 public enum DeckType
 {
@@ -13,33 +15,37 @@ public enum DeckType
 public interface IDeck
 {
     DeckType Type { get; }
-    IObservable<ICard> Supplied { get; }
+    string Name { get; }
+    
+    IObservable<ICard> WhenSupplied { get; }
 
-    void Initialize();
     ICard Supply();
     void TakeBack(ICard card);
+    IDeck Clone();
 }
 
 [CreateAssetMenu(fileName = "Deck", menuName = "Game/Deck", order = 1)]
 public class Deck : ScriptableObject, IDeck
 {
-    private readonly Subject<ICard> supplied = new Subject<ICard>();
+    private readonly Subject<ICard> supplying = new Subject<ICard>();
     
     [SerializeField] private DeckType type;
-    [SerializeField] private List<Card> cards;
-    
+    [SerializeField] private List<Card> referenceCards;
     private Queue<ICard> queue;
 
     public DeckType Type => type;
-    public IObservable<ICard> Supplied => supplied;
+    public string Name => name;
+    
+    public IObservable<ICard> WhenSupplied => supplying;
 
-    public void Initialize()
+    [Inject]
+    private void Initialize()
     {
-        var playCards = cards.Select(card => card.Clone()).ToList();
+        var cards = referenceCards.Select(refCard => refCard.Clone()).ToList();
         
-        playCards.Shuffle();
+        cards.Shuffle();
         
-        queue = new Queue<ICard>(playCards);
+        queue = new Queue<ICard>(cards);
     }
 
     public ICard Supply()
@@ -47,7 +53,7 @@ public class Deck : ScriptableObject, IDeck
         var card = queue.Dequeue();
         
         if (card != null)
-            supplied.OnNext(card);
+            supplying.OnNext(card);
 
         return card;
     }
@@ -55,5 +61,10 @@ public class Deck : ScriptableObject, IDeck
     public void TakeBack(ICard card)
     {
         queue.Enqueue(card);
+    }
+    
+    public IDeck Clone()
+    {
+        return Instantiate(this);
     }
 }
