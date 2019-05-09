@@ -9,7 +9,7 @@ public interface ISea : ICardConsumer, IBoardSection
     
     IObservable<bool> WhenToggledProjection { get; }
     
-    void ToggleProjection(bool on);
+    void ToggleProjection(bool toValue);
 }
 
 public class Sea : ISea
@@ -18,7 +18,7 @@ public class Sea : ISea
     {
     }
     
-    private readonly ReactiveProperty<bool> isProjected = new ReactiveProperty<bool>(true);
+    private readonly Subject<bool> projection = new Subject<bool>();
     private readonly Subject<ICard> consumption = new Subject<ICard>();
     private ICardProvider cardProvider;
 
@@ -29,7 +29,7 @@ public class Sea : ISea
 
     public ISlot[] Slots { get; }
     
-    public IObservable<bool> WhenToggledProjection => isProjected;
+    public IObservable<bool> WhenToggledProjection => projection;
     public IObservable<ICard> WhenConsumed => consumption;
 
     public void Populate()
@@ -55,13 +55,13 @@ public class Sea : ISea
         consumption.OnNext(card);
     }
 
-    public void ToggleProjection(bool on)
+    public void ToggleProjection(bool toValue)
     {
-        isProjected.Value = on;
-
         foreach (var slot in Slots)
         {
-            slot.IsVisible = on;
+            slot.IsVisible = toValue;
         }
+        
+        projection.OnNext(toValue);
     }
 }

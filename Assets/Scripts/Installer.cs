@@ -51,10 +51,10 @@ public class Installer : MonoInstaller
         Container.BindFactory<IDeck, DeckController, DeckController.Factory>().AsSingle();
         
         // Slot
-        Container.BindFactory<IPile, SlotBoarding, SlotBoarding.Factory>();
-        Container.BindFactory<IPile, SlotEvent, SlotEvent.Factory>();
-        Container.BindFactory<IPile, SlotPlayer, SlotPlayer.Factory>();
-        Container.BindFactory<ResourceType, IPile, SlotStorage, SlotStorage.Factory>();
+        Container.BindFactory<IPile, Transform, Bounds, SlotBoarding, SlotBoarding.Factory>();
+        Container.BindFactory<IPile, Transform, Bounds,SlotEvent, SlotEvent.Factory>();
+        Container.BindFactory<IPile, Transform, Bounds, SlotPlayer, SlotPlayer.Factory>();
+        Container.BindFactory<ResourceType, IPile, Transform, Bounds, SlotStorage, SlotStorage.Factory>();
         Container.BindFactory<ISlot, ISlotView, SlotController, SlotController.Factory>().AsSingle();
         
         // Pile

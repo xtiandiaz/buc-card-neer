@@ -1,3 +1,4 @@
+using UnityEngine;
 using Zenject;
 
 public interface ISlotStorage : ISlot
@@ -7,11 +8,12 @@ public interface ISlotStorage : ISlot
 
 public class SlotStorage : Slot, ISlotStorage
 {
-    public class Factory : PlaceholderFactory<ResourceType, IPile, SlotStorage>
+    public class Factory : PlaceholderFactory<ResourceType, IPile, Transform, Bounds, SlotStorage>
     {
     }
 
-    public SlotStorage(ResourceType resourceMask, IPile pile) : base(SlotType.Storage, pile)
+    public SlotStorage(ResourceType resourceMask, IPile pile, Transform transform, Bounds bounds) 
+        : base(SlotType.Storage, pile, transform, bounds)
     {
         ResourceMask = resourceMask;
     }

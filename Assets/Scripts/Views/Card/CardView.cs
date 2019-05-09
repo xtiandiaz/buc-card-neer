@@ -11,15 +11,16 @@ public interface ICardView
     Sprite FrontFace { set; }
     Sprite BackFace { set; }
     Vector3 Position { set; }
+    Vector3 LocalPosition { set; }
     int SortingOrder { set; } 
     
     void OnPicked();
     IObservable<Unit> OnDropped();
-    void Flip(CardFace to, bool animated);
-    void Move(Vector3 toPosition);
-    IObservable<Unit> MoveAsObservable(Vector3 toPosition);
-    void ToggleVisibility(bool on);
-    void SetParent(Transform asTransform);
+    void Flip(CardFace toFace, bool animated);
+    void MoveLocal(Vector3 toPosition);
+    IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition);
+    void ToggleVisibility(bool toValue);
+    void SetParent(Transform toTransform);
     void Fade(float toAlphaValue);
     void Tint(Color withColor, float byFactor);
     void Fog(Color withColor, float byFactor);
@@ -64,11 +65,19 @@ public class CardView : MonoBehaviour, ICardView
     
     public Vector3 Position
     {
-        get => transform.position;
         set
         {
             animator.Kill(CardAnimationType.Move);
             transform.position = value;
+        }
+    }
+    
+    public Vector3 LocalPosition
+    {
+        set
+        {
+            animator.Kill(CardAnimationType.Move);
+            transform.localPosition = value;
         }
     }
 
@@ -104,9 +113,9 @@ public class CardView : MonoBehaviour, ICardView
         return animator.DropAsObservable();
     }
 
-    public void ToggleVisibility(bool on)
+    public void ToggleVisibility(bool toValue)
     {
-        gameObject.SetActive(on);
+        gameObject.SetActive(toValue);
     }
 
     public void Fade(float toAlphaValue)
@@ -124,28 +133,28 @@ public class CardView : MonoBehaviour, ICardView
         shader.Fog(withColor, byFactor);
     }
 
-    public void Flip(CardFace to, bool animated)
+    public void Flip(CardFace toFace, bool animated)
     {
-        animator.Flip(to, animated, () =>
+        animator.Flip(toFace, animated, () =>
         {
-            frontFace.ToggleVisibility(to == CardFace.Front);
-            backFace.ToggleVisibility(to == CardFace.Back);
+            frontFace.ToggleVisibility(toFace == CardFace.Front);
+            backFace.ToggleVisibility(toFace == CardFace.Back);
         });
     }
 
-    public void Move(Vector3 toPosition)
+    public void MoveLocal(Vector3 toPosition)
     {
-        animator.Move(toPosition);
+        animator.MoveLocal(toPosition);
     }
     
-    public IObservable<Unit> MoveAsObservable(Vector3 toPosition)
+    public IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition)
     {
-        return animator.MoveAsObservable(toPosition, 0.5f);
+        return animator.MoveLocalAsObservable(toPosition, 0.5f);
     }
     
-    public void SetParent(Transform asTransform)
+    public void SetParent(Transform toTransform)
     {
-        transform.SetParent(asTransform, true);
+        transform.SetParent(toTransform, true);
     }
 
     public void Destroy()

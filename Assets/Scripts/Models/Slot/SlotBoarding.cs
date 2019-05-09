@@ -1,12 +1,14 @@
+using UnityEngine;
 using Zenject;
 
 public class SlotBoarding : Slot
 {
-    public class Factory : PlaceholderFactory<IPile, SlotBoarding>
+    public class Factory : PlaceholderFactory<IPile, Transform, Bounds, SlotBoarding>
     {
     }
 
-    public SlotBoarding(IPile pile) : base(SlotType.Boarding, pile)
+    public SlotBoarding(IPile pile, Transform transform, Bounds bounds) 
+        : base(SlotType.Boarding, pile, transform, bounds)
     {
     }
 

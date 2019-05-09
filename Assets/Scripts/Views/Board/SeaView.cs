@@ -37,6 +37,7 @@ public class SeaView : MonoBehaviour, ISeaView
         
         oceanMaterial = background.sharedMaterial;
         oceanMaterial.SetFloat(PivotOffset, - (Height / viewportHeight) * 0.5f);
+        oceanMaterial.SetFloat(Curvature, 1);
     }
 
     public void ToggleProjection(bool on, float withDurationInSeconds, float andDelayInSeconds = 0)

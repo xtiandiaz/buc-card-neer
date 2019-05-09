@@ -28,21 +28,33 @@ public class DraggingObserver : MonoBehaviour, IDraggingObserver
     {
         eventTrigger = gameObject.AddComponent<ObservableEventTrigger>();
 
+        var lastWorldPos = Vector3.zero;
+
         eventTrigger
             .OnBeginDragAsObservable()
-            .Subscribe(eventData => draggingStart.OnNext(Unit.Default))
+            .Do(eventData => lastWorldPos = worldPointProvider.GetWorldPoint(eventData.position))
+            .AsUnitObservable()
+            .Subscribe(draggingStart)
             .AddTo(this);
         
         eventTrigger
             .OnDragAsObservable()
-            .Select(eventData => worldPointProvider.GetWorldPoint(eventData.position))
-            .Subscribe(dragging.OnNext)
+            .Select(eventData =>
+            {
+                var newWorldPos = worldPointProvider.GetWorldPoint(eventData.position);
+                var deltaPos = newWorldPos - lastWorldPos;
+
+                lastWorldPos = newWorldPos;
+                
+                return deltaPos;
+            })
+            .Subscribe(dragging)
             .AddTo(this);
 
         eventTrigger
             .OnEndDragAsObservable()
             .Select(eventData => worldPointProvider.GetWorldPoint(eventData.position))
-            .Subscribe(draggingEnd.OnNext)
+            .Subscribe(draggingEnd)
             .AddTo(this);
     }
 }

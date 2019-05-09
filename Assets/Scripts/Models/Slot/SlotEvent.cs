@@ -1,12 +1,14 @@
+using UnityEngine;
 using Zenject;
 
 public class SlotEvent : Slot
 {
-    public class Factory : PlaceholderFactory<IPile, SlotEvent>
+    public class Factory : PlaceholderFactory<IPile, Transform, Bounds, SlotEvent>
     {
     }
 
-    public SlotEvent(IPile pile) : base(SlotType.Event, pile)
+    public SlotEvent(IPile pile, Transform transform, Bounds bounds) 
+        : base(SlotType.Event, pile, transform, bounds)
     {
     }
 

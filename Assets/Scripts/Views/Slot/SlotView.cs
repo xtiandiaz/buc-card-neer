@@ -6,12 +6,12 @@ using Zenject;
 public interface ISlotView
 {
     uint Capacity { get; }
+    bool ShouldStartLocked { get; }
     SlotType Type { get; }
     SlotEntryway Entryway { get; }
-    bool ShouldStartLocked { get; }
     ResourceType ResourceMask { get; }
     ICardArrangement CardArrangement { get; }
-    Vector3 Position { get; }
+    Transform Transform { get; }
     Bounds Bounds { get; }
     
     IObservable<Unit> WhenDraggingStarted { get; }
@@ -43,7 +43,7 @@ public class SlotView : MonoBehaviour, ISlotView
     public bool ShouldStartLocked => shouldStartLocked;
     public ResourceType ResourceMask => resourceMask;
     public ICardArrangement CardArrangement => arrangement;
-    public Vector3 Position => transform.position;
+    public Transform Transform => transform;
     public Bounds Bounds => faceRenderer.bounds;
     
     public IObservable<Unit> WhenDraggingStarted => draggingObserver.DraggingStart;

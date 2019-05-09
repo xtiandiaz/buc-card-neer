@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using Zenject;
 
 public enum PileInsertionMode
@@ -13,7 +11,6 @@ public enum PileInsertionMode
 public interface IPile
 {
     bool CanInsert { get; }
-    Vector3 Position { set; }
 
     ICard Peek();
     bool Insert(ICard card, PileInsertionMode withMode);
@@ -41,7 +38,6 @@ public class Pile : IPile
     }
 
     public bool CanInsert => !extent.HasValue || contents.Count < extent.Value;
-    public Vector3 Position { private get; set; }
 
     public ICard Peek()
     {
@@ -91,7 +87,7 @@ public class Pile : IPile
 
     public void Arrange()
     {
-        arrangement.Apply(contents, Position, extent);
+        arrangement.Apply(contents, extent);
     }
 
     public bool DoesContain(ICard card)

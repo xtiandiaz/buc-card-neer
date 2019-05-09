@@ -18,8 +18,8 @@ public interface ICardAnimator
     void Drop();
     IObservable<Unit> DropAsObservable();
     void Flip(CardFace toFace, bool whileAnimating, Action andDoAmidFlip = null);
-    Tween Move(Vector3 toPosition);
-    IObservable<Unit> MoveAsObservable(Vector3 toPosition, float duringSeconds);
+    Tween MoveLocal(Vector3 toPosition);
+    IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition, float duringSeconds);
     void Kill(CardAnimationType animationType);
 }
 
@@ -114,21 +114,21 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
         }
     }
     
-    public Tween Move(Vector3 toPosition)
+    public Tween MoveLocal(Vector3 toPosition)
     {
         Kill(CardAnimationType.Move);
         
-        moveTween = transform.DOMove(toPosition, settings.MoveDuration)
+        moveTween = transform.DOLocalMove(toPosition, settings.MoveDuration)
             .SetEase(settings.OutEase);
 
         return moveTween;
     }
     
-    public IObservable<Unit> MoveAsObservable(Vector3 toPosition, float duringSeconds)
+    public IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition, float duringSeconds)
     {
         return Observable.Create<Unit>(observer =>
         {
-            var tween = transform.DOMove(toPosition, duringSeconds)
+            var tween = transform.DOLocalMove(toPosition, duringSeconds)
                 .SetEase(settings.OutEase)
                 .OnComplete(() =>
                 {

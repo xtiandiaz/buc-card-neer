@@ -1,6 +1,7 @@
 using System;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
 [Flags]
 public enum CardType
@@ -30,16 +31,18 @@ public interface ICard
     int Index { get; }
     string Name { get; }
     CardType Type { get; }
-    Vector3 Position { get; }
+    Vector3 LocalPosition { get; }
     bool IsVisible { get; set; }
     Sprite FrontFace { get; }
     Sprite BackFace { get; }
+    ICardBond Bond { get; }
     
     IObservable<int> Worth { get; }
-    IObservable<Unit> WhenPicked { get; }
-    IObservable<Vector3> WhenDragged { get; }
-    IObservable<Unit> WhenDropped { get; }
+    IObservable<Transform> WhenBound { get; }
     IObservable<Unit> WhenArranged { get; }
+    IObservable<Unit> WhenPicked { get; }
+    IObservable<Unit> WhenDragged { get; }
+    IObservable<Unit> WhenDropped { get; }
     IObservable<CardFace> WhenFaceChanged { get; }
     IObservable<CardFace> WhenFlipped { get; }
     IObservable<bool> WhenVisibilityChanged { get; }
@@ -50,11 +53,11 @@ public interface ICard
 
     bool CanMatch(ICard withOther, ISlot fromSlot);
     void Match(ICard withOther);
-    void Bind(ICardBind to);
+    void Bind(ICardBond withBond);
     void Pick();
-    void Drag(Vector3 toPosition);
+    void Drag(Vector3 byDeltaPosition);
     void Drop();
-    void Arrange(Vector3 atPosition, int withIndex);
+    void Arrange(Vector3 atLocalPosition, int withIndex);
     void Flip(CardFace toFace);
     void Fade(float toAlphaValue);
     void Tint(Color withColor, float byFactor);
@@ -68,9 +71,10 @@ public abstract class Card : ScriptableObject, ICard
     [SerializeField] protected IntReactiveProperty value = new IntReactiveProperty();
     
     private readonly ReactiveProperty<bool> isVisible = new ReactiveProperty<bool>(true);
-    private readonly BehaviorSubject<Unit> arranging = new BehaviorSubject<Unit>(Unit.Default);
+    private readonly Subject<Transform> binding = new Subject<Transform>();
+    private readonly Subject<Unit> arranging = new Subject<Unit>();
     private readonly Subject<Unit> picking = new Subject<Unit>();
-    private readonly Subject<Vector3> dragging = new Subject<Vector3>();
+    private readonly Subject<Unit> dragging = new Subject<Unit>();
     private readonly Subject<Unit> dropping = new Subject<Unit>();
     private readonly Subject<CardFace> facing = new Subject<CardFace>();
     private readonly Subject<CardFace> flipping = new Subject<CardFace>();
@@ -82,20 +86,22 @@ public abstract class Card : ScriptableObject, ICard
     [SerializeField] private Sprite frontFace;
     [SerializeField] private Sprite backFace;
     private CardFace face;
-    private ICardBind bind;
     private float arrangedDepth;
 
     public abstract CardType Type { get; }
-    
+    public int Index { get; private set; }
+    public string Name => name;
+    public Sprite FrontFace => frontFace;
+    public Sprite BackFace => backFace;
+    public Vector3 LocalPosition { get; private set; }
+    public ICardBond Bond { get; private set; }
+
     public int Value
     {
         get => value.Value;
         set => this.value.Value = Mathf.Max(value, 0);
     }
 
-    public int Index { get; private set; }
-    public string Name => name;
-    
     public CardFace Face
     {
         get => face;
@@ -106,21 +112,17 @@ public abstract class Card : ScriptableObject, ICard
         }
     }
 
-    public Vector3 Position { get; private set; }
-
     public bool IsVisible
     {
         get => isVisible.Value;
         set => isVisible.Value = value;
     }
-    
-    public Sprite FrontFace => frontFace;
-    public Sprite BackFace => backFace;
 
     public IObservable<int> Worth => value;
+    public IObservable<Transform> WhenBound => binding;
     public IObservable<Unit> WhenArranged => arranging;
     public IObservable<Unit> WhenPicked => picking;
-    public IObservable<Vector3> WhenDragged => dragging;
+    public IObservable<Unit> WhenDragged => dragging;
     public IObservable<Unit> WhenDropped => dropping;
     public IObservable<CardFace> WhenFaceChanged => facing.DistinctUntilChanged();
     public IObservable<CardFace> WhenFlipped => flipping.DistinctUntilChanged();
@@ -134,41 +136,38 @@ public abstract class Card : ScriptableObject, ICard
 
     public abstract void Match(ICard withOther);
 
-    public void Bind(ICardBind to)
+    public void Bind(ICardBond withBond)
     {
-        if (to == bind || to == null)
+        if (withBond == Bond || withBond == null)
             return;
         
-        bind?.Release(this);
-        bind = to;
+        Bond?.Release(this);
+        Bond = withBond;
+
+        binding.OnNext(withBond.TransformBond);
     }
 
     public void Pick()
-    {
-        Position = new Vector3(Position.x, Position.y, 0);
-        
+    {       
         picking.OnNext(Unit.Default);
     }
     
-    public void Drag(Vector3 toPosition)
-    {
-        Position = toPosition = new Vector3(toPosition.x, toPosition.y, Position.z);
+    public void Drag(Vector3 byDeltaPosition)
+    {        
+        LocalPosition += byDeltaPosition;
         
-        dragging.OnNext(toPosition);
+        dragging.OnNext(Unit.Default);
     }
 
     public void Drop()
     {
-        Position = new Vector3(Position.x, Position.y, arrangedDepth);
-        
         dropping.OnNext(Unit.Default);
     }
 
-    public void Arrange(Vector3 atPosition, int withIndex)
+    public void Arrange(Vector3 atLocalPosition, int withIndex)
     {
-        Position = atPosition;
+        LocalPosition = atLocalPosition;
         Index = withIndex;
-        arrangedDepth = atPosition.z;
         
         arranging.OnNext(Unit.Default);
     }
@@ -201,7 +200,7 @@ public abstract class Card : ScriptableObject, ICard
 
     public void Destroy()
     {
-        bind?.Release(this);
+        Bond?.Release(this);
         
         destruction.OnNext(Unit.Default);
         destruction.OnCompleted();

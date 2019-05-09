@@ -30,9 +30,7 @@ public class SlotController : ISlotController, IDisposable
     [Inject]
     private void Initialize()
     {
-        model.Position = view.Position;
         model.Entryway = view.Entryway;
-        model.Bounds = view.Bounds;
         model.IsLocked = view.ShouldStartLocked;
         
         disposables.Add(model.Highlighting.Subscribe(view.ToggleHighlight));
@@ -64,7 +62,13 @@ public class SlotController : ISlotController, IDisposable
                 .TakeUntil(view.WhenDraggingStopped)
                 .Do(pickedCard.Drag)
                 .Last()
-                .Select(lastDraggingPosition => new { Card = pickedCard, Position = lastDraggingPosition }))
+                .Select(_ => new
+                {
+                    Card = pickedCard,
+                    Position = new Vector3(
+                        model.Position.x + pickedCard.LocalPosition.x,
+                        model.Position.y + pickedCard.LocalPosition.y)
+                }))
             .RepeatSafe()
             .Subscribe(droppedCardAtPosition =>
             {

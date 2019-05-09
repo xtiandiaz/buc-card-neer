@@ -44,13 +44,13 @@ public class SlotFactory : ISlotFactory
         switch (type)
         {
             case SlotType.Event:
-                return modelEventFactory.Create(pile);
+                return modelEventFactory.Create(pile, fromView.Transform, fromView.Bounds);
             case SlotType.Boarding:
-                return modelBoardingFactory.Create(pile);
+                return modelBoardingFactory.Create(pile, fromView.Transform, fromView.Bounds);
             case SlotType.Storage:
-                return modelResourceFactory.Create(fromView.ResourceMask, pile);
+                return modelResourceFactory.Create(fromView.ResourceMask, pile, fromView.Transform, fromView.Bounds);
             case SlotType.Player:
-                return modelPlayerFactory.Create(pile);
+                return modelPlayerFactory.Create(pile, fromView.Transform, fromView.Bounds);
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }

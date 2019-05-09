@@ -30,9 +30,8 @@ public class SeaController : ISeaController, IDisposable
     [Inject]
     private void Initialize()
     {
-        disposables.Add(
-            model.WhenToggledProjection
-                .Subscribe(isProjected => view.ToggleProjection(isProjected, ProjectionDurationInSeconds, 0.65f)));
+        disposables.Add(model.WhenToggledProjection
+                .Subscribe(isProjected => view.ToggleProjection(isProjected, ProjectionDurationInSeconds)));
         
         disposables.Add(model.Slots
             .Select(slot => slot.WhenReleased.Select(_ => slot))

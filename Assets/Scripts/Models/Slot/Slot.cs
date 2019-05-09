@@ -17,14 +17,13 @@ public enum SlotEntryway
     Rear
 }
 
-public interface ISlot : ICardBind
+public interface ISlot : ICardBond
 {
     bool IsVisible { get; set; }
     bool IsLocked { get; set; }
     SlotType Type { get; }
     SlotEntryway Entryway { get; set; }
-    Vector3 Position { set; }
-    Bounds Bounds { set; }
+    Vector3 Position { get; }
 
     IObservable<ICard> WhenPicked { get; }
     IObservable<ICard> WhenLodged { get; }
@@ -43,8 +42,10 @@ public interface ISlot : ICardBind
     bool DoesContain(Vector3 worldPoint);
 }
 
-public interface ICardBind
+public interface ICardBond
 {
+    Transform TransformBond { get; }
+    
     void Release(ICard card);
 }
 
@@ -59,14 +60,19 @@ public abstract class Slot : ISlot
     private readonly ReactiveProperty<bool> isLocked = new ReactiveProperty<bool>(false);
     private Bounds bounds;
     
-    protected Slot(SlotType type, IPile pile)
+    protected Slot(SlotType type, IPile pile, Transform transform, Bounds bounds)
     {
         this.pile = pile;
+        this.bounds = bounds;
+        
         Type = type;
+        TransformBond = transform;
     }
 
     public SlotType Type { get; }
     public SlotEntryway Entryway { get; set; }
+    public Vector3 Position => TransformBond.position;
+    public Transform TransformBond { get; }
     
     public bool IsVisible
     {
@@ -78,16 +84,6 @@ public abstract class Slot : ISlot
     {
         get => isLocked.Value;
         set => isLocked.Value = value;
-    }
-
-    public Vector3 Position
-    {
-        set => pile.Position = value;
-    }
-    
-    public Bounds Bounds
-    {
-        set => bounds = value;
     }
 
     public IObservable<ICard> WhenPicked => picking;
