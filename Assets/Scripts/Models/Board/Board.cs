@@ -26,6 +26,7 @@ public class Board : IBoard
     
     private readonly IDeck eventDeck;
     private readonly IDeck resourceDeck;
+    [Inject] private IPlayerProvider playerProvider;
     
     private Board(ISea sea, IShip[] ships, IDeck[] decks)
     {
@@ -33,8 +34,8 @@ public class Board : IBoard
         Ships = ships;
         Decks = decks;
 
-        eventDeck = Decks.FirstOrDefault(d => d.Type == DeckType.Events);
-        resourceDeck = Decks.FirstOrDefault(d => d.Type == DeckType.Resources);
+        eventDeck = Decks.FirstOrDefault(d => (DeckType) d.Type == DeckType.Events);
+        resourceDeck = Decks.FirstOrDefault(d => (DeckType) d.Type == DeckType.Resources);
         
         ShipPlayer = (ShipPlayer) Ships.First(s => s.Type == ShipType.Player);
         ShipMerchant = (ShipMerchant) Ships.First(s => s.Type == ShipType.Merchant);
@@ -58,10 +59,12 @@ public class Board : IBoard
     public void AssignProviders()
     {
         Sea.SetProvider(eventDeck);
+        ShipPlayer.SetProvider(playerProvider);
     }
 
     public void Populate()
     {
         Sea.Populate();
+        ShipPlayer.Populate();
     }
 }

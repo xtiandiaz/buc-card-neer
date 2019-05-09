@@ -5,7 +5,7 @@ public class CardMerchant : Card
 {
     public override CardType Type => CardType.Merchant;
 
-    public override bool CanMatch(ICard withOther)
+    public override bool CanMatch(ICard withOther, ISlot fromSlot)
     {
         return withOther is IResourceCard resourceCard && resourceCard.IsPurchase;
     }

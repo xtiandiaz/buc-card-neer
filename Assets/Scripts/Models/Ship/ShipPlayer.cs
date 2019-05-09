@@ -28,4 +28,9 @@ public class ShipPlayer : Ship, IShipPlayer
     
     public IObservable<ICard> WhenPirateBoarded => WhenBoarded.Where(card => (card.Type & CardType.Pirate) != 0);
     public IObservable<ICard> WhenMerchantBoarded => WhenBoarded.Where(card => (card.Type & CardType.Merchant) != 0);
+    
+    public override void Populate()
+    {
+        Feed(PlayerSlot);
+    }
 }

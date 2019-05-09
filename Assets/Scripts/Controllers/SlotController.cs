@@ -49,7 +49,7 @@ public class SlotController : ISlotController, IDisposable
             .Subscribe(cardFromSlot =>
             {
                 var (card, slot) = cardFromSlot;
-                model.ToggleHighlight(model.CanMatch(card) || model.CanLodge(card, slot));
+                model.ToggleHighlight(model.CanMatch(card, slot) || model.CanLodge(card, slot));
             }));
 
         #endregion
@@ -87,7 +87,7 @@ public class SlotController : ISlotController, IDisposable
             {
                 var (card, slot, position) = cardFromSlotAtPosition;
 
-                if (model.CanMatch(card))
+                if (model.CanMatch(card, slot))
                     model.Match(card);
                 else if (model.CanLodge(card, slot))
                     model.Lodge(card);

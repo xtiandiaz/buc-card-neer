@@ -43,8 +43,7 @@ public abstract class CardController : ICardController, IDisposable
                 model.Destroy();
         }));
         
-        disposables.Add(model.WhenDealt
-            .ContinueWith(model.WhenArranged)
+        disposables.Add(model.WhenArranged
             .SelectMany(_ => view.MoveAsObservable(model.Position))
             .Subscribe(_ => SetViewOrder()));
         

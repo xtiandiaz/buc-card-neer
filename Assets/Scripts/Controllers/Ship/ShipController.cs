@@ -5,7 +5,6 @@ using Zenject;
 
 public interface IShipController
 {
-    void Initialize();
 }
 
 public class ShipController : IShipController, IDisposable
@@ -25,10 +24,11 @@ public class ShipController : IShipController, IDisposable
         this.view = view;
     }
 
-    public virtual void Initialize()
+    [Inject]
+    protected virtual void Initialize()
     {
-        disposables.Add(model.WhenDocked.Subscribe(position => view.Dock(position)));
-        disposables.Add(model.WhenSailed.Subscribe(position => view.SetSail(position)));
+        disposables.Add(model.WhenDocked.Subscribe(_ => view.Dock(model.Position)));
+        disposables.Add(model.WhenSailed.Subscribe(_ => view.SetSail(model.Position)));
     }
 
     public void Dispose()

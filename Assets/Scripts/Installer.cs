@@ -21,26 +21,34 @@ public class Installer : MonoInstaller
         Container.BindInterfacesAndSelfTo<CardFactory>().AsSingle();
         Container.BindInterfacesAndSelfTo<SlotFactory>().AsSingle();
         
-        //Sub-factories
+        // Providers
+        Container.Bind<IPlayerProvider>().To<PlayerProvider>().AsSingle();
+        
+        // Player
+        Container.Bind(typeof(ICardPlayer), typeof(IPlayerStats)).FromInstance(playerCard.Clone()).AsSingle();
+        
+        // Board 
         Container.BindFactory<ISea, IShip[], IDeck[], Board, Board.Factory>().AsSingle();
         Container.BindFactory<IBoard, IBoardView, BoardController, BoardController.Factory>().AsSingle();
-        /*Container.BindFactory<IOcean, IShip[], IDeck[], Board, Board.Factory, IBoardFactory>()
-            .AsSingle();
-        Container.BindFactoryCustomInterface<IBoard, IBoardView, BoardController, BoardController.Factory, IBoardControllerFactory>()
-            .AsSingle();*/
         
+        Container.Bind<BoardLayoutSettings>().FromInstance(boardLayoutSettings).AsSingle();
+        Container.BindInterfacesAndSelfTo<BoardView>().FromInstance(boardView).AsSingle();
+        Container.Bind<IBoard>().FromFactory<BoardFactory>().AsSingle();
+        
+        Container.BindFactory<ISlot[], Sea, Sea.Factory>().AsSingle();
+        Container.BindFactory<ISea, ISeaView, SeaController, SeaController.Factory>().AsSingle();
+        
+        // Ship
         Container.BindFactory<ISlot[], ShipPlayer, ShipPlayer.Factory>().AsSingle();
         Container.BindFactory<ISlot[], ShipMerchant, ShipMerchant.Factory>().AsSingle();
         Container.BindFactory<ISlot[], ShipPirate, ShipPirate.Factory>().AsSingle();
         
         Container.BindFactory<IShip, IShipView, ShipController, ShipController.Factory>().AsSingle();
-        Container.BindFactory<IShipPlayer, ShipPlayerView, ICardPlayer, ShipPlayerController, ShipPlayerController.Factory>()
+        Container.BindFactory<IShipPlayer, ShipPlayerView, ShipPlayerController, ShipPlayerController.Factory>()
             .AsSingle();
-
+        
+        // Deck
         Container.BindFactory<IDeck, DeckController, DeckController.Factory>().AsSingle();
-
-        Container.BindFactory<ISlot[], Sea, Sea.Factory>().AsSingle();
-        Container.BindFactory<ISea, ISeaView, SeaController, SeaController.Factory>().AsSingle();
         
         // Slot
         Container.BindFactory<IPile, SlotBoarding, SlotBoarding.Factory>();
@@ -59,18 +67,12 @@ public class Installer : MonoInstaller
         Container.BindFactory<CardPlayer, CardPlayerView, CardPlayerController, CardPlayerController.Factory>().AsSingle();
         Container.BindFactory<string, CardView, CardView.Factory>().FromFactory<PrefabResourceFactory<CardView>>();
         
-        // Board 
-        Container.Bind<BoardLayoutSettings>().FromInstance(boardLayoutSettings).AsSingle();
-        Container.BindInterfacesAndSelfTo<BoardView>().FromInstance(boardView).AsSingle();
-        Container.Bind<IBoard>().FromFactory<BoardFactory>().AsSingle();
-        
         // Viewport
         Container.BindInterfacesAndSelfTo<BoardCamera>().FromInstance(camera).AsSingle();
         Container.Bind<Viewport>().FromFactory<ViewportFactory>().AsSingle();
         
-        // Single Cards & Extras
+        // Settings
         Container.Bind<CardAnimationSettings>().FromInstance(cardAnimationSettings);
-        Container.Bind(typeof(ICardPlayer), typeof(IPlayerStats)).FromInstance(playerCard.Clone()).AsSingle();
         
         // Managers
         Container.BindInterfacesAndSelfTo<DealingManager>().AsSingle();

@@ -17,9 +17,10 @@ public interface IShip : ICardConsumer, IBoardSection
     ISlot[] Slots { get; }
     ISlot BoardingSlot { get; }
     IDictionary<ResourceType, ISlotStorage> Storage { get; }
+    Vector3 Position { get; }
 
-    IObservable<Vector3> WhenDocked { get; }
-    IObservable<Vector3> WhenSailed { get; }
+    IObservable<Unit> WhenDocked { get; }
+    IObservable<Unit> WhenSailed { get; }
     IObservable<ICard> WhenBoarded { get; }
     
     void Dock(Vector3 atPosition);
@@ -29,8 +30,10 @@ public interface IShip : ICardConsumer, IBoardSection
 
 public abstract class Ship : IShip
 {
-    private readonly Subject<Vector3> docking = new Subject<Vector3>();
-    private readonly Subject<Vector3> sailing = new Subject<Vector3>();
+    private readonly Subject<Unit> docking = new Subject<Unit>();
+    private readonly Subject<Unit> sailing = new Subject<Unit>();
+    private readonly Subject<ICard> consumption = new Subject<ICard>();
+    private ICardProvider cardProvider;
     
     protected Ship(ShipType type, ISlot[] slots)
     {
@@ -45,34 +48,41 @@ public abstract class Ship : IShip
     public ISlot[] Slots { get; }
     public ISlot BoardingSlot { get; }
     public IDictionary<ResourceType, ISlotStorage> Storage { get; }
+    public Vector3 Position { get; private set; }
 
-    public IObservable<Vector3> WhenDocked => docking; 
-    public IObservable<Vector3> WhenSailed => sailing;
+    public IObservable<Unit> WhenDocked => docking; 
+    public IObservable<Unit> WhenSailed => sailing;
     public IObservable<ICard> WhenBoarded => BoardingSlot.WhenLodged;
+    public IObservable<ICard> WhenConsumed => consumption;
 
-    public void Populate()
-    {
-        throw new NotImplementedException();
-    }
-    
+    public abstract void Populate();
+
     public void SetProvider(ICardProvider provider)
     {
-        throw new NotImplementedException();
+        cardProvider = provider;
     }
 
     public void Feed(ISlot slot)
     {
-        throw new NotImplementedException();
+        var card = cardProvider.Provide();
+        
+        slot.Lodge(card);
+        
+        consumption.OnNext(card);
     }
 
     public void Dock(Vector3 atPosition)
     {
-        docking.OnNext(atPosition);
+        Position = atPosition;
+        
+        docking.OnNext(Unit.Default);
     }
 
     public void SetSail(Vector3 toPosition)
     {
-        sailing.OnNext(toPosition);
+        Position = toPosition;
+        
+        sailing.OnNext(Unit.Default);
     }
 
     public void Store(IResourceCard card)
@@ -85,6 +95,4 @@ public abstract class Ship : IShip
         
         Storage[card.ResourceType].Lodge(card);
     }
-
-    public IObservable<ICard> WhenConsumed { get; }
 }

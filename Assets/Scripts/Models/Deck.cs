@@ -9,15 +9,14 @@ using Object = UnityEngine.Object;
 public enum DeckType
 {
     Events,
-    Resources
+    Resources, 
+    Players
 }
 
 public interface IDeck : ICardProvider
 {
     DeckType Type { get; }
-    string Name { get; }
 
-    void TakeBack(ICard card);
     IDeck Clone();
 }
 
@@ -31,7 +30,6 @@ public class Deck : ScriptableObject, IDeck
     private Queue<ICard> queue;
 
     public DeckType Type => type;
-    public string Name => name;
     
     public IObservable<ICard> WhenProvided => supplying;
 
@@ -53,11 +51,6 @@ public class Deck : ScriptableObject, IDeck
             supplying.OnNext(card);
 
         return card;
-    }
-    
-    public void TakeBack(ICard card)
-    {
-        queue.Enqueue(card);
     }
     
     public IDeck Clone()

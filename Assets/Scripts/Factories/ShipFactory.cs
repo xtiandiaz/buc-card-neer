@@ -24,10 +24,8 @@ public class ShipFactory : IShipFactory
         ShipPirate.Factory modelFactoryPirate,    
         ShipController.Factory controllerFactory,
         ShipPlayerController.Factory controllerFactoryPlayer,
-        ISlotFactory slotFactory,
-        ICardFactory cardFactory,
-        ICardPlayer cardPlayer
-    )
+        ISlotFactory slotFactory
+        )
     {
         this.modelFactoryPlayer = modelFactoryPlayer;
         this.modelFactoryMerchant = modelFactoryMerchant;
@@ -37,16 +35,13 @@ public class ShipFactory : IShipFactory
         this.controllerFactoryPlayer = controllerFactoryPlayer;
         
         this.slotFactory = slotFactory;
-        this.cardFactory = cardFactory;
-        this.cardPlayer = cardPlayer;
     }
     
     public IShip Create(IShipView fromView)
     {
         var model = CreateModel(fromView);
-        var controller = CreateController(model, fromView);
         
-        controller.Initialize();
+        CreateController(model, fromView);
 
         return model;
     }
@@ -80,10 +75,7 @@ public class ShipFactory : IShipFactory
         {
             case ShipType.Player:
                 
-                return controllerFactoryPlayer.Create(
-                    (IShipPlayer) withModel, 
-                    (ShipPlayerView) andView,
-                    (ICardPlayer) cardFactory.Create(cardPlayer));
+                return controllerFactoryPlayer.Create((IShipPlayer) withModel, (ShipPlayerView) andView);
 
             default:
 

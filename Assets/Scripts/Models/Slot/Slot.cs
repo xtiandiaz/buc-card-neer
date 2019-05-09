@@ -2,12 +2,13 @@ using System;
 using UniRx;
 using UnityEngine;
 
+[Flags]
 public enum SlotType
 {
-    Event,
-    Boarding,
-    Storage,
-    Player
+    Event     = 1 << 0,
+    Boarding  = 1 << 1,
+    Storage   = 1 << 2,
+    Player    = 1 << 3
 }
 
 public enum SlotEntryway
@@ -33,7 +34,7 @@ public interface ISlot : ICardBind
     IObservable<bool> Locking { get; }
 
     ICard Pick();
-    bool CanMatch(ICard card);
+    bool CanMatch(ICard card, ISlot fromSlot);
     void Match(ICard card);
     bool CanLodge(ICard card, ISlot fromSlot);
     void Lodge(ICard card);
@@ -113,9 +114,9 @@ public abstract class Slot : ISlot
         return card != null && pile.CanInsert && !pile.DoesContain(card) && CanLodge(fromSlot) && CanLodge(card);
     }
 
-    public bool CanMatch(ICard card)
+    public bool CanMatch(ICard card, ISlot fromSlot)
     {
-        return pile.Peek()?.CanMatch(card) == true;
+        return pile.Peek()?.CanMatch(card, fromSlot) == true;
     }
 
     public void Match(ICard card)

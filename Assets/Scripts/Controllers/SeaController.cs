@@ -38,10 +38,6 @@ public class SeaController : ISeaController, IDisposable
             .Select(slot => slot.WhenReleased.Select(_ => slot))
             .Merge()
             .Subscribe(model.Feed));
-        
-        disposables.Add(model.WhenConsumed
-            .SelectMany(card => Observable.Return(card).Delay(TimeSpan.FromSeconds(0.1)))
-            .Subscribe(card => card.Deal()));
     }
 
     public void Dispose()

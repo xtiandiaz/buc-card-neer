@@ -57,7 +57,7 @@ public class CardResource : Card, IResourceCard
     public bool IsTreasure => isTreasure;
     public bool IsPurchase { get; private set; }
     public bool IsPurchasable => !IsLoot && !IsTreasure && !IsPurchase;
-    public bool IsConsumable => !IsPurchasable || IsPurchase;
+    public bool IsConsumable => (!IsPurchasable || IsPurchase) && (Type & CardType.Food) != 0;
 
     public IObservable<Unit> WhenPurchased => purchasing;
     public IObservable<Unit> WhenSold => selling;
@@ -69,7 +69,7 @@ public class CardResource : Card, IResourceCard
         this.playerStats = playerStats;
     }
 
-    public override bool CanMatch(ICard withOther)
+    public override bool CanMatch(ICard withOther, ISlot fromSlot)
     {
         // No other Card can be matched on top of a Resource
         return false;
@@ -81,6 +81,9 @@ public class CardResource : Card, IResourceCard
 
     public bool Purchase()
     {
+        if (!IsPurchasable)
+            return false;
+        
         if (playerStats.Coins < Value)
             return false;
         
@@ -107,6 +110,9 @@ public class CardResource : Card, IResourceCard
 
     public bool Consume()
     {
+        if (!IsConsumable)
+            return false;
+        
         var didConsume = true;
         
         switch (ResourceType)

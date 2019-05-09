@@ -39,7 +39,6 @@ public interface ICard
     IObservable<Unit> WhenPicked { get; }
     IObservable<Vector3> WhenDragged { get; }
     IObservable<Unit> WhenDropped { get; }
-    IObservable<Unit> WhenDealt { get; }
     IObservable<Unit> WhenArranged { get; }
     IObservable<CardFace> WhenFaceChanged { get; }
     IObservable<CardFace> WhenFlipped { get; }
@@ -49,13 +48,12 @@ public interface ICard
     IObservable<(Color, float)> WhenFogged { get; }
     IObservable<Unit> WhenDestroyed { get; }
 
-    bool CanMatch(ICard withOther);
+    bool CanMatch(ICard withOther, ISlot fromSlot);
     void Match(ICard withOther);
     void Bind(ICardBind to);
     void Pick();
     void Drag(Vector3 toPosition);
     void Drop();
-    void Deal();
     void Arrange(Vector3 atPosition, int withIndex);
     void Flip(CardFace toFace);
     void Fade(float toAlphaValue);
@@ -74,7 +72,6 @@ public abstract class Card : ScriptableObject, ICard
     private readonly Subject<Unit> picking = new Subject<Unit>();
     private readonly Subject<Vector3> dragging = new Subject<Vector3>();
     private readonly Subject<Unit> dropping = new Subject<Unit>();
-    private readonly Subject<Unit> dealing = new Subject<Unit>();
     private readonly Subject<CardFace> facing = new Subject<CardFace>();
     private readonly Subject<CardFace> flipping = new Subject<CardFace>();
     private readonly Subject<float> fading = new Subject<float>();
@@ -125,7 +122,6 @@ public abstract class Card : ScriptableObject, ICard
     public IObservable<Unit> WhenPicked => picking;
     public IObservable<Vector3> WhenDragged => dragging;
     public IObservable<Unit> WhenDropped => dropping;
-    public IObservable<Unit> WhenDealt => dealing;
     public IObservable<CardFace> WhenFaceChanged => facing.DistinctUntilChanged();
     public IObservable<CardFace> WhenFlipped => flipping.DistinctUntilChanged();
     public IObservable<bool> WhenVisibilityChanged => isVisible;
@@ -134,7 +130,7 @@ public abstract class Card : ScriptableObject, ICard
     public IObservable<(Color, float)> WhenFogged => fogging;
     public IObservable<Unit> WhenDestroyed => destruction;
 
-    public abstract bool CanMatch(ICard withOther);
+    public abstract bool CanMatch(ICard withOther, ISlot fromSlot);
 
     public abstract void Match(ICard withOther);
 
@@ -166,12 +162,6 @@ public abstract class Card : ScriptableObject, ICard
         Position = new Vector3(Position.x, Position.y, arrangedDepth);
         
         dropping.OnNext(Unit.Default);
-    }
-
-    public void Deal()
-    {
-        dealing.OnNext(Unit.Default);
-        dealing.OnCompleted();
     }
 
     public void Arrange(Vector3 atPosition, int withIndex)

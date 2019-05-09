@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface ICardPlayer : ICard, IPlayerStats
 {
-    bool CanPayFor(IResourceCard resourceCard);
+    bool CanPurchase(IResourceCard resourceCard);
     bool CanConsume(IResourceCard resourceCard);
 }
 
@@ -30,13 +30,16 @@ public class CardPlayer : Card, ICardPlayer, IPlayerStats
     public IObservable<int> Health => value;
     public IObservable<int> Funds => coins;
 
-    public override bool CanMatch(ICard withOther)
+    public override bool CanMatch(ICard withOther, ISlot fromSlot)
     {
+        if ((fromSlot.Type & (SlotType.Storage | SlotType.Boarding)) == 0)
+            return false;
+        
         if ((withOther.Type & (CardType.Pirate)) != 0)
             return true;
 
         if (withOther is IResourceCard resourceCard)
-            return CanPayFor(resourceCard) || CanConsume(resourceCard);
+            return CanPurchase(resourceCard) || CanConsume(resourceCard);
 
         return false;
     }
@@ -54,19 +57,19 @@ public class CardPlayer : Card, ICardPlayer, IPlayerStats
         if (!(withOther is IResourceCard resourceCard))
             return;
 
-        if (CanPayFor(resourceCard))
+        if (CanPurchase(resourceCard))
             resourceCard.Purchase();
         else if (CanConsume(resourceCard))
             resourceCard.Consume();
     }
 
-    public bool CanPayFor(IResourceCard resourceCard)
+    public bool CanPurchase(IResourceCard resourceCard)
     {
-        return !resourceCard.IsPurchase && resourceCard.Value <= Coins;
+        return resourceCard.IsPurchasable && resourceCard.Value <= Coins;
     }
 
     public bool CanConsume(IResourceCard resourceCard)
     {
-        return resourceCard.IsPurchase & (resourceCard.Type & CardType.Food) != 0;
+        return resourceCard.IsConsumable;
     }
 }

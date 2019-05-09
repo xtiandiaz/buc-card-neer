@@ -5,7 +5,7 @@ public class CardPirate : Card
 {
     public override CardType Type => CardType.Pirate;
 
-    public override bool CanMatch(ICard withOther)
+    public override bool CanMatch(ICard withOther, ISlot fromSlot)
     {
         return (withOther.Type & CardType.WeaponArtillery) != 0;
     }
