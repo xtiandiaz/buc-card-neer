@@ -7,12 +7,12 @@ public class CardMerchant : Card
 
     public override bool CanMatch(ICard withOther)
     {
-        return withOther is IResourceCard resourceCard && resourceCard.WasPaidFor;
+        return withOther is IResourceCard resourceCard && resourceCard.IsPurchase;
     }
 
     public override void Match(ICard withOther)
     {
-        if (withOther is IResourceCard resourceCard && resourceCard.WasPaidFor)
+        if (withOther is IResourceCard resourceCard && resourceCard.IsPurchase)
             resourceCard.Sell();
     }
 }

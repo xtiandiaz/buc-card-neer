@@ -9,10 +9,10 @@ public interface ICardController
 
 public abstract class CardController : ICardController, IDisposable
 {
+    protected readonly CompositeDisposable disposables = new CompositeDisposable();
     private readonly ICard model;
     private readonly ICardView view;
     private readonly BoardCamera boardCamera;
-    private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     [Inject] private Viewport viewport;
     [Inject] private BoardLayoutSettings layoutSettings;
@@ -35,7 +35,7 @@ public abstract class CardController : ICardController, IDisposable
         disposables.Add(model.WhenFaceChanged.Subscribe(face => view.Flip(face, false)));
         disposables.Add(model.WhenFlipped.Subscribe(face => view.Flip(face, true)));
         
-        disposables.Add(model.WhenValueChanged.Subscribe(value => 
+        disposables.Add(model.Worth.Subscribe(value => 
         {
             view.Value = value;
 
@@ -43,7 +43,8 @@ public abstract class CardController : ICardController, IDisposable
                 model.Destroy();
         }));
         
-        disposables.Add(model.WhenArranged
+        disposables.Add(model.WhenDealt
+            .ContinueWith(model.WhenArranged)
             .SelectMany(_ => view.MoveAsObservable(model.Position))
             .Subscribe(_ => SetViewOrder()));
         

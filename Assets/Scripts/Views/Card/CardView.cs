@@ -10,7 +10,7 @@ public interface ICardView
     int Value { set; }
     Sprite FrontFace { set; }
     Sprite BackFace { set; }
-    Vector3 Position { get; set; }
+    Vector3 Position { set; }
     int SortingOrder { set; } 
     
     void OnPicked();
@@ -32,25 +32,23 @@ public class CardView : MonoBehaviour, ICardView
     {
     }
 
-    [SerializeField] protected CardValue cardValue;
+    [SerializeField] protected CardLabel valueLabel;
     [SerializeField] private Transform contentWrapper;
     [SerializeField] private SortingGroup sortingGroup;
     [SerializeField] private CardFaceView frontFace;
     [SerializeField] private CardFaceView backFace;
     
+    [Inject] private CardAnimationSettings animationSettings;
     private ICardAnimator animator;
     private ICardShader shader;
     private Vector3 lastLodgingPosition;
-    private int sortingOrder;
-    private BoardLayoutSettings layoutSettings;
-    private CardAnimationSettings animationSettings;
 
     public int Value
     {
         set
         {
-            if (cardValue != null)
-                cardValue.SetValue(value);
+            if (valueLabel != null)
+                valueLabel.SetValue(value);
         }
     }
 
@@ -78,7 +76,7 @@ public class CardView : MonoBehaviour, ICardView
     {
         set
         {
-            sortingGroup.sortingOrder = sortingOrder = value;
+            sortingGroup.sortingOrder = value;
 
             var shouldToggleFaceContent = value >= -1;
 
@@ -87,21 +85,11 @@ public class CardView : MonoBehaviour, ICardView
         }
     }
 
-    [Inject]
-    private void Construct(
-        CardAnimationSettings animationSettings, 
-        BoardLayoutSettings layoutSettings
-        )
-    {
-        this.animationSettings = animationSettings;
-        this.layoutSettings = layoutSettings;
-        
-        animator = GetComponent<ICardAnimator>() ?? gameObject.AddComponent<CardAnimator>();
-        shader = GetComponent<ICardShader>();
-    }
-
     private void Awake()
     {
+        animator = GetComponent<ICardAnimator>() ?? gameObject.AddComponent<CardAnimator>();
+        shader = GetComponent<ICardShader>();
+        
         animator.Initialize(animationSettings, contentWrapper);
     }
 

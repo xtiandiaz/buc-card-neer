@@ -40,7 +40,7 @@ public class SlotController : ISlotController, IDisposable
         
         #region Picking
 
-        disposables.Add(model.WhenCardPicked
+        disposables.Add(model.WhenPicked
             // Push Card picking from Slot:
             .Subscribe(card => CardPicking.OnNext((card, model))));
         

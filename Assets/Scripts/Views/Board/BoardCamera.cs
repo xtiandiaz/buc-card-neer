@@ -4,18 +4,16 @@ using Zenject;
 public class BoardCamera : MonoBehaviour, IViewportProvider, IWorldPointProvider
 {   
     private new Camera camera;
-    private BoardLayoutSettings layoutSettings;
-
+    
     [Inject]
-    public void Construct(BoardLayoutSettings withLayoutSettings)
+    public void Initialize(BoardLayoutSettings withLayoutSettings)
     {
-        layoutSettings = withLayoutSettings;
         camera = GetComponent<Camera>();
         
-        var desiredViewWidth = (layoutSettings.CardSize.x + layoutSettings.CardSpacing.x) 
-                               * layoutSettings.MaxCardCountInRow
-                               - layoutSettings.CardSpacing.x
-                               + layoutSettings.Margins.x * 2f;
+        var desiredViewWidth = (withLayoutSettings.CardSize.x + withLayoutSettings.CardSpacing.x) 
+                               * withLayoutSettings.MaxCardCountInRow
+                               - withLayoutSettings.CardSpacing.x
+                               + withLayoutSettings.Margins.x * 2f;
         
         transform.position = new Vector3(
             0, 

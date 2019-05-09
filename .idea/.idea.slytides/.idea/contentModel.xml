@@ -737,12 +737,15 @@
           <e p="Components" t="Include">
             <e p="Card" t="Include">
               <e p="CardAnimator.cs" t="Include" />
+              <e p="CardLabel.cs" t="Include" />
               <e p="CardShader.cs" t="Include" />
-              <e p="CardValue.cs" t="Include" />
             </e>
             <e p="DraggingObserver.cs" t="Include" />
             <e p="ShipAnimator.cs" t="Include" />
             <e p="UserInteractionListener.cs" t="Include" />
+          </e>
+          <e p="Consumers" t="Include">
+            <e p="ICardConsumer.cs" t="Include" />
           </e>
           <e p="Controllers" t="Include">
             <e p="BoardController.cs" t="Include" />
@@ -775,15 +778,17 @@
             <e p="SeaFactory.cs" t="Include" />
             <e p="ShipFactory.cs" t="Include" />
             <e p="SlotFactory.cs" t="Include" />
+            <e p="ViewportFactory.cs" t="Include" />
           </e>
           <e p="Installer.cs" t="Include" />
           <e p="Managers" t="Include">
             <e p="DealingManager.cs" t="Include" />
+            <e p="ICardProviderManager.cs" t="Include" />
           </e>
           <e p="Models" t="Include">
             <e p="Board" t="Include">
               <e p="Board.cs" t="Include" />
-              <e p="Sea.cs" t="Include" />
+              <e p="IBoardSection.cs" t="Include" />
             </e>
             <e p="Card" t="Include">
               <e p="Card.cs" t="Include" />
@@ -801,6 +806,7 @@
             <e p="GamePalette.cs" t="Include" />
             <e p="GameState.cs" t="Include" />
             <e p="Pile.cs" t="Include" />
+            <e p="Sea.cs" t="Include" />
             <e p="Settings" t="Include">
               <e p="BoardLayoutSettings.cs" t="Include" />
               <e p="CardAnimationSettings.cs" t="Include" />
@@ -826,6 +832,7 @@
             <e p="Viewport.cs" t="Include" />
           </e>
           <e p="Providers" t="Include">
+            <e p="ICardProvider.cs" t="Include" />
             <e p="IViewportProvider.cs" t="Include" />
             <e p="IWorldPointProvider.cs" t="Include" />
           </e>

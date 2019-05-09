@@ -6,8 +6,9 @@ using Zenject;
 public interface IShipPlayer : IShip
 {
     ISlot PlayerSlot { get; }
-    IObservable<ICard> PirateBoarding { get; }
-    IObservable<ICard> MerchantBoarding { get; }
+    
+    IObservable<ICard> WhenPirateBoarded { get; }
+    IObservable<ICard> WhenMerchantBoarded { get; }
 }
 
 public class ShipPlayer : Ship, IShipPlayer
@@ -24,6 +25,7 @@ public class ShipPlayer : Ship, IShipPlayer
     }
 
     public ISlot PlayerSlot { get; }
-    public IObservable<ICard> PirateBoarding => Boarding.Where(card => (card.Type & CardType.Pirate) != 0);
-    public IObservable<ICard> MerchantBoarding => Boarding.Where(card => (card.Type & CardType.Merchant) != 0);
+    
+    public IObservable<ICard> WhenPirateBoarded => WhenBoarded.Where(card => (card.Type & CardType.Pirate) != 0);
+    public IObservable<ICard> WhenMerchantBoarded => WhenBoarded.Where(card => (card.Type & CardType.Merchant) != 0);
 }

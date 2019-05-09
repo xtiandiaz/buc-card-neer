@@ -8,14 +8,14 @@ public enum BoardMode
     Combat
 }
 
-public interface IBoard
+public interface IBoard : ICardProviderManager
 {
     ISea Sea { get; }
     IShip[] Ships { get; }
     IDeck[] Decks { get; }
     ISlot[] PlaySlots { get; }
 
-    void Deal();
+    void Populate();
 }
 
 public class Board : IBoard
@@ -55,9 +55,13 @@ public class Board : IBoard
     public ShipMerchant ShipMerchant { get; private set; }
     public ShipPirate ShipPirate { get; private set; }
 
-    public void Deal()
+    public void AssignProviders()
     {
-        Sea.Deal(eventDeck);
-        ShipPlayer.Supply(resourceDeck, 5);
+        Sea.SetProvider(eventDeck);
+    }
+
+    public void Populate()
+    {
+        Sea.Populate();
     }
 }

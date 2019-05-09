@@ -11,18 +11,17 @@ public enum ShipType
     Merchant
 }
 
-public interface IShip
+public interface IShip : ICardConsumer, IBoardSection
 {
     ShipType Type { get; }
     ISlot[] Slots { get; }
     ISlot BoardingSlot { get; }
     IDictionary<ResourceType, ISlotStorage> Storage { get; }
 
-    IObservable<Vector3> Docking { get; }
-    IObservable<Vector3> Sailing { get; }
-    IObservable<ICard> Boarding { get; }
-
-    void Supply(IDeck fromDeck, int count);
+    IObservable<Vector3> WhenDocked { get; }
+    IObservable<Vector3> WhenSailed { get; }
+    IObservable<ICard> WhenBoarded { get; }
+    
     void Dock(Vector3 atPosition);
     void SetSail(Vector3 toPosition);
     void Store(IResourceCard card);
@@ -47,20 +46,23 @@ public abstract class Ship : IShip
     public ISlot BoardingSlot { get; }
     public IDictionary<ResourceType, ISlotStorage> Storage { get; }
 
-    public IObservable<Vector3> Docking => docking; 
-    public IObservable<Vector3> Sailing => sailing;
-    public IObservable<ICard> Boarding => BoardingSlot.WhenLodged;
+    public IObservable<Vector3> WhenDocked => docking; 
+    public IObservable<Vector3> WhenSailed => sailing;
+    public IObservable<ICard> WhenBoarded => BoardingSlot.WhenLodged;
 
-    public void Supply(IDeck fromDeck, int count)
+    public void Populate()
     {
-        for (var i = 0; i < count; i++)
-        {
-            var card = fromDeck.Supply();
-            if (card == null)
-                break;
-            
-            Store((IResourceCard) card);
-        }
+        throw new NotImplementedException();
+    }
+    
+    public void SetProvider(ICardProvider provider)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Feed(ISlot slot)
+    {
+        throw new NotImplementedException();
     }
 
     public void Dock(Vector3 atPosition)
@@ -83,4 +85,6 @@ public abstract class Ship : IShip
         
         Storage[card.ResourceType].Lodge(card);
     }
+
+    public IObservable<ICard> WhenConsumed { get; }
 }

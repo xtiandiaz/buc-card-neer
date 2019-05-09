@@ -15,12 +15,11 @@ public class Installer : MonoInstaller
     public override void InstallBindings()
     {
         // Main factories
-        Container.Bind<IBoardFactory>().To<BoardFactory>().AsSingle();
-        Container.Bind<IShipFactory>().To<ShipFactory>().AsSingle();
-        Container.Bind<ISeaFactory>().To<SeaFactory>().AsSingle();
-        Container.Bind<IDeckFactory>().To<DeckFactory>().AsSingle();
-        Container.Bind<ICardFactory>().To<CardFactory>().AsSingle();
-        Container.Bind<ISlotFactory>().To<SlotFactory>().AsSingle();
+        Container.BindInterfacesAndSelfTo<ShipFactory>().AsSingle();
+        Container.BindInterfacesAndSelfTo<SeaFactory>().AsSingle();
+        Container.BindInterfacesAndSelfTo<DeckFactory>().AsSingle();
+        Container.BindInterfacesAndSelfTo<CardFactory>().AsSingle();
+        Container.BindInterfacesAndSelfTo<SlotFactory>().AsSingle();
         
         //Sub-factories
         Container.BindFactory<ISea, IShip[], IDeck[], Board, Board.Factory>().AsSingle();
@@ -61,10 +60,13 @@ public class Installer : MonoInstaller
         Container.BindFactory<string, CardView, CardView.Factory>().FromFactory<PrefabResourceFactory<CardView>>();
         
         // Board 
-        Container.BindInterfacesAndSelfTo<BoardCamera>().FromInstance(camera).AsSingle();
-        Container.Bind<Viewport>().FromMethod(() => camera.GetViewport(0)).AsSingle();
         Container.Bind<BoardLayoutSettings>().FromInstance(boardLayoutSettings).AsSingle();
         Container.BindInterfacesAndSelfTo<BoardView>().FromInstance(boardView).AsSingle();
+        Container.Bind<IBoard>().FromFactory<BoardFactory>().AsSingle();
+        
+        // Viewport
+        Container.BindInterfacesAndSelfTo<BoardCamera>().FromInstance(camera).AsSingle();
+        Container.Bind<Viewport>().FromFactory<ViewportFactory>().AsSingle();
         
         // Single Cards & Extras
         Container.Bind<CardAnimationSettings>().FromInstance(cardAnimationSettings);

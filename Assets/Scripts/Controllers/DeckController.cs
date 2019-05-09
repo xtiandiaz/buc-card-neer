@@ -25,7 +25,7 @@ public class DeckController : IDisposable
     [Inject]
     private void Initialize()
     {
-        disposables.Add(model.WhenSupplied.Subscribe(card => cardFactory.Create(card)));
+        disposables.Add(model.WhenProvided.Subscribe(card => cardFactory.Create(card)));
     }
 
     public void Dispose()

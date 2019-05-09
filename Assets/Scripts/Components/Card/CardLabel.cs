@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public interface ICardValue
+public interface ICardLabel
 {
     void SetValue(int to);
     void SetValue(float to);
@@ -10,7 +10,7 @@ public interface ICardValue
     void SetSorting(string withLayerName, int andOrder);
 }
 
-public class CardValue : MonoBehaviour, ICardValue
+public class CardLabel : MonoBehaviour, ICardLabel
 {
     [SerializeField] private List<TextMesh> textRenderers;
     [SerializeField] private string sortingLayerName;

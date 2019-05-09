@@ -1,3 +1,4 @@
+using UniRx;
 using Zenject;
 
 public class CardPlayerController : CardController
@@ -6,12 +7,18 @@ public class CardPlayerController : CardController
     {
     }
     
-    private readonly CardPlayer model;
-    private readonly CardPlayerView view;
+    private readonly ICardPlayer model;
+    private readonly ICardPlayerView view;
     
-    public CardPlayerController(CardPlayer model, CardPlayerView view) : base(model, view)
+    public CardPlayerController(ICardPlayer model, ICardPlayerView view) : base(model, view)
     {
         this.model = model;
         this.view = view;
+    }
+
+    [Inject]
+    private void Initialize()
+    {
+        disposables.Add(model.Funds.Subscribe(value => view.CoinsValue = value));
     }
 }

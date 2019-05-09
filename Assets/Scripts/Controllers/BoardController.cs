@@ -26,9 +26,11 @@ public class BoardController : IBoardController, IDisposable
     [Inject]
     private void Initialize()
     {
+        model.AssignProviders();
+        
         #region Ship Docking & Sailing
 
-        disposables.Add(model.ShipPlayer.PirateBoarding
+        disposables.Add(model.ShipPlayer.WhenPirateBoarded
             .Do(_ =>
             {
                 model.ShipPirate.Dock(view.PirateDockingPosition);
@@ -41,7 +43,7 @@ public class BoardController : IBoardController, IDisposable
             }))
             .Subscribe());
             
-        disposables.Add(model.ShipPlayer.MerchantBoarding
+        disposables.Add(model.ShipPlayer.WhenMerchantBoarded
             .Do(_ =>
             {
                 model.ShipMerchant.Dock(view.MerchantDockingPosition);

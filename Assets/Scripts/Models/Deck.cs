@@ -12,14 +12,11 @@ public enum DeckType
     Resources
 }
 
-public interface IDeck
+public interface IDeck : ICardProvider
 {
     DeckType Type { get; }
     string Name { get; }
-    
-    IObservable<ICard> WhenSupplied { get; }
 
-    ICard Supply();
     void TakeBack(ICard card);
     IDeck Clone();
 }
@@ -36,7 +33,7 @@ public class Deck : ScriptableObject, IDeck
     public DeckType Type => type;
     public string Name => name;
     
-    public IObservable<ICard> WhenSupplied => supplying;
+    public IObservable<ICard> WhenProvided => supplying;
 
     [Inject]
     private void Initialize()
@@ -48,7 +45,7 @@ public class Deck : ScriptableObject, IDeck
         queue = new Queue<ICard>(cards);
     }
 
-    public ICard Supply()
+    public ICard Provide()
     {
         var card = queue.Dequeue();
         

@@ -16,7 +16,7 @@ public class CardResourceView : CardView
         {
             suitRenderer.sprite = value.Icon;
             suitRenderer.color = value.Color;
-            cardValue.SetColor(value.Color);
+            base.valueLabel.SetColor(value.Color);
         }
     }
 }

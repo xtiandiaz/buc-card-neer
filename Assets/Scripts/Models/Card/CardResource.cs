@@ -21,22 +21,31 @@ public interface IResourceCard : ICard
     ResourceType ResourceType { get; }
     Sprite Item { get; }
     ISuit Suit { get; }
+    bool IsLoot { get; }
     bool IsTreasure { get; }
-    bool WasPaidFor { get; }
+    bool IsPurchase { get; }
+    bool IsPurchasable { get; }
+    bool IsConsumable { get; }
     
     IObservable<Unit> WhenPurchased { get; } 
+    IObservable<Unit> WhenSold { get; } 
+    IObservable<Unit> WhenConsumed { get; } 
 
     bool Purchase();
     bool Sell();
+    bool Consume();
 }
 
 [CreateAssetMenu(fileName = "CardResource", menuName = "Game/Card/Resource", order = 1)]
 public class CardResource : Card, IResourceCard
 {
     private readonly Subject<Unit> purchasing = new Subject<Unit>();
+    private readonly Subject<Unit> selling = new Subject<Unit>();
+    private readonly Subject<Unit> consumption = new Subject<Unit>();
 
     [SerializeField] private Sprite item;
     [SerializeField] private Suit suit;
+    [SerializeField] private Suit isLoot;
     [SerializeField] private bool isTreasure;
     private IPlayerStats playerStats;
 
@@ -44,10 +53,15 @@ public class CardResource : Card, IResourceCard
     public ResourceType ResourceType => suit.ResourceType;
     public Sprite Item => item;
     public ISuit Suit => suit;
+    public bool IsLoot => isLoot;
     public bool IsTreasure => isTreasure;
-    public bool WasPaidFor { get; private set; }
+    public bool IsPurchase { get; private set; }
+    public bool IsPurchasable => !IsLoot && !IsTreasure && !IsPurchase;
+    public bool IsConsumable => !IsPurchasable || IsPurchase;
 
     public IObservable<Unit> WhenPurchased => purchasing;
+    public IObservable<Unit> WhenSold => selling;
+    public IObservable<Unit> WhenConsumed => consumption;
 
     [Inject]
     private void Construct(IPlayerStats playerStats)
@@ -71,9 +85,10 @@ public class CardResource : Card, IResourceCard
             return false;
         
         playerStats.Coins -= Value;
-        WasPaidFor = true;
+        IsPurchase = true;
         
         purchasing.OnNext(Unit.Default);
+        purchasing.OnCompleted();
 
         return true;
     }
@@ -83,7 +98,38 @@ public class CardResource : Card, IResourceCard
         playerStats.Coins += Value;
         
         Destroy();
+        
+        selling.OnNext(Unit.Default);
+        selling.OnCompleted();
 
         return true;
+    }
+
+    public bool Consume()
+    {
+        var didConsume = true;
+        
+        switch (ResourceType)
+        {
+            case ResourceType.Food:
+
+                playerStats.HealthPoints += Value;
+
+                break;
+            
+            default:
+                didConsume = false;
+                break;
+        }
+
+        if (didConsume)
+        {
+            Value = 0;
+            
+            consumption.OnNext(Unit.Default);
+            consumption.OnCompleted();
+        }
+
+        return didConsume;
     }
 }

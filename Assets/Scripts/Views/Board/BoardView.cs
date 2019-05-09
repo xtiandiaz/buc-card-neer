@@ -16,8 +16,7 @@ public class BoardView : MonoBehaviour, IBoardView
     [SerializeField] private ShipMerchantView shipMerchant;
     [SerializeField] private ShipPirateView shipPirate;
 
-    private BoardMode lastMode;
-    private IViewportProvider viewportProvider;
+    [Inject] private Viewport viewport;
 
     public IShipView[] Ships => new IShipView[] {shipPlayer, shipMerchant, shipPirate};
     public IDeck[] Decks => decks;
@@ -29,14 +28,10 @@ public class BoardView : MonoBehaviour, IBoardView
     public Vector3 MerchantSailingDestination { get; private set; }
 
     [Inject]
-    private void Construct(IViewportProvider viewportProvider)
+    // Required to position slots before dealing any Cards
+    private void Initialize()
     {
-        this.viewportProvider = viewportProvider;
-    }
-
-    private void Awake()
-    {
-        var viewportHeight = viewportProvider.GetViewport(0).Size.y;
+        var viewportHeight = viewport.Size.y;
         
         transform.position = Vector3.down * (viewportHeight * 0.5f);
 

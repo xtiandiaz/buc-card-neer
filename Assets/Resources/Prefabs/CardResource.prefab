@@ -281,7 +281,7 @@ GameObject:
   - component: {fileID: 4646353274661442325}
   - component: {fileID: 8840121596520852176}
   m_Layer: 0
-  m_Name: Value
+  m_Name: ValueLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -450,7 +450,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1db30a74872d4a6884cc61a16a44ddb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardValue: {fileID: 4038689470109362295}
+  valueLabel: {fileID: 4038689470109362295}
   contentWrapper: {fileID: 481732668797973513}
   sortingGroup: {fileID: 4141944539622565620}
   frontFace: {fileID: 48035879172936117}

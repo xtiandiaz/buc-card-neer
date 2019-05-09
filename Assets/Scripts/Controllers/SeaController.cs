@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UniRx;
 using Zenject;
 
@@ -30,12 +31,17 @@ public class SeaController : ISeaController, IDisposable
     private void Initialize()
     {
         disposables.Add(
-            model.UpdatedProjectionState
+            model.WhenToggledProjection
                 .Subscribe(isProjected => view.ToggleProjection(isProjected, ProjectionDurationInSeconds, 0.65f)));
         
-        disposables.Add(model.Dealing
-            .SelectMany(fromDeck => dealingManager.Deal(fromDeck, 3, TimeSpan.FromSeconds(0.1), model.Slots))
-            .Subscribe());
+        disposables.Add(model.Slots
+            .Select(slot => slot.WhenReleased.Select(_ => slot))
+            .Merge()
+            .Subscribe(model.Feed));
+        
+        disposables.Add(model.WhenConsumed
+            .SelectMany(card => Observable.Return(card).Delay(TimeSpan.FromSeconds(0.1)))
+            .Subscribe(card => card.Deal()));
     }
 
     public void Dispose()

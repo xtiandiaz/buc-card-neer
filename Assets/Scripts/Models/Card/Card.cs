@@ -35,11 +35,12 @@ public interface ICard
     Sprite FrontFace { get; }
     Sprite BackFace { get; }
     
-    IObservable<int> WhenValueChanged { get; }
-    IObservable<Unit> WhenArranged { get; }
+    IObservable<int> Worth { get; }
     IObservable<Unit> WhenPicked { get; }
     IObservable<Vector3> WhenDragged { get; }
     IObservable<Unit> WhenDropped { get; }
+    IObservable<Unit> WhenDealt { get; }
+    IObservable<Unit> WhenArranged { get; }
     IObservable<CardFace> WhenFaceChanged { get; }
     IObservable<CardFace> WhenFlipped { get; }
     IObservable<bool> WhenVisibilityChanged { get; }
@@ -54,6 +55,7 @@ public interface ICard
     void Pick();
     void Drag(Vector3 toPosition);
     void Drop();
+    void Deal();
     void Arrange(Vector3 atPosition, int withIndex);
     void Flip(CardFace toFace);
     void Fade(float toAlphaValue);
@@ -68,10 +70,11 @@ public abstract class Card : ScriptableObject, ICard
     [SerializeField] protected IntReactiveProperty value = new IntReactiveProperty();
     
     private readonly ReactiveProperty<bool> isVisible = new ReactiveProperty<bool>(true);
-    private readonly Subject<Unit> arranging = new Subject<Unit>();
+    private readonly BehaviorSubject<Unit> arranging = new BehaviorSubject<Unit>(Unit.Default);
     private readonly Subject<Unit> picking = new Subject<Unit>();
     private readonly Subject<Vector3> dragging = new Subject<Vector3>();
     private readonly Subject<Unit> dropping = new Subject<Unit>();
+    private readonly Subject<Unit> dealing = new Subject<Unit>();
     private readonly Subject<CardFace> facing = new Subject<CardFace>();
     private readonly Subject<CardFace> flipping = new Subject<CardFace>();
     private readonly Subject<float> fading = new Subject<float>();
@@ -90,7 +93,7 @@ public abstract class Card : ScriptableObject, ICard
     public int Value
     {
         get => value.Value;
-        set => this.value.Value = value;
+        set => this.value.Value = Mathf.Max(value, 0);
     }
 
     public int Index { get; private set; }
@@ -117,11 +120,12 @@ public abstract class Card : ScriptableObject, ICard
     public Sprite FrontFace => frontFace;
     public Sprite BackFace => backFace;
 
-    public IObservable<int> WhenValueChanged => value;
+    public IObservable<int> Worth => value;
     public IObservable<Unit> WhenArranged => arranging;
     public IObservable<Unit> WhenPicked => picking;
     public IObservable<Vector3> WhenDragged => dragging;
     public IObservable<Unit> WhenDropped => dropping;
+    public IObservable<Unit> WhenDealt => dealing;
     public IObservable<CardFace> WhenFaceChanged => facing.DistinctUntilChanged();
     public IObservable<CardFace> WhenFlipped => flipping.DistinctUntilChanged();
     public IObservable<bool> WhenVisibilityChanged => isVisible;
@@ -162,6 +166,12 @@ public abstract class Card : ScriptableObject, ICard
         Position = new Vector3(Position.x, Position.y, arrangedDepth);
         
         dropping.OnNext(Unit.Default);
+    }
+
+    public void Deal()
+    {
+        dealing.OnNext(Unit.Default);
+        dealing.OnCompleted();
     }
 
     public void Arrange(Vector3 atPosition, int withIndex)

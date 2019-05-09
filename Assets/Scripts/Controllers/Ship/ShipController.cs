@@ -27,8 +27,8 @@ public class ShipController : IShipController, IDisposable
 
     public virtual void Initialize()
     {
-        disposables.Add(model.Docking.Subscribe(position => view.Dock(position)));
-        disposables.Add(model.Sailing.Subscribe(position => view.SetSail(position)));
+        disposables.Add(model.WhenDocked.Subscribe(position => view.Dock(position)));
+        disposables.Add(model.WhenSailed.Subscribe(position => view.SetSail(position)));
     }
 
     public void Dispose()

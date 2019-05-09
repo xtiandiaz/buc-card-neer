@@ -1,12 +1,13 @@
 using System.Linq;
 using Zenject;
 
-public interface IBoardFactory : IFactory<IBoardView, IBoard>
+public interface IBoardFactory : IFactory<IBoard>
 {
 }
 
 public class BoardFactory : IBoardFactory
 {
+    private readonly IBoardView boardView;
     private readonly Board.Factory modelFactory;
     private readonly BoardController.Factory controllerFactory;
     private readonly ISeaFactory seaFactory;
@@ -14,6 +15,7 @@ public class BoardFactory : IBoardFactory
     private readonly IDeckFactory deckFactory;
 
     private BoardFactory(
+        IBoardView boardView,
         Board.Factory modelFactory,
         BoardController.Factory controllerFactory,
         ISeaFactory seaFactory,
@@ -21,6 +23,7 @@ public class BoardFactory : IBoardFactory
         IDeckFactory deckFactory
         )
     {
+        this.boardView = boardView;
         this.modelFactory = modelFactory;
         this.controllerFactory = controllerFactory;
         this.seaFactory = seaFactory;
@@ -28,14 +31,14 @@ public class BoardFactory : IBoardFactory
         this.deckFactory = deckFactory;
     }
     
-    public IBoard Create(IBoardView fromView)
+    public IBoard Create()
     {
         var model = modelFactory.Create(
-            seaFactory.Create(fromView.Sea),
-            fromView.Ships.Select(shipView => shipFactory.Create(shipView)).ToArray(),
-            fromView.Decks.Select(deck => deckFactory.Create(deck)).ToArray());
+            seaFactory.Create(boardView.Sea),
+            boardView.Ships.Select(shipView => shipFactory.Create(shipView)).ToArray(),
+            boardView.Decks.Select(deck => deckFactory.Create(deck)).ToArray());
         
-        controllerFactory.Create(model, fromView);
+        controllerFactory.Create(model, boardView);
         
         return model;
     }

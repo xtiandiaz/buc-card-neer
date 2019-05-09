@@ -1,29 +1,19 @@
-using UniRx;
 using UnityEngine;
 using Zenject;
 
 public class GameController : IInitializable
 {
-    private readonly IBoardFactory boardFactory;
-    private readonly IBoardView boardView;
+    private readonly IBoard board;
 
-    private IBoard board;
-
-    public GameController(
-        IBoardFactory boardFactory,
-        IBoardView boardView
-    )
+    public GameController(IBoard board)
     {
-        this.boardFactory = boardFactory;
-        this.boardView = boardView;
+        this.board = board;
     }
 
     public void Initialize()
     {
         Application.targetFrameRate = 50;
-
-        board = boardFactory.Create(boardView);
-
-        board.Deal();
+        
+        board.Populate();
     }
 }
