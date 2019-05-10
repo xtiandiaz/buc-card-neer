@@ -128,6 +128,8 @@ MonoBehaviour:
   faceRenderer: {fileID: 4019751580280472258}
   capacity: 0
   type: 0
+  entryway: 0
+  shouldStartLocked: 0
   resourceMask: 0
   arrangement: {fileID: 0}
   draggingObserver: {fileID: -2762682686527509236}
