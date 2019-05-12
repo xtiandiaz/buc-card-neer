@@ -10,6 +10,10 @@ public interface IBoardView
 
 public class BoardView : MonoBehaviour, IBoardView
 {
+    public class Factory : PlaceholderFactory<BoardView>
+    {
+    }
+    
     [SerializeField] private Deck[] decks;
     [SerializeField] private SeaView sea;
     [SerializeField] private ShipPlayerView shipPlayer;

@@ -12,12 +12,11 @@ public class BoardController : IBoardController, IDisposable
     {
     }
     
-    private readonly Board model;
-    private readonly BoardView view;
-    private readonly ICardPlayer playerCard;
+    private readonly IBoard model;
+    private readonly IBoardView view;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
-    private BoardController(Board model, BoardView view)
+    private BoardController(IBoard model, IBoardView view)
     {
         this.model = model;
         this.view = view;
@@ -26,9 +25,8 @@ public class BoardController : IBoardController, IDisposable
     [Inject]
     private void Initialize()
     {
-        model.AssignProviders();
         
-        #region Ship Docking & Sailing
+       /* #region Ship Docking & Sailing
 
         disposables.Add(model.ShipPlayer.WhenPirateBoarded
             .Do(_ =>
@@ -56,7 +54,7 @@ public class BoardController : IBoardController, IDisposable
             }))
             .Subscribe());
 
-        #endregion
+        #endregion*/
     }
 
     public void Dispose()

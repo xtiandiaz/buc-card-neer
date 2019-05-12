@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Zenject;
 
 public interface IDeckFactory : IFactory<IDeck, IDeck>
@@ -6,25 +7,20 @@ public interface IDeckFactory : IFactory<IDeck, IDeck>
 
 public class DeckFactory : IDeckFactory
 {
-    private readonly DiContainer container;
     private readonly DeckController.Factory controllerFactory;
+    private readonly List<IDeck> decks;
 
     private DeckFactory(
-        DiContainer container,
         DeckController.Factory controllerFactory
-    )
+        )
     {
-        this.container = container;
         this.controllerFactory = controllerFactory;
     }
     
-    public IDeck Create(IDeck fromReferenceModel)
-    {
-        var model = fromReferenceModel.Clone();
-        container.Inject(model);
+    public IDeck Create(IDeck forModel)
+    {        
+        controllerFactory.Create(forModel);
         
-        controllerFactory.Create(model);
-        
-        return model;
+        return forModel;
     }
 }

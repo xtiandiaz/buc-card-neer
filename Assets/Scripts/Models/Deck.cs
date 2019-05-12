@@ -17,44 +17,45 @@ public interface IDeck : ICardProvider
 {
     DeckType Type { get; }
 
-    IDeck Clone();
+    void Shuffle();
 }
 
 [CreateAssetMenu(fileName = "Deck", menuName = "Game/Deck", order = 1)]
 public class Deck : ScriptableObject, IDeck
 {
-    private readonly Subject<ICard> supplying = new Subject<ICard>();
+    public class Factory : PlaceholderFactory<IDeck>
+    {
+    }
+    
+    private readonly Subject<ICard> provision = new Subject<ICard>();
     
     [SerializeField] private DeckType type;
-    [SerializeField] private List<Card> referenceCards;
+    [SerializeField] private List<Card> cards;
     private Queue<ICard> queue;
 
     public DeckType Type => type;
     
-    public IObservable<ICard> WhenProvided => supplying;
+    public IObservable<ICard> WhenProvided => provision;
+    public bool IsExhausted { get; private set; }
 
-    [Inject]
-    private void Initialize()
+    public void Shuffle()
     {
-        var cards = referenceCards.Select(refCard => refCard.Clone()).ToList();
-        
         cards.Shuffle();
-        
-        queue = new Queue<ICard>(cards);
     }
 
     public ICard Provide()
     {
-        var card = queue.Dequeue();
-        
+        var card = cards.LastOrDefault();
+
         if (card != null)
-            supplying.OnNext(card);
+        {
+            card = Instantiate(card);
+            cards.RemoveAt(cards.Count - 1);
+            provision.OnNext(card);
+        }
+        
+        IsExhausted = cards.Count <= 0;
 
         return card;
-    }
-    
-    public IDeck Clone()
-    {
-        return Instantiate(this);
     }
 }

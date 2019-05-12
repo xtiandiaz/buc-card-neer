@@ -13,6 +13,10 @@ public interface ISeaView
 
 public class SeaView : MonoBehaviour, ISeaView
 {
+    public class Factory : PlaceholderFactory<ISeaView>
+    {
+    }
+    
     private static readonly int Curvature = Shader.PropertyToID("_Curvature");
     private static readonly int PivotOffset = Shader.PropertyToID("_PivotOffset");
     

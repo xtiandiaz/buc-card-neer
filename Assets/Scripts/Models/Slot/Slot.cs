@@ -17,7 +17,7 @@ public enum SlotEntryway
     Rear
 }
 
-public interface ISlot : ICardBond
+public interface ISlot : ICardBond, ICardConsumer
 {
     bool IsVisible { get; set; }
     bool IsLocked { get; set; }
@@ -59,6 +59,7 @@ public abstract class Slot : ISlot
     private readonly ReactiveProperty<bool> isVisible = new ReactiveProperty<bool>(true);
     private readonly ReactiveProperty<bool> isLocked = new ReactiveProperty<bool>(false);
     private Bounds bounds;
+    private ICardProvider cardProvider;
     
     protected Slot(SlotType type, IPile pile, Transform transform, Bounds bounds)
     {
@@ -123,10 +124,16 @@ public abstract class Slot : ISlot
     public void Lodge(ICard card)
     {
         if (!CanLodge(card))
+        {
+            Debug.LogWarning($"[Slot] Can't lodge {card}.");
             return;
-        
+        }
+
         if (!pile.Insert(card, Entryway == SlotEntryway.Front ? PileInsertionMode.Unshift : PileInsertionMode.Push))
+        {
+            Debug.LogError($"[Slot] Couldn't insert {card} in Pile.");
             return;
+        }
         
         card.Bind(this);
         
@@ -157,4 +164,17 @@ public abstract class Slot : ISlot
     protected abstract bool CanLodge(ICard card);
     
     protected abstract bool CanLodge(ISlot fromSlot);
+    
+    public void SetProvider(ICardProvider provider)
+    {
+        cardProvider = provider;
+    }
+
+    public void Consume(int count)
+    {
+        if (cardProvider.IsExhausted)
+            return;
+
+        Lodge(cardProvider.Provide());
+    }
 }

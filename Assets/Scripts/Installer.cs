@@ -2,11 +2,20 @@
 using Zenject;
 
 public class Installer : MonoInstaller
-{
-    [SerializeField] private BoardCamera camera;
-    [SerializeField] private GamePalette palette;
-    [SerializeField] private BoardView boardView;
+{    
+    [Header("Models")]
     [SerializeField] private CardPlayer playerCard;
+    
+    [Header("Views")]
+    [SerializeField] private BoardView boardView;
+    [SerializeField] private SeaView seaView;
+    [SerializeField] private ShipPlayerView shipPlayerView;
+
+    [Header("Decks")] 
+    [SerializeField] private Deck eventsDeck;
+    
+    [Header("Viewport")]
+    [SerializeField] private BoardCamera camera;
 
     [Header("Settings")] 
     [SerializeField] private CardAnimationSettings cardAnimationSettings;
@@ -14,72 +23,82 @@ public class Installer : MonoInstaller
 
     public override void InstallBindings()
     {
-        // Main factories
-        Container.BindInterfacesAndSelfTo<ShipFactory>().AsSingle();
-        Container.BindInterfacesAndSelfTo<SeaFactory>().AsSingle();
-        Container.BindInterfacesAndSelfTo<DeckFactory>().AsSingle();
-        Container.BindInterfacesAndSelfTo<CardFactory>().AsSingle();
-        Container.BindInterfacesAndSelfTo<SlotFactory>().AsSingle();
-        
-        // Providers
-        Container.Bind<IPlayerProvider>().To<PlayerProvider>().AsSingle();
-        
-        // Player
-        Container.Bind(typeof(ICardPlayer), typeof(IPlayerStats)).FromInstance(playerCard.Clone()).AsSingle();
-        
-        // Board 
-        Container.BindFactory<ISea, IShip[], IDeck[], Board, Board.Factory>().AsSingle();
-        Container.BindFactory<IBoard, IBoardView, BoardController, BoardController.Factory>().AsSingle();
-        
+        #region Game
+
+        Container.BindInterfacesAndSelfTo<GameController>().AsSingle();
+
+        #endregion
+        #region Board
+
         Container.Bind<BoardLayoutSettings>().FromInstance(boardLayoutSettings).AsSingle();
-        Container.BindInterfacesAndSelfTo<BoardView>().FromInstance(boardView).AsSingle();
-        Container.Bind<IBoard>().FromFactory<BoardFactory>().AsSingle();
-        
+        Container.BindFactory<Board, Board.Factory>().AsSingle();
+        Container.BindFactory<BoardView, BoardView.Factory>().FromInstance(boardView);
+        Container.BindFactory<IBoard, IBoardView, BoardController, BoardController.Factory>().AsSingle();
+        Container.Bind<IBoardFactory>().To<BoardFactory>().AsSingle();
+
+        #endregion
+        #region Sea
+
         Container.BindFactory<ISlot[], Sea, Sea.Factory>().AsSingle();
+        Container.BindFactory<ISeaView, SeaView.Factory>().FromInstance(seaView);
         Container.BindFactory<ISea, ISeaView, SeaController, SeaController.Factory>().AsSingle();
-        
-        // Ship
+        Container.Bind<ISeaFactory>().To<SeaFactory>().AsSingle();
+
+        #endregion
+        #region Ships
+
         Container.BindFactory<ISlot[], ShipPlayer, ShipPlayer.Factory>().AsSingle();
-        Container.BindFactory<ISlot[], ShipMerchant, ShipMerchant.Factory>().AsSingle();
-        Container.BindFactory<ISlot[], ShipPirate, ShipPirate.Factory>().AsSingle();
-        
+        Container.BindFactory<IShipPlayerView, ShipPlayerView.Factory>().FromInstance(shipPlayerView);
         Container.BindFactory<IShip, IShipView, ShipController, ShipController.Factory>().AsSingle();
         Container.BindFactory<IShipPlayer, ShipPlayerView, ShipPlayerController, ShipPlayerController.Factory>()
             .AsSingle();
+        Container.Bind<IShipFactory>().To<ShipFactory>().AsSingle();
+
+        #endregion
+        #region Decks & Providers
         
-        // Deck
-        Container.BindFactory<IDeck, DeckController, DeckController.Factory>().AsSingle();
+        Container.Bind(typeof(ICardProvider), typeof(IDeck))
+            //.WithId(DeckType.Events)
+            .FromInstance(Instantiate(eventsDeck));
         
-        // Slot
+        Container.BindFactory<IDeck, DeckController, DeckController.Factory>().WhenInjectedInto<IDeckFactory>();
+        Container.Bind<IDeckFactory>().To<DeckFactory>().AsSingle();
+        
+        #endregion
+        #region Slots
+        
         Container.BindFactory<IPile, Transform, Bounds, SlotBoarding, SlotBoarding.Factory>();
         Container.BindFactory<IPile, Transform, Bounds,SlotEvent, SlotEvent.Factory>();
         Container.BindFactory<IPile, Transform, Bounds, SlotPlayer, SlotPlayer.Factory>();
         Container.BindFactory<ResourceType, IPile, Transform, Bounds, SlotStorage, SlotStorage.Factory>();
         Container.BindFactory<ISlot, ISlotView, SlotController, SlotController.Factory>().AsSingle();
+        Container.Bind<ISlotFactory>().To<SlotFactory>().AsSingle();
         
-        // Pile
         Container.BindFactory<ICardArrangement, int?, Pile, Pile.Factory>();
+        
+        #endregion
+        #region Cards
 
-        // Card
         Container.BindFactory<CardPirate, CardPirateView, CardPirateController, CardPirateController.Factory>().AsSingle();
         Container.BindFactory<CardMerchant, CardMerchantView, CardMerchantController, CardMerchantController.Factory>().AsSingle();
         Container.BindFactory<CardResource, CardResourceView, CardResourceController, CardResourceController.Factory>().AsSingle();
         Container.BindFactory<CardPlayer, CardPlayerView, CardPlayerController, CardPlayerController.Factory>().AsSingle();
         Container.BindFactory<string, CardView, CardView.Factory>().FromFactory<PrefabResourceFactory<CardView>>();
+        Container.Bind<ICardFactory>().To<CardFactory>().AsSingle();
         
-        // Viewport
+        Container.Bind(typeof(ICardPlayer), typeof(IPlayerStats)).FromInstance(Instantiate(playerCard));
+
+        #endregion
+        #region Viewport
+
         Container.BindInterfacesAndSelfTo<BoardCamera>().FromInstance(camera).AsSingle();
         Container.Bind<Viewport>().FromFactory<ViewportFactory>().AsSingle();
-        
-        // Settings
+
+        #endregion
+        #region Settings
+
         Container.Bind<CardAnimationSettings>().FromInstance(cardAnimationSettings);
-        
-        // Managers
-        Container.BindInterfacesAndSelfTo<DealingManager>().AsSingle();
-        
-        // Game
-        Container.Bind<GameState>().AsSingle();
-        Container.Bind<GamePalette>().FromInstance(palette);
-        Container.BindInterfacesAndSelfTo<GameController>().AsSingle();
+
+        #endregion
     }
 }

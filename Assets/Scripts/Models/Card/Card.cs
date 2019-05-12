@@ -62,7 +62,6 @@ public interface ICard
     void Fade(float toAlphaValue);
     void Tint(Color withColor, float byFactor);
     void Fog(Color withColor, float byFactor);
-    ICard Clone();
     void Destroy();
 }
 
@@ -191,11 +190,6 @@ public abstract class Card : ScriptableObject, ICard
     public void Fog(Color withColor, float byFactor)
     {
         fogging.OnNext((withColor, byFactor));
-    }
-
-    public ICard Clone()
-    {
-        return Instantiate(this);
     }
 
     public void Destroy()

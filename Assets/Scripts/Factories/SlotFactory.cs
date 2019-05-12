@@ -1,4 +1,9 @@
 using System;
+using Zenject;
+
+public interface ISlotFactory : IFactory<ISlotView, ISlot>
+{
+}
 
 public class SlotFactory : ISlotFactory
 {

@@ -9,9 +9,4 @@ public class ShipMerchant : Ship
     public ShipMerchant(ISlot[] slots) : base(ShipType.Merchant, slots)
     {
     }
-
-    public override void Populate()
-    {
-        throw new System.NotImplementedException();
-    }
 }

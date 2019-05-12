@@ -1,6 +1,5 @@
 using System;
 using UniRx;
-using UnityEngine;
 using Zenject;
 
 public class DeckController : IDisposable
@@ -25,6 +24,8 @@ public class DeckController : IDisposable
     [Inject]
     private void Initialize()
     {
+        model.Shuffle();
+        
         disposables.Add(model.WhenProvided.Subscribe(card => cardFactory.Create(card)));
     }
 

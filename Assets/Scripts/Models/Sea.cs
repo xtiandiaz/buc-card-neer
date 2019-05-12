@@ -3,7 +3,7 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-public interface ISea : ICardConsumer, IBoardSection
+public interface ISea : ICardProviderManager
 {
     ISlot[] Slots { get; }
     
@@ -18,41 +18,26 @@ public class Sea : ISea
     {
     }
     
+    private readonly ICardProvider cardProvider;
     private readonly Subject<bool> projection = new Subject<bool>();
-    private readonly Subject<ICard> consumption = new Subject<ICard>();
-    private ICardProvider cardProvider;
 
-    private Sea(ISlot[] slots)
+    private Sea(
+        ISlot[] slots,
+        ICardProvider cardProvider
+        )
     {
         Slots = slots;
+        this.cardProvider = cardProvider;
     }
 
     public ISlot[] Slots { get; }
     
     public IObservable<bool> WhenToggledProjection => projection;
-    public IObservable<ICard> WhenConsumed => consumption;
 
-    public void Populate()
+    public void AssignProviders()
     {
-        for (var i = 0; i < 3; i++)
-        {
-            foreach (var slot in Slots)
-                Feed(slot);
-        }
-    }
-    
-    public void SetProvider(ICardProvider provider)
-    {
-        cardProvider = provider;
-    }
-
-    public void Feed(ISlot slot)
-    {
-        var card = cardProvider.Provide();
-        
-        slot.Lodge(card);
-        
-        consumption.OnNext(card);
+        foreach (var slot in Slots)
+            slot.SetProvider(cardProvider);
     }
 
     public void ToggleProjection(bool toValue)

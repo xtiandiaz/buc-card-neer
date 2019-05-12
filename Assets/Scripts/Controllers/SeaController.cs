@@ -13,13 +13,12 @@ public class SeaController : ISeaController, IDisposable
     {
     }
 
+    private const int FeedCountPerSlot = 3;
     private const float ProjectionDurationInSeconds = 1f;
     
     private readonly ISea model;
     private readonly ISeaView view;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
-
-    [Inject] private IDealingManager dealingManager;
 
     private SeaController(ISea model, ISeaView view)
     {
@@ -30,13 +29,15 @@ public class SeaController : ISeaController, IDisposable
     [Inject]
     private void Initialize()
     {
-        disposables.Add(model.WhenToggledProjection
-                .Subscribe(isProjected => view.ToggleProjection(isProjected, ProjectionDurationInSeconds)));
+        model.AssignProviders();
         
-        disposables.Add(model.Slots
-            .Select(slot => slot.WhenReleased.Select(_ => slot))
-            .Merge()
-            .Subscribe(model.Feed));
+        disposables.Add(Observable.Timer(TimeSpan.Zero, TimeSpan.FromSeconds(0.1))
+            .Take(model.Slots.Length * FeedCountPerSlot)
+            .Do(i => model.Slots[i % model.Slots.Length].Consume(1))
+            .Subscribe());
+        
+        disposables.Add(model.WhenToggledProjection
+            .Subscribe(isProjected => view.ToggleProjection(isProjected, ProjectionDurationInSeconds)));
     }
 
     public void Dispose()

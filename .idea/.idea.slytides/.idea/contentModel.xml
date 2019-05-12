@@ -734,6 +734,9 @@
           </e>
         </e>
         <e p="Scripts" t="Include">
+          <e p="Cameras" t="Include">
+            <e p="BoardCamera.cs" t="Include" />
+          </e>
           <e p="Components" t="Include">
             <e p="Card" t="Include">
               <e p="CardAnimator.cs" t="Include" />
@@ -773,8 +776,6 @@
             <e p="BoardFactory.cs" t="Include" />
             <e p="CardFactory.cs" t="Include" />
             <e p="DeckFactory.cs" t="Include" />
-            <e p="ISeaFactory.cs" t="Include" />
-            <e p="ISlotFactory.cs" t="Include" />
             <e p="SeaFactory.cs" t="Include" />
             <e p="ShipFactory.cs" t="Include" />
             <e p="SlotFactory.cs" t="Include" />
@@ -782,13 +783,11 @@
           </e>
           <e p="Installer.cs" t="Include" />
           <e p="Managers" t="Include">
-            <e p="DealingManager.cs" t="Include" />
             <e p="ICardProviderManager.cs" t="Include" />
           </e>
           <e p="Models" t="Include">
             <e p="Board" t="Include">
               <e p="Board.cs" t="Include" />
-              <e p="IBoardSection.cs" t="Include" />
             </e>
             <e p="Card" t="Include">
               <e p="Card.cs" t="Include" />
@@ -803,8 +802,6 @@
             </e>
             <e p="Deck.cs" t="Include" />
             <e p="Direction.cs" t="Include" />
-            <e p="GamePalette.cs" t="Include" />
-            <e p="GameState.cs" t="Include" />
             <e p="Pile.cs" t="Include" />
             <e p="Sea.cs" t="Include" />
             <e p="Settings" t="Include">
@@ -835,11 +832,9 @@
             <e p="ICardProvider.cs" t="Include" />
             <e p="IViewportProvider.cs" t="Include" />
             <e p="IWorldPointProvider.cs" t="Include" />
-            <e p="PlayerProvider.cs" t="Include" />
           </e>
           <e p="Views" t="Include">
             <e p="Board" t="Include">
-              <e p="BoardCamera.cs" t="Include" />
               <e p="BoardView.cs" t="Include" />
               <e p="SeaView.cs" t="Include" />
             </e>
@@ -852,7 +847,6 @@
               <e p="CardStatView.cs" t="Include" />
               <e p="CardView.cs" t="Include" />
             </e>
-            <e p="FocusLight.cs" t="Include" />
             <e p="Ship" t="Include">
               <e p="ShipMerchantView.cs" t="Include" />
               <e p="ShipPirateView.cs" t="Include" />

@@ -1,5 +1,6 @@
 using System;
 using UniRx;
+using UnityEngine;
 using Zenject;
 
 public class ShipPlayerController : ShipController
@@ -9,18 +10,29 @@ public class ShipPlayerController : ShipController
     }
     
     private readonly IShipPlayer model;
-    private readonly ShipPlayerView view;
-    [Inject] private CardAnimationSettings cardAnimationSettings;
-    
-    private ShipPlayerController(IShipPlayer model, ShipPlayerView view) : base(model, view)
+    private readonly IShipPlayerView view;
+    private readonly ICardPlayer playerCard;
+    private readonly CardAnimationSettings cardAnimationSettings;
+
+    private ShipPlayerController(
+        IShipPlayer model, 
+        IShipPlayerView view,
+        ICardPlayer playerCard, 
+        CardAnimationSettings cardAnimationSettings
+        ) 
+        : base(model, view)
     {
         this.model = model;
         this.view = view;
+        this.playerCard = playerCard;
+        this.cardAnimationSettings = cardAnimationSettings;
     }
     
     protected override void Initialize()
     {
         base.Initialize();
+        
+        model.PlayerSlot?.Lodge(playerCard);
             
         disposables.Add(model.WhenBoarded
             .Delay(TimeSpan.FromSeconds(cardAnimationSettings.BoardingDelay))

@@ -6,6 +6,7 @@ using Zenject;
 
 public interface IShipPlayer : IShip
 {
+    ISlot PlayerSlot { get; }
     Vector3 DockingPosition { get; }
     
     IObservable<ICard> WhenPirateBoarded { get; }
@@ -20,22 +21,18 @@ public class ShipPlayer : Ship, IShipPlayer
     {
     }
     
-    private readonly ISlot playerSlot;
+    private readonly ICardPlayer playerCard;
 
     public ShipPlayer(ISlot[] slots) : base(ShipType.Player, slots)
     {
-        playerSlot = Slots.FirstOrDefault(slot => slot.Type == SlotType.Player);
+        PlayerSlot = Slots.FirstOrDefault(slot => slot.Type == SlotType.Player);
     }
     
+    public ISlot PlayerSlot { get; }
     public Vector3 DockingPosition { get; }
     
     public IObservable<ICard> WhenPirateBoarded => WhenBoarded.Where(card => (card.Type & CardType.Pirate) != 0);
     public IObservable<ICard> WhenMerchantBoarded => WhenBoarded.Where(card => (card.Type & CardType.Merchant) != 0);
-    
-    public override void Populate()
-    {
-        Feed(playerSlot);
-    }
 
     public void Dock()
     {

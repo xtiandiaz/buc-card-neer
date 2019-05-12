@@ -11,7 +11,7 @@ public enum ShipType
     Merchant
 }
 
-public interface IShip : ICardConsumer, IBoardSection
+public interface IShip
 {
     ShipType Type { get; }
     ISlot[] Slots { get; }
@@ -54,22 +54,6 @@ public abstract class Ship : IShip
     public IObservable<Unit> WhenSailed => sailing;
     public IObservable<ICard> WhenBoarded => BoardingSlot.WhenLodged;
     public IObservable<ICard> WhenConsumed => consumption;
-
-    public abstract void Populate();
-
-    public void SetProvider(ICardProvider provider)
-    {
-        cardProvider = provider;
-    }
-
-    public void Feed(ISlot slot)
-    {
-        var card = cardProvider.Provide();
-        
-        slot.Lodge(card);
-        
-        consumption.OnNext(card);
-    }
 
     public void Dock(Vector3 atPosition)
     {

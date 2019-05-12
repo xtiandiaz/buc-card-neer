@@ -2,70 +2,67 @@ using System;
 using System.Linq;
 using Zenject;
 
-public interface IShipFactory : IFactory<IShipView, IShip>
+public interface IShipFactory : IFactory<ShipType, IShip>
 {
-    IShip Create(IShipView fromView);
 }
 
 public class ShipFactory : IShipFactory
 {
     private readonly ShipPlayer.Factory modelFactoryPlayer;
-    private readonly ShipMerchant.Factory modelFactoryMerchant;
-    private readonly ShipPirate.Factory modelFactoryPirate;
+    private readonly ShipPlayerView.Factory viewFactoryPlayer;
     private readonly ShipController.Factory controllerFactory;
     private readonly ShipPlayerController.Factory controllerFactoryPlayer;
     private readonly ISlotFactory slotFactory;
-    private readonly ICardFactory cardFactory;
-    private readonly ICardPlayer cardPlayer;
 
     private ShipFactory(
         ShipPlayer.Factory modelFactoryPlayer,
-        ShipMerchant.Factory modelFactoryMerchant,
-        ShipPirate.Factory modelFactoryPirate,    
+        ShipPlayerView.Factory viewFactoryPlayer,
         ShipController.Factory controllerFactory,
         ShipPlayerController.Factory controllerFactoryPlayer,
         ISlotFactory slotFactory
         )
     {
         this.modelFactoryPlayer = modelFactoryPlayer;
-        this.modelFactoryMerchant = modelFactoryMerchant;
-        this.modelFactoryPirate = modelFactoryPirate;
-        
+        this.viewFactoryPlayer = viewFactoryPlayer;        
         this.controllerFactory = controllerFactory;
         this.controllerFactoryPlayer = controllerFactoryPlayer;
-        
         this.slotFactory = slotFactory;
     }
     
-    public IShip Create(IShipView fromView)
+    public IShip Create(ShipType forType)
     {
-        var model = CreateModel(fromView);
+        var view = CreateView(forType);
+        var slots = view.Slots.Select(slotFactory.Create).ToArray();
+        var model = CreateModel(forType, slots);
         
-        CreateController(model, fromView);
+        CreateController(model, view);
 
         return model;
     }
 
-    private IShip CreateModel(IShipView fromView)
+    private IShip CreateModel(ShipType forType, ISlot[] withSlots)
     {
-        var slots = fromView.Slots.Select(sv => slotFactory.Create(sv)).ToArray();
-        
-        switch (fromView.Type)
+        switch (forType)
         {
             case ShipType.Player:
 
-                return modelFactoryPlayer.Create(slots);
-
-            case ShipType.Pirate:
-
-                return modelFactoryPirate.Create(slots);
-                
-            case ShipType.Merchant:
-
-                return modelFactoryMerchant.Create(slots);
+                return modelFactoryPlayer.Create(withSlots);
                 
             default:
-                throw new ArgumentOutOfRangeException(nameof(fromView.Type), fromView.Type, null);
+                throw new ArgumentOutOfRangeException(nameof(forType), forType, null);
+        }
+    }
+
+    private IShipView CreateView(ShipType forType)
+    {
+        switch (forType)
+        {
+            case ShipType.Player:
+
+                return viewFactoryPlayer.Create();
+                
+            default:
+                throw new ArgumentOutOfRangeException(nameof(forType), forType, null);
         }
     }
 

@@ -1,6 +1,12 @@
-using UnityEngine;
 using Zenject;
 
-public class ShipPlayerView : ShipView
+public interface IShipPlayerView : IShipView
 {
+}
+
+public class ShipPlayerView : ShipView, IShipPlayerView
+{
+    public class Factory : PlaceholderFactory<IShipPlayerView>
+    {
+    }
 }
