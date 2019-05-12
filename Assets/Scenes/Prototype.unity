@@ -120,51 +120,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &5523120
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5523122}
-  - component: {fileID: 5523121}
-  m_Layer: 0
-  m_Name: GamePalette
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &5523121
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5523120}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93be5794714e4dc78389ca7ac30bd2c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  slotHighlight: {r: 0, g: 1, b: 0.4864049, a: 1}
-  pirate: {r: 0, g: 0, b: 0, a: 0}
---- !u!4 &5523122
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5523120}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &52973589
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -557,13 +512,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24e4ab4c67afa4822bbf004051bc2459, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 534669906}
-  palette: {fileID: 5523121}
   playerCard: {fileID: 11400000, guid: 155e51e0940104ebaab177e4c174ea4d, type: 2}
   boardView: {fileID: 1969069925}
   seaView: {fileID: 1851111359}
   shipPlayerView: {fileID: 1586207629}
   eventsDeck: {fileID: 11400000, guid: 21c0d3a12db394182b1bc2861f9571c9, type: 2}
+  camera: {fileID: 534669906}
   cardAnimationSettings: {fileID: 11400000, guid: 82c18c688b13c467c9b2c21f495c904d,
     type: 2}
   boardLayoutSettings: {fileID: 11400000, guid: 828e180d359954817af172a5c69c03ec,
