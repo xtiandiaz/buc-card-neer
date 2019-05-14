@@ -634,7 +634,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerCard: {fileID: 11400000, guid: 155e51e0940104ebaab177e4c174ea4d, type: 2}
   camera: {fileID: 534669906}
-  gameMenuView: {fileID: 0}
+  gameMenuView: {fileID: 1849980231}
   boardView: {fileID: 1969069925}
   seaView: {fileID: 1851111359}
   shipPlayerView: {fileID: 1586207629}
@@ -2757,6 +2757,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96e608f835284f8ab6fbf15bb63c664d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  resetButton: {fileID: 128895550}
 --- !u!1 &1851111357
 GameObject:
   m_ObjectHideFlags: 0

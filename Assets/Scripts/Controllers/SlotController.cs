@@ -4,11 +4,11 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-public interface ISlotController
+public interface ISlotController : IInitializable, IDisposable
 {
 }
 
-public class SlotController : ISlotController, IDisposable
+public class SlotController : ISlotController
 {
     public class Factory : PlaceholderFactory<ISlot, ISlotView, SlotController>
     {
@@ -28,7 +28,7 @@ public class SlotController : ISlotController, IDisposable
     }
 
     [Inject]
-    private void Initialize()
+    public void Initialize()
     {
         model.Entryway = view.Entryway;
         model.IsLocked = view.ShouldStartLocked;

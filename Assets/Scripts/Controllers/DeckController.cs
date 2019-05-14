@@ -1,8 +1,12 @@
 using System;
 using UniRx;
+using UnityEngine;
 using Zenject;
 
-public class DeckController : IDisposable
+public interface IDeckController : IInitializable, IDisposable
+{}
+
+public class DeckController : IDeckController 
 {
     public class Factory : PlaceholderFactory<IDeck, DeckController>
     {
@@ -22,7 +26,7 @@ public class DeckController : IDisposable
     }
 
     [Inject]
-    private void Initialize()
+    public void Initialize()
     {
         model.Shuffle();
         

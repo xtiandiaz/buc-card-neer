@@ -1,8 +1,9 @@
+using System;
 using System.Linq;
-using UnityEngine;
+using UniRx;
 using Zenject;
 
-public interface ISeaFactory : IFactory<ISea>
+public interface ISeaFactory : IFactory<ISea>, IDisposable
 {
 }
 
@@ -12,6 +13,7 @@ public class SeaFactory : ISeaFactory
     private readonly SeaView.Factory viewFactory;
     private readonly SeaController.Factory controllerFactory;
     private readonly ISlotFactory slotFactory;
+    private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private SeaFactory(
         Sea.Factory modelFactory, 
@@ -31,8 +33,13 @@ public class SeaFactory : ISeaFactory
         var view = viewFactory.Create();
         var model = modelFactory.Create(view.Slots.Select(slotView => slotFactory.Create(slotView)).ToArray());
         
-        controllerFactory.Create(model, view);
+        disposables.Add(controllerFactory.Create(model, view));
 
         return model;
+    }
+
+    public void Dispose()
+    {
+        disposables?.Dispose();
     }
 }

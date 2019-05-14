@@ -3,11 +3,11 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-public interface IShipController
+public interface IShipController : IInitializable, IDisposable
 {
 }
 
-public class ShipController : IShipController, IDisposable
+public class ShipController : IShipController
 {
     public class Factory : PlaceholderFactory<IShip, IShipView, ShipController>
     {
@@ -25,7 +25,7 @@ public class ShipController : IShipController, IDisposable
     }
 
     [Inject]
-    protected virtual void Initialize()
+    public virtual void Initialize()
     {
         disposables.Add(model.WhenDocked.Subscribe(_ => view.Dock(model.Position)));
         disposables.Add(model.WhenSailed.Subscribe(_ => view.SetSail(model.Position)));
@@ -33,6 +33,6 @@ public class ShipController : IShipController, IDisposable
 
     public void Dispose()
     {
-        disposables?.Dispose();
+        disposables.Dispose();
     }
 }

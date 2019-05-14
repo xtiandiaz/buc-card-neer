@@ -1,7 +1,8 @@
 using System;
+using UniRx;
 using Zenject;
 
-public interface ISlotFactory : IFactory<ISlotView, ISlot>
+public interface ISlotFactory : IFactory<ISlotView, ISlot>, IDisposable
 {
 }
 
@@ -13,6 +14,7 @@ public class SlotFactory : ISlotFactory
     private readonly SlotStorage.Factory modelResourceFactory;
     private readonly SlotEvent.Factory modelEventFactory;
     private readonly SlotController.Factory controllerFactory;
+    private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private SlotFactory(
         Pile.Factory pileFactory,
@@ -35,7 +37,7 @@ public class SlotFactory : ISlotFactory
     {
         var model = CreateModel(fromView);
        
-        controllerFactory.Create(model, fromView);
+        disposables.Add(controllerFactory.Create(model, fromView));
 
         return model;
     }
@@ -59,5 +61,10 @@ public class SlotFactory : ISlotFactory
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
+    }
+
+    public void Dispose()
+    {
+        disposables?.Dispose();
     }
 }

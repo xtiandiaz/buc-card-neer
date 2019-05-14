@@ -28,7 +28,7 @@ public class ShipPlayerController : ShipController
         this.cardAnimationSettings = cardAnimationSettings;
     }
     
-    protected override void Initialize()
+    public override void Initialize()
     {
         base.Initialize();
         

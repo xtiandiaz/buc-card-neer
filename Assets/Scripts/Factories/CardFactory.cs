@@ -1,8 +1,9 @@
 using System;
+using UniRx;
 using UnityEngine;
 using Zenject;
 
-public interface ICardFactory : IFactory<ICard, ICard>
+public interface ICardFactory : IFactory<ICard, ICard>, IDisposable
 {
     ICard Create(ICard forModel);
 }
@@ -14,6 +15,7 @@ public class CardFactory : ICardFactory
     private readonly CardMerchantController.Factory controllerFactoryMerchant;
     private readonly CardResourceController.Factory controllerFactoryResource;
     private readonly CardPlayerController.Factory controllerFactoryPlayer;
+    private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private CardFactory(
         CardView.Factory viewFactory,
@@ -33,8 +35,8 @@ public class CardFactory : ICardFactory
     public ICard Create(ICard forModel)
     {
         var view = viewFactory.Create(GetViewResourcePath(forModel.Type));
-        
-        CreateController(forModel, view);
+
+        disposables.Add(CreateController(forModel, view));
         
         return forModel;
     }
@@ -83,5 +85,10 @@ public class CardFactory : ICardFactory
                 
                 throw new ArgumentOutOfRangeException(nameof(forCardType), forCardType, null);
         }
+    }
+
+    public void Dispose()
+    {
+        disposables?.Dispose();
     }
 }

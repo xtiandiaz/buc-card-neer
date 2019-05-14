@@ -1,13 +1,14 @@
 using System;
 using System.Linq;
 using UniRx;
+using UnityEngine;
 using Zenject;
 
-public interface ISeaController
+public interface ISeaController : IInitializable, IDisposable
 {
 }
 
-public class SeaController : ISeaController, IDisposable
+public class SeaController : ISeaController
 {
     public class Factory : PlaceholderFactory<ISea, ISeaView, SeaController>
     {
@@ -28,7 +29,7 @@ public class SeaController : ISeaController, IDisposable
     }
     
     [Inject]
-    private void Initialize()
+    public void Initialize()
     {
         model.AssignProviders();
         
@@ -51,6 +52,6 @@ public class SeaController : ISeaController, IDisposable
 
     public void Dispose()
     {
-        disposables?.Dispose();
+        disposables.Dispose();
     }
 }

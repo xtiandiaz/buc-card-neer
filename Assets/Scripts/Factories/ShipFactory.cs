@@ -1,8 +1,9 @@
 using System;
 using System.Linq;
+using UniRx;
 using Zenject;
 
-public interface IShipFactory : IFactory<ShipType, IShip>
+public interface IShipFactory : IFactory<ShipType, IShip>, IDisposable
 {
 }
 
@@ -13,6 +14,7 @@ public class ShipFactory : IShipFactory
     private readonly ShipController.Factory controllerFactory;
     private readonly ShipPlayerController.Factory controllerFactoryPlayer;
     private readonly ISlotFactory slotFactory;
+    private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private ShipFactory(
         ShipPlayer.Factory modelFactoryPlayer,
@@ -35,7 +37,7 @@ public class ShipFactory : IShipFactory
         var slots = view.Slots.Select(slotFactory.Create).ToArray();
         var model = CreateModel(forType, slots);
         
-        CreateController(model, view);
+        disposables.Add(CreateController(model, view));
 
         return model;
     }
@@ -78,5 +80,10 @@ public class ShipFactory : IShipFactory
 
                 return controllerFactory.Create(withModel, andView);
         }
+    }
+
+    public void Dispose()
+    {
+        disposables?.Dispose();
     }
 }

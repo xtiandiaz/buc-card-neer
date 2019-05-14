@@ -2,11 +2,11 @@ using System;
 using Zenject;
 using UniRx;
 
-public interface IBoardController
+public interface IBoardController : IInitializable, IDisposable
 {
 }
 
-public class BoardController : IBoardController, IDisposable
+public class BoardController : IBoardController
 {
     public class Factory : PlaceholderFactory<IBoard, IBoardView, BoardController>
     {
@@ -23,38 +23,8 @@ public class BoardController : IBoardController, IDisposable
     }
 
     [Inject]
-    private void Initialize()
+    public void Initialize()
     {
-        
-       /* #region Ship Docking & Sailing
-
-        disposables.Add(model.ShipPlayer.WhenPirateBoarded
-            .Do(_ =>
-            {
-                model.ShipPirate.Dock(view.PirateDockingPosition);
-                model.Sea.ToggleProjection(false);
-            })
-            .SelectMany(card => card.WhenDestroyed.Do(_ =>
-            {
-                model.ShipPirate.SetSail(view.PirateSailingDestination);
-                model.Sea.ToggleProjection(true);
-            }))
-            .Subscribe());
-            
-        disposables.Add(model.ShipPlayer.WhenMerchantBoarded
-            .Do(_ =>
-            {
-                model.ShipMerchant.Dock(view.MerchantDockingPosition);
-                model.Sea.ToggleProjection(false);
-            })
-            .SelectMany(card => card.WhenDestroyed.Do(_ =>
-            {
-                model.ShipMerchant.SetSail(view.MerchantDockingPosition);
-                model.Sea.ToggleProjection(true);
-            }))
-            .Subscribe());
-
-        #endregion*/
     }
 
     public void Dispose()

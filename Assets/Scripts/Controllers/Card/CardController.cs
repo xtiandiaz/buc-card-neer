@@ -3,11 +3,11 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-public interface ICardController
+public interface ICardController : IInitializable, IDisposable
 {
 }
 
-public abstract class CardController : ICardController, IDisposable
+public abstract class CardController : ICardController
 {
     protected readonly CompositeDisposable disposables = new CompositeDisposable();
     
@@ -26,7 +26,7 @@ public abstract class CardController : ICardController, IDisposable
     }
     
     [Inject]
-    protected virtual void Initialize()
+    public virtual void Initialize()
     {
         view.FrontFace = model.FrontFace;
         view.BackFace = model.BackFace;

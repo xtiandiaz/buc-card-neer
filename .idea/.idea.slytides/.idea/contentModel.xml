@@ -780,7 +780,6 @@
             <e p="SeaFactory.cs" t="Include" />
             <e p="ShipFactory.cs" t="Include" />
             <e p="SlotFactory.cs" t="Include" />
-            <e p="ViewportFactory.cs" t="Include" />
           </e>
           <e p="Installers" t="Include">
             <e p="AppInstaller.cs" t="Include" />
@@ -806,6 +805,7 @@
             </e>
             <e p="Deck.cs" t="Include" />
             <e p="Direction.cs" t="Include" />
+            <e p="Game.cs" t="Include" />
             <e p="Pile.cs" t="Include" />
             <e p="Sea.cs" t="Include" />
             <e p="Settings" t="Include">

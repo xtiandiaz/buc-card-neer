@@ -3,12 +3,15 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-public interface IGameController
+public interface IGameController : IInitializable, IDisposable
 {
 }
 
-public class GameController : IGameController, IInitializable, IDisposable
+public class GameController : IGameController
 {
+    private readonly IGame model;
+    private readonly IGameMenuView menuView;
+    private readonly IAppController appController;
     private readonly IBoardFactory boardFactory;
     private readonly ISeaFactory seaFactory;
     private readonly IShipFactory shipFactory;
@@ -19,6 +22,9 @@ public class GameController : IGameController, IInitializable, IDisposable
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     public GameController(
+        IGame model, 
+        IGameMenuView menuView,
+        IAppController appController,
         IBoardFactory boardFactory,
         ISeaFactory seaFactory,
         IShipFactory shipFactory,
@@ -28,6 +34,9 @@ public class GameController : IGameController, IInitializable, IDisposable
         ICardPlayer cardPlayer
         )
     {
+        this.model = model;
+        this.menuView = menuView;
+        this.appController = appController;
         this.boardFactory = boardFactory;
         this.seaFactory = seaFactory;
         this.shipFactory = shipFactory;
@@ -41,14 +50,17 @@ public class GameController : IGameController, IInitializable, IDisposable
     {
         deckFactory.Create(deck);
         cardFactory.Create(cardPlayer);
-        
+
         boardFactory.Create();
         seaFactory.Create();
         shipFactory.Create(ShipType.Player);
+
+        disposables.Add(menuView.ResetControl.OnClickAsObservable().Subscribe(_ => model.Reset()));
+        disposables.Add(model.WhenReset.Subscribe(_ => appController.Reload()));
     }
 
     public void Dispose()
     {
-        disposables?.Dispose();
+        disposables.Dispose();
     }
 }

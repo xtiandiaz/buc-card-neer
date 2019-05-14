@@ -35,6 +35,7 @@ public class GameInstaller : MonoInstaller
         
         #region Game
 
+        Container.BindInterfacesAndSelfTo<Game>().AsSingle();
         Container.BindInterfacesAndSelfTo<GameController>().AsSingle();
         Container.Bind<IGameMenuView>().FromInstance(gameMenuView).AsSingle();
 
@@ -46,7 +47,7 @@ public class GameInstaller : MonoInstaller
         Container.BindFactory<Board, Board.Factory>().AsSingle();
         Container.BindFactory<BoardView, BoardView.Factory>().FromInstance(boardView);
         Container.BindFactory<IBoard, IBoardView, BoardController, BoardController.Factory>().AsSingle();
-        Container.Bind<IBoardFactory>().To<BoardFactory>().AsSingle();
+        Container.BindInterfacesAndSelfTo<BoardFactory>().AsSingle();
 
         #endregion
         
@@ -55,7 +56,7 @@ public class GameInstaller : MonoInstaller
         Container.BindFactory<ISlot[], Sea, Sea.Factory>().AsSingle();
         Container.BindFactory<ISeaView, SeaView.Factory>().FromInstance(seaView);
         Container.BindFactory<ISea, ISeaView, SeaController, SeaController.Factory>().AsSingle();
-        Container.Bind<ISeaFactory>().To<SeaFactory>().AsSingle();
+        Container.BindInterfacesAndSelfTo<SeaFactory>().AsSingle();
 
         #endregion
         
@@ -66,7 +67,7 @@ public class GameInstaller : MonoInstaller
         Container.BindFactory<IShip, IShipView, ShipController, ShipController.Factory>().AsSingle();
         Container.BindFactory<IShipPlayer, ShipPlayerView, ShipPlayerController, ShipPlayerController.Factory>()
             .AsSingle();
-        Container.Bind<IShipFactory>().To<ShipFactory>().AsSingle();
+        Container.BindInterfacesAndSelfTo<ShipFactory>().AsSingle();
 
         #endregion
         
@@ -77,7 +78,7 @@ public class GameInstaller : MonoInstaller
             .FromInstance(Instantiate(eventsDeck));
         
         Container.BindFactory<IDeck, DeckController, DeckController.Factory>().WhenInjectedInto<IDeckFactory>();
-        Container.Bind<IDeckFactory>().To<DeckFactory>().AsSingle();
+        Container.BindInterfacesAndSelfTo<DeckFactory>().AsSingle();
         
         #endregion
         
@@ -88,7 +89,7 @@ public class GameInstaller : MonoInstaller
         Container.BindFactory<IPile, Transform, Bounds, SlotPlayer, SlotPlayer.Factory>();
         Container.BindFactory<ResourceType, IPile, Transform, Bounds, SlotStorage, SlotStorage.Factory>();
         Container.BindFactory<ISlot, ISlotView, SlotController, SlotController.Factory>().AsSingle();
-        Container.Bind<ISlotFactory>().To<SlotFactory>().AsSingle();
+        Container.BindInterfacesAndSelfTo<SlotFactory>().AsSingle();
         
         Container.BindFactory<ICardArrangement, int?, Pile, Pile.Factory>();
         
@@ -101,7 +102,7 @@ public class GameInstaller : MonoInstaller
         Container.BindFactory<CardResource, CardResourceView, CardResourceController, CardResourceController.Factory>().AsSingle();
         Container.BindFactory<CardPlayer, CardPlayerView, CardPlayerController, CardPlayerController.Factory>().AsSingle();
         Container.BindFactory<string, CardView, CardView.Factory>().FromFactory<PrefabResourceFactory<CardView>>();
-        Container.Bind<ICardFactory>().To<CardFactory>().AsSingle();
+        Container.BindInterfacesAndSelfTo<CardFactory>().AsSingle();
         
         Container.Bind(typeof(ICardPlayer), typeof(IPlayerStats)).FromInstance(Instantiate(playerCard));
 
@@ -109,7 +110,7 @@ public class GameInstaller : MonoInstaller
         
         #region Settings
 
-        Container.Bind<CardAnimationSettings>().FromInstance(cardAnimationSettings);
+        Container.Bind<CardAnimationSettings>().FromInstance(cardAnimationSettings).AsSingle();
 
         #endregion
     }
