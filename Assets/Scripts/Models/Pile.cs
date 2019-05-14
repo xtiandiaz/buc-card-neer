@@ -10,6 +10,7 @@ public enum PileInsertionMode
 
 public interface IPile
 {
+    int Count { get; }
     bool CanInsert { get; }
 
     ICard Peek();
@@ -37,6 +38,7 @@ public class Pile : IPile
         contents = extent.HasValue ? new List<ICard>(extent.Value) : new List<ICard>();
     }
 
+    public int Count => contents.Count;
     public bool CanInsert => !extent.HasValue || contents.Count < extent.Value;
 
     public ICard Peek()

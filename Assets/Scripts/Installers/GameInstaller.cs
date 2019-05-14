@@ -1,21 +1,22 @@
 ﻿using UnityEngine;
 using Zenject;
 
-public class Installer : MonoInstaller
+public class GameInstaller : MonoInstaller
 {    
     [Header("Models")]
     [SerializeField] private CardPlayer playerCard;
     
+    [Header("Viewport")]
+    [SerializeField] private GameCamera camera;
+    
     [Header("Views")]
+    [SerializeField] private GameMenuView gameMenuView;
     [SerializeField] private BoardView boardView;
     [SerializeField] private SeaView seaView;
     [SerializeField] private ShipPlayerView shipPlayerView;
 
     [Header("Decks")] 
     [SerializeField] private Deck eventsDeck;
-    
-    [Header("Viewport")]
-    [SerializeField] private BoardCamera camera;
 
     [Header("Settings")] 
     [SerializeField] private CardAnimationSettings cardAnimationSettings;
@@ -23,9 +24,19 @@ public class Installer : MonoInstaller
 
     public override void InstallBindings()
     {
+        #region Viewport
+
+        Container.BindInterfacesAndSelfTo<GameCamera>().FromInstance(camera).AsSingle();
+        camera.Initialize(boardLayoutSettings);
+
+        Container.Bind<Viewport>().FromMethod(() => camera.GetViewport(0));
+
+        #endregion
+        
         #region Game
 
         Container.BindInterfacesAndSelfTo<GameController>().AsSingle();
+        Container.Bind<IGameMenuView>().FromInstance(gameMenuView).AsSingle();
 
         #endregion
         
@@ -93,13 +104,6 @@ public class Installer : MonoInstaller
         Container.Bind<ICardFactory>().To<CardFactory>().AsSingle();
         
         Container.Bind(typeof(ICardPlayer), typeof(IPlayerStats)).FromInstance(Instantiate(playerCard));
-
-        #endregion
-        
-        #region Viewport
-
-        Container.BindInterfacesAndSelfTo<BoardCamera>().FromInstance(camera).AsSingle();
-        Container.Bind<Viewport>().FromFactory<ViewportFactory>().AsSingle();
 
         #endregion
         

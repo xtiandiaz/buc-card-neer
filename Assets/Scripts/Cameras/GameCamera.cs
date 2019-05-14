@@ -1,11 +1,15 @@
 ﻿using UnityEngine;
 using Zenject;
 
-public class BoardCamera : MonoBehaviour, IViewportProvider, IWorldPointProvider
+public interface IGameCamera
+{
+    void Initialize(BoardLayoutSettings withLayoutSettings);
+}
+
+public class GameCamera : MonoBehaviour, IGameCamera, IViewportProvider, IWorldPointProvider
 {   
     private new Camera camera;
     
-    [Inject]
     public void Initialize(BoardLayoutSettings withLayoutSettings)
     {
         camera = GetComponent<Camera>();

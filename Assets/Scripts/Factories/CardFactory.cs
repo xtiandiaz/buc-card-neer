@@ -66,7 +66,7 @@ public class CardFactory : ICardFactory
 
     private string GetViewResourcePath(CardType forCardType)
     {
-        const string basePath = "Prefabs/Card";
+        const string basePath = "CardViews/Card";
         
         switch (forCardType)
         {

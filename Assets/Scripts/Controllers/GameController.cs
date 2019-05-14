@@ -3,7 +3,11 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-public class GameController : IInitializable, IDisposable
+public interface IGameController
+{
+}
+
+public class GameController : IGameController, IInitializable, IDisposable
 {
     private readonly IBoardFactory boardFactory;
     private readonly ISeaFactory seaFactory;
@@ -35,8 +39,6 @@ public class GameController : IInitializable, IDisposable
 
     public void Initialize()
     {
-        Application.targetFrameRate = 50;
-        
         deckFactory.Create(deck);
         cardFactory.Create(cardPlayer);
         

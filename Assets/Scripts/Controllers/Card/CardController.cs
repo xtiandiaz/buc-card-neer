@@ -13,7 +13,7 @@ public abstract class CardController : ICardController, IDisposable
     
     private readonly ICard model;
     private readonly ICardView view;
-    private readonly BoardCamera boardCamera;
+    private readonly GameCamera gameCamera;
 
     [Inject] private Viewport viewport;
     [Inject] private BoardLayoutSettings layoutSettings;
@@ -100,6 +100,7 @@ public abstract class CardController : ICardController, IDisposable
     public void Dispose()
     {
         disposables?.Dispose();
+        destructionDisposable?.Dispose();
     }
 
     private void SetViewOrder()

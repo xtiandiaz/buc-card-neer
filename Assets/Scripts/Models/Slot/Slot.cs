@@ -21,6 +21,7 @@ public interface ISlot : ICardBond, ICardConsumer
 {
     bool IsVisible { get; set; }
     bool IsLocked { get; set; }
+    bool IsEmpty { get; }
     SlotType Type { get; }
     SlotEntryway Entryway { get; set; }
     Vector3 Position { get; }
@@ -28,6 +29,7 @@ public interface ISlot : ICardBond, ICardConsumer
     IObservable<ICard> WhenPicked { get; }
     IObservable<ICard> WhenLodged { get; }
     IObservable<Unit> WhenReleased { get; }
+    IObservable<Unit> WhenEmptied { get; }
     IObservable<bool> Highlighting { get; }
     IObservable<bool> Visibility { get; }
     IObservable<bool> Locking { get; }
@@ -55,6 +57,7 @@ public abstract class Slot : ISlot
     private readonly Subject<ICard> picking = new Subject<ICard>();
     private readonly Subject<ICard> lodging = new Subject<ICard>();
     private readonly Subject<Unit> releasing = new Subject<Unit>();
+    private readonly Subject<Unit> emptying = new Subject<Unit>();
     private readonly Subject<bool> highlighting = new Subject<bool>();
     private readonly ReactiveProperty<bool> isVisible = new ReactiveProperty<bool>(true);
     private readonly ReactiveProperty<bool> isLocked = new ReactiveProperty<bool>(false);
@@ -87,9 +90,12 @@ public abstract class Slot : ISlot
         set => isLocked.Value = value;
     }
 
+    public bool IsEmpty => pile.Count <= 0;
+
     public IObservable<ICard> WhenPicked => picking;
     public IObservable<ICard> WhenLodged => lodging;
     public IObservable<Unit> WhenReleased => releasing;
+    public IObservable<Unit> WhenEmptied => emptying;
     public IObservable<bool> Highlighting => highlighting.DistinctUntilChanged();
     public IObservable<bool> Visibility => isVisible;
     public IObservable<bool> Locking => isLocked;
@@ -144,6 +150,9 @@ public abstract class Slot : ISlot
     {
         if (pile.Remove(card))
             releasing.OnNext(Unit.Default);
+        
+        if (IsEmpty)
+            emptying.OnNext(Unit.Default);
     }
 
     public void Arrange()

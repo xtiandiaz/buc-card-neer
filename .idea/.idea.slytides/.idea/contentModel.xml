@@ -735,7 +735,7 @@
         </e>
         <e p="Scripts" t="Include">
           <e p="Cameras" t="Include">
-            <e p="BoardCamera.cs" t="Include" />
+            <e p="GameCamera.cs" t="Include" />
           </e>
           <e p="Components" t="Include">
             <e p="Card" t="Include">
@@ -751,6 +751,7 @@
             <e p="ICardConsumer.cs" t="Include" />
           </e>
           <e p="Controllers" t="Include">
+            <e p="AppController.cs" t="Include" />
             <e p="BoardController.cs" t="Include" />
             <e p="Card" t="Include">
               <e p="CardController.cs" t="Include" />
@@ -781,7 +782,10 @@
             <e p="SlotFactory.cs" t="Include" />
             <e p="ViewportFactory.cs" t="Include" />
           </e>
-          <e p="Installer.cs" t="Include" />
+          <e p="Installers" t="Include">
+            <e p="AppInstaller.cs" t="Include" />
+            <e p="GameInstaller.cs" t="Include" />
+          </e>
           <e p="Managers" t="Include">
             <e p="ICardProviderManager.cs" t="Include" />
           </e>
@@ -846,6 +850,10 @@
               <e p="CardResourceView.cs" t="Include" />
               <e p="CardStatView.cs" t="Include" />
               <e p="CardView.cs" t="Include" />
+            </e>
+            <e p="Menu" t="Include">
+              <e p="GameMenuView.cs" t="Include" />
+              <e p="MenuView.cs" t="Include" />
             </e>
             <e p="Ship" t="Include">
               <e p="ShipMerchantView.cs" t="Include" />

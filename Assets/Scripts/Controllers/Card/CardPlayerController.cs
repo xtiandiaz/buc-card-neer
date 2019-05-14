@@ -16,9 +16,10 @@ public class CardPlayerController : CardController
         this.view = view;
     }
 
-    [Inject]
-    private void Initialize()
+    protected override void Initialize()
     {
+        base.Initialize();
+        
         disposables.Add(model.Funds.Subscribe(value => view.CoinsValue = value));
     }
 }

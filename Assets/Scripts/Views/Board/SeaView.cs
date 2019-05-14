@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 using DG.Tweening;
@@ -24,15 +23,14 @@ public class SeaView : MonoBehaviour, ISeaView
     [SerializeField] private Transform slotWrapper;
     [SerializeField] private MeshRenderer background;
     [SerializeField] private float height;
-
-    [Inject] private Viewport viewport;
     private Material oceanMaterial;
     private Sequence projectionSequence;
 
     public float Height => height;
     public ISlotView[] Slots => slots;
 
-    private void Awake()
+    [Inject]
+    private void Initialize(Viewport viewport)
     {
         var viewportHeight = viewport.Size.y;
         var backgroundTransform = background.transform;
