@@ -10,12 +10,14 @@ public interface ICardController
 public abstract class CardController : ICardController, IDisposable
 {
     protected readonly CompositeDisposable disposables = new CompositeDisposable();
+    
     private readonly ICard model;
     private readonly ICardView view;
     private readonly BoardCamera boardCamera;
 
     [Inject] private Viewport viewport;
     [Inject] private BoardLayoutSettings layoutSettings;
+    private IDisposable destructionDisposable;
 
     protected CardController(ICard model, ICardView view)
     {
@@ -29,7 +31,7 @@ public abstract class CardController : ICardController, IDisposable
         view.FrontFace = model.FrontFace;
         view.BackFace = model.BackFace;
         view.Value = model.Value;
-        view.Position = Vector2.up * (viewport.Size.y + layoutSettings.CardSize.y) * 0.5f;
+        view.Position = Vector2.up * (viewport.Size.y + layoutSettings.CardSize.y) * 0.5f; // Dealing position
         
         disposables.Add(model.WhenVisibilityChanged.Subscribe(view.ToggleVisibility));
         disposables.Add(model.WhenFaceChanged.Subscribe(face => view.Flip(face, false)));
@@ -41,13 +43,7 @@ public abstract class CardController : ICardController, IDisposable
 
             if (value <= 0)
                 model.Destroy();
-        }));
-        
-        disposables.Add(model.WhenDestroyed.Subscribe(_ => 
-        {
-            view.Destroy();
-            Dispose();
-        }));
+        }));    
 
         #region Binding & Arrangement
 
@@ -84,6 +80,19 @@ public abstract class CardController : ICardController, IDisposable
         
         disposables.Add(model.WhenFogged.Subscribe(withColorByFactor =>
             view.Fog(withColorByFactor.Item1, withColorByFactor.Item2)));
+
+        #endregion
+
+        #region Destruction
+
+        destructionDisposable = model.WhenDestroyed
+            .Do(_ => disposables.Clear())
+            .ContinueWith(view.FadeAsObservable(0))
+            .Subscribe(_ => 
+            {
+                view.Destroy();
+                Dispose();
+            });
 
         #endregion
     }

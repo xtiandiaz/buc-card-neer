@@ -10,6 +10,7 @@ public class CardAnimationSettings : ScriptableObject
     [field: SerializeField] public float LiftDuration { get; private set; } = 0.2f;
     [field: SerializeField] public float ReturnToLocationWerePickedDuration { get; private set; } = 0.5f;
     [field: SerializeField] public float BoardingDelay { get; private set; }
+    [field: SerializeField] public float FadeDuration { get; private set; } = 0.5f;
     [field: SerializeField] public Ease InEase { get; private set; } = Ease.InQuart;
     [field: SerializeField] public Ease OutEase { get; private set; } = Ease.OutQuart;
 }

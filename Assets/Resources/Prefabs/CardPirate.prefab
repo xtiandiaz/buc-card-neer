@@ -478,10 +478,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1aef73f82fdb4f86893bc90e724a6085, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetRenderers:
-  - {fileID: 5816174328690173628}
+  targetTextRenderers:
+  - {fileID: 4736496701903705906}
+  - {fileID: 1047839365642814312}
+  targetSpriteRenderers:
   - {fileID: 5304362483095993766}
-  - {fileID: 3919300728649846905}
+  - {fileID: 5816174328690173628}
 --- !u!114 &2686640228326501932
 MonoBehaviour:
   m_ObjectHideFlags: 0

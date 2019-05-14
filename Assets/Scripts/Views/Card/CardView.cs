@@ -22,6 +22,7 @@ public interface ICardView
     void ToggleVisibility(bool toValue);
     void SetParent(Transform toTransform);
     void Fade(float toAlphaValue);
+    IObservable<Unit> FadeAsObservable(float toAlphaValue);
     void Tint(Color withColor, float byFactor);
     void Fog(Color withColor, float byFactor);
     void Destroy();
@@ -100,6 +101,7 @@ public class CardView : MonoBehaviour, ICardView
         shader = GetComponent<ICardShader>();
         
         animator.Initialize(animationSettings, contentWrapper);
+        shader.Initialize(animationSettings);
     }
 
     public void OnPicked()
@@ -121,6 +123,11 @@ public class CardView : MonoBehaviour, ICardView
     public void Fade(float toAlphaValue)
     {
         shader.Fade(toAlphaValue);
+    }
+    
+    public IObservable<Unit> FadeAsObservable(float toAlphaValue)
+    {
+        return shader.FadeAsObservable(toAlphaValue);
     }
 
     public void Tint(Color withColor, float byFactor)

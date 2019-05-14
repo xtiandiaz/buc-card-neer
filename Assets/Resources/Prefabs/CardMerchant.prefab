@@ -277,7 +277,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ec39bf6b00140d98ca6af2c5e91ea82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardValue: {fileID: 0}
+  valueLabel: {fileID: 0}
   contentWrapper: {fileID: 8420024804149596198}
   sortingGroup: {fileID: 4141944539622565620}
   frontFace: {fileID: 8222015627637077736}
@@ -294,6 +294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1aef73f82fdb4f86893bc90e724a6085, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetRenderers:
-  - {fileID: 5816174328690173628}
+  targetTextRenderers: []
+  targetSpriteRenderers:
   - {fileID: 5304362483095993766}
+  - {fileID: 5816174328690173628}

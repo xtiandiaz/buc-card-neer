@@ -55,7 +55,7 @@ public class SlotController : ISlotController, IDisposable
         #region Dragging
 
         disposables.Add(view.WhenDraggingStarted
-            .SkipWhile(_ => model.IsLocked)
+            .SkipWhile(_ => model.IsLocked || model.IsEmpty)
             .Take(1)
             .Select(_ => model.Pick())
             .ContinueWith(pickedCard => view.WhenDragged

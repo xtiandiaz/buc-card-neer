@@ -28,6 +28,7 @@ public class Installer : MonoInstaller
         Container.BindInterfacesAndSelfTo<GameController>().AsSingle();
 
         #endregion
+        
         #region Board
 
         Container.Bind<BoardLayoutSettings>().FromInstance(boardLayoutSettings).AsSingle();
@@ -37,6 +38,7 @@ public class Installer : MonoInstaller
         Container.Bind<IBoardFactory>().To<BoardFactory>().AsSingle();
 
         #endregion
+        
         #region Sea
 
         Container.BindFactory<ISlot[], Sea, Sea.Factory>().AsSingle();
@@ -45,6 +47,7 @@ public class Installer : MonoInstaller
         Container.Bind<ISeaFactory>().To<SeaFactory>().AsSingle();
 
         #endregion
+        
         #region Ships
 
         Container.BindFactory<ISlot[], ShipPlayer, ShipPlayer.Factory>().AsSingle();
@@ -55,6 +58,7 @@ public class Installer : MonoInstaller
         Container.Bind<IShipFactory>().To<ShipFactory>().AsSingle();
 
         #endregion
+        
         #region Decks & Providers
         
         Container.Bind(typeof(ICardProvider), typeof(IDeck))
@@ -65,6 +69,7 @@ public class Installer : MonoInstaller
         Container.Bind<IDeckFactory>().To<DeckFactory>().AsSingle();
         
         #endregion
+        
         #region Slots
         
         Container.BindFactory<IPile, Transform, Bounds, SlotBoarding, SlotBoarding.Factory>();
@@ -77,6 +82,7 @@ public class Installer : MonoInstaller
         Container.BindFactory<ICardArrangement, int?, Pile, Pile.Factory>();
         
         #endregion
+        
         #region Cards
 
         Container.BindFactory<CardPirate, CardPirateView, CardPirateController, CardPirateController.Factory>().AsSingle();
@@ -89,12 +95,14 @@ public class Installer : MonoInstaller
         Container.Bind(typeof(ICardPlayer), typeof(IPlayerStats)).FromInstance(Instantiate(playerCard));
 
         #endregion
+        
         #region Viewport
 
         Container.BindInterfacesAndSelfTo<BoardCamera>().FromInstance(camera).AsSingle();
         Container.Bind<Viewport>().FromFactory<ViewportFactory>().AsSingle();
 
         #endregion
+        
         #region Settings
 
         Container.Bind<CardAnimationSettings>().FromInstance(cardAnimationSettings);

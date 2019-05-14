@@ -4,7 +4,7 @@ using UnityEngine;
 public class SeaCardArrangement : CardArrangement
 {
     [SerializeField] private Color fogColor = Color.white;
-    [SerializeField] [Range(0, 1f)] private float fogDamping = 0.5f;
+    [SerializeField] [Range(0, 1f)] private float fogIntensity = 0.5f;
 
     protected override void Apply(ICard toCard, int withIndex, Vector3 atPosition, float andTimeStep)
     {
@@ -13,6 +13,6 @@ public class SeaCardArrangement : CardArrangement
         
         base.Apply(toCard, withIndex, arrangedPosition, andTimeStep);
         
-        toCard.Fog(fogColor, andTimeStep * fogDamping);
+        toCard.Fog(fogColor, andTimeStep * fogIntensity);
     }
 }
