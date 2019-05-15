@@ -3,85 +3,42 @@ using System.Linq;
 using UniRx;
 using Zenject;
 
-public interface IShipFactory : IFactory<ShipType, IShip>, IDisposable
+public interface IShipFactory : IFactory<IShip>, IDisposable
 {
 }
 
 public class ShipFactory : IShipFactory
 {
-    private readonly ShipPlayer.Factory modelFactoryPlayer;
-    private readonly ShipPlayerView.Factory viewFactoryPlayer;
+    private readonly Ship.Factory modelFactory;
+    private readonly ShipView.Factory viewFactory;
     private readonly ShipController.Factory controllerFactory;
-    private readonly ShipPlayerController.Factory controllerFactoryPlayer;
     private readonly ISlotFactory slotFactory;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private ShipFactory(
-        ShipPlayer.Factory modelFactoryPlayer,
-        ShipPlayerView.Factory viewFactoryPlayer,
+        Ship.Factory modelFactory,
+        ShipView.Factory viewFactory,
         ShipController.Factory controllerFactory,
-        ShipPlayerController.Factory controllerFactoryPlayer,
         ISlotFactory slotFactory
         )
     {
-        this.modelFactoryPlayer = modelFactoryPlayer;
-        this.viewFactoryPlayer = viewFactoryPlayer;        
+        this.modelFactory = modelFactory;
+        this.viewFactory = viewFactory;        
         this.controllerFactory = controllerFactory;
-        this.controllerFactoryPlayer = controllerFactoryPlayer;
         this.slotFactory = slotFactory;
     }
     
-    public IShip Create(ShipType forType)
+    public IShip Create()
     {
-        var view = CreateView(forType);
+        var view = viewFactory.Create();
         var slots = view.Slots.Select(slotFactory.Create).ToArray();
-        var model = CreateModel(forType, slots);
+        var model = modelFactory.Create(slots);
         
-        disposables.Add(CreateController(model, view));
+        disposables.Add(controllerFactory.Create(model, view));
 
         return model;
     }
-
-    private IShip CreateModel(ShipType forType, ISlot[] withSlots)
-    {
-        switch (forType)
-        {
-            case ShipType.Player:
-
-                return modelFactoryPlayer.Create(withSlots);
-                
-            default:
-                throw new ArgumentOutOfRangeException(nameof(forType), forType, null);
-        }
-    }
-
-    private IShipView CreateView(ShipType forType)
-    {
-        switch (forType)
-        {
-            case ShipType.Player:
-
-                return viewFactoryPlayer.Create();
-                
-            default:
-                throw new ArgumentOutOfRangeException(nameof(forType), forType, null);
-        }
-    }
-
-    private IShipController CreateController(IShip withModel, IShipView andView)
-    {
-        switch (withModel.Type)
-        {
-            case ShipType.Player:
-                
-                return controllerFactoryPlayer.Create((IShipPlayer) withModel, (ShipPlayerView) andView);
-
-            default:
-
-                return controllerFactory.Create(withModel, andView);
-        }
-    }
-
+    
     public void Dispose()
     {
         disposables?.Dispose();

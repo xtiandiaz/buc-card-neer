@@ -13,7 +13,7 @@ public class GameInstaller : MonoInstaller
     [SerializeField] private GameMenuView gameMenuView;
     [SerializeField] private BoardView boardView;
     [SerializeField] private SeaView seaView;
-    [SerializeField] private ShipPlayerView shipPlayerView;
+    [SerializeField] private ShipView shipView;
 
     [Header("Decks")] 
     [SerializeField] private Deck eventsDeck;
@@ -62,11 +62,9 @@ public class GameInstaller : MonoInstaller
         
         #region Ships
 
-        Container.BindFactory<ISlot[], ShipPlayer, ShipPlayer.Factory>().AsSingle();
-        Container.BindFactory<IShipPlayerView, ShipPlayerView.Factory>().FromInstance(shipPlayerView);
+        Container.BindFactory<ISlot[], Ship, Ship.Factory>().AsSingle();
+        Container.BindFactory<ShipView, ShipView.Factory>().FromInstance(shipView);
         Container.BindFactory<IShip, IShipView, ShipController, ShipController.Factory>().AsSingle();
-        Container.BindFactory<IShipPlayer, ShipPlayerView, ShipPlayerController, ShipPlayerController.Factory>()
-            .AsSingle();
         Container.BindInterfacesAndSelfTo<ShipFactory>().AsSingle();
 
         #endregion

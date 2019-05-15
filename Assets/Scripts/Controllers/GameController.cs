@@ -53,7 +53,7 @@ public class GameController : IGameController
 
         boardFactory.Create();
         seaFactory.Create();
-        shipFactory.Create(ShipType.Player);
+        shipFactory.Create();
 
         disposables.Add(menuView.ResetControl.OnClickAsObservable().Subscribe(_ => model.Reset()));
         disposables.Add(model.WhenReset.Subscribe(_ => appController.Reload()));

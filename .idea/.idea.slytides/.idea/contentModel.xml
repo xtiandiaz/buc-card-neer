@@ -763,10 +763,7 @@
             <e p="DeckController.cs" t="Include" />
             <e p="GameController.cs" t="Include" />
             <e p="SeaController.cs" t="Include" />
-            <e p="Ship" t="Include">
-              <e p="ShipController.cs" t="Include" />
-              <e p="ShipPlayerController.cs" t="Include" />
-            </e>
+            <e p="ShipController.cs" t="Include" />
             <e p="SlotController.cs" t="Include" />
           </e>
           <e p="Extensions" t="Include">
@@ -814,12 +811,7 @@
               <e p="CardAnimationSettings.cs" t="Include" />
               <e p="ShipAnimationSettings.cs" t="Include" />
             </e>
-            <e p="Ship" t="Include">
-              <e p="Ship.cs" t="Include" />
-              <e p="ShipMerchant.cs" t="Include" />
-              <e p="ShipPirate.cs" t="Include" />
-              <e p="ShipPlayer.cs" t="Include" />
-            </e>
+            <e p="Ship.cs" t="Include" />
             <e p="Slot" t="Include">
               <e p="Slot.cs" t="Include" />
               <e p="SlotBoarding.cs" t="Include" />
@@ -856,12 +848,7 @@
               <e p="GameMenuView.cs" t="Include" />
               <e p="MenuView.cs" t="Include" />
             </e>
-            <e p="Ship" t="Include">
-              <e p="ShipMerchantView.cs" t="Include" />
-              <e p="ShipPirateView.cs" t="Include" />
-              <e p="ShipPlayerView.cs" t="Include" />
-              <e p="ShipView.cs" t="Include" />
-            </e>
+            <e p="ShipView.cs" t="Include" />
             <e p="Slot" t="Include">
               <e p="SlotView.cs" t="Include" />
             </e>

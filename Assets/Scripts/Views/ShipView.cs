@@ -1,9 +1,8 @@
-using DG.Tweening;
 using UnityEngine;
+using Zenject;
 
 public interface IShipView
 {
-    ShipType Type { get; }
     float Height { get; }
     Vector3 Position { get; set; }
     ISlotView[] Slots { get; }
@@ -12,9 +11,12 @@ public interface IShipView
     void SetSail(Vector3 toLocalPosition);
 }
 
-public abstract class ShipView : MonoBehaviour, IShipView
+public class ShipView : MonoBehaviour, IShipView
 {
-    [SerializeField] private ShipType type;
+    public class Factory : PlaceholderFactory<ShipView>
+    {
+    }
+    
     [SerializeField] private float height;
     [SerializeField] private SlotView[] slots;
     [SerializeField] private ShipAnimationSettings animatorSettings;
@@ -22,8 +24,8 @@ public abstract class ShipView : MonoBehaviour, IShipView
     private Transform thisTransform;
     private IShipAnimator animator;
 
-    public ShipType Type => type;
     public float Height => height;
+    public ISlotView[] Slots => slots;
     
     public Vector3 Position
     {
@@ -34,8 +36,6 @@ public abstract class ShipView : MonoBehaviour, IShipView
             thisTransform.position = value;
         }
     }
-    
-    public ISlotView[] Slots => slots;
 
     private void Awake()
     {

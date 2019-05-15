@@ -3,19 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UniRx;
 using UnityEngine;
-
-public enum ShipType
-{
-    Player,
-    Pirate,
-    Merchant
-}
+using Zenject;
 
 public interface IShip
 {
-    ShipType Type { get; }
     ISlot[] Slots { get; }
     ISlot BoardingSlot { get; }
+    ISlot PlayerSlot { get; }
     IDictionary<ResourceType, ISlotStorage> Storage { get; }
     Vector3 Position { get; }
 
@@ -29,24 +23,28 @@ public interface IShip
     void Store(ICardResource card);
 }
 
-public abstract class Ship : IShip
+public class Ship : IShip
 {
+    public class Factory : PlaceholderFactory<ISlot[], Ship>
+    {   
+    }
+    
     private readonly Subject<Unit> docking = new Subject<Unit>();
     private readonly Subject<Unit> sailing = new Subject<Unit>();
     private ICardProvider cardProvider;
     
-    protected Ship(ShipType type, ISlot[] slots)
+    protected Ship(ISlot[] slots)
     {
-        Type = type;
         Slots = slots;
         BoardingSlot = Slots.FirstOrDefault(slot => slot.Type == SlotType.Boarding);
+        PlayerSlot = Slots.FirstOrDefault(slot => slot.Type == SlotType.Player);
         Storage = slots.Where(slot => slot.Type == SlotType.Storage).Cast<ISlotStorage>()
             .ToDictionary(resSlot => resSlot.ResourceMask, resSlot => resSlot);
     }
     
-    public ShipType Type { get; }
     public ISlot[] Slots { get; }
     public ISlot BoardingSlot { get; }
+    public ISlot PlayerSlot { get; }
     public IDictionary<ResourceType, ISlotStorage> Storage { get; }
     public Vector3 Position { get; private set; }
 

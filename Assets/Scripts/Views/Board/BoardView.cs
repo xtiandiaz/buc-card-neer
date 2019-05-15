@@ -12,12 +12,7 @@ public class BoardView : MonoBehaviour, IBoardView
     }
     
     [SerializeField] private SeaView sea;
-    [SerializeField] private ShipPlayerView shipPlayer;
-    
-    public Vector3 PirateDockingPosition { get; private set; }
-    public Vector3 MerchantDockingPosition { get; private set; }
-    public Vector3 PirateSailingDestination { get; private set; }
-    public Vector3 MerchantSailingDestination { get; private set; }
+    [SerializeField] private ShipView shipPlayer;
 
     [Inject]
     private void Initialize(Viewport viewport)
