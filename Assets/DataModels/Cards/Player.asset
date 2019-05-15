@@ -17,4 +17,4 @@ MonoBehaviour:
   frontFace: {fileID: 21300000, guid: 3b1beceaca5484967a72d8c2cd76f87c, type: 3}
   backFace: {fileID: 21300000, guid: e0c5ddc0092624ea18a4afd9dcb6599a, type: 3}
   coins:
-    value: 10
+    value: 0

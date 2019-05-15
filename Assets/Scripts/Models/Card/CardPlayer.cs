@@ -5,8 +5,8 @@ using Zenject;
 
 public interface ICardPlayer : ICard, IPlayerStats
 {
-    bool CanPurchase(IResourceCard resourceCard);
-    bool CanConsume(IResourceCard resourceCard);
+    bool CanPurchase(ICardResource resourceCard);
+    bool CanConsume(ICardResource resourceCard);
 }
 
 [CreateAssetMenu(fileName = "CardPlayer", menuName = "Game/Card/Player", order = 1)]
@@ -39,7 +39,7 @@ public class CardPlayer : Card, ICardPlayer, IPlayerStats
         if ((withOther.Type & (CardType.Pirate)) != 0)
             return true;
 
-        if (withOther is IResourceCard resourceCard)
+        if (withOther is ICardResource resourceCard)
             return CanPurchase(resourceCard) || CanConsume(resourceCard);
 
         return false;
@@ -55,7 +55,7 @@ public class CardPlayer : Card, ICardPlayer, IPlayerStats
             return;
         }
 
-        if (!(withOther is IResourceCard resourceCard))
+        if (!(withOther is ICardResource resourceCard))
             return;
 
         if (CanPurchase(resourceCard))
@@ -64,12 +64,12 @@ public class CardPlayer : Card, ICardPlayer, IPlayerStats
             resourceCard.Consume();
     }
 
-    public bool CanPurchase(IResourceCard resourceCard)
+    public bool CanPurchase(ICardResource resourceCard)
     {
         return resourceCard.IsPurchasable && resourceCard.Value <= Coins;
     }
 
-    public bool CanConsume(IResourceCard resourceCard)
+    public bool CanConsume(ICardResource resourceCard)
     {
         return resourceCard.IsConsumable;
     }

@@ -8,6 +8,7 @@ Shader "Sprites/OneSided"
         _Color ("Tint", Color) = (1,1,1,1)
         [PerRendererData] _FogColor("Fog Color", Color) = (1,1,1,1)
         [PerRendererData] _FogIntensity("Fog Intensity", Range(0, 1.0)) = 0
+        [HideInInspector] _Flip ("Flip", Vector) = (1,1,1,1)
         [HideInInspector] _RendererColor ("RendererColor", Color) = (1,1,1,1)
     }
 
@@ -39,6 +40,8 @@ Shader "Sprites/OneSided"
             UNITY_INSTANCING_BUFFER_START(PerDrawSprite)
                 // SpriteRenderer.Color while Non-Batched/Instanced.
                 UNITY_DEFINE_INSTANCED_PROP(fixed4, unity_SpriteRendererColorArray)
+                UNITY_DEFINE_INSTANCED_PROP(fixed2, unity_SpriteFlipArray)
+                
                 UNITY_DEFINE_INSTANCED_PROP(fixed4, _FogColor)
                 UNITY_DEFINE_INSTANCED_PROP(fixed, _FogIntensity)
             UNITY_INSTANCING_BUFFER_END(PerDrawSprite)
@@ -46,6 +49,7 @@ Shader "Sprites/OneSided"
             #define _RendererColor      UNITY_ACCESS_INSTANCED_PROP(PerDrawSprite, unity_SpriteRendererColorArray)
             #define _FogColorPDS        UNITY_ACCESS_INSTANCED_PROP(PerDrawSprite, _FogColor)
             #define _FogIntensityPDS    UNITY_ACCESS_INSTANCED_PROP(PerDrawSprite, _FogIntensity)
+            #define _Flip               UNITY_ACCESS_INSTANCED_PROP(PerDrawSprite, unity_SpriteFlipArray)
             // Material Color.
             fixed4 _Color;
             
@@ -65,6 +69,11 @@ Shader "Sprites/OneSided"
                 UNITY_VERTEX_OUTPUT_STEREO
             };
             
+            inline float4 UnityFlipSprite(in float3 pos, in fixed2 flip)
+            {
+                return float4(pos.xy * flip, pos.z, 1.0);
+            }
+            
             v2f SpriteVert(appdata_t IN)
             {
                 v2f OUT;
@@ -72,7 +81,7 @@ Shader "Sprites/OneSided"
                 UNITY_SETUP_INSTANCE_ID (IN);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(OUT);
             
-                OUT.vertex = IN.vertex;
+                OUT.vertex = UnityFlipSprite(IN.vertex, _Flip);
                 OUT.vertex = UnityObjectToClipPos(OUT.vertex);
                 OUT.texcoord = IN.texcoord;
                 OUT.color = IN.color * _Color * _RendererColor;
@@ -85,8 +94,8 @@ Shader "Sprites/OneSided"
             fixed4 SpriteFrag(v2f IN) : SV_Target
             {
                 fixed4 baseColor = tex2D(_MainTex, IN.texcoord) * IN.color;
-                fixed4 c = lerp(baseColor, _FogColorPDS, _FogIntensityPDS) * baseColor.a;
-                return c;
+                fixed4 c = lerp(baseColor, _FogColorPDS, _FogIntensityPDS);
+                return fixed4(c.r, c.g, c.b, 1.0) * baseColor.a;
             }               
             
             ENDCG

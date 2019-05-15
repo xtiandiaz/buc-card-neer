@@ -807,6 +807,7 @@
             <e p="Direction.cs" t="Include" />
             <e p="Game.cs" t="Include" />
             <e p="Pile.cs" t="Include" />
+            <e p="ResourceFixation.cs" t="Include" />
             <e p="Sea.cs" t="Include" />
             <e p="Settings" t="Include">
               <e p="BoardLayoutSettings.cs" t="Include" />

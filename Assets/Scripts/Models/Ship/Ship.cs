@@ -22,17 +22,17 @@ public interface IShip
     IObservable<Unit> WhenDocked { get; }
     IObservable<Unit> WhenSailed { get; }
     IObservable<ICard> WhenBoarded { get; }
+    IObservable<ICardResource> WhenBoardedResource { get; }
     
     void Dock(Vector3 atPosition);
     void SetSail(Vector3 toPosition);
-    void Store(IResourceCard card);
+    void Store(ICardResource card);
 }
 
 public abstract class Ship : IShip
 {
     private readonly Subject<Unit> docking = new Subject<Unit>();
     private readonly Subject<Unit> sailing = new Subject<Unit>();
-    private readonly Subject<ICard> consumption = new Subject<ICard>();
     private ICardProvider cardProvider;
     
     protected Ship(ShipType type, ISlot[] slots)
@@ -53,7 +53,8 @@ public abstract class Ship : IShip
     public IObservable<Unit> WhenDocked => docking; 
     public IObservable<Unit> WhenSailed => sailing;
     public IObservable<ICard> WhenBoarded => BoardingSlot.WhenLodged;
-    public IObservable<ICard> WhenConsumed => consumption;
+    public IObservable<ICardResource> WhenBoardedResource =>
+        WhenBoarded.Where(c => (c.Type & CardType.Resource) != 0).Cast<ICard, ICardResource>();
 
     public void Dock(Vector3 atPosition)
     {
@@ -69,7 +70,7 @@ public abstract class Ship : IShip
         sailing.OnNext(Unit.Default);
     }
 
-    public void Store(IResourceCard card)
+    public void Store(ICardResource card)
     {
         if (!Storage.ContainsKey(card.ResourceType))
         {

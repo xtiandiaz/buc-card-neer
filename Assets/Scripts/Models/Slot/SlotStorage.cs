@@ -27,7 +27,7 @@ public class SlotStorage : Slot, ISlotStorage
 
     protected override bool CanLodge(ICard card)
     {
-        if (!(card is IResourceCard resourceCard))
+        if (!(card is ICardResource resourceCard))
             return false;
 
         if ((ResourceMask & resourceCard.ResourceType) == 0)

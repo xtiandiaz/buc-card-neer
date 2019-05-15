@@ -7,12 +7,20 @@ public class CardPirate : Card
 
     public override bool CanMatch(ICard withOther, ISlot fromSlot)
     {
-        return (withOther.Type & CardType.WeaponArtillery) != 0;
+        if (!(withOther is ICardResource resourceCard) || !resourceCard.IsBoarded)
+            return false;
+
+        if (IsBoarded)
+        {
+            return (resourceCard.ResourceType & ResourceType.WeaponMelee) != 0;
+        }
+        
+        return (resourceCard.ResourceType & ResourceType.WeaponArtillery) != 0;
     }
 
     public override void Match(ICard withOther)
     {
-        if ((withOther.Type & CardType.WeaponArtillery) != 0)
+        if (withOther is ICardResource resourceCard && (resourceCard.ResourceType & ResourceType.Weapon) != 0)
         {
             Value -= withOther.Value;
             withOther.Destroy();

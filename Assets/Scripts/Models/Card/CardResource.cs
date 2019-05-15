@@ -13,31 +13,35 @@ public enum ResourceType
     Gem                 = CardType.Gem,
     WeaponArtillery     = CardType.WeaponArtillery,
     WeaponMelee         = CardType.WeaponMelee,
-    Money               = CardType.Money
+    Money               = CardType.Money,
+    
+    Weapon              = WeaponMelee | WeaponArtillery
 }
 
-public interface IResourceCard : ICard
+public interface ICardResource : ICard
 {
     ResourceType ResourceType { get; }
     Sprite Item { get; }
     ISuit Suit { get; }
-    bool IsLoot { get; }
-    bool IsTreasure { get; }
-    bool IsPurchase { get; }
+    int LockValue { get; }
+    bool WasPurchased { get; }
     bool IsPurchasable { get; }
+    bool IsLocked { get; }
     bool IsConsumable { get; }
     
+    IObservable<int> LockValueAsObservable { get; }
+    IObservable<Unit> WhenUnlocked { get; }
     IObservable<Unit> WhenPurchased { get; } 
     IObservable<Unit> WhenSold { get; } 
     IObservable<Unit> WhenConsumed { get; } 
 
     bool Purchase();
-    bool Sell();
+    bool Sell(int byFactor);
     bool Consume();
 }
 
 [CreateAssetMenu(fileName = "CardResource", menuName = "Game/Card/Resource", order = 1)]
-public class CardResource : Card, IResourceCard
+public class CardResource : Card, ICardResource
 {
     private readonly Subject<Unit> purchasing = new Subject<Unit>();
     private readonly Subject<Unit> selling = new Subject<Unit>();
@@ -45,20 +49,21 @@ public class CardResource : Card, IResourceCard
 
     [SerializeField] private Sprite item;
     [SerializeField] private Suit suit;
-    [SerializeField] private Suit isLoot;
-    [SerializeField] private bool isTreasure;
+    [SerializeField] private IntReactiveProperty lockValue = new IntReactiveProperty();
     private IPlayerStats playerStats;
 
     public override CardType Type => (CardType) ResourceType;
     public ResourceType ResourceType => suit.ResourceType;
     public Sprite Item => item;
     public ISuit Suit => suit;
-    public bool IsLoot => isLoot;
-    public bool IsTreasure => isTreasure;
-    public bool IsPurchase { get; private set; }
-    public bool IsPurchasable => !IsLoot && !IsTreasure && !IsPurchase;
-    public bool IsConsumable => (!IsPurchasable || IsPurchase) && (Type & CardType.Food) != 0;
+    public int LockValue => lockValue.Value;
+    public bool WasPurchased { get; private set; }
+    public bool IsPurchasable => !WasPurchased && !IsLocked;
+    public bool IsLocked => LockValue > 0;
+    public bool IsConsumable => !IsLocked && (Type & CardType.Food) != 0;
 
+    public IObservable<int> LockValueAsObservable => lockValue;
+    public IObservable<Unit> WhenUnlocked => lockValue.Where(x => x <= 0).Take(1).AsSingleUnitObservable();
     public IObservable<Unit> WhenPurchased => purchasing;
     public IObservable<Unit> WhenSold => selling;
     public IObservable<Unit> WhenConsumed => consumption;
@@ -84,11 +89,7 @@ public class CardResource : Card, IResourceCard
         if (!IsPurchasable)
             return false;
         
-        if (playerStats.Coins < Value)
-            return false;
-        
-        playerStats.Coins -= Value;
-        IsPurchase = true;
+        WasPurchased = true;
         
         purchasing.OnNext(Unit.Default);
         purchasing.OnCompleted();
@@ -96,9 +97,9 @@ public class CardResource : Card, IResourceCard
         return true;
     }
 
-    public bool Sell()
+    public bool Sell(int byFactor)
     {
-        playerStats.Coins += Value;
+        playerStats.Coins += Value * byFactor;
         
         Destroy();
         

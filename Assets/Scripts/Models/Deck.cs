@@ -8,9 +8,7 @@ using Object = UnityEngine.Object;
 
 public enum DeckType
 {
-    Events,
-    Resources, 
-    Players
+    Events
 }
 
 public interface IDeck : ICardProvider

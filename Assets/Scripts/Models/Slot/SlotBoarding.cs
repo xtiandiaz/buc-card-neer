@@ -11,7 +11,7 @@ public class SlotBoarding : Slot
         : base(SlotType.Boarding, pile, transform, bounds)
     {
     }
-
+    
     protected override bool CanLodge(ISlot fromSlot)
     {
         return fromSlot.Type == SlotType.Event;
@@ -20,5 +20,12 @@ public class SlotBoarding : Slot
     protected override bool CanLodge(ICard card)
     {
         return (card.Type & (CardType.Resource | CardType.Pirate | CardType.Merchant)) != 0;
+    }
+
+    protected override void OnLodged(ICard card)
+    {
+        base.OnLodged(card);
+        
+        card.Board();
     }
 }

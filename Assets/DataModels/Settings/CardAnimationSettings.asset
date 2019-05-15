@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: CardAnimationSettings
   m_EditorClassIdentifier: Assembly-CSharp::CardAnimationSettings
-  <MoveDuration>k__BackingField: 0.4
+  <MoveDuration>k__BackingField: 0.3
   <FlipDuration>k__BackingField: 0.4
   <LiftDepth>k__BackingField: 1.25
   <LiftDuration>k__BackingField: 0.2
-  <ReturnToLocationWerePickedDuration>k__BackingField: 0.5
-  <BoardingDelay>k__BackingField: 0.65
+  <ReturnToLocationWerePickedDuration>k__BackingField: 0.3
+  <BoardingDelay>k__BackingField: 0.5
+  <FadeDuration>k__BackingField: 0.5
   <InEase>k__BackingField: 11
   <OutEase>k__BackingField: 12

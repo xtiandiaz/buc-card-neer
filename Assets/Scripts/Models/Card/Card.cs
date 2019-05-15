@@ -32,20 +32,20 @@ public interface ICard
     string Name { get; }
     CardType Type { get; }
     Vector3 LocalPosition { get; }
-    bool IsVisible { get; set; }
     Sprite FrontFace { get; }
     Sprite BackFace { get; }
     ICardBond Bond { get; }
+    bool IsBoarded { get; }
     
-    IObservable<int> Worth { get; }
+    IObservable<int> ValueAsObservable { get; }
     IObservable<Transform> WhenBound { get; }
+    IObservable<Unit> WhenBoarded { get; }
     IObservable<Unit> WhenArranged { get; }
     IObservable<Unit> WhenPicked { get; }
     IObservable<Unit> WhenDragged { get; }
     IObservable<Unit> WhenDropped { get; }
     IObservable<CardFace> WhenFaceChanged { get; }
     IObservable<CardFace> WhenFlipped { get; }
-    IObservable<bool> WhenVisibilityChanged { get; }
     IObservable<float> WhenFaded { get; }
     IObservable<(Color, float)> WhenTinted { get; }
     IObservable<(Color, float)> WhenFogged { get; }
@@ -54,6 +54,7 @@ public interface ICard
     bool CanMatch(ICard withOther, ISlot fromSlot);
     void Match(ICard withOther);
     void Bind(ICardBond withBond);
+    void Board();
     void Pick();
     void Drag(Vector3 byDeltaPosition);
     void Drop();
@@ -69,8 +70,8 @@ public abstract class Card : ScriptableObject, ICard
 {
     [SerializeField] protected IntReactiveProperty value = new IntReactiveProperty();
     
-    private readonly ReactiveProperty<bool> isVisible = new ReactiveProperty<bool>(true);
     private readonly Subject<Transform> binding = new Subject<Transform>();
+    private readonly Subject<Unit> boarding = new Subject<Unit>();
     private readonly Subject<Unit> arranging = new Subject<Unit>();
     private readonly Subject<Unit> picking = new Subject<Unit>();
     private readonly Subject<Unit> dragging = new Subject<Unit>();
@@ -94,6 +95,7 @@ public abstract class Card : ScriptableObject, ICard
     public Sprite BackFace => backFace;
     public Vector3 LocalPosition { get; private set; }
     public ICardBond Bond { get; private set; }
+    public bool IsBoarded { get; private set; }
 
     public int Value
     {
@@ -111,21 +113,15 @@ public abstract class Card : ScriptableObject, ICard
         }
     }
 
-    public bool IsVisible
-    {
-        get => isVisible.Value;
-        set => isVisible.Value = value;
-    }
-
-    public IObservable<int> Worth => value;
+    public IObservable<int> ValueAsObservable => value;
     public IObservable<Transform> WhenBound => binding;
+    public IObservable<Unit> WhenBoarded => boarding;
     public IObservable<Unit> WhenArranged => arranging;
     public IObservable<Unit> WhenPicked => picking;
     public IObservable<Unit> WhenDragged => dragging;
     public IObservable<Unit> WhenDropped => dropping;
     public IObservable<CardFace> WhenFaceChanged => facing.DistinctUntilChanged();
     public IObservable<CardFace> WhenFlipped => flipping.DistinctUntilChanged();
-    public IObservable<bool> WhenVisibilityChanged => isVisible;
     public IObservable<float> WhenFaded => fading;
     public IObservable<(Color, float)> WhenTinted => tinting;
     public IObservable<(Color, float)> WhenFogged => fogging;
@@ -144,6 +140,13 @@ public abstract class Card : ScriptableObject, ICard
         Bond = withBond;
 
         binding.OnNext(withBond.TransformBond);
+    }
+
+    public void Board()
+    {
+        IsBoarded = true;
+        
+        boarding.OnNext(Unit.Default);
     }
 
     public void Pick()

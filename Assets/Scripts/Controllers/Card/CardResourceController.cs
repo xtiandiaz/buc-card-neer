@@ -1,4 +1,5 @@
 using Zenject;
+using UniRx;
 
 public class CardResourceController : CardController
 {
@@ -6,10 +7,10 @@ public class CardResourceController : CardController
     {
     }
     
-    private readonly CardResource model;
-    private readonly CardResourceView view;
+    private readonly ICardResource model;
+    private readonly ICardResourceView view;
     
-    public CardResourceController(CardResource model, CardResourceView view) : base(model, view)
+    public CardResourceController(ICardResource model, ICardResourceView view) : base(model, view)
     {
         this.model = model;
         this.view = view;
@@ -21,5 +22,16 @@ public class CardResourceController : CardController
 
         view.Suit = model.Suit;
         view.Item = model.Item;
+        
+        disposables.Add(model.LockValueAsObservable.Subscribe(lockValue =>
+        {
+            view.LockValue = lockValue;
+            view.ToggleLock(lockValue > 0);
+        }));
+        
+        // For now, Resources are automatically purchased when boarded and unlocked:
+        disposables.Add(model.WhenBoarded
+            .SelectMany(_ => model.WhenUnlocked)
+            .Subscribe(_ => model.Purchase()));
     }
 }

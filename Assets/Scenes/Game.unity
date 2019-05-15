@@ -2966,13 +2966,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72b27c5411ade4ab08936664752cef86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  decks:
-  - {fileID: 11400000, guid: 21c0d3a12db394182b1bc2861f9571c9, type: 2}
-  - {fileID: 11400000, guid: c855d934f6dbe48dd98dec7ed328d3b3, type: 2}
   sea: {fileID: 1851111359}
   shipPlayer: {fileID: 1586207629}
-  shipMerchant: {fileID: 1799396279}
-  shipPirate: {fileID: 326454028}
 --- !u!1 &2038039557
 GameObject:
   m_ObjectHideFlags: 0
@@ -3097,7 +3092,7 @@ PrefabInstance:
         type: 3}
       propertyPath: arrangement
       value: 
-      objectReference: {fileID: 11400000, guid: 50f085ab641aa426792e773c3c30d79e,
+      objectReference: {fileID: 11400000, guid: abf818a7cdd644848a362b3e4c9abcf2,
         type: 2}
     - target: {fileID: 4629558531078662713, guid: 2fbe541c3947b49e9898dc04ca06b96e,
         type: 3}

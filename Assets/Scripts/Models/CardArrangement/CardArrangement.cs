@@ -19,7 +19,7 @@ public class CardArrangement : ScriptableObject, ICardArrangement
         float total = fromTotalCount ?? toCards.Count;
 
         for (var i = countM1; i >= 0; i--)
-            Apply(toCards[i], i, Vector3.zero, i / total);
+            Apply(toCards[i], i, offset * i, i / total);
     }
 
     protected virtual void Apply(ICard toCard, int withIndex, Vector3 atPosition, float andTimeStep)

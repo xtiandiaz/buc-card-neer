@@ -30,20 +30,18 @@ public abstract class CardController : ICardController
     {
         view.FrontFace = model.FrontFace;
         view.BackFace = model.BackFace;
-        view.Value = model.Value;
         view.Position = Vector2.up * (viewport.Size.y + layoutSettings.CardSize.y) * 0.5f; // Dealing position
-        
-        disposables.Add(model.WhenVisibilityChanged.Subscribe(view.ToggleVisibility));
-        disposables.Add(model.WhenFaceChanged.Subscribe(face => view.Flip(face, false)));
-        disposables.Add(model.WhenFlipped.Subscribe(face => view.Flip(face, true)));
-        
-        disposables.Add(model.Worth.Subscribe(value => 
+
+        disposables.Add(model.ValueAsObservable.Subscribe(value =>
         {
             view.Value = value;
 
             if (value <= 0)
                 model.Destroy();
-        }));    
+        }));
+        
+        disposables.Add(model.WhenFaceChanged.Subscribe(face => view.Flip(face, false)));
+        disposables.Add(model.WhenFlipped.Subscribe(face => view.Flip(face, true)));   
 
         #region Binding & Arrangement
 
@@ -51,7 +49,8 @@ public abstract class CardController : ICardController
         
         disposables.Add(model.WhenArranged
             .SelectMany(_ => view.MoveLocalAsObservable(model.LocalPosition))
-            .Subscribe(_ => SetViewOrder()));
+            .Do(_ => SetViewOrder())
+            .Subscribe());
 
         #endregion
 

@@ -140,10 +140,8 @@ public abstract class Slot : ISlot
             Debug.LogError($"[Slot] Couldn't insert {card} in Pile.");
             return;
         }
-        
-        card.Bind(this);
-        
-        lodging.OnNext(card);
+
+        OnLodged(card);
     }
 
     public void Release(ICard card)
@@ -169,10 +167,6 @@ public abstract class Slot : ISlot
     {
         return bounds.Contains(worldPoint);
     }
-
-    protected abstract bool CanLodge(ICard card);
-    
-    protected abstract bool CanLodge(ISlot fromSlot);
     
     public void SetProvider(ICardProvider provider)
     {
@@ -185,5 +179,16 @@ public abstract class Slot : ISlot
             return;
 
         Lodge(cardProvider.Provide());
+    }
+    
+    protected abstract bool CanLodge(ICard card);
+         
+    protected abstract bool CanLodge(ISlot fromSlot);
+
+    protected virtual void OnLodged(ICard card)
+    {
+        card.Bind(this);
+        
+        lodging.OnNext(card);
     }
 }

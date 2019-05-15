@@ -34,10 +34,12 @@ public class ShipPlayerController : ShipController
         
         model.PlayerSlot?.Lodge(playerCard);
             
-        disposables.Add(model.WhenBoarded
+        disposables.Add(model.WhenBoardedResource
             .Delay(TimeSpan.FromSeconds(cardAnimationSettings.BoardingDelay))
-            .Where(card => (card.Type & CardType.Resource) != 0)
-            .Do(card => model.Store((IResourceCard) card))
+            .SelectMany(resCard => resCard.WasPurchased 
+                    ? Observable.Return(resCard) 
+                    : resCard.WhenPurchased.Select(_ => resCard))
+            .Do(resCard => model.Store(resCard))
             .Subscribe());
     }
 }
