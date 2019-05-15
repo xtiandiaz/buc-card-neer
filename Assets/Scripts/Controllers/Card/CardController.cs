@@ -49,7 +49,7 @@ public abstract class CardController : ICardController
         
         disposables.Add(model.WhenArranged
             .SelectMany(_ => view.MoveLocalAsObservable(model.LocalPosition))
-            .Do(_ => SetViewOrder())
+            .Do(_ => view.SortingOrder = -model.Index)
             .Subscribe());
 
         #endregion
@@ -66,7 +66,7 @@ public abstract class CardController : ICardController
         
         disposables.Add(model.WhenDropped
             .SelectMany(_ => view.OnDropped())
-            .Subscribe(_ => SetViewOrder()));
+            .Subscribe());
 
         #endregion
 
@@ -100,11 +100,6 @@ public abstract class CardController : ICardController
     {
         disposables?.Dispose();
         destructionDisposable?.Dispose();
-    }
-
-    private void SetViewOrder()
-    {
-        view.SortingOrder = -model.Index;
     }
 }
 
