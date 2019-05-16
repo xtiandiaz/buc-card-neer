@@ -70,12 +70,13 @@ public class Ship : IShip
 
     public void Store(ICardResource card)
     {
-        if (!Storage.ContainsKey(card.ResourceType))
+        var slot = Storage.FirstOrDefault(s => (s.Key & card.ResourceType) != 0);
+        if (slot.Value == null)
         {
             Debug.LogError($"[Ship] There's no storage Slot for Card with Resource Type {card.ResourceType}");
             return;
         }
         
-        Storage[card.ResourceType].Lodge(card);
+       slot.Value.Lodge(card);
     }
 }

@@ -788,9 +788,11 @@
           <e p="Models" t="Include">
             <e p="Board" t="Include">
               <e p="Board.cs" t="Include" />
+              <e p="BoardLayoutSettings.cs" t="Include" />
             </e>
             <e p="Card" t="Include">
               <e p="Card.cs" t="Include" />
+              <e p="CardAnimationSettings.cs" t="Include" />
               <e p="CardMerchant.cs" t="Include" />
               <e p="CardPirate.cs" t="Include" />
               <e p="CardPlayer.cs" t="Include" />
@@ -806,17 +808,16 @@
             <e p="Pile.cs" t="Include" />
             <e p="ResourceFixation.cs" t="Include" />
             <e p="Sea.cs" t="Include" />
-            <e p="Settings" t="Include">
-              <e p="BoardLayoutSettings.cs" t="Include" />
-              <e p="CardAnimationSettings.cs" t="Include" />
+            <e p="Ship" t="Include">
+              <e p="Ship.cs" t="Include" />
               <e p="ShipAnimationSettings.cs" t="Include" />
             </e>
-            <e p="Ship.cs" t="Include" />
             <e p="Slot" t="Include">
               <e p="Slot.cs" t="Include" />
               <e p="SlotBoarding.cs" t="Include" />
               <e p="SlotEvent.cs" t="Include" />
               <e p="SlotPlayer.cs" t="Include" />
+              <e p="SlotSettings.cs" t="Include" />
               <e p="SlotStorage.cs" t="Include" />
             </e>
             <e p="Stats" t="Include">

@@ -3,15 +3,15 @@ using Zenject;
 
 public class SlotBoarding : Slot
 {
-    public class Factory : PlaceholderFactory<IPile, Transform, Bounds, SlotBoarding>
+    public class Factory : PlaceholderFactory<IPile, ISlotSettings, Bounds, Transform, SlotBoarding>
     {
     }
 
-    public SlotBoarding(IPile pile, Transform transform, Bounds bounds) 
-        : base(SlotType.Boarding, pile, transform, bounds)
+    public SlotBoarding(IPile pile, ISlotSettings settings, Bounds bounds, Transform transformBond) 
+        : base(pile, settings, bounds, transformBond)
     {
     }
-    
+
     protected override bool CanLodge(ISlot fromSlot)
     {
         return fromSlot.Type == SlotType.Event;

@@ -3,12 +3,12 @@ using Zenject;
 
 public class SlotEvent : Slot
 {
-    public class Factory : PlaceholderFactory<IPile, Transform, Bounds, SlotEvent>
+    public class Factory : PlaceholderFactory<IPile, ISlotSettings, Bounds, Transform, SlotEvent>
     {
     }
 
-    public SlotEvent(IPile pile, Transform transform, Bounds bounds) 
-        : base(SlotType.Event, pile, transform, bounds)
+    public SlotEvent(IPile pile, ISlotSettings settings, Bounds bounds, Transform transformBond) 
+        : base(pile, settings, bounds, transformBond)
     {
     }
 

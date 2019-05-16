@@ -15,6 +15,7 @@ public enum ResourceType
     WeaponMelee         = CardType.WeaponMelee,
     Money               = CardType.Money,
     
+    Item                = Food | Artifact | Gem, 
     Weapon              = WeaponMelee | WeaponArtillery
 }
 

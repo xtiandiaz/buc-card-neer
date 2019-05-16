@@ -29,12 +29,8 @@ public class SlotController : ISlotController
 
     [Inject]
     public void Initialize()
-    {
-        model.Entryway = view.Entryway;
-        model.IsLocked = view.ShouldStartLocked;
-        
-        disposables.Add(model.Highlighting.Subscribe(view.ToggleHighlight));
-        disposables.Add(model.Visibility.Subscribe(view.ToggleVisibility));
+    {        
+        disposables.Add(model.WhenToggledHighlighting.Subscribe(view.ToggleHighlight));
         
         #region Picking
 

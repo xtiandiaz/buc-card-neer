@@ -5,12 +5,7 @@ using Zenject;
 
 public interface ISlotView
 {
-    uint Capacity { get; }
-    bool ShouldStartLocked { get; }
-    SlotType Type { get; }
-    SlotEntryway Entryway { get; }
-    ResourceType ResourceMask { get; }
-    ICardArrangement CardArrangement { get; }
+    ISlotSettings Settings { get; }
     Transform Transform { get; }
     Bounds Bounds { get; }
     
@@ -24,25 +19,15 @@ public interface ISlotView
 
 public class SlotView : MonoBehaviour, ISlotView
 {
+    [SerializeField] private SlotSettings settings;
     [SerializeField] private SpriteRenderer faceRenderer;
-    [SerializeField] private uint capacity;
-    [SerializeField] private SlotType type;
-    [SerializeField] private SlotEntryway entryway;
-    [SerializeField] private bool shouldStartLocked;
-    [SerializeField] private ResourceType resourceMask;
-    [SerializeField] private CardArrangement arrangement;
     [SerializeField] private DraggingObserver draggingObserver;
 
     private Color defaultFaceColor;
     private BoardLayoutSettings layoutSettings;
     private IWorldPointProvider worldPointProvider;
 
-    public uint Capacity => capacity;
-    public SlotType Type => type;
-    public SlotEntryway Entryway => entryway;
-    public bool ShouldStartLocked => shouldStartLocked;
-    public ResourceType ResourceMask => resourceMask;
-    public ICardArrangement CardArrangement => arrangement;
+    public ISlotSettings Settings => settings;
     public Transform Transform => transform;
     public Bounds Bounds => faceRenderer.bounds;
     
@@ -71,7 +56,7 @@ public class SlotView : MonoBehaviour, ISlotView
     {
         if (on)
         {
-            faceRenderer.color = Color.green;
+            faceRenderer.color = settings.HighlightColor;
             faceRenderer.sortingLayerName = layoutSettings.CardSortingLayerName;
             faceRenderer.sortingOrder = layoutSettings.FloatingCardSortingOrder - 1;
         }

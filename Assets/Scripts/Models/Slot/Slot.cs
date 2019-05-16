@@ -19,19 +19,16 @@ public enum SlotEntryway
 
 public interface ISlot : ICardBond, ICardConsumer
 {
-    bool IsVisible { get; set; }
-    bool IsLocked { get; set; }
+    bool IsLocked { get; }
     bool IsEmpty { get; }
     SlotType Type { get; }
-    SlotEntryway Entryway { get; set; }
     Vector3 Position { get; }
 
     IObservable<ICard> WhenPicked { get; }
     IObservable<ICard> WhenLodged { get; }
     IObservable<Unit> WhenReleased { get; }
     IObservable<Unit> WhenEmptied { get; }
-    IObservable<bool> Highlighting { get; }
-    IObservable<bool> Visibility { get; }
+    IObservable<bool> WhenToggledHighlighting { get; }
     IObservable<bool> Locking { get; }
 
     ICard Pick();
@@ -53,51 +50,44 @@ public interface ICardBond
 
 public abstract class Slot : ISlot
 {
+    protected readonly ISlotSettings settings;
+    
     private readonly IPile pile;
     private readonly Subject<ICard> picking = new Subject<ICard>();
     private readonly Subject<ICard> lodging = new Subject<ICard>();
     private readonly Subject<Unit> releasing = new Subject<Unit>();
     private readonly Subject<Unit> emptying = new Subject<Unit>();
     private readonly Subject<bool> highlighting = new Subject<bool>();
-    private readonly ReactiveProperty<bool> isVisible = new ReactiveProperty<bool>(true);
     private readonly ReactiveProperty<bool> isLocked = new ReactiveProperty<bool>(false);
     private Bounds bounds;
     private ICardProvider cardProvider;
     
-    protected Slot(SlotType type, IPile pile, Transform transform, Bounds bounds)
+    protected Slot(IPile pile, ISlotSettings settings, Bounds bounds, Transform transformBond)
     {
         this.pile = pile;
+        this.settings = settings;
         this.bounds = bounds;
         
-        Type = type;
-        TransformBond = transform;
+        TransformBond = transformBond;
+        IsLocked = settings.ShouldStartLocked;
     }
 
-    public SlotType Type { get; }
-    public SlotEntryway Entryway { get; set; }
+    public SlotType Type => settings.Type;
     public Vector3 Position => TransformBond.position;
     public Transform TransformBond { get; }
-    
-    public bool IsVisible
-    {
-        get => isVisible.Value;
-        set => isVisible.Value = value;
-    }
+    public bool IsEmpty => pile.Count <= 0;
     
     public bool IsLocked
     {
         get => isLocked.Value;
-        set => isLocked.Value = value;
+        private set => isLocked.Value = value;
     }
-
-    public bool IsEmpty => pile.Count <= 0;
 
     public IObservable<ICard> WhenPicked => picking;
     public IObservable<ICard> WhenLodged => lodging;
     public IObservable<Unit> WhenReleased => releasing;
     public IObservable<Unit> WhenEmptied => emptying;
-    public IObservable<bool> Highlighting => highlighting.DistinctUntilChanged();
-    public IObservable<bool> Visibility => isVisible;
+    public IObservable<bool> WhenToggledHighlighting => highlighting.DistinctUntilChanged();
     public IObservable<bool> Locking => isLocked;
 
     public ICard Pick()
@@ -135,7 +125,10 @@ public abstract class Slot : ISlot
             return;
         }
 
-        if (!pile.Insert(card, Entryway == SlotEntryway.Front ? PileInsertionMode.Unshift : PileInsertionMode.Push))
+        if (!pile.Insert(
+            card, 
+            settings.Entryway == SlotEntryway.Front ? PileInsertionMode.Unshift : PileInsertionMode.Push,
+            settings.DoesSelfArrangeOnLodging))
         {
             Debug.LogError($"[Slot] Couldn't insert {card} in Pile.");
             return;
@@ -146,7 +139,7 @@ public abstract class Slot : ISlot
 
     public void Release(ICard card)
     {
-        if (pile.Remove(card))
+        if (pile.Remove(card, settings.DoesSelfArrangeOnReleasing))
             releasing.OnNext(Unit.Default);
         
         if (IsEmpty)

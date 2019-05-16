@@ -8,17 +8,16 @@ public interface ISlotStorage : ISlot
 
 public class SlotStorage : Slot, ISlotStorage
 {
-    public class Factory : PlaceholderFactory<ResourceType, IPile, Transform, Bounds, SlotStorage>
+    public class Factory : PlaceholderFactory<IPile, ISlotSettings, Bounds, Transform, SlotStorage>
     {
     }
 
-    public SlotStorage(ResourceType resourceMask, IPile pile, Transform transform, Bounds bounds) 
-        : base(SlotType.Storage, pile, transform, bounds)
+    public SlotStorage(IPile pile, ISlotSettings settings, Bounds bounds, Transform transformBond) 
+        : base(pile, settings, bounds, transformBond)
     {
-        ResourceMask = resourceMask;
     }
 
-    public ResourceType ResourceMask { get; }
+    public ResourceType ResourceMask => settings.ResourceMask;
 
     protected override bool CanLodge(ISlot fromSlot)
     {
@@ -34,6 +33,5 @@ public class SlotStorage : Slot, ISlotStorage
             return false;
 
         return true;
-        //return resourceCard.IsTreasure || resourceCard.WasPaidFor;
     }
 }

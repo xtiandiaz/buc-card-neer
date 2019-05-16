@@ -8,7 +8,6 @@ public interface ISlotFactory : IFactory<ISlotView, ISlot>, IDisposable
 
 public class SlotFactory : ISlotFactory
 {
-    private readonly Pile.Factory pileFactory;
     private readonly SlotBoarding.Factory modelBoardingFactory;
     private readonly SlotPlayer.Factory modelPlayerFactory;
     private readonly SlotStorage.Factory modelResourceFactory;
@@ -17,7 +16,6 @@ public class SlotFactory : ISlotFactory
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private SlotFactory(
-        Pile.Factory pileFactory,
         SlotBoarding.Factory modelBoardingFactory,
         SlotPlayer.Factory modelPlayerFactory,
         SlotStorage.Factory modelResourceFactory,
@@ -25,7 +23,6 @@ public class SlotFactory : ISlotFactory
         SlotController.Factory controllerFactory
         )
     {
-        this.pileFactory = pileFactory;
         this.modelBoardingFactory = modelBoardingFactory;
         this.modelPlayerFactory = modelPlayerFactory;
         this.modelResourceFactory = modelResourceFactory;
@@ -44,22 +41,22 @@ public class SlotFactory : ISlotFactory
 
     private ISlot CreateModel(ISlotView fromView)
     {
-        var type = fromView.Type;
-        var pileExtent = fromView.Capacity > 0 ? (int) fromView.Capacity : default(int?);
-        var pile = pileFactory.Create(fromView.CardArrangement, pileExtent);
+        var settings = fromView.Settings;
+        var pileExtent = settings.Capacity > 0 ? (int) settings.Capacity : default(int?);
+        var pile = new Pile(settings.Arrangement, pileExtent);
         
-        switch (type)
+        switch (settings.Type)
         {
             case SlotType.Event:
-                return modelEventFactory.Create(pile, fromView.Transform, fromView.Bounds);
+                return modelEventFactory.Create(pile, settings, fromView.Bounds, fromView.Transform);
             case SlotType.Boarding:
-                return modelBoardingFactory.Create(pile, fromView.Transform, fromView.Bounds);
+                return modelBoardingFactory.Create(pile, settings, fromView.Bounds, fromView.Transform);
             case SlotType.Storage:
-                return modelResourceFactory.Create(fromView.ResourceMask, pile, fromView.Transform, fromView.Bounds);
+                return modelResourceFactory.Create(pile, settings, fromView.Bounds, fromView.Transform);
             case SlotType.Player:
-                return modelPlayerFactory.Create(pile, fromView.Transform, fromView.Bounds);
+                return modelPlayerFactory.Create(pile, settings, fromView.Bounds, fromView.Transform);
             default:
-                throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                throw new ArgumentOutOfRangeException(nameof(settings.Type), settings.Type, null);
         }
     }
 

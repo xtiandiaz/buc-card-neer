@@ -15,7 +15,6 @@ public class SeaController : ISeaController
     }
 
     private const int FeedCountPerSlot = 3;
-    private const float ProjectionDurationInSeconds = 1f;
     private static readonly TimeSpan DealingInterval = TimeSpan.FromSeconds(0.1);
     
     private readonly ISea model;
@@ -45,9 +44,6 @@ public class SeaController : ISeaController
                 .Take(FeedCountPerSlot)
                 .Do(_ => slot.Consume(1)))
             .Subscribe());
-        
-        disposables.Add(model.WhenToggledProjection
-            .Subscribe(isProjected => view.ToggleProjection(isProjected, ProjectionDurationInSeconds)));
     }
 
     public void Dispose()
