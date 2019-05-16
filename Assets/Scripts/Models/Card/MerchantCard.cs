@@ -1,8 +1,8 @@
 using System.Linq;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CardMerchant", menuName = "Game/Card/Merchant", order = 1)]
-public class CardMerchant : Card
+[CreateAssetMenu(menuName = "Game/Card/Merchant")]
+public class MerchantCard : Card
 {
     [SerializeField] private ResourceFixation[] fixations;
     
@@ -10,12 +10,12 @@ public class CardMerchant : Card
 
     public override bool CanMatch(ICard withOther, ISlot fromSlot)
     {
-        return withOther is ICardResource resourceCard && resourceCard.WasPurchased;
+        return withOther is IResourceCard resourceCard && resourceCard.WasPurchased;
     }
 
     public override void Match(ICard withOther)
     {
-        if (withOther is ICardResource resourceCard && resourceCard.WasPurchased)
+        if (withOther is IResourceCard resourceCard && resourceCard.WasPurchased)
             resourceCard.Sell(
                 fixations.FirstOrDefault(f => (f.Suit.ResourceType & resourceCard.ResourceType) != 0)?.Degree ?? 1);
     }

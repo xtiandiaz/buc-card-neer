@@ -1,13 +1,13 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CardPirate", menuName = "Game/Card/Pirate", order = 1)]
-public class CardPirate : Card
+[CreateAssetMenu(menuName = "Game/Card/Pirate")]
+public class PirateCard : Card
 {
     public override CardType Type => CardType.Pirate;
 
     public override bool CanMatch(ICard withOther, ISlot fromSlot)
     {
-        if (!(withOther is ICardResource resourceCard) || !resourceCard.IsBoarded)
+        if (!(withOther is IResourceCard resourceCard) || !resourceCard.IsBoarded)
             return false;
 
         if (IsBoarded)
@@ -20,7 +20,7 @@ public class CardPirate : Card
 
     public override void Match(ICard withOther)
     {
-        if (withOther is ICardResource resourceCard && (resourceCard.ResourceType & ResourceType.Weapon) != 0)
+        if (withOther is IResourceCard resourceCard && (resourceCard.ResourceType & ResourceType.Weapon) != 0)
         {
             Value -= withOther.Value;
             withOther.Destroy();

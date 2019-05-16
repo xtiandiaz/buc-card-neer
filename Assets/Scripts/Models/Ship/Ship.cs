@@ -10,17 +10,17 @@ public interface IShip
     ISlot[] Slots { get; }
     ISlot BoardingSlot { get; }
     ISlot PlayerSlot { get; }
-    IDictionary<ResourceType, ISlotStorage> Storage { get; }
+    IDictionary<ResourceType, IStorageSlot> Storage { get; }
     Vector3 Position { get; }
 
     IObservable<Unit> WhenDocked { get; }
     IObservable<Unit> WhenSailed { get; }
     IObservable<ICard> WhenBoarded { get; }
-    IObservable<ICardResource> WhenBoardedResource { get; }
+    IObservable<IResourceCard> WhenBoardedResource { get; }
     
     void Dock(Vector3 atPosition);
     void SetSail(Vector3 toPosition);
-    void Store(ICardResource card);
+    void Store(IResourceCard card);
 }
 
 public class Ship : IShip
@@ -38,21 +38,21 @@ public class Ship : IShip
         Slots = slots;
         BoardingSlot = Slots.FirstOrDefault(slot => slot.Type == SlotType.Boarding);
         PlayerSlot = Slots.FirstOrDefault(slot => slot.Type == SlotType.Player);
-        Storage = slots.Where(slot => slot.Type == SlotType.Storage).Cast<ISlotStorage>()
+        Storage = slots.Where(slot => slot.Type == SlotType.Storage).Cast<IStorageSlot>()
             .ToDictionary(resSlot => resSlot.ResourceMask, resSlot => resSlot);
     }
     
     public ISlot[] Slots { get; }
     public ISlot BoardingSlot { get; }
     public ISlot PlayerSlot { get; }
-    public IDictionary<ResourceType, ISlotStorage> Storage { get; }
+    public IDictionary<ResourceType, IStorageSlot> Storage { get; }
     public Vector3 Position { get; private set; }
 
     public IObservable<Unit> WhenDocked => docking; 
     public IObservable<Unit> WhenSailed => sailing;
     public IObservable<ICard> WhenBoarded => BoardingSlot.WhenLodged;
-    public IObservable<ICardResource> WhenBoardedResource =>
-        WhenBoarded.Where(c => (c.Type & CardType.Resource) != 0).Cast<ICard, ICardResource>();
+    public IObservable<IResourceCard> WhenBoardedResource =>
+        WhenBoarded.Where(c => (c.Type & CardType.Resource) != 0).Cast<ICard, IResourceCard>();
 
     public void Dock(Vector3 atPosition)
     {
@@ -68,7 +68,7 @@ public class Ship : IShip
         sailing.OnNext(Unit.Default);
     }
 
-    public void Store(ICardResource card)
+    public void Store(IResourceCard card)
     {
         var slot = Storage.FirstOrDefault(s => (s.Key & card.ResourceType) != 0);
         if (slot.Value == null)

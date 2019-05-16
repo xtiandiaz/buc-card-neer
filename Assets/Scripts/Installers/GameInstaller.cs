@@ -4,7 +4,7 @@ using Zenject;
 public class GameInstaller : MonoInstaller
 {    
     [Header("Models")]
-    [SerializeField] private CardPlayer playerCard;
+    [SerializeField] private PlayerCard playerCard;
     
     [Header("Viewport")]
     [SerializeField] private GameCamera camera;
@@ -82,10 +82,10 @@ public class GameInstaller : MonoInstaller
         
         #region Slots
         
-        Container.BindFactory<IPile, ISlotSettings, Bounds, Transform, SlotBoarding, SlotBoarding.Factory>();
-        Container.BindFactory<IPile, ISlotSettings, Bounds, Transform, SlotEvent, SlotEvent.Factory>();
-        Container.BindFactory<IPile, ISlotSettings, Bounds, Transform, SlotPlayer, SlotPlayer.Factory>();
-        Container.BindFactory<IPile, ISlotSettings, Bounds, Transform, SlotStorage, SlotStorage.Factory>();
+        Container.BindFactory<IPile, ISlotSettings, Bounds, Transform, BoardingSlot, BoardingSlot.Factory>();
+        Container.BindFactory<IPile, ISlotSettings, Bounds, Transform, EventSlot, EventSlot.Factory>();
+        Container.BindFactory<IPile, ISlotSettings, Bounds, Transform, PlayerSlot, PlayerSlot.Factory>();
+        Container.BindFactory<IPile, ISlotSettings, Bounds, Transform, StorageSlot, StorageSlot.Factory>();
         Container.BindFactory<ISlot, ISlotView, SlotController, SlotController.Factory>().AsSingle();
         Container.BindInterfacesAndSelfTo<SlotFactory>().AsSingle();
         
@@ -93,14 +93,14 @@ public class GameInstaller : MonoInstaller
         
         #region Cards
 
-        Container.BindFactory<CardPirate, CardPirateView, CardPirateController, CardPirateController.Factory>().AsSingle();
-        Container.BindFactory<CardMerchant, CardMerchantView, CardMerchantController, CardMerchantController.Factory>().AsSingle();
-        Container.BindFactory<CardResource, CardResourceView, CardResourceController, CardResourceController.Factory>().AsSingle();
-        Container.BindFactory<CardPlayer, CardPlayerView, CardPlayerController, CardPlayerController.Factory>().AsSingle();
+        Container.BindFactory<PirateCard, CardPirateView, PirateCardController, PirateCardController.Factory>().AsSingle();
+        Container.BindFactory<MerchantCard, CardMerchantView, MerchantCardController, MerchantCardController.Factory>().AsSingle();
+        Container.BindFactory<ResourceCard, CardResourceView, ResourceCardController, ResourceCardController.Factory>().AsSingle();
+        Container.BindFactory<PlayerCard, CardPlayerView, PlayerCardController, PlayerCardController.Factory>().AsSingle();
         Container.BindFactory<string, CardView, CardView.Factory>().FromFactory<PrefabResourceFactory<CardView>>();
         Container.BindInterfacesAndSelfTo<CardFactory>().AsSingle();
         
-        Container.Bind(typeof(ICardPlayer), typeof(IPlayerStats)).FromInstance(Instantiate(playerCard));
+        Container.Bind(typeof(IPlayerCard), typeof(IPlayerStats)).FromInstance(Instantiate(playerCard));
 
         #endregion
         

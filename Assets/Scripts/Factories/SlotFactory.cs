@@ -8,18 +8,18 @@ public interface ISlotFactory : IFactory<ISlotView, ISlot>, IDisposable
 
 public class SlotFactory : ISlotFactory
 {
-    private readonly SlotBoarding.Factory modelBoardingFactory;
-    private readonly SlotPlayer.Factory modelPlayerFactory;
-    private readonly SlotStorage.Factory modelResourceFactory;
-    private readonly SlotEvent.Factory modelEventFactory;
+    private readonly BoardingSlot.Factory modelBoardingFactory;
+    private readonly PlayerSlot.Factory modelPlayerFactory;
+    private readonly StorageSlot.Factory modelResourceFactory;
+    private readonly EventSlot.Factory modelEventFactory;
     private readonly SlotController.Factory controllerFactory;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private SlotFactory(
-        SlotBoarding.Factory modelBoardingFactory,
-        SlotPlayer.Factory modelPlayerFactory,
-        SlotStorage.Factory modelResourceFactory,
-        SlotEvent.Factory modelEventFactory,
+        BoardingSlot.Factory modelBoardingFactory,
+        PlayerSlot.Factory modelPlayerFactory,
+        StorageSlot.Factory modelResourceFactory,
+        EventSlot.Factory modelEventFactory,
         SlotController.Factory controllerFactory
         )
     {

@@ -18,7 +18,7 @@ public class GameController : IGameController
     private readonly IDeckFactory deckFactory;
     private readonly ICardFactory cardFactory;
     private readonly IDeck deck;
-    private readonly ICardPlayer cardPlayer;
+    private readonly IPlayerCard playerCard;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     public GameController(
@@ -31,7 +31,7 @@ public class GameController : IGameController
         IDeckFactory deckFactory,
         ICardFactory cardFactory,
         IDeck deck,
-        ICardPlayer cardPlayer
+        IPlayerCard playerCard
         )
     {
         this.model = model;
@@ -43,13 +43,13 @@ public class GameController : IGameController
         this.deckFactory = deckFactory;
         this.cardFactory = cardFactory;
         this.deck = deck;
-        this.cardPlayer = cardPlayer;
+        this.playerCard = playerCard;
     }
 
     public void Initialize()
     {
         deckFactory.Create(deck);
-        cardFactory.Create(cardPlayer);
+        cardFactory.Create(playerCard);
 
         boardFactory.Create();
         seaFactory.Create();

@@ -12,19 +12,19 @@ public class CardFactory : ICardFactory
 {
     private readonly DiContainer container;
     private readonly CardView.Factory viewFactory;
-    private readonly CardPirateController.Factory controllerFactoryFoe;
-    private readonly CardMerchantController.Factory controllerFactoryMerchant;
-    private readonly CardResourceController.Factory controllerFactoryResource;
-    private readonly CardPlayerController.Factory controllerFactoryPlayer;
+    private readonly PirateCardController.Factory controllerFactoryFoe;
+    private readonly MerchantCardController.Factory controllerFactoryMerchant;
+    private readonly ResourceCardController.Factory controllerFactoryResource;
+    private readonly PlayerCardController.Factory controllerFactoryPlayer;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private CardFactory(
         DiContainer container,
         CardView.Factory viewFactory,
-        CardPirateController.Factory controllerFactoryFoe,
-        CardMerchantController.Factory controllerFactoryMerchant, 
-        CardResourceController.Factory controllerFactoryResource, 
-        CardPlayerController.Factory controllerFactoryPlayer
+        PirateCardController.Factory controllerFactoryFoe,
+        MerchantCardController.Factory controllerFactoryMerchant, 
+        ResourceCardController.Factory controllerFactoryResource, 
+        PlayerCardController.Factory controllerFactoryPlayer
         )
     {
         this.container = container;
@@ -52,20 +52,20 @@ public class CardFactory : ICardFactory
         {
             case CardType.Pirate:
                 
-                return controllerFactoryFoe.Create((CardPirate) forModel, (CardPirateView) andView);
+                return controllerFactoryFoe.Create((PirateCard) forModel, (CardPirateView) andView);
             
             case CardType.Merchant:
                 
-                return controllerFactoryMerchant.Create((CardMerchant) forModel, (CardMerchantView) andView);
+                return controllerFactoryMerchant.Create((MerchantCard) forModel, (CardMerchantView) andView);
             
             case CardType.Player:
                 
-                return controllerFactoryPlayer.Create((CardPlayer) forModel, (CardPlayerView) andView);
+                return controllerFactoryPlayer.Create((PlayerCard) forModel, (CardPlayerView) andView);
             
             default:
                 
                 if ((forModel.Type & CardType.Resource) != 0)
-                    return controllerFactoryResource.Create((CardResource) forModel, (CardResourceView) andView); 
+                    return controllerFactoryResource.Create((ResourceCard) forModel, (CardResourceView) andView); 
                 
                 throw new ArgumentOutOfRangeException();
         }

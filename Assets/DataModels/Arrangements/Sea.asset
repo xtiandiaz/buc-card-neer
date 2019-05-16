@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b83d5d0521f458e9a49fd868b2cf6fe, type: 3}
   m_Name: Sea
   m_EditorClassIdentifier: 
-  offset: {x: 0, y: 7, z: 3.5}
+  offset: {x: 0, y: 10, z: 5}
   offsetFunction:
     serializedVersion: 2
     m_Curve:

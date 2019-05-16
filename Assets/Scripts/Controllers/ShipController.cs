@@ -17,13 +17,13 @@ public class ShipController : IShipController
     
     private readonly IShip model;
     private readonly IShipView view;
-    private readonly ICardPlayer playerCard;
+    private readonly IPlayerCard playerCard;
     private readonly CardAnimationSettings cardAnimationSettings;
 
     protected ShipController(
         IShip model, 
         IShipView view, 
-        ICardPlayer playerCard, 
+        IPlayerCard playerCard, 
         CardAnimationSettings cardAnimationSettings
         )
     {

@@ -1,16 +1,16 @@
 using Zenject;
 using UniRx;
 
-public class CardResourceController : CardController
+public class ResourceCardController : CardController
 {
-    public class Factory : PlaceholderFactory<CardResource, CardResourceView, CardResourceController>
+    public class Factory : PlaceholderFactory<ResourceCard, CardResourceView, ResourceCardController>
     {
     }
     
-    private readonly ICardResource model;
+    private readonly IResourceCard model;
     private readonly ICardResourceView view;
     
-    public CardResourceController(ICardResource model, ICardResourceView view) : base(model, view)
+    public ResourceCardController(IResourceCard model, ICardResourceView view) : base(model, view)
     {
         this.model = model;
         this.view = view;

@@ -755,10 +755,10 @@
             <e p="BoardController.cs" t="Include" />
             <e p="Card" t="Include">
               <e p="CardController.cs" t="Include" />
-              <e p="CardMerchantController.cs" t="Include" />
-              <e p="CardPirateController.cs" t="Include" />
-              <e p="CardPlayerController.cs" t="Include" />
-              <e p="CardResourceController.cs" t="Include" />
+              <e p="MerchantCardController.cs" t="Include" />
+              <e p="PirateCardController.cs" t="Include" />
+              <e p="PlayerCardController.cs" t="Include" />
+              <e p="ResourceCardController.cs" t="Include" />
             </e>
             <e p="DeckController.cs" t="Include" />
             <e p="GameController.cs" t="Include" />
@@ -793,10 +793,10 @@
             <e p="Card" t="Include">
               <e p="Card.cs" t="Include" />
               <e p="CardAnimationSettings.cs" t="Include" />
-              <e p="CardMerchant.cs" t="Include" />
-              <e p="CardPirate.cs" t="Include" />
-              <e p="CardPlayer.cs" t="Include" />
-              <e p="CardResource.cs" t="Include" />
+              <e p="MerchantCard.cs" t="Include" />
+              <e p="PirateCard.cs" t="Include" />
+              <e p="PlayerCard.cs" t="Include" />
+              <e p="ResourceCard.cs" t="Include" />
             </e>
             <e p="CardArrangement" t="Include">
               <e p="CardArrangement.cs" t="Include" />
@@ -813,12 +813,12 @@
               <e p="ShipAnimationSettings.cs" t="Include" />
             </e>
             <e p="Slot" t="Include">
+              <e p="BoardingSlot.cs" t="Include" />
+              <e p="EventSlot.cs" t="Include" />
+              <e p="PlayerSlot.cs" t="Include" />
               <e p="Slot.cs" t="Include" />
-              <e p="SlotBoarding.cs" t="Include" />
-              <e p="SlotEvent.cs" t="Include" />
-              <e p="SlotPlayer.cs" t="Include" />
               <e p="SlotSettings.cs" t="Include" />
-              <e p="SlotStorage.cs" t="Include" />
+              <e p="StorageSlot.cs" t="Include" />
             </e>
             <e p="Stats" t="Include">
               <e p="IPlayerStats.cs" t="Include" />

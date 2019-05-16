@@ -3,14 +3,14 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-public interface ICardPlayer : ICard, IPlayerStats
+public interface IPlayerCard : ICard, IPlayerStats
 {
-    bool CanPurchase(ICardResource resourceCard);
-    bool CanConsume(ICardResource resourceCard);
+    bool CanPurchase(IResourceCard resourceCard);
+    bool CanConsume(IResourceCard resourceCard);
 }
 
-[CreateAssetMenu(fileName = "CardPlayer", menuName = "Game/Card/Player", order = 1)]
-public class CardPlayer : Card, ICardPlayer, IPlayerStats
+[CreateAssetMenu(menuName = "Game/Card/Player")]
+public class PlayerCard : Card, IPlayerCard
 {
     [SerializeField] private IntReactiveProperty coins = new IntReactiveProperty(10);
     
@@ -39,7 +39,7 @@ public class CardPlayer : Card, ICardPlayer, IPlayerStats
         if ((withOther.Type & (CardType.Pirate)) != 0)
             return true;
 
-        if (withOther is ICardResource resourceCard)
+        if (withOther is IResourceCard resourceCard)
             return CanPurchase(resourceCard) || CanConsume(resourceCard);
 
         return false;
@@ -55,7 +55,7 @@ public class CardPlayer : Card, ICardPlayer, IPlayerStats
             return;
         }
 
-        if (!(withOther is ICardResource resourceCard))
+        if (!(withOther is IResourceCard resourceCard))
             return;
 
         if (CanPurchase(resourceCard))
@@ -64,12 +64,12 @@ public class CardPlayer : Card, ICardPlayer, IPlayerStats
             resourceCard.Consume();
     }
 
-    public bool CanPurchase(ICardResource resourceCard)
+    public bool CanPurchase(IResourceCard resourceCard)
     {
         return resourceCard.IsPurchasable && resourceCard.Value <= Coins;
     }
 
-    public bool CanConsume(ICardResource resourceCard)
+    public bool CanConsume(IResourceCard resourceCard)
     {
         return resourceCard.IsConsumable;
     }

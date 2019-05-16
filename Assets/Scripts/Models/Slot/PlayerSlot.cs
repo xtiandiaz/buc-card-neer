@@ -1,13 +1,13 @@
 using UnityEngine;
 using Zenject;
 
-public class SlotPlayer : Slot
+public class PlayerSlot : Slot
 {
-    public class Factory : PlaceholderFactory<IPile, ISlotSettings, Bounds, Transform, SlotPlayer>
+    public class Factory : PlaceholderFactory<IPile, ISlotSettings, Bounds, Transform, PlayerSlot>
     {
     }
 
-    public SlotPlayer(IPile pile, ISlotSettings settings, Bounds bounds, Transform transformBond) 
+    public PlayerSlot(IPile pile, ISlotSettings settings, Bounds bounds, Transform transformBond) 
         : base(pile, settings, bounds, transformBond)
     {
     }

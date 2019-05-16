@@ -1,18 +1,18 @@
 using UnityEngine;
 using Zenject;
 
-public interface ISlotStorage : ISlot
+public interface IStorageSlot : ISlot
 {
     ResourceType ResourceMask { get; }
 }
 
-public class SlotStorage : Slot, ISlotStorage
+public class StorageSlot : Slot, IStorageSlot
 {
-    public class Factory : PlaceholderFactory<IPile, ISlotSettings, Bounds, Transform, SlotStorage>
+    public class Factory : PlaceholderFactory<IPile, ISlotSettings, Bounds, Transform, StorageSlot>
     {
     }
 
-    public SlotStorage(IPile pile, ISlotSettings settings, Bounds bounds, Transform transformBond) 
+    public StorageSlot(IPile pile, ISlotSettings settings, Bounds bounds, Transform transformBond) 
         : base(pile, settings, bounds, transformBond)
     {
     }
@@ -26,7 +26,7 @@ public class SlotStorage : Slot, ISlotStorage
 
     protected override bool CanLodge(ICard card)
     {
-        if (!(card is ICardResource resourceCard))
+        if (!(card is IResourceCard resourceCard))
             return false;
 
         if ((ResourceMask & resourceCard.ResourceType) == 0)

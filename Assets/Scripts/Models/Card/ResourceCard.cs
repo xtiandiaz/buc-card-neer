@@ -19,7 +19,7 @@ public enum ResourceType
     Weapon              = WeaponMelee | WeaponArtillery
 }
 
-public interface ICardResource : ICard
+public interface IResourceCard : ICard
 {
     ResourceType ResourceType { get; }
     Sprite Item { get; }
@@ -42,7 +42,7 @@ public interface ICardResource : ICard
 }
 
 [CreateAssetMenu(fileName = "CardResource", menuName = "Game/Card/Resource", order = 1)]
-public class CardResource : Card, ICardResource
+public class ResourceCard : Card, IResourceCard
 {
     private readonly Subject<Unit> purchasing = new Subject<Unit>();
     private readonly Subject<Unit> selling = new Subject<Unit>();
