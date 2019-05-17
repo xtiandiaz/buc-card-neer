@@ -11,7 +11,7 @@ public interface IResourceFixation
 public class ResourceFixation : IResourceFixation
 {
     [SerializeField] private Suit suit;
-    [SerializeField] private int degree;
+    [SerializeField] [Range(2, 4)] private int degree;
 
     public Suit Suit => suit;
     public int Degree  => degree;

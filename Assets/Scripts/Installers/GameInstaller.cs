@@ -93,14 +93,15 @@ public class GameInstaller : MonoInstaller
         
         #region Cards
 
-        Container.BindFactory<PirateCard, CardPirateView, PirateCardController, PirateCardController.Factory>().AsSingle();
-        Container.BindFactory<MerchantCard, CardMerchantView, MerchantCardController, MerchantCardController.Factory>().AsSingle();
-        Container.BindFactory<ResourceCard, CardResourceView, ResourceCardController, ResourceCardController.Factory>().AsSingle();
-        Container.BindFactory<PlayerCard, CardPlayerView, PlayerCardController, PlayerCardController.Factory>().AsSingle();
+        Container.BindFactory<PirateCard, PirateCardView, PirateCardController, PirateCardController.Factory>().AsSingle();
+        Container.BindFactory<IMerchantCard, IMerchantCardView, MerchantCardController, MerchantCardController.Factory>().AsSingle();
+        Container.BindFactory<IInspectorCard, IInspectorCardView, InspectorCardController, InspectorCardController.Factory>().AsSingle();
+        Container.BindFactory<ResourceCard, ResourceCardView, ResourceCardController, ResourceCardController.Factory>().AsSingle();
+        Container.BindFactory<PlayerCard, PlayerCardView, PlayerCardController, PlayerCardController.Factory>().AsSingle();
         Container.BindFactory<string, CardView, CardView.Factory>().FromFactory<PrefabResourceFactory<CardView>>();
         Container.BindInterfacesAndSelfTo<CardFactory>().AsSingle();
         
-        Container.Bind(typeof(IPlayerCard), typeof(IPlayerStats)).FromInstance(Instantiate(playerCard));
+        Container.BindInterfacesAndSelfTo<PlayerCard>().FromInstance(Instantiate(playerCard));
 
         #endregion
         

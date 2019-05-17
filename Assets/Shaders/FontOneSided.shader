@@ -70,8 +70,8 @@ Shader "GUI/Text Shader OneSided"
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 baseColor = fixed4(i.color.r, i.color.g, i.color.b, tex2D(_MainTex, i.texcoord).a * i.color.a);                
-                fixed4 c = lerp(baseColor, _FogColorPDS, _FogIntensityPDS) * baseColor.a;
-                return c;
+                fixed4 c = lerp(baseColor, _FogColorPDS, _FogIntensityPDS);
+                return fixed4(c.r, c.g, c.b, 1.0) * baseColor.a;
             }
             ENDCG
         }

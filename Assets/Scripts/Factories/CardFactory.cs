@@ -14,6 +14,7 @@ public class CardFactory : ICardFactory
     private readonly CardView.Factory viewFactory;
     private readonly PirateCardController.Factory controllerFactoryFoe;
     private readonly MerchantCardController.Factory controllerFactoryMerchant;
+    private readonly InspectorCardController.Factory controllerFactoryInspector;
     private readonly ResourceCardController.Factory controllerFactoryResource;
     private readonly PlayerCardController.Factory controllerFactoryPlayer;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
@@ -23,6 +24,7 @@ public class CardFactory : ICardFactory
         CardView.Factory viewFactory,
         PirateCardController.Factory controllerFactoryFoe,
         MerchantCardController.Factory controllerFactoryMerchant, 
+        InspectorCardController.Factory controllerFactoryInspector, 
         ResourceCardController.Factory controllerFactoryResource, 
         PlayerCardController.Factory controllerFactoryPlayer
         )
@@ -31,6 +33,7 @@ public class CardFactory : ICardFactory
         this.viewFactory = viewFactory;
         this.controllerFactoryFoe = controllerFactoryFoe;
         this.controllerFactoryMerchant = controllerFactoryMerchant;
+        this.controllerFactoryInspector = controllerFactoryInspector;
         this.controllerFactoryResource = controllerFactoryResource;
         this.controllerFactoryPlayer = controllerFactoryPlayer;
     }
@@ -52,20 +55,24 @@ public class CardFactory : ICardFactory
         {
             case CardType.Pirate:
                 
-                return controllerFactoryFoe.Create((PirateCard) forModel, (CardPirateView) andView);
+                return controllerFactoryFoe.Create((PirateCard) forModel, (PirateCardView) andView);
             
             case CardType.Merchant:
                 
-                return controllerFactoryMerchant.Create((MerchantCard) forModel, (CardMerchantView) andView);
+                return controllerFactoryMerchant.Create((MerchantCard) forModel, (MerchantCardView) andView);
+            
+            case CardType.Inspector:
+                
+                return controllerFactoryInspector.Create((IInspectorCard) forModel, (IInspectorCardView) andView);
             
             case CardType.Player:
                 
-                return controllerFactoryPlayer.Create((PlayerCard) forModel, (CardPlayerView) andView);
+                return controllerFactoryPlayer.Create((PlayerCard) forModel, (PlayerCardView) andView);
             
             default:
                 
                 if ((forModel.Type & CardType.Resource) != 0)
-                    return controllerFactoryResource.Create((ResourceCard) forModel, (CardResourceView) andView); 
+                    return controllerFactoryResource.Create((ResourceCard) forModel, (ResourceCardView) andView); 
                 
                 throw new ArgumentOutOfRangeException();
         }
@@ -73,13 +80,14 @@ public class CardFactory : ICardFactory
 
     private string GetViewResourcePath(CardType forCardType)
     {
-        const string basePath = "CardViews/Card";
+        const string basePath = "CardViews/";
         
         switch (forCardType)
         {
             case CardType.Player:
             case CardType.Pirate:
             case CardType.Merchant:
+            case CardType.Inspector:
 
                 return $"{basePath}{forCardType}";
 

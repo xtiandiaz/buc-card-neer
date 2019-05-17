@@ -2,15 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public interface ICardLabel
-{
-    void SetValue(int to);
-    void SetValue(float to);
-    void SetColor(Color to);
-    void SetSorting(string withLayerName, int andOrder);
-}
-
-public class CardLabel : MonoBehaviour, ICardLabel
+public class CardLabel : MonoBehaviour
 {
     [SerializeField] private List<TextMesh> textRenderers;
     [SerializeField] private string sortingLayerName;
@@ -25,12 +17,17 @@ public class CardLabel : MonoBehaviour, ICardLabel
 
     public void SetValue(int to)
     {
-        Set($"{to}");
+        SetValue($"{to}");
     }
     
     public void SetValue(float to)
     {
-        Set($"{to}");
+        SetValue($"{to}");
+    }
+    
+    public void SetValue(string to)
+    {
+        textRenderers.ForEach(r => r.text = to);
     }
 
     public void SetColor(Color to)
@@ -38,17 +35,12 @@ public class CardLabel : MonoBehaviour, ICardLabel
         textRenderers.ForEach(r => r.color = to);
     }
 
-    public void SetSorting(string withLayerName, int andOrder)
+    private void SetSorting(string withLayerName, int andOrder)
     {
         MeshRenderers.ForEach(r =>
         {
             r.sortingLayerName = withLayerName;
             r.sortingOrder = andOrder;
         });
-    }
-
-    private void Set(string value)
-    {
-        textRenderers.ForEach(r => r.text = value);
     }
 }

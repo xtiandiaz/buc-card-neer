@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: SuitC
   m_EditorClassIdentifier: 
   resourceType: 32
-  icon: {fileID: -7624950995120954534, guid: 5a693d6d101cd4f3289c7ae1a751308f, type: 3}
-  color: {r: 0.18039216, g: 0.8, b: 0.44313726, a: 1}
+  icon: {fileID: 21300000, guid: 45494ca11809645c9b2c04fef74d0498, type: 3}
+  color: {r: 0.1254902, g: 0.7490196, b: 0.41960785, a: 1}

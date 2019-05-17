@@ -3,14 +3,14 @@ using UniRx;
 
 public class ResourceCardController : CardController
 {
-    public class Factory : PlaceholderFactory<ResourceCard, CardResourceView, ResourceCardController>
+    public class Factory : PlaceholderFactory<ResourceCard, ResourceCardView, ResourceCardController>
     {
     }
     
     private readonly IResourceCard model;
-    private readonly ICardResourceView view;
+    private readonly IResourceCardView view;
     
-    public ResourceCardController(IResourceCard model, ICardResourceView view) : base(model, view)
+    public ResourceCardController(IResourceCard model, IResourceCardView view) : base(model, view)
     {
         this.model = model;
         this.view = view;

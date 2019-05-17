@@ -20,4 +20,4 @@ MonoBehaviour:
   doesSelfArrangeOnLodging: 1
   doesSelfArrangeOnReleasing: 1
   highlightColor: {r: 0.003680706, g: 1, b: 0, a: 1}
-  resourceMask: 192
+  resourceMask: 64

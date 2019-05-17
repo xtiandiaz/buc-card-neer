@@ -1,6 +1,7 @@
 using System;
 using UniRx;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Zenject;
 
 public interface IGameController : IInitializable, IDisposable
@@ -55,8 +56,18 @@ public class GameController : IGameController
         seaFactory.Create();
         shipFactory.Create();
 
+        #region Conclusion
+
+        disposables.Add(playerCard.WhenDestroyed.Subscribe(_ => model.End()));
+        disposables.Add(model.WhenEnded.Subscribe(_ => EventSystem.current.enabled = false));
+
+        #endregion
+        #region Menu Controls
+
         disposables.Add(menuView.ResetControl.OnClickAsObservable().Subscribe(_ => model.Reset()));
         disposables.Add(model.WhenReset.Subscribe(_ => appController.Reload()));
+
+        #endregion
     }
 
     public void Dispose()

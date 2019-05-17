@@ -18,6 +18,6 @@ MonoBehaviour:
   entryway: 1
   arrangement: {fileID: 11400000, guid: 8c652235ab686451bbe0cde2d23cc2a1, type: 2}
   doesSelfArrangeOnLodging: 1
-  doesSelfArrangeOnReleasing: 0
+  doesSelfArrangeOnReleasing: 1
   highlightColor: {r: 0.003680706, g: 1, b: 0, a: 1}
   resourceMask: 0

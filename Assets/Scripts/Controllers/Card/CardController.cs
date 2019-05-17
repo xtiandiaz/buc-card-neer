@@ -48,8 +48,8 @@ public abstract class CardController : ICardController
         disposables.Add(model.WhenBound.Subscribe(view.SetParent));
         
         disposables.Add(model.WhenArranged
+            .Do(_ => view.SortingOrder = - model.Index * 10)
             .SelectMany(_ => view.MoveLocalAsObservable(model.LocalPosition))
-            .Do(_ => view.SortingOrder = -model.Index)
             .Subscribe());
 
         #endregion
@@ -87,18 +87,20 @@ public abstract class CardController : ICardController
         destructionDisposable = model.WhenDestroyed
             .Do(_ => disposables.Clear())
             .ContinueWith(view.FadeAsObservable(0))
-            .Subscribe(_ => 
-            {
-                view.Destroy();
-                Dispose();
-            });
+            .Subscribe(
+                _ => 
+                {
+                    view.Destroy();
+                    Dispose();
+                },
+                e => Debug.LogError(e.Message));
 
         #endregion
     }
 
     public void Dispose()
     {
-        disposables?.Dispose();
+        disposables.Dispose();
         destructionDisposable?.Dispose();
     }
 }

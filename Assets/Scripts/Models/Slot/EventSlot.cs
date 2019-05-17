@@ -20,6 +20,6 @@ public class EventSlot : Slot
 
     protected override bool CanLodge(ICard card)
     {
-        return (card.Type & (CardType.Resource | CardType.Pirate | CardType.Merchant)) != 0;
+        return (card.Type & (CardType.Resource | CardType.Pirate | CardType.Merchant | CardType.Inspector)) != 0;
     }
 }

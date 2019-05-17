@@ -1,22 +1,33 @@
-using System.Linq;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Game/Card/Merchant")]
-public class MerchantCard : Card
+public interface IMerchantCard : ICard
 {
-    [SerializeField] private ResourceFixation[] fixations;
+    IResourceFixation Fixation { get; }
+}
+
+[CreateAssetMenu(menuName = "Game/Card/Merchant")]
+public class MerchantCard : Card, IMerchantCard
+{
+    [SerializeField] private ResourceFixation fixation;
     
     public override CardType Type => CardType.Merchant;
+    public IResourceFixation Fixation => fixation;
 
     public override bool CanMatch(ICard withOther, ISlot fromSlot)
     {
-        return withOther is IResourceCard resourceCard && resourceCard.WasPurchased;
+        if (!IsBoarded)
+            return false;
+        
+        return withOther is IResourceCard resourceCard && resourceCard.IsAcquired;
     }
 
     public override void Match(ICard withOther)
     {
-        if (withOther is IResourceCard resourceCard && resourceCard.WasPurchased)
-            resourceCard.Sell(
-                fixations.FirstOrDefault(f => (f.Suit.ResourceType & resourceCard.ResourceType) != 0)?.Degree ?? 1);
+        if (withOther is IResourceCard resourceCard && resourceCard.IsAcquired)
+        {
+            resourceCard.Sell((fixation.Suit.ResourceType & resourceCard.ResourceType) != 0 
+                ? fixation.Degree
+                : 1);
+        }
     }
 }

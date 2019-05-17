@@ -11,12 +11,9 @@ public enum ResourceType
     Food                = CardType.Food,
     Artifact            = CardType.Artifact,
     Gem                 = CardType.Gem,
-    WeaponArtillery     = CardType.WeaponArtillery,
-    WeaponMelee         = CardType.WeaponMelee,
-    Money               = CardType.Money,
+    Weapon              = CardType.Weapon,
     
-    Item                = Food | Artifact | Gem, 
-    Weapon              = WeaponMelee | WeaponArtillery
+    Item                = Food | Artifact | Gem
 }
 
 public interface IResourceCard : ICard
@@ -25,7 +22,7 @@ public interface IResourceCard : ICard
     Sprite Item { get; }
     ISuit Suit { get; }
     int LockValue { get; }
-    bool WasPurchased { get; }
+    bool IsAcquired { get; }
     bool IsPurchasable { get; }
     bool IsLocked { get; }
     bool IsConsumable { get; }
@@ -39,6 +36,7 @@ public interface IResourceCard : ICard
     bool Purchase();
     bool Sell(int byFactor);
     bool Consume();
+    bool Unlock();
 }
 
 [CreateAssetMenu(fileName = "CardResource", menuName = "Game/Card/Resource", order = 1)]
@@ -51,17 +49,21 @@ public class ResourceCard : Card, IResourceCard
     [SerializeField] private Sprite item;
     [SerializeField] private Suit suit;
     [SerializeField] private IntReactiveProperty lockValue = new IntReactiveProperty();
-    private IPlayerStats playerStats;
 
     public override CardType Type => (CardType) ResourceType;
     public ResourceType ResourceType => suit.ResourceType;
     public Sprite Item => item;
     public ISuit Suit => suit;
-    public int LockValue => lockValue.Value;
-    public bool WasPurchased { get; private set; }
-    public bool IsPurchasable => !WasPurchased && !IsLocked;
+    public bool IsAcquired { get; private set; }
+    public bool IsPurchasable => !IsAcquired && !IsLocked;
     public bool IsLocked => LockValue > 0;
     public bool IsConsumable => !IsLocked && (Type & CardType.Food) != 0;
+
+    public int LockValue
+    {
+        get => lockValue.Value;
+        set => lockValue.Value = value;
+    }
 
     public IObservable<int> LockValueAsObservable => lockValue;
     public IObservable<Unit> WhenUnlocked => lockValue.Where(x => x <= 0).Take(1).AsSingleUnitObservable();
@@ -69,20 +71,33 @@ public class ResourceCard : Card, IResourceCard
     public IObservable<Unit> WhenSold => selling;
     public IObservable<Unit> WhenConsumed => consumption;
 
-    [Inject]
-    private void Construct(IPlayerStats playerStats)
-    {
-        this.playerStats = playerStats;
-    }
-
     public override bool CanMatch(ICard withOther, ISlot fromSlot)
     {
-        // No other Card can be matched on top of a Resource
-        return false;
+        if (!IsBoarded || !IsLocked)
+            return false;
+        
+        if (!(withOther is IResourceCard resourceCard) || !resourceCard.IsBoarded)
+            return false;
+        
+        return (resourceCard.ResourceType & ResourceType.Weapon) != 0;
     }
 
     public override void Match(ICard withOther)
     {
+        if (!(withOther is IResourceCard resourceCard) || (resourceCard.ResourceType & ResourceType.Weapon) == 0) 
+            return;
+        
+        LockValue -= withOther.Value;
+        
+        withOther.Destroy();
+    }
+
+    public override void Flip(CardFace toFace)
+    {
+        if (IsLocked && toFace == CardFace.Front)
+            return;
+        
+        base.Flip(toFace);
     }
 
     public bool Purchase()
@@ -90,7 +105,7 @@ public class ResourceCard : Card, IResourceCard
         if (!IsPurchasable)
             return false;
         
-        WasPurchased = true;
+        IsAcquired = true;
         
         purchasing.OnNext(Unit.Default);
         purchasing.OnCompleted();
@@ -102,10 +117,10 @@ public class ResourceCard : Card, IResourceCard
     {
         playerStats.Coins += Value * byFactor;
         
-        Destroy();
-        
         selling.OnNext(Unit.Default);
         selling.OnCompleted();
+        
+        Destroy();
 
         return true;
     }
@@ -124,7 +139,6 @@ public class ResourceCard : Card, IResourceCard
                 playerStats.HealthPoints += Value;
 
                 break;
-            
             default:
                 didConsume = false;
                 break;
@@ -132,12 +146,23 @@ public class ResourceCard : Card, IResourceCard
 
         if (didConsume)
         {
-            Value = 0;
-            
             consumption.OnNext(Unit.Default);
             consumption.OnCompleted();
+            
+            Destroy();
         }
 
         return didConsume;
+    }
+
+    public bool Unlock()
+    {
+        if (!IsLocked)
+            return false;
+
+        playerStats.HealthPoints -= LockValue;
+        LockValue = 0;
+
+        return true;
     }
 }

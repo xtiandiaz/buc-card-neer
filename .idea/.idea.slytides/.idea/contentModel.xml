@@ -740,6 +740,7 @@
           <e p="Components" t="Include">
             <e p="Card" t="Include">
               <e p="CardAnimator.cs" t="Include" />
+              <e p="CardGraphic.cs" t="Include" />
               <e p="CardLabel.cs" t="Include" />
               <e p="CardShader.cs" t="Include" />
             </e>
@@ -755,6 +756,7 @@
             <e p="BoardController.cs" t="Include" />
             <e p="Card" t="Include">
               <e p="CardController.cs" t="Include" />
+              <e p="InspectorCardController.cs" t="Include" />
               <e p="MerchantCardController.cs" t="Include" />
               <e p="PirateCardController.cs" t="Include" />
               <e p="PlayerCardController.cs" t="Include" />
@@ -793,6 +795,7 @@
             <e p="Card" t="Include">
               <e p="Card.cs" t="Include" />
               <e p="CardAnimationSettings.cs" t="Include" />
+              <e p="InspectorCard.cs" t="Include" />
               <e p="MerchantCard.cs" t="Include" />
               <e p="PirateCard.cs" t="Include" />
               <e p="PlayerCard.cs" t="Include" />
@@ -804,7 +807,10 @@
             </e>
             <e p="Deck.cs" t="Include" />
             <e p="Direction.cs" t="Include" />
-            <e p="Game.cs" t="Include" />
+            <e p="Game" t="Include">
+              <e p="Game.cs" t="Include" />
+              <e p="IGameStatusNotifier.cs" t="Include" />
+            </e>
             <e p="Pile.cs" t="Include" />
             <e p="ResourceFixation.cs" t="Include" />
             <e p="Sea.cs" t="Include" />
@@ -838,12 +844,12 @@
             </e>
             <e p="Card" t="Include">
               <e p="CardFaceView.cs" t="Include" />
-              <e p="CardMerchantView.cs" t="Include" />
-              <e p="CardPirateView.cs" t="Include" />
-              <e p="CardPlayerView.cs" t="Include" />
-              <e p="CardResourceView.cs" t="Include" />
-              <e p="CardStatView.cs" t="Include" />
               <e p="CardView.cs" t="Include" />
+              <e p="InspectorCardView.cs" t="Include" />
+              <e p="MerchantCardView.cs" t="Include" />
+              <e p="PirateCardView.cs" t="Include" />
+              <e p="PlayerCardView.cs" t="Include" />
+              <e p="ResourceCardView.cs" t="Include" />
             </e>
             <e p="Menu" t="Include">
               <e p="GameMenuView.cs" t="Include" />

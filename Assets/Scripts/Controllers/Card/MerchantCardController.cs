@@ -2,16 +2,23 @@ using Zenject;
 
 public class MerchantCardController : CardController
 {
-    public class Factory : PlaceholderFactory<MerchantCard, CardMerchantView, MerchantCardController>
+    public class Factory : PlaceholderFactory<IMerchantCard, IMerchantCardView, MerchantCardController>
     {
     }
     
-    private readonly MerchantCard model;
-    private readonly CardMerchantView view;
+    private readonly IMerchantCard model;
+    private readonly IMerchantCardView view;
     
-    public MerchantCardController(MerchantCard model, CardMerchantView view) : base(model, view)
+    public MerchantCardController(IMerchantCard model, IMerchantCardView view) : base(model, view)
     {
         this.model = model;
         this.view = view;
+    }
+
+    public override void Initialize()
+    {
+        base.Initialize();
+
+        view.Fixation = model.Fixation;
     }
 }

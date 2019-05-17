@@ -12,11 +12,10 @@ public enum CardType
     Food               = 1 << 3,
     Artifact           = 1 << 4,
     Gem                = 1 << 5,
-    WeaponMelee        = 1 << 6,
-    WeaponArtillery    = 1 << 7,
-    Money              = 1 << 8,
+    Weapon             = 1 << 6,
+    Inspector          = 1 << 8,
                          
-    Resource           = Food | Gem | Artifact | WeaponMelee | WeaponArtillery
+    Resource           = Food | Gem | Artifact | Weapon
 }
 
 public enum CardFace
@@ -28,6 +27,7 @@ public enum CardFace
 public interface ICard
 {
     int Value { get; set; }
+    int OriginalValue { get; }
     int Index { get; }
     string Name { get; }
     CardType Type { get; }
@@ -69,6 +69,7 @@ public interface ICard
 public abstract class Card : ScriptableObject, ICard
 {
     [SerializeField] protected IntReactiveProperty value = new IntReactiveProperty();
+    protected IPlayerStats playerStats;
     
     private readonly Subject<Transform> binding = new Subject<Transform>();
     private readonly Subject<Unit> boarding = new Subject<Unit>();
@@ -89,6 +90,7 @@ public abstract class Card : ScriptableObject, ICard
     private float arrangedDepth;
 
     public abstract CardType Type { get; }
+    public int OriginalValue { get; private set; }
     public int Index { get; private set; }
     public string Name => name;
     public Sprite FrontFace => frontFace;
@@ -126,6 +128,13 @@ public abstract class Card : ScriptableObject, ICard
     public IObservable<(Color, float)> WhenTinted => tinting;
     public IObservable<(Color, float)> WhenFogged => fogging;
     public IObservable<Unit> WhenDestroyed => destruction;
+    
+    [Inject]
+    protected void Construct(IPlayerStats playerStats)
+    {
+        OriginalValue = Value;
+        this.playerStats = playerStats;
+    }
 
     public abstract bool CanMatch(ICard withOther, ISlot fromSlot);
 
@@ -174,7 +183,7 @@ public abstract class Card : ScriptableObject, ICard
         arranging.OnNext(Unit.Default);
     }
 
-    public void Flip(CardFace toFace)
+    public virtual void Flip(CardFace toFace)
     {
         face = toFace;
         flipping.OnNext(toFace);

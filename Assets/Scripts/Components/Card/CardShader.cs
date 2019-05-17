@@ -19,7 +19,6 @@ public class CardShader : MonoBehaviour, ICardShader
     {
         public readonly Func<Color> colorGetter;
         
-        private readonly Color originalColor;
         private readonly Renderer renderer;
         private readonly Action<Color> colorSetter;
         private readonly MaterialPropertyBlock materialPropertyBlock;
@@ -34,18 +33,17 @@ public class CardShader : MonoBehaviour, ICardShader
             this.colorGetter = colorGetter;
             this.colorSetter = colorSetter;
             
-            originalColor = colorGetter();
             materialPropertyBlock = GetPropertyBlock(renderer);
         }
 
         public void Apply(Action<Action<Color>, Color> colorTransform)
         {
-            colorTransform(colorSetter, originalColor);
+            colorTransform(colorSetter, colorGetter());
         }
 
         public void Apply(Action<MaterialPropertyBlock, Color> colorTransform)
         {
-            colorTransform(materialPropertyBlock, originalColor);
+            colorTransform(materialPropertyBlock, colorGetter());
             
             renderer.SetPropertyBlock(materialPropertyBlock);
         }
@@ -76,7 +74,7 @@ public class CardShader : MonoBehaviour, ICardShader
     }
 
     private void Awake()
-    {
+    {        
         foreach (var spriteRenderer in targetSpriteRenderers)
             shadingEntries.Add(ProduceEntry(spriteRenderer));
         
@@ -86,7 +84,7 @@ public class CardShader : MonoBehaviour, ICardShader
     
     public void Fade(float toAlphaValue)
     {
-        Apply((colorSetter, originalColor) => colorSetter(originalColor.SetAlpha(toAlphaValue)));
+        Apply((colorSetter, startColor) => colorSetter(startColor.SetAlpha(toAlphaValue)));
     }
 
     public IObservable<Unit> FadeAsObservable(float toAlphaValue)
@@ -117,12 +115,12 @@ public class CardShader : MonoBehaviour, ICardShader
     
     public void Tint(Color withColor, float byFactor)
     {
-        Apply((colorSetter, originalColor) => colorSetter(originalColor.Tint(withColor, byFactor)));
+        Apply((colorSetter, startColor) => colorSetter(startColor.Tint(withColor, byFactor)));
     }
     
     public void Fog(Color withColor, float byFactor)
     {
-        Apply((propertyBlock, originalColor) => 
+        Apply((propertyBlock, startColor) => 
         {
             propertyBlock.SetColor(FogColorPropertyId, withColor);
             propertyBlock.SetFloat(FogIntensityPropertyId, byFactor);

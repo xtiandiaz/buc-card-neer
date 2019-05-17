@@ -9,6 +9,6 @@ public abstract class MenuView : MonoBehaviour
     private void Initialize(Viewport viewport)
     {
         var canvasScaler = GetComponent<CanvasScaler>();
-        canvasScaler.scaleFactor = Screen.width / viewport.Size.x;
+        canvasScaler.scaleFactor = Screen.width / viewport.Size.x / 10f;
     }
 }

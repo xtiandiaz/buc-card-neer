@@ -7,11 +7,13 @@ public interface IPlayerCard : ICard, IPlayerStats
 {
     bool CanPurchase(IResourceCard resourceCard);
     bool CanConsume(IResourceCard resourceCard);
+    bool CanUnlock(IResourceCard resourceCard);
 }
 
 [CreateAssetMenu(menuName = "Game/Card/Player")]
 public class PlayerCard : Card, IPlayerCard
 {
+    [SerializeField] private int maxHealthPoints = 14;
     [SerializeField] private IntReactiveProperty coins = new IntReactiveProperty(10);
     
     public override CardType Type => CardType.Player;
@@ -19,7 +21,7 @@ public class PlayerCard : Card, IPlayerCard
     public int HealthPoints
     {
         get => Value;
-        set => Value = value;
+        set => Value = Math.Min(value, maxHealthPoints);
     }
 
     public int Coins
@@ -33,24 +35,26 @@ public class PlayerCard : Card, IPlayerCard
 
     public override bool CanMatch(ICard withOther, ISlot fromSlot)
     {
-        if ((fromSlot.Type & (SlotType.Storage | SlotType.Boarding)) == 0)
+        if (!withOther.IsBoarded)
             return false;
         
         if ((withOther.Type & (CardType.Pirate)) != 0)
             return true;
 
         if (withOther is IResourceCard resourceCard)
-            return CanPurchase(resourceCard) || CanConsume(resourceCard);
+            return CanPurchase(resourceCard) || CanConsume(resourceCard) || CanUnlock(resourceCard);
 
         return false;
     }
 
     public override void Match(ICard withOther)
     {
-        if ((withOther.Type & (CardType.Pirate)) != 0)
+        if (withOther is IPirateCard pirateCard)
         {
-            HealthPoints -= withOther.Value;
-            withOther.Value = 0; // Cause for destruction
+            HealthPoints -= pirateCard.Value;
+            Coins += pirateCard.OriginalValue * pirateCard.LootMultiplier;
+            
+            pirateCard.Value = 0; // Cause for destruction
             
             return;
         }
@@ -58,15 +62,22 @@ public class PlayerCard : Card, IPlayerCard
         if (!(withOther is IResourceCard resourceCard))
             return;
 
+        if (CanUnlock(resourceCard))
+            resourceCard.Unlock();
         if (CanPurchase(resourceCard))
             resourceCard.Purchase();
         else if (CanConsume(resourceCard))
             resourceCard.Consume();
     }
 
+    public bool CanUnlock(IResourceCard resourceCard)
+    {
+        return resourceCard.IsLocked && resourceCard.LockValue <= HealthPoints;
+    }
+
     public bool CanPurchase(IResourceCard resourceCard)
     {
-        return resourceCard.IsPurchasable && resourceCard.Value <= Coins;
+        return !resourceCard.IsAcquired && resourceCard.Value <= Coins;
     }
 
     public bool CanConsume(IResourceCard resourceCard)

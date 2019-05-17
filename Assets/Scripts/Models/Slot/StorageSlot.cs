@@ -21,12 +21,13 @@ public class StorageSlot : Slot, IStorageSlot
 
     protected override bool CanLodge(ISlot fromSlot)
     {
-        return (fromSlot.Type & (SlotType.Boarding)) != 0;
+        // Can store only what's on-board
+        return (fromSlot.Type & SlotType.Boarding) != 0;
     }
 
     protected override bool CanLodge(ICard card)
     {
-        if (!(card is IResourceCard resourceCard))
+        if (!(card is IResourceCard resourceCard) || !resourceCard.IsAcquired)
             return false;
 
         if ((ResourceMask & resourceCard.ResourceType) == 0)

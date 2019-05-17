@@ -16,3 +16,4 @@ MonoBehaviour:
     value: 9
   frontFace: {fileID: 21300000, guid: 1f40b4c98798046f5b45d2e541ce3e4f, type: 3}
   backFace: {fileID: 21300000, guid: 54b63cc400e4a44b1954a5f1a9a6846d, type: 3}
+  lootMultiplier: 2
