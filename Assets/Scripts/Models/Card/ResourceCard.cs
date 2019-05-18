@@ -19,30 +19,33 @@ public enum ResourceType
 public interface IResourceCard : ICard
 {
     ResourceType ResourceType { get; }
+    IResourceAgent Owner { get; }
     Sprite Item { get; }
     ISuit Suit { get; }
     int LockValue { get; }
-    bool IsAcquired { get; }
-    bool IsPurchasable { get; }
+    bool IsWrapped { get; }
     bool IsLocked { get; }
-    bool IsConsumable { get; }
-    
-    IObservable<int> LockValueAsObservable { get; }
-    IObservable<Unit> WhenUnlocked { get; }
-    IObservable<Unit> WhenPurchased { get; } 
-    IObservable<Unit> WhenSold { get; } 
-    IObservable<Unit> WhenConsumed { get; } 
 
-    bool Purchase();
-    bool Sell(int byFactor);
-    bool Consume();
-    bool Unlock();
+    IObservable<int> WhenLockValueChanged { get; }
+    IObservable<Unit> WhenCollected { get; }
+    IObservable<Unit> WhenBought { get; } 
+    IObservable<Unit> WhenSold { get; } 
+    IObservable<Unit> WhenConsumed { get; }
+    IObservable<Unit> WhenUnlocked { get; }
+
+    void OnCollected(IResourceAgent byAgent);
+    void OnBought(IResourceAgent byAgent);
+    void OnSold(IResourceAgent toAgent);
+    void OnConsumed(IResourceAgent byAgent);
+    void Unwrap();
+    void Unlock();
 }
 
 [CreateAssetMenu(fileName = "CardResource", menuName = "Game/Card/Resource", order = 1)]
 public class ResourceCard : Card, IResourceCard
 {
-    private readonly Subject<Unit> purchasing = new Subject<Unit>();
+    private readonly Subject<Unit> collection = new Subject<Unit>();
+    private readonly Subject<Unit> buying = new Subject<Unit>();
     private readonly Subject<Unit> selling = new Subject<Unit>();
     private readonly Subject<Unit> consumption = new Subject<Unit>();
 
@@ -51,25 +54,25 @@ public class ResourceCard : Card, IResourceCard
     [SerializeField] private IntReactiveProperty lockValue = new IntReactiveProperty();
 
     public override CardType Type => (CardType) ResourceType;
+    public IResourceAgent Owner { get; private set; }
     public ResourceType ResourceType => suit.ResourceType;
     public Sprite Item => item;
     public ISuit Suit => suit;
-    public bool IsAcquired { get; private set; }
-    public bool IsPurchasable => !IsAcquired && !IsLocked;
+    public bool IsWrapped { get; private set; } = true;
     public bool IsLocked => LockValue > 0;
-    public bool IsConsumable => !IsLocked && (Type & CardType.Food) != 0;
 
     public int LockValue
     {
         get => lockValue.Value;
-        set => lockValue.Value = value;
+        private set => lockValue.Value = value;
     }
 
-    public IObservable<int> LockValueAsObservable => lockValue;
-    public IObservable<Unit> WhenUnlocked => lockValue.Where(x => x <= 0).Take(1).AsSingleUnitObservable();
-    public IObservable<Unit> WhenPurchased => purchasing;
+    public IObservable<int> WhenLockValueChanged => lockValue;
+    public IObservable<Unit> WhenCollected => collection;
+    public IObservable<Unit> WhenBought => buying;
     public IObservable<Unit> WhenSold => selling;
     public IObservable<Unit> WhenConsumed => consumption;
+    public IObservable<Unit> WhenUnlocked => lockValue.Where(x => x <= 0).Take(1).AsSingleUnitObservable();
 
     public override bool CanMatch(ICard withOther, ISlot fromSlot)
     {
@@ -100,69 +103,44 @@ public class ResourceCard : Card, IResourceCard
         base.Flip(toFace);
     }
 
-    public bool Purchase()
+    public void OnCollected(IResourceAgent byAgent)
     {
-        if (!IsPurchasable)
-            return false;
-        
-        IsAcquired = true;
-        
-        purchasing.OnNext(Unit.Default);
-        purchasing.OnCompleted();
+        Unwrap();
+        Owner = byAgent;
 
-        return true;
+        collection.OnNext(Unit.Default);
     }
 
-    public bool Sell(int byFactor)
+    public void OnBought(IResourceAgent byAgent)
     {
-        playerStats.Coins += Value * byFactor;
-        
+        throw new NotImplementedException();
+    }
+
+    public void OnSold(IResourceAgent toAgent)
+    {
         selling.OnNext(Unit.Default);
         selling.OnCompleted();
         
         Destroy();
-
-        return true;
     }
 
-    public bool Consume()
+    public void OnConsumed(IResourceAgent byAgent)
     {
-        if (!IsConsumable)
-            return false;
-        
-        var didConsume = true;
-        
-        switch (ResourceType)
-        {
-            case ResourceType.Food:
+        consumption.OnNext(Unit.Default);
+        consumption.OnCompleted();
 
-                playerStats.HealthPoints += Value;
-
-                break;
-            default:
-                didConsume = false;
-                break;
-        }
-
-        if (didConsume)
-        {
-            consumption.OnNext(Unit.Default);
-            consumption.OnCompleted();
-            
-            Destroy();
-        }
-
-        return didConsume;
+        Destroy();
     }
 
-    public bool Unlock()
+    public void Unwrap()
     {
-        if (!IsLocked)
-            return false;
+        IsWrapped = false;
+        
+        Flip(CardFace.Front);
+    }
 
-        playerStats.HealthPoints -= LockValue;
+    public void Unlock()
+    {
         LockValue = 0;
-
-        return true;
     }
 }

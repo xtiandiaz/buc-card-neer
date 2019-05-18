@@ -27,10 +27,10 @@ public class StorageSlot : Slot, IStorageSlot
 
     protected override bool CanLodge(ICard card)
     {
-        if (!(card is IResourceCard resourceCard) || !resourceCard.IsAcquired)
+        if (!card.IsBoarded)
             return false;
-
-        if ((ResourceMask & resourceCard.ResourceType) == 0)
+        
+        if (!(card is IResourceCard resourceCard) || resourceCard.IsWrapped || (ResourceMask & resourceCard.ResourceType) == 0)
             return false;
 
         return true;

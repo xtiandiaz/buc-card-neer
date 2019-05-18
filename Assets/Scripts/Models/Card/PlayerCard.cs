@@ -1,13 +1,11 @@
 using System;
 using UniRx;
 using UnityEngine;
-using Zenject;
 
-public interface IPlayerCard : ICard, IPlayerStats
+public interface IPlayerCard : ICard, IResourceTrader, IResourceCollector, IResourceConsumer
 {
-    bool CanPurchase(IResourceCard resourceCard);
-    bool CanConsume(IResourceCard resourceCard);
-    bool CanUnlock(IResourceCard resourceCard);
+    IObservable<int> Health { get; }
+    IObservable<int> Funds { get; }
 }
 
 [CreateAssetMenu(menuName = "Game/Card/Player")]
@@ -15,14 +13,8 @@ public class PlayerCard : Card, IPlayerCard
 {
     [SerializeField] private int maxHealthPoints = 14;
     [SerializeField] private IntReactiveProperty coins = new IntReactiveProperty(10);
-    
-    public override CardType Type => CardType.Player;
 
-    public int HealthPoints
-    {
-        get => Value;
-        set => Value = Math.Min(value, maxHealthPoints);
-    }
+    public override CardType Type => CardType.Player;
 
     public int Coins
     {
@@ -32,6 +24,13 @@ public class PlayerCard : Card, IPlayerCard
 
     public IObservable<int> Health => value;
     public IObservable<int> Funds => coins;
+    
+    private bool IsAlive => HealthPoints > 0;
+    private int HealthPoints
+    {
+        get => Value;
+        set => Value = Math.Min(value, maxHealthPoints);
+    }
 
     public override bool CanMatch(ICard withOther, ISlot fromSlot)
     {
@@ -42,7 +41,7 @@ public class PlayerCard : Card, IPlayerCard
             return true;
 
         if (withOther is IResourceCard resourceCard)
-            return CanPurchase(resourceCard) || CanConsume(resourceCard) || CanUnlock(resourceCard);
+            return CanCollect(resourceCard) || CanConsume(resourceCard) || CanUnlock(resourceCard);
 
         return false;
     }
@@ -51,11 +50,7 @@ public class PlayerCard : Card, IPlayerCard
     {
         if (withOther is IPirateCard pirateCard)
         {
-            HealthPoints -= pirateCard.Value;
-            Coins += pirateCard.OriginalValue * pirateCard.LootMultiplier;
-            
-            pirateCard.Value = 0; // Cause for destruction
-            
+            Fight(pirateCard);
             return;
         }
 
@@ -63,11 +58,16 @@ public class PlayerCard : Card, IPlayerCard
             return;
 
         if (CanUnlock(resourceCard))
-            resourceCard.Unlock();
-        if (CanPurchase(resourceCard))
-            resourceCard.Purchase();
+            Unlock(resourceCard);
+        else if (CanCollect(resourceCard))
+            Collect(resourceCard);
         else if (CanConsume(resourceCard))
-            resourceCard.Consume();
+            Consume(resourceCard);
+    }
+
+    public bool CanCollect(IResourceCard resourceCard)
+    {
+        return resourceCard.Owner == null && !resourceCard.IsLocked;
     }
 
     public bool CanUnlock(IResourceCard resourceCard)
@@ -75,13 +75,70 @@ public class PlayerCard : Card, IPlayerCard
         return resourceCard.IsLocked && resourceCard.LockValue <= HealthPoints;
     }
 
-    public bool CanPurchase(IResourceCard resourceCard)
+    public bool CanBuy(IResourceCard resourceCard)
     {
-        return !resourceCard.IsAcquired && resourceCard.Value <= Coins;
+        throw new NotImplementedException();
+    }
+    
+    public bool CanSell(IResourceCard resourceCard)
+    {
+        return resourceCard.Owner == (IResourceAgent) this;
     }
 
     public bool CanConsume(IResourceCard resourceCard)
     {
-        return resourceCard.IsConsumable;
+        return (resourceCard.Type & CardType.Food) != 0;
+    }
+
+    public void Collect(IResourceCard resourceCard)
+    {
+        resourceCard.OnCollected(this);
+    }
+    
+    public void Buy(IResourceCard resourceCard)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Sell(IResourceCard resourceCard, IMerchantCard toMerchant)
+    {
+        Coins += toMerchant.GetOffer(resourceCard);
+
+        resourceCard.OnSold(toMerchant);
+    }
+
+    public void Consume(IResourceCard resourceCard)
+    {
+        if ((resourceCard.Type & CardType.Food) == 0) 
+            return;
+        
+        HealthPoints += resourceCard.Value;
+        
+        resourceCard.OnConsumed(this);
+    }
+
+    private void Unlock(IResourceCard resourceCard)
+    {
+        HealthPoints -= resourceCard.LockValue;
+        
+        resourceCard.Unlock();
+        
+        Collect(resourceCard);
+    }
+
+    private void Fight(IPirateCard pirate)
+    {
+        HealthPoints -= pirate.Value;
+
+        if (!IsAlive) 
+            return;
+        
+        Seize(pirate);
+        pirate.Destroy();
+    }
+
+    private void Seize(IPirateCard fromPirate)
+    {
+        Coins += fromPirate.OriginalValue * fromPirate.LootMultiplier;
     }
 }

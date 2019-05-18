@@ -69,8 +69,7 @@ public interface ICard
 public abstract class Card : ScriptableObject, ICard
 {
     [SerializeField] protected IntReactiveProperty value = new IntReactiveProperty();
-    protected IPlayerStats playerStats;
-    
+
     private readonly Subject<Transform> binding = new Subject<Transform>();
     private readonly Subject<Unit> boarding = new Subject<Unit>();
     private readonly Subject<Unit> arranging = new Subject<Unit>();
@@ -129,11 +128,9 @@ public abstract class Card : ScriptableObject, ICard
     public IObservable<(Color, float)> WhenFogged => fogging;
     public IObservable<Unit> WhenDestroyed => destruction;
     
-    [Inject]
-    protected void Construct(IPlayerStats playerStats)
+    private void Awake()
     {
         OriginalValue = Value;
-        this.playerStats = playerStats;
     }
 
     public abstract bool CanMatch(ICard withOther, ISlot fromSlot);
@@ -204,7 +201,7 @@ public abstract class Card : ScriptableObject, ICard
         fogging.OnNext((withColor, byFactor));
     }
 
-    public void Destroy()
+    public virtual void Destroy()
     {
         Bond?.Release(this);
         

@@ -31,9 +31,6 @@ public class PirateCard : Card, IPirateCard
         
         Value -= withOther.Value;
 
-        if (Value <= 0)
-            playerStats.Coins += withOther.OriginalValue;
-        
         withOther.Destroy();
     }
 }

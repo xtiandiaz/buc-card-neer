@@ -77,6 +77,6 @@ public class Ship : IShip
             return;
         }
         
-       slot.Value.Lodge(card);
+        slot.Value.Lodge(card);
     }
 }

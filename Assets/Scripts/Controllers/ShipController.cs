@@ -43,9 +43,16 @@ public class ShipController : IShipController
             
         disposables.Add(model.WhenBoardedResource
             .Delay(TimeSpan.FromSeconds(cardAnimationSettings.BoardingDelay))
-            .SelectMany(resCard => resCard.IsAcquired 
-                ? Observable.Return(resCard) 
-                : resCard.WhenPurchased.Select(_ => resCard))
+            .SelectMany(resCard =>
+            {
+                if (playerCard.CanCollect(resCard))
+                {
+                    playerCard.Collect(resCard);
+                    return Observable.Return(resCard);
+                }
+                
+                return resCard.WhenCollected.Select(_ => resCard);
+            })
             .Do(resCard => model.Store(resCard))
             .Subscribe());
     }

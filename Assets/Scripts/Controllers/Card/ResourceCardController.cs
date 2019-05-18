@@ -22,16 +22,11 @@ public class ResourceCardController : CardController
 
         view.Suit = model.Suit;
         view.Item = model.Item;
-        
-        disposables.Add(model.LockValueAsObservable.Subscribe(lockValue =>
+
+        disposables.Add(model.WhenLockValueChanged.Subscribe(lockValue =>
         {
             view.LockValue = lockValue;
             view.ToggleLock(lockValue > 0);
         }));
-        
-        // For now, Resources are automatically purchased when boarded and unlocked:
-        disposables.Add(model.WhenBoarded
-            .SelectMany(_ => model.WhenUnlocked)
-            .Subscribe(_ => model.Purchase()));
     }
 }
