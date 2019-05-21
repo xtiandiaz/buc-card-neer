@@ -78,7 +78,7 @@ public class PlayerCard : Card, IPlayerCard
         return resourceCard.IsLocked && resourceCard.LockValue <= HealthPoints;
     }
 
-    public bool CanBuy(IResourceCard resourceCard)
+    public bool CanBuy(IResourceCard resource)
     {
         throw new NotImplementedException();
     }

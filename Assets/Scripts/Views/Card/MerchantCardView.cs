@@ -18,7 +18,7 @@ public class MerchantCardView : CardView, IMerchantCardView
             fixationGraphic.Color = 
                 fixationLabel.Color = value.Suit.Color;
             
-            fixationLabel.SetValue($"{value.Degree}x");
+            fixationLabel.SetValue($"{value.Degree}");
         }
     }
 }

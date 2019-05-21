@@ -83,20 +83,34 @@ public class ResourceCard : Card, IResourceCard
 
     public override bool CanMatch(ICard withOther, ISlot fromSlot)
     {
-        if (!IsLocked)
-            return false;
+        if (IsLocked)
+            return (withOther.Type & CardType.WeaponMelee) != 0;
 
-        return withOther is IResourceCard resourceCard && (resourceCard.ResourceType & ResourceType.WeaponMelee) != 0;
+        return (ResourceType & ResourceType.WeaponRanged) != 0 && (withOther.Type & CardType.Pirate) != 0;
     }
 
     public override void Match(ICard withOther)
     {
-        if (!(withOther is IResourceCard resourceCard) || (resourceCard.ResourceType & ResourceType.WeaponMelee) == 0) 
+        if (IsLocked)
+        {
+            if ((withOther.Type & CardType.WeaponMelee) != 0)
+                return;
+        
+            LockValue -= withOther.Value;
+        
+            withOther.Destroy();
+        }
+
+        if ((ResourceType & ResourceType.WeaponRanged) == 0) 
             return;
         
-        LockValue -= withOther.Value;
-        
-        withOther.Destroy();
+        // Ranged combat follows:
+
+        if ((withOther.Type & CardType.Pirate) != 0)
+        {
+            withOther.Value -= Value;
+            Destroy();
+        }
     }
 
     public override void Flip(CardFace toFace)

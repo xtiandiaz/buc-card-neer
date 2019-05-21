@@ -8,7 +8,7 @@ public interface IMerchantCard : ICard, IResourceBuyer
     
     IObservable<IResourceCard> WhenBought { get; }
     
-    int GetOffer(IResourceCard forResourceCard);
+    int GetOffer(IResourceCard forResource);
 }
 
 [CreateAssetMenu(menuName = "Game/Card/Merchant")]
@@ -26,9 +26,6 @@ public class MerchantCard : Card, IMerchantCard
 
     public override bool CanMatch(ICard withOther, ISlot fromSlot)
     {
-        if (!IsBoarded)
-            return false;
-        
         return withOther is IResourceCard resourceCard && CanBuy(resourceCard);
     }
 
@@ -40,9 +37,9 @@ public class MerchantCard : Card, IMerchantCard
         }
     }
 
-    public bool CanBuy(IResourceCard resourceCard)
+    public bool CanBuy(IResourceCard resource)
     {
-        return resourceCard.Owner != null && resourceCard.Owner != (IResourceAgent) this;
+        return resource.Owner != null && resource.Owner != (IResourceAgent) this;
     }
 
     public void Buy(IResourceCard resourceCard)
@@ -52,9 +49,9 @@ public class MerchantCard : Card, IMerchantCard
         buying.OnNext(resourceCard);
     }
 
-    public int GetOffer(IResourceCard forResourceCard)
+    public int GetOffer(IResourceCard forResource)
     {
-        return forResourceCard.Value 
-               * ((fixation.Suit.ResourceType & forResourceCard.ResourceType) != 0 ? fixation.Degree : 1);
+        return forResource.Value 
+               * ((fixation.Suit.ResourceType & forResource.ResourceType) != 0 ? Value : 1);
     }
 }

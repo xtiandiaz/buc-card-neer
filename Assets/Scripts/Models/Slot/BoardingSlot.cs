@@ -14,17 +14,20 @@ public class BoardingSlot : Slot
     
     protected override bool CanMatch(ICard withCard)
     {
-        return withCard.IsBoarded;
+        return withCard.IsBoarded || (withCard.Type & CardType.Pirate) != 0;
     }
 
     protected override bool CanLodge(ISlot fromSlot)
     {
-        return fromSlot.Type == SlotType.Supply;
+        return (fromSlot.Type & (SlotType.Supply | SlotType.Storage)) != 0;
     }
 
     protected override bool CanLodge(ICard card)
     {
-        return (card.Type & (CardType.Resource | CardType.Agent)) != 0;
+        if (!card.IsBoarded)
+            return (card.Type & (CardType.Resource | CardType.Agent)) != 0;
+        
+        return IsEmpty && (card.Type & CardType.WeaponRanged) != 0;
     }
 
     protected override void OnLodged(ICard card)
