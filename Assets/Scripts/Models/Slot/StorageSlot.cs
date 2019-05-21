@@ -19,6 +19,11 @@ public class StorageSlot : Slot, IStorageSlot
 
     public ResourceType ResourceMask => settings.ResourceMask;
 
+    protected override bool CanMatch(ICard withCard)
+    {
+        return false;
+    }
+    
     protected override bool CanLodge(ISlot fromSlot)
     {
         // Can store only what's on-board

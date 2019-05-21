@@ -22,6 +22,7 @@ public class ResourceCardController : CardController
 
         view.Suit = model.Suit;
         view.Item = model.Item;
+        view.Container = model.Container;
 
         disposables.Add(model.WhenLockValueChanged.Subscribe(lockValue =>
         {

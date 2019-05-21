@@ -5,7 +5,7 @@ using UnityEngine;
 [Flags]
 public enum SlotType
 {
-    Event     = 1 << 0,
+    Supply     = 1 << 0,
     Boarding  = 1 << 1,
     Storage   = 1 << 2,
     Player    = 1 << 3
@@ -32,7 +32,7 @@ public interface ISlot : ICardBond, ICardConsumer
     IObservable<bool> Locking { get; }
 
     ICard Pick();
-    bool CanMatch(ICard card, ISlot fromSlot);
+    bool CanMatch(ICard withCard, ISlot fromSlot);
     void Match(ICard card);
     bool CanLodge(ICard card, ISlot fromSlot);
     void Lodge(ICard card);
@@ -102,14 +102,14 @@ public abstract class Slot : ISlot
         return card;
     }
 
+    public bool CanMatch(ICard withCard, ISlot fromSlot)
+    {
+        return CanMatch(withCard) && pile.Peek()?.CanMatch(withCard, fromSlot) == true;
+    }
+    
     public bool CanLodge(ICard card, ISlot fromSlot)
     {
         return card != null && pile.CanInsert && !pile.DoesContain(card) && CanLodge(fromSlot) && CanLodge(card);
-    }
-
-    public bool CanMatch(ICard card, ISlot fromSlot)
-    {
-        return pile.Peek()?.CanMatch(card, fromSlot) == true;
     }
 
     public void Match(ICard card)
@@ -173,6 +173,8 @@ public abstract class Slot : ISlot
 
         Lodge(cardProvider.Provide());
     }
+
+    protected abstract bool CanMatch(ICard withCard);
     
     protected abstract bool CanLodge(ICard card);
          

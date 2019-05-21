@@ -826,11 +826,11 @@
             </e>
             <e p="Slot" t="Include">
               <e p="BoardingSlot.cs" t="Include" />
-              <e p="EventSlot.cs" t="Include" />
               <e p="PlayerSlot.cs" t="Include" />
               <e p="Slot.cs" t="Include" />
               <e p="SlotSettings.cs" t="Include" />
               <e p="StorageSlot.cs" t="Include" />
+              <e p="SupplySlot.cs" t="Include" />
             </e>
             <e p="Suit.cs" t="Include" />
             <e p="Viewport.cs" t="Include" />

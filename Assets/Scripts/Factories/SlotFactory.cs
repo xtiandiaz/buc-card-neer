@@ -11,7 +11,7 @@ public class SlotFactory : ISlotFactory
     private readonly BoardingSlot.Factory modelBoardingFactory;
     private readonly PlayerSlot.Factory modelPlayerFactory;
     private readonly StorageSlot.Factory modelResourceFactory;
-    private readonly EventSlot.Factory modelEventFactory;
+    private readonly SupplySlot.Factory modelEventFactory;
     private readonly SlotController.Factory controllerFactory;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
@@ -19,7 +19,7 @@ public class SlotFactory : ISlotFactory
         BoardingSlot.Factory modelBoardingFactory,
         PlayerSlot.Factory modelPlayerFactory,
         StorageSlot.Factory modelResourceFactory,
-        EventSlot.Factory modelEventFactory,
+        SupplySlot.Factory modelEventFactory,
         SlotController.Factory controllerFactory
         )
     {
@@ -47,7 +47,7 @@ public class SlotFactory : ISlotFactory
         
         switch (settings.Type)
         {
-            case SlotType.Event:
+            case SlotType.Supply:
                 return modelEventFactory.Create(pile, settings, fromView.Bounds, fromView.Transform);
             case SlotType.Boarding:
                 return modelBoardingFactory.Create(pile, settings, fromView.Bounds, fromView.Transform);

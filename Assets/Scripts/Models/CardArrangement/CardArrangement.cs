@@ -12,6 +12,7 @@ public class CardArrangement : ScriptableObject, ICardArrangement
     [SerializeField] protected Vector3 offset;
     [SerializeField] protected AnimationCurve offsetFunction;
     [SerializeField] protected CardFace facing;
+    [SerializeField] protected bool shouldTopMostRemainInPlace;
 
     public void Apply(IList<ICard> toCards, int? fromTotalCount)
     {
@@ -19,7 +20,7 @@ public class CardArrangement : ScriptableObject, ICardArrangement
         float total = fromTotalCount ?? toCards.Count;
 
         for (var i = countM1; i >= 0; i--)
-            Apply(toCards[i], i, offset * (countM1 - i), i / total);
+            Apply(toCards[i], i, offset * (shouldTopMostRemainInPlace ? countM1 - i : i), i / total);
     }
 
     protected virtual void Apply(ICard toCard, int withIndex, Vector3 atPosition, float andTimeStep)

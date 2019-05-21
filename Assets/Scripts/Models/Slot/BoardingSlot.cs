@@ -11,15 +11,20 @@ public class BoardingSlot : Slot
         : base(pile, settings, bounds, transformBond)
     {
     }
+    
+    protected override bool CanMatch(ICard withCard)
+    {
+        return withCard.IsBoarded;
+    }
 
     protected override bool CanLodge(ISlot fromSlot)
     {
-        return fromSlot.Type == SlotType.Event;
+        return fromSlot.Type == SlotType.Supply;
     }
 
     protected override bool CanLodge(ICard card)
     {
-        return (card.Type & (CardType.Resource | CardType.Pirate | CardType.Merchant)) != 0;
+        return (card.Type & (CardType.Resource | CardType.Agent)) != 0;
     }
 
     protected override void OnLodged(ICard card)

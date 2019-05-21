@@ -31,26 +31,18 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 6ee30767afd8f4a5eadf8efd6f0e95a2, type: 3}
-    totalSpriteSurfaceArea: 2800000
+    totalSpriteSurfaceArea: 1400000
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: e0c5ddc0092624ea18a4afd9dcb6599a, type: 3}
-  - {fileID: 21300000, guid: 7a434bc10d38f48d282de428a5842b2a, type: 3}
   - {fileID: 21300000, guid: 2f2aa4140721a48ceb58dbef774bb478, type: 3}
   - {fileID: 21300000, guid: 54b63cc400e4a44b1954a5f1a9a6846d, type: 3}
-  - {fileID: 21300000, guid: 365e4437cedda4a8a972e0b0f354905e, type: 3}
-  - {fileID: 21300000, guid: 0322a7f8a66e9444e9885337a5ec4d40, type: 3}
-  - {fileID: 21300000, guid: f46531490548d4521bb24303c253bac5, type: 3}
   - {fileID: 21300000, guid: 5051615c02c57464d89499432909e4a6, type: 3}
   m_PackedSpriteNamesToIndex:
-  - CardPlayerDead
-  - CardCrate
-  - CardMerchantShip
-  - CardPirateShip
-  - CardChest
-  - CardBarrel
-  - CardKraken
-  - CardInspectorShip
+  - Player
+  - MerchantShip
+  - PirateShip
+  - InspectorShip
   m_Tag: CardBack
   m_IsVariant: 0

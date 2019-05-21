@@ -17,6 +17,11 @@ public class CardFaceView : MonoBehaviour, ICardFaceView
         set => faceRenderer.sprite = value;
     }
 
+    public Color Color
+    {
+        set => faceRenderer.color = value;
+    }
+
     public void ToggleVisibility(bool on)
     {
         gameObject.SetActive(on);

@@ -9,13 +9,16 @@ public enum CardType
     Player             = 1 << 0,
     Pirate             = 1 << 1,
     Merchant           = 1 << 2,
-    Food               = 1 << 3,
-    Artifact           = 1 << 4,
-    Gem                = 1 << 5,
-    Weapon             = 1 << 6,
-    Inspector          = 1 << 8,
+    Inspector          = 1 << 3,
+    Food               = 1 << 4,
+    Artifact           = 1 << 5,
+    Gem                = 1 << 6,
+    WeaponMelee        = 1 << 7,
+    WeaponRanged       = 1 << 8,
+    Medicine           = 1 << 9,
                          
-    Resource           = Food | Gem | Artifact | Weapon
+    Resource           = Food | Gem | Artifact | WeaponMelee | WeaponRanged | Medicine,
+    Agent              = Pirate | Merchant | Inspector
 }
 
 public enum CardFace

@@ -9,7 +9,7 @@ public class SeaCardArrangement : CardArrangement
     protected override void Apply(ICard toCard, int withIndex, Vector3 atPosition, float andTimeStep)
     {
         var offsetAtIndex = offset * withIndex;
-        var arrangedPosition = new Vector3(offsetAtIndex.x, offset.y * offsetFunction.Evaluate(andTimeStep), offsetAtIndex.z);
+        var arrangedPosition = new Vector3(offsetAtIndex.x, offset.y * withIndex, offsetAtIndex.z);
         
         base.Apply(toCard, withIndex, arrangedPosition, andTimeStep);
         

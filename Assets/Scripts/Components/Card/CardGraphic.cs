@@ -9,4 +9,9 @@ public class CardGraphic : MonoBehaviour
     {
         set => spriteRenderers.ForEach(r => r.sprite = value);
     }
+
+    public Color Color
+    {
+        set => spriteRenderers.ForEach(r => r.color = value);
+    }
 }

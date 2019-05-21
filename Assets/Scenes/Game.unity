@@ -527,7 +527,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0.7619123, b: 0.951, a: 1}
+  m_BackGroundColor: {r: 0.26125845, g: 0.75121695, b: 0.9716981, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -766,7 +766,7 @@ PrefabInstance:
     - target: {fileID: 3296003705870509421, guid: 2fbe541c3947b49e9898dc04ca06b96e,
         type: 3}
       propertyPath: m_Name
-      value: EventSlot0
+      value: SupplySlot0
       objectReference: {fileID: 0}
     - target: {fileID: 3296003705870509421, guid: 2fbe541c3947b49e9898dc04ca06b96e,
         type: 3}
@@ -1388,7 +1388,7 @@ PrefabInstance:
     - target: {fileID: 3296003705870509421, guid: 2fbe541c3947b49e9898dc04ca06b96e,
         type: 3}
       propertyPath: m_Name
-      value: EventSlot1
+      value: SupplySlot1
       objectReference: {fileID: 0}
     - target: {fileID: 3296003705870509421, guid: 2fbe541c3947b49e9898dc04ca06b96e,
         type: 3}
@@ -1554,7 +1554,7 @@ PrefabInstance:
     - target: {fileID: 3296003705870509421, guid: 2fbe541c3947b49e9898dc04ca06b96e,
         type: 3}
       propertyPath: m_Name
-      value: EventSlot2
+      value: SupplySlot2
       objectReference: {fileID: 0}
     - target: {fileID: 3296003705870509421, guid: 2fbe541c3947b49e9898dc04ca06b96e,
         type: 3}
@@ -1935,7 +1935,7 @@ PrefabInstance:
     - target: {fileID: 3296003705870509421, guid: 2fbe541c3947b49e9898dc04ca06b96e,
         type: 3}
       propertyPath: m_Name
-      value: EventSlot3
+      value: SupplySlot3
       objectReference: {fileID: 0}
     - target: {fileID: 3296003705870509421, guid: 2fbe541c3947b49e9898dc04ca06b96e,
         type: 3}

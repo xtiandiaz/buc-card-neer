@@ -8,25 +8,19 @@ public interface IPirateCard : ICard
 [CreateAssetMenu(menuName = "Game/Card/Pirate")]
 public class PirateCard : Card, IPirateCard
 {
-    [SerializeField] [Range(2, 4)] private int lootMultiplier;
+    [SerializeField] [Range(1, 4)] private int lootMultiplier;
     
     public override CardType Type => CardType.Pirate;
     public int LootMultiplier => lootMultiplier;
 
     public override bool CanMatch(ICard withOther, ISlot fromSlot)
     {
-        if (!IsBoarded)
-            return false;
-        
-        if (!(withOther is IResourceCard resourceCard) || !resourceCard.IsBoarded)
-            return false;
-
-        return (resourceCard.ResourceType & ResourceType.Weapon) != 0;
+        return withOther is IResourceCard resourceCard && (resourceCard.ResourceType & ResourceType.WeaponMelee) != 0;
     }
 
     public override void Match(ICard withOther)
     {
-        if (!(withOther is IResourceCard resourceCard) || (resourceCard.ResourceType & ResourceType.Weapon) == 0) 
+        if (!(withOther is IResourceCard resourceCard) || (resourceCard.ResourceType & ResourceType.WeaponMelee) == 0) 
             return;
         
         Value -= withOther.Value;

@@ -11,15 +11,20 @@ public enum ResourceType
     Food                = CardType.Food,
     Artifact            = CardType.Artifact,
     Gem                 = CardType.Gem,
-    Weapon              = CardType.Weapon,
+    WeaponMelee         = CardType.WeaponMelee,
+    WeaponRanged        = CardType.WeaponRanged,
+    Medicine            = CardType.Medicine,
     
-    Item                = Food | Artifact | Gem
+    Item                = Food | Artifact | Gem,
+    Implement           = WeaponMelee | WeaponRanged | Medicine,
+    Weapon              = WeaponMelee | WeaponRanged
 }
 
 public interface IResourceCard : ICard
 {
     ResourceType ResourceType { get; }
     IResourceAgent Owner { get; }
+    Sprite Container { get; }
     Sprite Item { get; }
     ISuit Suit { get; }
     int LockValue { get; }
@@ -49,6 +54,7 @@ public class ResourceCard : Card, IResourceCard
     private readonly Subject<Unit> selling = new Subject<Unit>();
     private readonly Subject<Unit> consumption = new Subject<Unit>();
 
+    [SerializeField] private Sprite container;
     [SerializeField] private Sprite item;
     [SerializeField] private Suit suit;
     [SerializeField] private IntReactiveProperty lockValue = new IntReactiveProperty();
@@ -56,6 +62,7 @@ public class ResourceCard : Card, IResourceCard
     public override CardType Type => (CardType) ResourceType;
     public IResourceAgent Owner { get; private set; }
     public ResourceType ResourceType => suit.ResourceType;
+    public Sprite Container => container;
     public Sprite Item => item;
     public ISuit Suit => suit;
     public bool IsWrapped { get; private set; } = true;
@@ -76,18 +83,15 @@ public class ResourceCard : Card, IResourceCard
 
     public override bool CanMatch(ICard withOther, ISlot fromSlot)
     {
-        if (!IsBoarded || !IsLocked)
+        if (!IsLocked)
             return false;
-        
-        if (!(withOther is IResourceCard resourceCard) || !resourceCard.IsBoarded)
-            return false;
-        
-        return (resourceCard.ResourceType & ResourceType.Weapon) != 0;
+
+        return withOther is IResourceCard resourceCard && (resourceCard.ResourceType & ResourceType.WeaponMelee) != 0;
     }
 
     public override void Match(ICard withOther)
     {
-        if (!(withOther is IResourceCard resourceCard) || (resourceCard.ResourceType & ResourceType.Weapon) == 0) 
+        if (!(withOther is IResourceCard resourceCard) || (resourceCard.ResourceType & ResourceType.WeaponMelee) == 0) 
             return;
         
         LockValue -= withOther.Value;

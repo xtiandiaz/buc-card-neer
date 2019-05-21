@@ -35,9 +35,9 @@ public class CardView : MonoBehaviour, ICardView
     }
 
     [SerializeField] protected CardLabel valueLabel;
+    [SerializeField] protected CardFaceView frontFace;
     [SerializeField] private Transform contentWrapper;
     [SerializeField] private SortingGroup sortingGroup;
-    [SerializeField] private CardFaceView frontFace;
     [SerializeField] private CardFaceView backFace;
     
     [Inject] private CardAnimationSettings animationSettings;
@@ -88,10 +88,10 @@ public class CardView : MonoBehaviour, ICardView
         {
             sortingGroup.sortingOrder = value;
 
-            var shouldToggleFaceContent = value >= -1;
+            /*var shouldToggleFaceContent = value >= -1;
 
             frontFace.ToggleContent(shouldToggleFaceContent);
-            backFace.ToggleContent(shouldToggleFaceContent);
+            backFace.ToggleContent(shouldToggleFaceContent);*/
         }
     }
 

@@ -31,26 +31,20 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: bc1fdcda3d8024a90925b402284e75da, type: 3}
-    totalSpriteSurfaceArea: 2800000
+    totalSpriteSurfaceArea: 1750000
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: dd8d17801cdb34453afae4bd4bdc8b76, type: 3}
   - {fileID: 21300000, guid: 86f1ad9090ae042bab70c5a9265ea93d, type: 3}
-  - {fileID: 21300000, guid: f68949611698e418293fcdefa1029d00, type: 3}
-  - {fileID: 21300000, guid: 6522bb42bfd0941dfaa47b6ae7b5d3a5, type: 3}
-  - {fileID: 21300000, guid: 3daab1c96a3734d0987e25e89fbf9dd6, type: 3}
   - {fileID: 21300000, guid: 1f40b4c98798046f5b45d2e541ce3e4f, type: 3}
   - {fileID: 21300000, guid: 3b1beceaca5484967a72d8c2cd76f87c, type: 3}
-  - {fileID: 21300000, guid: 46fdb16f1c2d3493b80cb6e6bcd4f5e6, type: 3}
+  - {fileID: 21300000, guid: 2b92a5fadefb84c6b89311ccdb35b9eb, type: 3}
   m_PackedSpriteNamesToIndex:
-  - CardMerchant
-  - CardInspector
-  - CardItemArtifact
-  - CardWeapon
-  - CardItemFood
-  - CardPirate
-  - CardPlayerAlive
-  - CardItemGem
+  - Merchant
+  - Inspector
+  - Pirate
+  - Player
+  - Resource
   m_Tag: CardFront
   m_IsVariant: 0

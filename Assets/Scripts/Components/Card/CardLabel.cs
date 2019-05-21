@@ -10,6 +10,11 @@ public class CardLabel : MonoBehaviour
 
     private List<MeshRenderer> MeshRenderers => textRenderers.Select(r => r.GetComponent<MeshRenderer>()).ToList();
 
+    public Color Color
+    {
+        set => textRenderers.ForEach(r => r.color = value);
+    }
+    
     private void Awake()
     {
         SetSorting(sortingLayerName, sortingOrder);
@@ -24,15 +29,10 @@ public class CardLabel : MonoBehaviour
     {
         SetValue($"{to}");
     }
-    
+
     public void SetValue(string to)
     {
         textRenderers.ForEach(r => r.text = to);
-    }
-
-    public void SetColor(Color to)
-    {
-        textRenderers.ForEach(r => r.color = to);
     }
 
     private void SetSorting(string withLayerName, int andOrder)

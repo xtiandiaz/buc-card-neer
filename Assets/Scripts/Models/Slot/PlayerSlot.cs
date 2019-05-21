@@ -11,6 +11,11 @@ public class PlayerSlot : Slot
         : base(pile, settings, bounds, transformBond)
     {
     }
+    
+    protected override bool CanMatch(ICard withCard)
+    {
+        return withCard.IsBoarded;
+    }
 
     protected override bool CanLodge(ISlot fromSlot)
     {

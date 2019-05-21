@@ -19,7 +19,7 @@ public class PlayerCard : Card, IPlayerCard
     public int Coins
     {
         get => coins.Value;
-        set => coins.Value =  Mathf.Max(value, 0);
+        set => coins.Value = Mathf.Max(value, 0);
     }
 
     public IObservable<int> Health => value;
@@ -34,10 +34,7 @@ public class PlayerCard : Card, IPlayerCard
 
     public override bool CanMatch(ICard withOther, ISlot fromSlot)
     {
-        if (!withOther.IsBoarded)
-            return false;
-        
-        if ((withOther.Type & (CardType.Pirate)) != 0)
+        if ((withOther.Type & (CardType.Pirate | CardType.Inspector)) != 0)
             return true;
 
         if (withOther is IResourceCard resourceCard)
@@ -51,6 +48,12 @@ public class PlayerCard : Card, IPlayerCard
         if (withOther is IPirateCard pirateCard)
         {
             Fight(pirateCard);
+            return;
+        }
+        
+        if (withOther is IInspectorCard inspectorCard)
+        {
+            Bribe(inspectorCard);
             return;
         }
 
@@ -87,7 +90,7 @@ public class PlayerCard : Card, IPlayerCard
 
     public bool CanConsume(IResourceCard resourceCard)
     {
-        return (resourceCard.Type & CardType.Food) != 0;
+        return (resourceCard.Type & CardType.Medicine) != 0;
     }
 
     public void Collect(IResourceCard resourceCard)
@@ -109,9 +112,6 @@ public class PlayerCard : Card, IPlayerCard
 
     public void Consume(IResourceCard resourceCard)
     {
-        if ((resourceCard.Type & CardType.Food) == 0) 
-            return;
-        
         HealthPoints += resourceCard.Value;
         
         resourceCard.OnConsumed(this);
@@ -134,7 +134,17 @@ public class PlayerCard : Card, IPlayerCard
             return;
         
         Seize(pirate);
+        
         pirate.Destroy();
+    }
+
+    private void Bribe(IInspectorCard inspector)
+    {
+        Coins -= inspector.Value;
+        
+        //TODO what if Player has no funds to bribe?
+        
+        inspector.Destroy();
     }
 
     private void Seize(IPirateCard fromPirate)
