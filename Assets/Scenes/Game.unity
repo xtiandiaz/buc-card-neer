@@ -458,7 +458,7 @@ MonoBehaviour:
   boardView: {fileID: 1969069925}
   seaView: {fileID: 1851111359}
   shipView: {fileID: 1586207629}
-  eventsDeck: {fileID: 11400000, guid: 21c0d3a12db394182b1bc2861f9571c9, type: 2}
+  mainDeck: {fileID: 11400000, guid: 21c0d3a12db394182b1bc2861f9571c9, type: 2}
   cardAnimationSettings: {fileID: 11400000, guid: 82c18c688b13c467c9b2c21f495c904d,
     type: 2}
   boardLayoutSettings: {fileID: 11400000, guid: 828e180d359954817af172a5c69c03ec,
@@ -1210,7 +1210,7 @@ MonoBehaviour:
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 5424df9f680fa44c2826c6b0f5e30828, type: 3}
+    m_Font: {fileID: 12800000, guid: 3811403f69f8b41f8988a951b48e8715, type: 3}
     m_FontSize: 15
     m_FontStyle: 0
     m_BestFit: 0

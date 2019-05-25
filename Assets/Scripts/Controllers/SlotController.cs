@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -19,12 +18,14 @@ public class SlotController : ISlotController
     
     private readonly ISlot model;
     private readonly ISlotView view;
+    private readonly IMoveObserver moveObserver;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
-    private SlotController(ISlot model, ISlotView view)
+    private SlotController(ISlot model, ISlotView view, IMoveObserver moveObserver)
     {
         this.model = model;
         this.view = view;
+        this.moveObserver = moveObserver;
     }
 
     [Inject]
@@ -88,10 +89,26 @@ public class SlotController : ISlotController
                 var (card, slot, position) = cardFromSlotAtPosition;
 
                 if (model.CanMatch(card, slot))
+                {
                     model.Match(card);
+                    moveObserver.OnNext();
+                }
                 else if (model.CanLodge(card, slot))
+                {
                     model.Lodge(card);
+                    moveObserver.OnNext();
+                }
             }));
+
+        #endregion
+
+        #region Dismissing
+
+        disposables.Add(view.WhenDoubleClicked.Subscribe(_ =>
+        {
+            if ((model.Type & SlotType.Boarding) != 0 && (model.Peek()?.Type & CardType.Merchant) != 0)
+                model.Peek()?.Destroy();
+        }));
 
         #endregion
     }

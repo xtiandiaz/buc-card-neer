@@ -33,12 +33,15 @@ public class ResourceCardView : CardView, IResourceCardView
         {
             suitRenderer.sprite = value.Icon;
             suitRenderer.color = 
-                containerRenderer.color =
-                    lockLabel.Color = 
-                        valueLabel.Color = value.Color;
+                valueLabel.Color = value.Color;
 
-            if ((value.ResourceType & ResourceType.Implement) == 0)
+            if ((value.ResourceType & ResourceType.Tool) == 0)
+            {
+                containerRenderer.color =
+                    lockLabel.Color = value.Color;
+                
                 return;
+            }
             
             frontFace.Color = value.Color;
             itemRenderer.color =

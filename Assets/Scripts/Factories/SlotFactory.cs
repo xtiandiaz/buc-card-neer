@@ -62,6 +62,6 @@ public class SlotFactory : ISlotFactory
 
     public void Dispose()
     {
-        disposables?.Dispose();
+        disposables.Dispose();
     }
 }

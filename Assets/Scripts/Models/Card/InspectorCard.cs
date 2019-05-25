@@ -23,4 +23,12 @@ public class InspectorCard : Card, IInspectorCard
 
         withOther.Destroy();
     }
+
+    public override void Clash(ICard withOther)
+    {
+        if ((withOther.Type & CardType.Merchant) == 0)
+            return;
+
+        Value--;
+    }
 }

@@ -2,23 +2,19 @@ using UnityEngine;
 
 public interface IMerchantCardView : ICardView
 {
-    IResourceFixation Fixation { set; }
+    ISuit Suit { set; }
 }
 
 public class MerchantCardView : CardView, IMerchantCardView
 {
-    [SerializeField] private CardGraphic fixationGraphic;
-    [SerializeField] private CardLabel fixationLabel;
+    [SerializeField] private CardGraphic suitGraphic;
 
-    public IResourceFixation Fixation
+    public ISuit Suit
     {
         set
         {
-            fixationGraphic.Sprite = value.Suit.Icon;
-            fixationGraphic.Color = 
-                fixationLabel.Color = value.Suit.Color;
-            
-            fixationLabel.SetValue($"{value.Degree}");
+            suitGraphic.Sprite = value.Icon;
+            suitGraphic.Color = value.Color;
         }
     }
 }

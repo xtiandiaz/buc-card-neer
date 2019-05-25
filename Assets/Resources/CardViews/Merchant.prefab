@@ -235,7 +235,7 @@ GameObject:
   - component: {fileID: 950033430323500208}
   - component: {fileID: 4588601198398689907}
   m_Layer: 0
-  m_Name: FixationLabel
+  m_Name: ValueLabelFront
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -328,6 +328,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textRenderers:
   - {fileID: 950033430323500208}
+  - {fileID: 7061675951498954654}
   sortingLayerName: Card
   sortingOrder: 4
 --- !u!1 &1424389594652000821
@@ -407,7 +408,7 @@ GameObject:
   - component: {fileID: 7061675951498954654}
   - component: {fileID: 8209362288180627607}
   m_Layer: 0
-  m_Name: ValueLabel
+  m_Name: ValueLabelBack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -500,6 +501,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textRenderers:
   - {fileID: 7061675951498954654}
+  - {fileID: 950033430323500208}
   sortingLayerName: Card
   sortingOrder: 4
 --- !u!1 &4028140536671139883
@@ -513,7 +515,7 @@ GameObject:
   - component: {fileID: 8656681030145237244}
   - component: {fileID: 2769499831347866282}
   m_Layer: 0
-  m_Name: FixationIcon
+  m_Name: SuitIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -640,12 +642,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   valueLabel: {fileID: 8209362288180627607}
+  frontFace: {fileID: 8222015627637077736}
   contentWrapper: {fileID: 8420024804149596198}
   sortingGroup: {fileID: 4141944539622565620}
-  frontFace: {fileID: 8222015627637077736}
   backFace: {fileID: 6851289454263683994}
-  fixationGraphic: {fileID: 2357453936424422112}
-  fixationLabel: {fileID: 4588601198398689907}
+  suitGraphic: {fileID: 2357453936424422112}
+  suitLabel: {fileID: 0}
 --- !u!114 &8130335592096477142
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -757,7 +759,7 @@ GameObject:
   - component: {fileID: 8769885250284272981}
   - component: {fileID: 2357453936424422112}
   m_Layer: 0
-  m_Name: FixationGraphic
+  m_Name: SuitGraphic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -56,6 +56,7 @@ public interface ICard
 
     bool CanMatch(ICard withOther, ISlot fromSlot);
     void Match(ICard withOther);
+    void Clash(ICard withOther);
     void Bind(ICardBond withBond);
     void Board();
     void Pick();
@@ -130,7 +131,7 @@ public abstract class Card : ScriptableObject, ICard
     public IObservable<(Color, float)> WhenTinted => tinting;
     public IObservable<(Color, float)> WhenFogged => fogging;
     public IObservable<Unit> WhenDestroyed => destruction;
-    
+
     private void Awake()
     {
         OriginalValue = Value;
@@ -139,6 +140,8 @@ public abstract class Card : ScriptableObject, ICard
     public abstract bool CanMatch(ICard withOther, ISlot fromSlot);
 
     public abstract void Match(ICard withOther);
+
+    public abstract void Clash(ICard withOther);
 
     public void Bind(ICardBond withBond)
     {

@@ -26,17 +26,20 @@ public interface ISlot : ICardBond, ICardConsumer
 
     IObservable<ICard> WhenPicked { get; }
     IObservable<ICard> WhenLodged { get; }
+    IObservable<ICard> WhenMatched { get; }
     IObservable<Unit> WhenReleased { get; }
     IObservable<Unit> WhenEmptied { get; }
     IObservable<bool> WhenToggledHighlighting { get; }
-    IObservable<bool> Locking { get; }
 
+    ICard Peek();
     ICard Pick();
     bool CanMatch(ICard withCard, ISlot fromSlot);
     void Match(ICard card);
     bool CanLodge(ICard card, ISlot fromSlot);
     void Lodge(ICard card);
     void Arrange();
+    void Lock();
+    void Unlock();
     void ToggleHighlight(bool on);
     bool DoesContain(Vector3 worldPoint);
 }
@@ -55,6 +58,7 @@ public abstract class Slot : ISlot
     private readonly IPile pile;
     private readonly Subject<ICard> picking = new Subject<ICard>();
     private readonly Subject<ICard> lodging = new Subject<ICard>();
+    private readonly Subject<ICard> matching = new Subject<ICard>();
     private readonly Subject<Unit> releasing = new Subject<Unit>();
     private readonly Subject<Unit> emptying = new Subject<Unit>();
     private readonly Subject<bool> highlighting = new Subject<bool>();
@@ -85,10 +89,15 @@ public abstract class Slot : ISlot
 
     public IObservable<ICard> WhenPicked => picking;
     public IObservable<ICard> WhenLodged => lodging;
+    public IObservable<ICard> WhenMatched => matching;
     public IObservable<Unit> WhenReleased => releasing;
     public IObservable<Unit> WhenEmptied => emptying;
     public IObservable<bool> WhenToggledHighlighting => highlighting.DistinctUntilChanged();
-    public IObservable<bool> Locking => isLocked;
+
+    public ICard Peek()
+    {
+        return pile.Peek();
+    }
 
     public ICard Pick()
     {
@@ -115,6 +124,8 @@ public abstract class Slot : ISlot
     public void Match(ICard card)
     {
         pile.Peek()?.Match(card);
+        
+        matching.OnNext(card);
     }
 
     public void Lodge(ICard card)
@@ -149,6 +160,16 @@ public abstract class Slot : ISlot
     public void Arrange()
     {
         pile.Arrange();
+    }
+
+    public void Lock()
+    {
+        IsLocked = true;
+    }
+    
+    public void Unlock()
+    {
+        IsLocked = false;
     }
 
     public void ToggleHighlight(bool on)

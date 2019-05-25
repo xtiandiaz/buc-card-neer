@@ -4,17 +4,9 @@ using System.Linq;
 using UniRx;
 using UnityEngine;
 using Zenject;
-using Object = UnityEngine.Object;
-
-public enum DeckType
-{
-    Events
-}
 
 public interface IDeck : ICardProvider
 {
-    DeckType Type { get; }
-
     void Shuffle();
 }
 
@@ -27,12 +19,9 @@ public class Deck : ScriptableObject, IDeck
     
     private readonly Subject<ICard> provision = new Subject<ICard>();
     
-    [SerializeField] private DeckType type;
     [SerializeField] private List<Card> cards;
     private Queue<ICard> queue;
 
-    public DeckType Type => type;
-    
     public IObservable<ICard> WhenProvided => provision;
     public bool IsExhausted { get; private set; }
 

@@ -40,6 +40,6 @@ public class SeaFactory : ISeaFactory
 
     public void Dispose()
     {
-        disposables?.Dispose();
+        disposables.Dispose();
     }
 }

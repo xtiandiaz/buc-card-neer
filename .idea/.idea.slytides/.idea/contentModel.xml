@@ -791,25 +791,28 @@
             <e p="Board" t="Include">
               <e p="Board.cs" t="Include" />
               <e p="BoardLayoutSettings.cs" t="Include" />
+              <e p="MoveRouter.cs" t="Include" />
             </e>
             <e p="Card" t="Include">
+              <e p="Arrangement" t="Include">
+                <e p="CardArrangement.cs" t="Include" />
+                <e p="SeaCardArrangement.cs" t="Include" />
+              </e>
               <e p="Card.cs" t="Include" />
               <e p="CardAnimationSettings.cs" t="Include" />
               <e p="InspectorCard.cs" t="Include" />
-              <e p="IResourceAgent.cs" t="Include" />
-              <e p="IResourceBuyer.cs" t="Include" />
-              <e p="IResourceCollector.cs" t="Include" />
-              <e p="IResourceConsumer.cs" t="Include" />
-              <e p="IResourceSeller.cs" t="Include" />
-              <e p="IResourceTrader.cs" t="Include" />
               <e p="MerchantCard.cs" t="Include" />
               <e p="PirateCard.cs" t="Include" />
               <e p="PlayerCard.cs" t="Include" />
-              <e p="ResourceCard.cs" t="Include" />
-            </e>
-            <e p="CardArrangement" t="Include">
-              <e p="CardArrangement.cs" t="Include" />
-              <e p="SeaCardArrangement.cs" t="Include" />
+              <e p="Resource" t="Include">
+                <e p="IResourceAgent.cs" t="Include" />
+                <e p="IResourceBuyer.cs" t="Include" />
+                <e p="IResourceCollector.cs" t="Include" />
+                <e p="IResourceConsumer.cs" t="Include" />
+                <e p="IResourceSeller.cs" t="Include" />
+                <e p="IResourceTrader.cs" t="Include" />
+                <e p="ResourceCard.cs" t="Include" />
+              </e>
             </e>
             <e p="Deck.cs" t="Include" />
             <e p="Direction.cs" t="Include" />
@@ -818,7 +821,6 @@
               <e p="IGameStatusNotifier.cs" t="Include" />
             </e>
             <e p="Pile.cs" t="Include" />
-            <e p="ResourceFixation.cs" t="Include" />
             <e p="Sea.cs" t="Include" />
             <e p="Ship" t="Include">
               <e p="Ship.cs" t="Include" />
@@ -841,10 +843,7 @@
             <e p="IWorldPointProvider.cs" t="Include" />
           </e>
           <e p="Views" t="Include">
-            <e p="Board" t="Include">
-              <e p="BoardView.cs" t="Include" />
-              <e p="SeaView.cs" t="Include" />
-            </e>
+            <e p="BoardView.cs" t="Include" />
             <e p="Card" t="Include">
               <e p="CardFaceView.cs" t="Include" />
               <e p="CardView.cs" t="Include" />
@@ -858,6 +857,7 @@
               <e p="GameMenuView.cs" t="Include" />
               <e p="MenuView.cs" t="Include" />
             </e>
+            <e p="SeaView.cs" t="Include" />
             <e p="ShipView.cs" t="Include" />
             <e p="Slot" t="Include">
               <e p="SlotView.cs" t="Include" />

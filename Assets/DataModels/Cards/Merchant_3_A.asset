@@ -16,6 +16,4 @@ MonoBehaviour:
     value: 3
   frontFace: {fileID: 21300000, guid: dd8d17801cdb34453afae4bd4bdc8b76, type: 3}
   backFace: {fileID: 21300000, guid: 2f2aa4140721a48ceb58dbef774bb478, type: 3}
-  fixation:
-    suit: {fileID: 11400000, guid: d0ae5989adafa491fb5bfc71a3337137, type: 2}
-    degree: 4
+  suit: {fileID: 11400000, guid: d0ae5989adafa491fb5bfc71a3337137, type: 2}

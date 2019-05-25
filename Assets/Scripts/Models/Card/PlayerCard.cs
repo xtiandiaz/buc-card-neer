@@ -6,6 +6,8 @@ public interface IPlayerCard : ICard, IResourceTrader, IResourceCollector, IReso
 {
     IObservable<int> Health { get; }
     IObservable<int> Funds { get; }
+
+    void Seize(IPirateCard pirate);
 }
 
 [CreateAssetMenu(menuName = "Game/Card/Player")]
@@ -68,9 +70,14 @@ public class PlayerCard : Card, IPlayerCard
             Consume(resourceCard);
     }
 
+    public override void Clash(ICard withOther)
+    {
+        throw new NotImplementedException();
+    }
+
     public bool CanCollect(IResourceCard resourceCard)
     {
-        return resourceCard.Owner == null && !resourceCard.IsLocked;
+        return resourceCard.CanBeCollected();
     }
 
     public bool CanUnlock(IResourceCard resourceCard)
@@ -116,6 +123,11 @@ public class PlayerCard : Card, IPlayerCard
         
         resourceCard.OnConsumed(this);
     }
+    
+    public void Seize(IPirateCard fromPirate)
+    {
+        Coins += fromPirate.OriginalValue;
+    }
 
     private void Unlock(IResourceCard resourceCard)
     {
@@ -141,14 +153,9 @@ public class PlayerCard : Card, IPlayerCard
     private void Bribe(IInspectorCard inspector)
     {
         Coins -= inspector.Value;
-        
-        //TODO what if Player has no funds to bribe?
-        
-        inspector.Destroy();
-    }
 
-    private void Seize(IPirateCard fromPirate)
-    {
-        Coins += fromPirate.OriginalValue * fromPirate.LootMultiplier;
+        //TODO what if Player has no funds to bribe?
+
+        inspector.Destroy();
     }
 }

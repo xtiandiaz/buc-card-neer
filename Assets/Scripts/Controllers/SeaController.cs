@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using UniRx;
-using UnityEngine;
 using Zenject;
 
 public interface ISeaController : IInitializable, IDisposable
@@ -35,6 +34,11 @@ public class SeaController : ISeaController
         disposables.Add(Observable.Timer(TimeSpan.Zero, DealingInterval)
             .Take(model.Slots.Length * FeedCountPerSlot)
             .Do(i => model.Slots[i % model.Slots.Length].Consume(1))
+            .Subscribe());
+        
+        disposables.Add(model.Slots
+            .Select(slot => slot.WhenReleased.Do(_ => slot.Lock()))
+            .Merge()
             .Subscribe());
         
         disposables.Add(model.Slots

@@ -30,7 +30,7 @@ public abstract class CardController : ICardController
     {
         view.FrontFace = model.FrontFace;
         view.BackFace = model.BackFace;
-        view.Position = Vector2.up * (viewport.Size.y + layoutSettings.CardSize.y) * 0.5f; // Dealing position
+        view.Position = (viewport.Size.y + layoutSettings.CardSize.y) * 0.5f * Vector2.up; // Dealing position
 
         disposables.Add(model.ValueAsObservable.Subscribe(value =>
         {

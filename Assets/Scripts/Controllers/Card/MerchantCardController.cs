@@ -27,7 +27,7 @@ public class MerchantCardController : CardController
     {
         base.Initialize();
 
-        view.Fixation = model.Fixation;
+        view.Suit = model.Suit;
         
         disposables.Add(model.WhenBought.Subscribe(resCard => player.Sell(resCard, model)));
     }

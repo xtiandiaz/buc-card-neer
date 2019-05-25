@@ -1,5 +1,4 @@
 using UniRx;
-using UnityEngine;
 using Zenject;
 
 public class PlayerCardController : CardController
@@ -21,6 +20,12 @@ public class PlayerCardController : CardController
     {
         base.Initialize();
         
-        disposables.Add(model.Funds.Subscribe(value => view.CoinsValue = value));
+        disposables.Add(model.Funds.Subscribe(value =>
+        {
+            view.CoinsValue = value;
+            
+            if (value <= 0)
+                model.Destroy();
+        }));
     }
 }

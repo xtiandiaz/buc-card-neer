@@ -36,6 +36,6 @@ public class BoardFactory : IBoardFactory
 
     public void Dispose()
     {
-        disposables?.Dispose();
+        disposables.Dispose();
     }
 }

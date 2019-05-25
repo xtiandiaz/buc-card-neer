@@ -16,7 +16,7 @@ public class GameInstaller : MonoInstaller
     [SerializeField] private ShipView shipView;
 
     [Header("Decks")] 
-    [SerializeField] private Deck eventsDeck;
+    [SerializeField] private Deck mainDeck;
 
     [Header("Settings")] 
     [SerializeField] private CardAnimationSettings cardAnimationSettings;
@@ -47,7 +47,10 @@ public class GameInstaller : MonoInstaller
         Container.BindFactory<Board, Board.Factory>().AsSingle();
         Container.BindFactory<BoardView, BoardView.Factory>().FromInstance(boardView);
         Container.BindFactory<IBoard, IBoardView, BoardController, BoardController.Factory>().AsSingle();
-        Container.BindInterfacesAndSelfTo<BoardFactory>().AsSingle();
+        //Container.BindInterfacesAndSelfTo<BoardFactory>().AsSingle();
+        Container.Bind<IBoard>().FromFactory<BoardFactory>().AsSingle().NonLazy();
+
+        Container.Bind(typeof(IMoveObservable), typeof(IMoveObserver)).To<MoveRouter>().AsSingle();
 
         #endregion
         
@@ -56,7 +59,8 @@ public class GameInstaller : MonoInstaller
         Container.BindFactory<ISlot[], Sea, Sea.Factory>().AsSingle();
         Container.BindFactory<ISeaView, SeaView.Factory>().FromInstance(seaView);
         Container.BindFactory<ISea, ISeaView, SeaController, SeaController.Factory>().AsSingle();
-        Container.BindInterfacesAndSelfTo<SeaFactory>().AsSingle();
+        //Container.BindInterfacesAndSelfTo<SeaFactory>().AsSingle();
+        Container.Bind<ISea>().FromFactory<SeaFactory>().AsSingle().NonLazy();
 
         #endregion
         
@@ -73,7 +77,7 @@ public class GameInstaller : MonoInstaller
         
         Container.Bind(typeof(ICardProvider), typeof(IDeck))
             //.WithId(DeckType.Events)
-            .FromInstance(Instantiate(eventsDeck));
+            .FromInstance(Instantiate(mainDeck));
         
         Container.BindFactory<IDeck, DeckController, DeckController.Factory>().WhenInjectedInto<IDeckFactory>();
         Container.BindInterfacesAndSelfTo<DeckFactory>().AsSingle();

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface IMerchantCard : ICard, IResourceBuyer
 {
-    IResourceFixation Fixation { get; }
+    ISuit Suit { get; }
     
     IObservable<IResourceCard> WhenBought { get; }
     
@@ -16,10 +16,10 @@ public class MerchantCard : Card, IMerchantCard
 {
     private readonly Subject<IResourceCard> buying = new Subject<IResourceCard>();
 
-    [SerializeField] private ResourceFixation fixation;
+    [SerializeField] private Suit suit;
 
     public override CardType Type => CardType.Merchant;
-    public IResourceFixation Fixation => fixation;
+    public ISuit Suit => suit;
     int IResourceBuyer.Coins { get; }
 
     public IObservable<IResourceCard> WhenBought => buying;
@@ -37,6 +37,14 @@ public class MerchantCard : Card, IMerchantCard
         }
     }
 
+    public override void Clash(ICard withOther)
+    {
+        if ((withOther.Type & CardType.Pirate) == 0)
+            return;
+        
+        Value--;
+    }
+
     public bool CanBuy(IResourceCard resource)
     {
         return resource.Owner != null && resource.Owner != (IResourceAgent) this;
@@ -51,7 +59,6 @@ public class MerchantCard : Card, IMerchantCard
 
     public int GetOffer(IResourceCard forResource)
     {
-        return forResource.Value 
-               * ((fixation.Suit.ResourceType & forResource.ResourceType) != 0 ? Value : 1);
+        return forResource.Value * ((Suit.ResourceType & forResource.ResourceType) != 0 ? Value : 1);
     }
 }

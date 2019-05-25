@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using UniRx;
+using UnityEngine;
 using Zenject;
 
 public interface IShipFactory : IFactory<IShip>, IDisposable
@@ -41,6 +42,6 @@ public class ShipFactory : IShipFactory
     
     public void Dispose()
     {
-        disposables?.Dispose();
+        disposables.Dispose();
     }
 }

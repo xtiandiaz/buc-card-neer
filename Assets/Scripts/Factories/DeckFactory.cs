@@ -29,6 +29,6 @@ public class DeckFactory : IDeckFactory
 
     public void Dispose()
     {
-        disposables?.Dispose();
+        disposables.Dispose();
     }
 }

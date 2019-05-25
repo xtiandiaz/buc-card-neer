@@ -8,6 +8,7 @@ public interface IDraggingObserver
     IObservable<Unit> DraggingStart { get; }
     IObservable<Vector3> Dragging { get; }
     IObservable<Vector3> DraggingEnd { get; }
+    IObservable<Unit> WhenDoubleClicked { get; }
 
     void Initialize(IWorldPointProvider worldPointProvider);
 }
@@ -18,11 +19,13 @@ public class DraggingObserver : MonoBehaviour, IDraggingObserver
     private readonly Subject<Unit> draggingStart = new Subject<Unit>();
     private readonly Subject<Vector3> dragging = new Subject<Vector3>();
     private readonly Subject<Vector3> draggingEnd = new Subject<Vector3>();
+    private readonly Subject<Unit> doubleClicking = new Subject<Unit>();
     private ObservableEventTrigger eventTrigger;
     
     public IObservable<Unit> DraggingStart => draggingStart;
     public IObservable<Vector3> Dragging => dragging;
     public IObservable<Vector3> DraggingEnd => draggingEnd;
+    public IObservable<Unit> WhenDoubleClicked => doubleClicking;
 
     public void Initialize(IWorldPointProvider worldPointProvider)
     {
@@ -55,6 +58,13 @@ public class DraggingObserver : MonoBehaviour, IDraggingObserver
             .OnEndDragAsObservable()
             .Select(eventData => worldPointProvider.GetWorldPoint(eventData.position))
             .Subscribe(draggingEnd)
+            .AddTo(this);
+
+        var clickStream = eventTrigger.OnPointerClickAsObservable();
+
+        clickStream.Buffer(clickStream.Throttle(TimeSpan.FromMilliseconds(250)))
+            .Where(xs => xs.Count >= 2)
+            .Subscribe(_ => doubleClicking.OnNext(Unit.Default))
             .AddTo(this);
     }
 }

@@ -12,14 +12,10 @@ public interface IShip
     ISlot PlayerSlot { get; }
     IDictionary<ResourceType, IStorageSlot> Storage { get; }
     Vector3 Position { get; }
-
-    IObservable<Unit> WhenDocked { get; }
-    IObservable<Unit> WhenSailed { get; }
+    
     IObservable<ICard> WhenBoarded { get; }
     IObservable<IResourceCard> WhenBoardedResource { get; }
-    
-    void Dock(Vector3 atPosition);
-    void SetSail(Vector3 toPosition);
+
     void Store(IResourceCard card);
 }
 
@@ -29,8 +25,6 @@ public class Ship : IShip
     {   
     }
     
-    private readonly Subject<Unit> docking = new Subject<Unit>();
-    private readonly Subject<Unit> sailing = new Subject<Unit>();
     private ICardProvider cardProvider;
     
     protected Ship(ISlot[] slots)
@@ -47,26 +41,10 @@ public class Ship : IShip
     public ISlot PlayerSlot { get; }
     public IDictionary<ResourceType, IStorageSlot> Storage { get; }
     public Vector3 Position { get; private set; }
-
-    public IObservable<Unit> WhenDocked => docking; 
-    public IObservable<Unit> WhenSailed => sailing;
+    
     public IObservable<ICard> WhenBoarded => BoardingSlot.WhenLodged;
     public IObservable<IResourceCard> WhenBoardedResource =>
         WhenBoarded.Where(c => (c.Type & CardType.Resource) != 0).Cast<ICard, IResourceCard>();
-
-    public void Dock(Vector3 atPosition)
-    {
-        Position = atPosition;
-        
-        docking.OnNext(Unit.Default);
-    }
-
-    public void SetSail(Vector3 toPosition)
-    {
-        Position = toPosition;
-        
-        sailing.OnNext(Unit.Default);
-    }
 
     public void Store(IResourceCard card)
     {

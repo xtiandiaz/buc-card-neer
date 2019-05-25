@@ -1,6 +1,5 @@
 using System;
 using UniRx;
-using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
 
@@ -14,10 +13,9 @@ public class GameController : IGameController
     private readonly IGameMenuView menuView;
     private readonly IAppController appController;
     private readonly IBoardFactory boardFactory;
-    private readonly ISeaFactory seaFactory;
-    private readonly IShipFactory shipFactory;
     private readonly IDeckFactory deckFactory;
     private readonly ICardFactory cardFactory;
+    private readonly IShipFactory shipFactory;
     private readonly IDeck deck;
     private readonly IPlayerCard playerCard;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
@@ -26,11 +24,9 @@ public class GameController : IGameController
         IGame model, 
         IGameMenuView menuView,
         IAppController appController,
-        IBoardFactory boardFactory,
-        ISeaFactory seaFactory,
-        IShipFactory shipFactory,
         IDeckFactory deckFactory,
         ICardFactory cardFactory,
+        IShipFactory shipFactory,
         IDeck deck,
         IPlayerCard playerCard
         )
@@ -38,11 +34,9 @@ public class GameController : IGameController
         this.model = model;
         this.menuView = menuView;
         this.appController = appController;
-        this.boardFactory = boardFactory;
-        this.seaFactory = seaFactory;
-        this.shipFactory = shipFactory;
         this.deckFactory = deckFactory;
         this.cardFactory = cardFactory;
+        this.shipFactory = shipFactory;
         this.deck = deck;
         this.playerCard = playerCard;
     }
@@ -51,9 +45,6 @@ public class GameController : IGameController
     {
         deckFactory.Create(deck);
         cardFactory.Create(playerCard);
-
-        boardFactory.Create();
-        seaFactory.Create();
         shipFactory.Create();
 
         #region Conclusion
@@ -62,6 +53,7 @@ public class GameController : IGameController
         disposables.Add(model.WhenEnded.Subscribe(_ => EventSystem.current.enabled = false));
 
         #endregion
+        
         #region Menu Controls
 
         disposables.Add(menuView.ResetControl.OnClickAsObservable().Subscribe(_ => model.Reset()));

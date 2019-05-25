@@ -102,6 +102,6 @@ public class CardFactory : ICardFactory
 
     public void Dispose()
     {
-        disposables?.Dispose();
+        disposables.Dispose();
     }
 }

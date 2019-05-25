@@ -27,4 +27,12 @@ public class PirateCard : Card, IPirateCard
 
         withOther.Destroy();
     }
+
+    public override void Clash(ICard withOther)
+    {
+        if ((withOther.Type & CardType.Inspector) == 0)
+            return;
+        
+        Value--;
+    }
 }

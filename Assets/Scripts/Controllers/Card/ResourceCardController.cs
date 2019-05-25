@@ -29,5 +29,7 @@ public class ResourceCardController : CardController
             view.LockValue = lockValue;
             view.ToggleLock(lockValue > 0);
         }));
+        
+        disposables.Add(model.WhenUnlocked.Subscribe(_ => model.Unwrap()));
     }
 }

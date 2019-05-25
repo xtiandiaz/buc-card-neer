@@ -12,6 +12,7 @@ public interface ISlotView
     IObservable<Unit> WhenDraggingStarted { get; }
     IObservable<Vector3> WhenDragged { get; }
     IObservable<Vector3> WhenDraggingStopped { get; }
+    IObservable<Unit> WhenDoubleClicked { get; }
 
     void ToggleHighlight(bool on);
     void ToggleVisibility(bool on);
@@ -25,7 +26,6 @@ public class SlotView : MonoBehaviour, ISlotView
 
     private Color defaultFaceColor;
     private BoardLayoutSettings layoutSettings;
-    private IWorldPointProvider worldPointProvider;
 
     public ISlotSettings Settings => settings;
     public Transform Transform => transform;
@@ -34,21 +34,18 @@ public class SlotView : MonoBehaviour, ISlotView
     public IObservable<Unit> WhenDraggingStarted => draggingObserver.DraggingStart;
     public IObservable<Vector3> WhenDragged => draggingObserver.Dragging;
     public IObservable<Vector3> WhenDraggingStopped => draggingObserver.DraggingEnd;
+    public IObservable<Unit> WhenDoubleClicked => draggingObserver.WhenDoubleClicked;
 
     [Inject]
-    private void Construct(
+    private void Initialize(
         BoardLayoutSettings layoutSettings, 
         IWorldPointProvider worldPointProvider
         )
     {
         this.layoutSettings = layoutSettings;
-        this.worldPointProvider = worldPointProvider;
-        
-        defaultFaceColor = faceRenderer.color;
-    }
 
-    private void Awake()
-    {
+        defaultFaceColor = faceRenderer.color;
+        
         draggingObserver.Initialize(worldPointProvider);
     }
 

@@ -34,24 +34,24 @@ public class ShipController : IShipController
     }
 
     [Inject]
-    public virtual void Initialize()
+    public void Initialize()
     {
-        disposables.Add(model.WhenDocked.Subscribe(_ => view.Dock(model.Position)));
-        disposables.Add(model.WhenSailed.Subscribe(_ => view.SetSail(model.Position)));
-        
         model.PlayerSlot?.Lodge(playerCard);
-            
+
         disposables.Add(model.WhenBoardedResource
             .Delay(TimeSpan.FromSeconds(cardAnimationSettings.BoardingDelay))
             .SelectMany(resCard =>
             {
-                if (playerCard.CanCollect(resCard))
+                if (resCard.CanBeCollected())
                 {
                     playerCard.Collect(resCard);
                     return Observable.Return(resCard);
                 }
-                
-                return resCard.WhenCollected.Select(_ => resCard);
+
+                return resCard.WhenCanBeCollected
+                    .Select(_ => resCard)
+                    .Take(1)
+                    .Do(playerCard.Collect);
             })
             .Do(resCard => model.Store(resCard))
             .Subscribe());
