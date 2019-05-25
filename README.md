@@ -1,4 +1,4 @@
 # Sly Tides
 Sly Tides game Unity project.
 
-Requires Unity 2018.3.0f2 or later.
+Requires **Unity 2019.1.3f1**
