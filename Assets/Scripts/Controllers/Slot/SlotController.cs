@@ -13,23 +13,23 @@ public class SlotController : ISlotController
     {
     }
     
+    protected readonly ISlot model;
+    protected readonly ISlotView view;
+    protected readonly CompositeDisposable disposables = new CompositeDisposable();
+    
     private static readonly Subject<(ICard, ISlot)> CardPicking = new Subject<(ICard, ISlot)>();
     private static readonly Subject<(ICard, ISlot, Vector3)> CardDropping = new Subject<(ICard, ISlot, Vector3)>();
     
-    private readonly ISlot model;
-    private readonly ISlotView view;
-    private readonly IMoveObserver moveObserver;
-    private readonly CompositeDisposable disposables = new CompositeDisposable();
+    [Inject] private IMoveObserver moveObserver;
 
-    private SlotController(ISlot model, ISlotView view, IMoveObserver moveObserver)
+    protected SlotController(ISlot model, ISlotView view)
     {
         this.model = model;
         this.view = view;
-        this.moveObserver = moveObserver;
     }
 
     [Inject]
-    public void Initialize()
+    public virtual void Initialize()
     {        
         disposables.Add(model.WhenToggledHighlighting.Subscribe(view.ToggleHighlight));
         
@@ -99,16 +99,6 @@ public class SlotController : ISlotController
                     moveObserver.OnNext();
                 }
             }));
-
-        #endregion
-
-        #region Dismissing
-
-        disposables.Add(view.WhenDoubleClicked.Subscribe(_ =>
-        {
-            if ((model.Type & SlotType.Boarding) != 0 && (model.Peek()?.Type & CardType.Merchant) != 0)
-                model.Peek()?.Destroy();
-        }));
 
         #endregion
     }

@@ -1,7 +1,11 @@
 using UnityEngine;
 using Zenject;
 
-public class BoardingSlot : Slot
+public interface IBoardingSlot : ISlot
+{
+}
+
+public class BoardingSlot : Slot, IBoardingSlot
 {
     public class Factory : PlaceholderFactory<IPile, ISlotSettings, Bounds, Transform, BoardingSlot>
     {

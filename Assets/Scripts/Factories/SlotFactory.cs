@@ -13,6 +13,7 @@ public class SlotFactory : ISlotFactory
     private readonly StorageSlot.Factory modelResourceFactory;
     private readonly SupplySlot.Factory modelEventFactory;
     private readonly SlotController.Factory controllerFactory;
+    private readonly BoardingSlotController.Factory controllerFactoryBoarding;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private SlotFactory(
@@ -20,7 +21,8 @@ public class SlotFactory : ISlotFactory
         PlayerSlot.Factory modelPlayerFactory,
         StorageSlot.Factory modelResourceFactory,
         SupplySlot.Factory modelEventFactory,
-        SlotController.Factory controllerFactory
+        SlotController.Factory controllerFactory,
+        BoardingSlotController.Factory controllerFactoryBoarding
         )
     {
         this.modelBoardingFactory = modelBoardingFactory;
@@ -28,13 +30,14 @@ public class SlotFactory : ISlotFactory
         this.modelResourceFactory = modelResourceFactory;
         this.modelEventFactory = modelEventFactory;
         this.controllerFactory = controllerFactory;
+        this.controllerFactoryBoarding = controllerFactoryBoarding;
     }
     
     public ISlot Create(ISlotView fromView)
     {
         var model = CreateModel(fromView);
        
-        disposables.Add(controllerFactory.Create(model, fromView));
+        disposables.Add(CreateController(model, fromView));
 
         return model;
     }
@@ -58,6 +61,13 @@ public class SlotFactory : ISlotFactory
             default:
                 throw new ArgumentOutOfRangeException(nameof(settings.Type), settings.Type, null);
         }
+    }
+
+    private ISlotController CreateController(ISlot forModel, ISlotView andView)
+    {
+        return (forModel.Type & SlotType.Boarding) != 0 
+            ? controllerFactoryBoarding.Create((IBoardingSlot) forModel, andView) 
+            : controllerFactory.Create(forModel, andView);
     }
 
     public void Dispose()

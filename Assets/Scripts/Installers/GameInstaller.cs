@@ -91,6 +91,7 @@ public class GameInstaller : MonoInstaller
         Container.BindFactory<IPile, ISlotSettings, Bounds, Transform, PlayerSlot, PlayerSlot.Factory>();
         Container.BindFactory<IPile, ISlotSettings, Bounds, Transform, StorageSlot, StorageSlot.Factory>();
         Container.BindFactory<ISlot, ISlotView, SlotController, SlotController.Factory>().AsSingle();
+        Container.BindFactory<IBoardingSlot, ISlotView, BoardingSlotController, BoardingSlotController.Factory>().AsSingle();
         Container.BindInterfacesAndSelfTo<SlotFactory>().AsSingle();
         
         #endregion

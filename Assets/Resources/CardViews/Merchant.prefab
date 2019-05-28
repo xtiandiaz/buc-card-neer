@@ -647,7 +647,6 @@ MonoBehaviour:
   sortingGroup: {fileID: 4141944539622565620}
   backFace: {fileID: 6851289454263683994}
   suitGraphic: {fileID: 2357453936424422112}
-  suitLabel: {fileID: 0}
 --- !u!114 &8130335592096477142
 MonoBehaviour:
   m_ObjectHideFlags: 0

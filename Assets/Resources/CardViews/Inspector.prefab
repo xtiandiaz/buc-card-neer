@@ -559,9 +559,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   valueLabel: {fileID: 1755363637573206423}
+  frontFace: {fileID: 2394089882030168721}
   contentWrapper: {fileID: 4196249751627446869}
   sortingGroup: {fileID: 4141944539622565620}
-  frontFace: {fileID: 2394089882030168721}
   backFace: {fileID: 1036552923604472217}
 --- !u!114 &9099243857038372407
 MonoBehaviour:

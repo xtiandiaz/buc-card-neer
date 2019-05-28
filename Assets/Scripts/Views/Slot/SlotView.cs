@@ -12,7 +12,7 @@ public interface ISlotView
     IObservable<Unit> WhenDraggingStarted { get; }
     IObservable<Vector3> WhenDragged { get; }
     IObservable<Vector3> WhenDraggingStopped { get; }
-    IObservable<Unit> WhenDoubleClicked { get; }
+    IObservable<Direction> WhenSwiped { get; }
 
     void ToggleHighlight(bool on);
     void ToggleVisibility(bool on);
@@ -22,7 +22,7 @@ public class SlotView : MonoBehaviour, ISlotView
 {
     [SerializeField] private SlotSettings settings;
     [SerializeField] private SpriteRenderer faceRenderer;
-    [SerializeField] private DraggingObserver draggingObserver;
+    [SerializeField] private GestureListener gestureListener;
 
     private Color defaultFaceColor;
     private BoardLayoutSettings layoutSettings;
@@ -31,10 +31,10 @@ public class SlotView : MonoBehaviour, ISlotView
     public Transform Transform => transform;
     public Bounds Bounds => faceRenderer.bounds;
     
-    public IObservable<Unit> WhenDraggingStarted => draggingObserver.DraggingStart;
-    public IObservable<Vector3> WhenDragged => draggingObserver.Dragging;
-    public IObservable<Vector3> WhenDraggingStopped => draggingObserver.DraggingEnd;
-    public IObservable<Unit> WhenDoubleClicked => draggingObserver.WhenDoubleClicked;
+    public IObservable<Unit> WhenDraggingStarted => gestureListener.WhenDraggingStarted;
+    public IObservable<Vector3> WhenDragged => gestureListener.WhenDragged;
+    public IObservable<Vector3> WhenDraggingStopped => gestureListener.WhenDraggingEnded;
+    public IObservable<Direction> WhenSwiped => gestureListener.WhenSwiped;
 
     [Inject]
     private void Initialize(
@@ -46,7 +46,7 @@ public class SlotView : MonoBehaviour, ISlotView
 
         defaultFaceColor = faceRenderer.color;
         
-        draggingObserver.Initialize(worldPointProvider);
+        gestureListener.Initialize(worldPointProvider);
     }
 
     public void ToggleHighlight(bool on)

@@ -744,7 +744,7 @@
               <e p="CardLabel.cs" t="Include" />
               <e p="CardShader.cs" t="Include" />
             </e>
-            <e p="DraggingObserver.cs" t="Include" />
+            <e p="GestureListener.cs" t="Include" />
             <e p="ShipAnimator.cs" t="Include" />
             <e p="UserInteractionListener.cs" t="Include" />
           </e>
@@ -766,7 +766,10 @@
             <e p="GameController.cs" t="Include" />
             <e p="SeaController.cs" t="Include" />
             <e p="ShipController.cs" t="Include" />
-            <e p="SlotController.cs" t="Include" />
+            <e p="Slot" t="Include">
+              <e p="BoardingSlotController.cs" t="Include" />
+              <e p="SlotController.cs" t="Include" />
+            </e>
           </e>
           <e p="Extensions" t="Include">
             <e p="ColorExtensions.cs" t="Include" />
