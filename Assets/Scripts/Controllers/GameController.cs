@@ -50,7 +50,6 @@ public class GameController : IGameController
         #region Conclusion
 
         disposables.Add(playerCard.WhenDestroyed.Subscribe(_ => model.End()));
-        disposables.Add(model.WhenEnded.Subscribe(_ => EventSystem.current.enabled = false));
 
         #endregion
         

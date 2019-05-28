@@ -50,7 +50,7 @@ public class GameInstaller : MonoInstaller
         //Container.BindInterfacesAndSelfTo<BoardFactory>().AsSingle();
         Container.Bind<IBoard>().FromFactory<BoardFactory>().AsSingle().NonLazy();
 
-        Container.Bind(typeof(IMoveObservable), typeof(IMoveObserver)).To<MoveRouter>().AsSingle();
+        Container.Bind(typeof(IMoveListener), typeof(IMoveObserver)).To<MoveListener>().AsSingle();
 
         #endregion
         

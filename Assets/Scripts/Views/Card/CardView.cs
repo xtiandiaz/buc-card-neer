@@ -17,6 +17,7 @@ public interface ICardView
     void OnPicked();
     IObservable<Unit> OnDropped();
     void Flip(CardFace toFace, bool animated);
+    void Tilt(Direction towardDirection, TimeSpan duringTime);
     void MoveLocal(Vector3 toPosition);
     IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition);
     void ToggleVisibility(bool toValue);
@@ -115,6 +116,30 @@ public class CardView : MonoBehaviour, ICardView
         return animator.DropAsObservable();
     }
 
+    public void Flip(CardFace toFace, bool animated)
+    {
+        animator.Flip(toFace, animated, () =>
+        {
+            frontFace.ToggleVisibility(toFace == CardFace.Front);
+            backFace.ToggleVisibility(toFace == CardFace.Back);
+        });
+    }
+
+    public void Tilt(Direction towardDirection, TimeSpan duringTime)
+    {
+        animator.Tilt(towardDirection, duringTime);
+    }
+
+    public void MoveLocal(Vector3 toPosition)
+    {
+        animator.MoveLocal(toPosition);
+    }
+    
+    public IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition)
+    {
+        return animator.MoveLocalAsObservable(toPosition, 0.5f);
+    }
+    
     public void ToggleVisibility(bool toValue)
     {
         gameObject.SetActive(toValue);
@@ -138,25 +163,6 @@ public class CardView : MonoBehaviour, ICardView
     public void Fog(Color withColor, float byFactor)
     {
         shader.Fog(withColor, byFactor);
-    }
-
-    public void Flip(CardFace toFace, bool animated)
-    {
-        animator.Flip(toFace, animated, () =>
-        {
-            frontFace.ToggleVisibility(toFace == CardFace.Front);
-            backFace.ToggleVisibility(toFace == CardFace.Back);
-        });
-    }
-
-    public void MoveLocal(Vector3 toPosition)
-    {
-        animator.MoveLocal(toPosition);
-    }
-    
-    public IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition)
-    {
-        return animator.MoveLocalAsObservable(toPosition, 0.5f);
     }
     
     public void SetParent(Transform toTransform)

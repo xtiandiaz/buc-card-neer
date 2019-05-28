@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.InteropServices.WindowsRuntime;
 using DG.Tweening;
 using UniRx;
 using UnityEngine;
@@ -8,6 +7,7 @@ public enum CardAnimationType
 {
     Lift,
     Flip,
+    Tilt,
     Move
 }
 
@@ -18,6 +18,7 @@ public interface ICardAnimator
     void Drop();
     IObservable<Unit> DropAsObservable();
     void Flip(CardFace toFace, bool whileAnimating, Action andDoAmidFlip = null);
+    void Tilt(Direction towardDirection, TimeSpan duringTime);
     Tween MoveLocal(Vector3 toPosition);
     IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition, float duringSeconds);
     void Kill(CardAnimationType animationType);
@@ -28,7 +29,8 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
     private CardAnimationSettings settings;
     private Transform contentWrapper;
     private Tween moveTween, liftTween;
-    private Sequence flipSequence;
+    private Sequence flipSequence, tiltSequence;
+    private CardFace currentFace;
 
     public void Initialize(CardAnimationSettings withSettings, Transform andContentWrapper)
     {
@@ -63,7 +65,9 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
         Kill(CardAnimationType.Flip);
         Kill(CardAnimationType.Lift);
 
-        var destEulerAngles = Vector3.up * (toFace == CardFace.Back ? 180f : 0);
+        currentFace = toFace;
+        
+        var destEulerAngles = GetRotationEulerAnglesDestination(currentFace);
 
         if (!whileAnimating)
         {
@@ -90,30 +94,24 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
         flipSequence.Join(Lift(0, halfTweenDuration).SetEase(settings.OutEase));
     }
 
-    public void Kill(CardAnimationType animationType)
+    public void Tilt(Direction towardDirection, TimeSpan duringTime)
     {
-        switch (animationType)
-        {
-            case CardAnimationType.Lift:
-                
-                liftTween?.Kill();
-                
-                break;
-            case CardAnimationType.Flip:
-                
-                flipSequence?.Kill();
-                
-                break;
-            case CardAnimationType.Move:
-                
-                moveTween?.Kill();
-                
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(animationType), animationType, null);
-        }
+        Kill(CardAnimationType.Flip);
+        Kill(CardAnimationType.Tilt);
+        
+        tiltSequence = DOTween.Sequence();
+        var originalRotation = GetRotationEulerAnglesDestination(currentFace);
+
+        tiltSequence.Append(
+            contentWrapper.DORotate(originalRotation + GetTiltingVector(towardDirection) * settings.TiltAngle, settings.TiltDuration)
+                .SetEase(settings.OutEase));
+
+        tiltSequence.Append(
+            contentWrapper.DORotate(originalRotation, settings.TiltDuration)
+                .SetDelay((float) duringTime.TotalSeconds)
+                .SetEase(settings.OutEase));
     }
-    
+
     public Tween MoveLocal(Vector3 toPosition)
     {
         Kill(CardAnimationType.Move);
@@ -140,8 +138,65 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
         });
     }
     
+    public void Kill(CardAnimationType animationType)
+    {
+        switch (animationType)
+        {
+            case CardAnimationType.Lift:
+                
+                liftTween?.Kill();
+                
+                break;
+            case CardAnimationType.Flip:
+                
+                flipSequence?.Kill();
+                
+                break;
+            case CardAnimationType.Tilt:
+                
+                tiltSequence?.Kill();
+                
+                break;
+            case CardAnimationType.Move:
+                
+                moveTween?.Kill();
+                
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(animationType), animationType, null);
+        }
+    }
+
     private Tween Lift(float toDepth, float inSeconds)
     {
         return contentWrapper.DOLocalMoveZ(toDepth, settings.LiftDuration).SetEase(settings.OutEase);
+    }
+
+    private Vector3 GetRotationEulerAnglesDestination(CardFace forFace)
+    {
+        return Vector3.up * (forFace == CardFace.Back ? 180f : 0);
+    }
+
+    private Vector3 GetTiltingVector(Direction fromDirection)
+    {
+        switch (fromDirection)
+        {
+            case Direction.Up:
+                return Vector3.right;
+            case Direction.Down:
+                return Vector3.left;
+            case Direction.Right:
+                return Vector3.down;
+            case Direction.Left:
+                return Vector3.up;
+            default:
+                return Vector3.zero;       
+        }
+    }
+    
+    private void KillAll()
+    {
+        foreach (CardAnimationType animationType in Enum.GetValues(typeof(CardAnimationType)))
+            Kill(animationType);
     }
 }

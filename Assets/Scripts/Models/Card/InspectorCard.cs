@@ -24,11 +24,8 @@ public class InspectorCard : Card, IInspectorCard
         withOther.Destroy();
     }
 
-    public override void Clash(ICard withOther)
+    public override bool CanClash(ICard other)
     {
-        if ((withOther.Type & CardType.Merchant) == 0)
-            return;
-
-        Value--;
+        return (other.Type & CardType.Pirate) != 0;
     }
 }

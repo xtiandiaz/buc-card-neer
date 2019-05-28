@@ -10,6 +10,7 @@ public interface IGameMenuView
 
 public class GameMenuView : MenuView, IGameMenuView
 {
+    [SerializeField] private GameObject contentWrapper;
     [SerializeField] private Button resetButton;
     [SerializeField] private Text heading;
 
@@ -18,8 +19,14 @@ public class GameMenuView : MenuView, IGameMenuView
     [Inject]
     private void Initialize(IGameStatusNotifier gameStatusNotifier)
     {
+        contentWrapper.SetActive(false);
+        
         gameStatusNotifier.WhenEnded
-            .Subscribe(_ => heading.text = "Game Over")
+            .Subscribe(_ =>
+            {
+                heading.text = "Game Over";
+                contentWrapper.SetActive(true);
+            })
             .AddTo(this);
     }
 }

@@ -794,7 +794,7 @@
             <e p="Board" t="Include">
               <e p="Board.cs" t="Include" />
               <e p="BoardLayoutSettings.cs" t="Include" />
-              <e p="MoveRouter.cs" t="Include" />
+              <e p="MoveListener.cs" t="Include" />
             </e>
             <e p="Card" t="Include">
               <e p="Arrangement" t="Include">

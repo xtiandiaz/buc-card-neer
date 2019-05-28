@@ -7,12 +7,12 @@ public interface IMoveObserver
     void OnCompleted();
 }
 
-public interface IMoveObservable
+public interface IMoveListener
 {
     IObservable<Unit> WhenMoved { get; }
 }
 
-public class MoveRouter : IMoveObserver, IMoveObservable
+public class MoveListener : IMoveObserver, IMoveListener
 {
     private readonly Subject<Unit> moving = new Subject<Unit>();
     

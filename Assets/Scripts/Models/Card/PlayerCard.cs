@@ -52,7 +52,7 @@ public class PlayerCard : Card, IPlayerCard
             Fight(pirateCard);
             return;
         }
-        
+
         if (withOther is IInspectorCard inspectorCard)
         {
             Bribe(inspectorCard);
@@ -70,19 +70,14 @@ public class PlayerCard : Card, IPlayerCard
             Consume(resourceCard);
     }
 
-    public override void Clash(ICard withOther)
+    public override bool CanClash(ICard withOther)
     {
-        throw new NotImplementedException();
+        return false;
     }
 
     public bool CanCollect(IResourceCard resourceCard)
     {
         return resourceCard.CanBeCollected();
-    }
-
-    public bool CanUnlock(IResourceCard resourceCard)
-    {
-        return resourceCard.IsLocked && resourceCard.LockValue <= HealthPoints;
     }
 
     public bool CanBuy(IResourceCard resource)
@@ -127,6 +122,11 @@ public class PlayerCard : Card, IPlayerCard
     public void Seize(IPirateCard fromPirate)
     {
         Coins += fromPirate.OriginalValue;
+    }
+
+    private bool CanUnlock(IResourceCard resourceCard)
+    {
+        return resourceCard.IsLocked;
     }
 
     private void Unlock(IResourceCard resourceCard)

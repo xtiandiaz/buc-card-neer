@@ -37,14 +37,6 @@ public class MerchantCard : Card, IMerchantCard
         }
     }
 
-    public override void Clash(ICard withOther)
-    {
-        if ((withOther.Type & CardType.Pirate) == 0)
-            return;
-        
-        Value--;
-    }
-
     public bool CanBuy(IResourceCard resource)
     {
         return resource.Owner != null && resource.Owner != (IResourceAgent) this;
@@ -60,5 +52,10 @@ public class MerchantCard : Card, IMerchantCard
     public int GetOffer(IResourceCard forResource)
     {
         return forResource.Value * ((Suit.ResourceType & forResource.ResourceType) != 0 ? Value : 1);
+    }
+    
+    public override bool CanClash(ICard other)
+    {
+        return (other.Type & CardType.Inspector) != 0;
     }
 }

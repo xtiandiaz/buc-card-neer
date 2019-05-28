@@ -15,6 +15,7 @@ public class SeaController : ISeaController
 
     private const int FeedCountPerSlot = 3;
     private static readonly TimeSpan DealingInterval = TimeSpan.FromSeconds(0.1);
+    private static readonly TimeSpan ClashingInterval = TimeSpan.FromSeconds(0.5);
     
     private readonly ISea model;
     private readonly ISeaView view;
@@ -31,16 +32,18 @@ public class SeaController : ISeaController
     {
         model.AssignProviders();
         
-        disposables.Add(Observable.Timer(TimeSpan.Zero, DealingInterval)
-            .Take(model.Slots.Length * FeedCountPerSlot)
-            .Do(i => model.Slots[i % model.Slots.Length].Consume(1))
-            .Subscribe());
-        
         disposables.Add(model.Slots
             .Select(slot => slot.WhenReleased.Do(_ => slot.Lock()))
             .Merge()
             .Subscribe());
-        
+
+        #region Dealing
+
+        disposables.Add(Observable.Timer(TimeSpan.Zero, DealingInterval)
+            .Take(model.Slots.Length * FeedCountPerSlot)
+            .Do(i => model.Slots[i % model.Slots.Length].Consume(1))
+            .Subscribe());
+
         disposables.Add(model.Slots
             .Select(slot => slot.WhenEmptied.Select(_ => slot))
             .Merge()
@@ -48,6 +51,24 @@ public class SeaController : ISeaController
                 .Take(FeedCountPerSlot)
                 .Do(_ => slot.Consume(1)))
             .Subscribe());
+
+        #endregion
+
+        #region Clashing
+
+        disposables.Add(model.WhenClashed
+            .SelectMany(_ =>
+            {
+                var indicesToClash = Enumerable.Range(0, model.Slots.Length).Where(i => model.CanClash(i)).ToArray();
+                
+                return Observable.Timer(TimeSpan.Zero, ClashingInterval)
+                    .Take(indicesToClash.Length)
+                    .Do(i => model.Clash(indicesToClash[(int) i]))
+                    .DoOnCompleted(model.Unlock); // For Supply Slots are locked upon release
+            }) 
+            .Subscribe());
+
+        #endregion
     }
 
     public void Dispose()

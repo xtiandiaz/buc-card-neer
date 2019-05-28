@@ -41,6 +41,7 @@ public interface ICard
     bool IsBoarded { get; }
     
     IObservable<int> ValueAsObservable { get; }
+    IObservable<Direction> WhenClashed { get; }
     IObservable<Transform> WhenBound { get; }
     IObservable<Unit> WhenBoarded { get; }
     IObservable<Unit> WhenArranged { get; }
@@ -56,7 +57,8 @@ public interface ICard
 
     bool CanMatch(ICard withOther, ISlot fromSlot);
     void Match(ICard withOther);
-    void Clash(ICard withOther);
+    bool CanClash(ICard other);
+    void Clash(ICard other, Direction withDirection);
     void Bind(ICardBond withBond);
     void Board();
     void Pick();
@@ -74,6 +76,7 @@ public abstract class Card : ScriptableObject, ICard
 {
     [SerializeField] protected IntReactiveProperty value = new IntReactiveProperty();
 
+    private readonly Subject<Direction> clashing = new Subject<Direction>();
     private readonly Subject<Transform> binding = new Subject<Transform>();
     private readonly Subject<Unit> boarding = new Subject<Unit>();
     private readonly Subject<Unit> arranging = new Subject<Unit>();
@@ -119,6 +122,7 @@ public abstract class Card : ScriptableObject, ICard
     }
 
     public IObservable<int> ValueAsObservable => value;
+    public IObservable<Direction> WhenClashed => clashing;
     public IObservable<Transform> WhenBound => binding;
     public IObservable<Unit> WhenBoarded => boarding;
     public IObservable<Unit> WhenArranged => arranging;
@@ -141,7 +145,14 @@ public abstract class Card : ScriptableObject, ICard
 
     public abstract void Match(ICard withOther);
 
-    public abstract void Clash(ICard withOther);
+    public abstract bool CanClash(ICard other);
+
+    public void Clash(ICard other, Direction withDirection)
+    {
+        other.Value--;
+
+        clashing.OnNext(withDirection);
+    }
 
     public void Bind(ICardBond withBond)
     {

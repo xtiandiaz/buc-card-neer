@@ -16,7 +16,7 @@ public enum ResourceType
     Medicine            = CardType.Medicine,
     
     Item                = Food | Artifact | Gem,
-    Tool           = WeaponMelee | WeaponRanged | Medicine,
+    Tool                = WeaponMelee | WeaponRanged | Medicine,
     Weapon              = WeaponMelee | WeaponRanged
 }
 
@@ -114,7 +114,7 @@ public class ResourceCard : Card, IResourceCard
         if ((ResourceType & ResourceType.WeaponRanged) == 0) 
             return;
         
-        // Ranged combat follows:
+        // Ranged combat ensues:
 
         if ((withOther.Type & CardType.Pirate) != 0)
         {
@@ -123,9 +123,9 @@ public class ResourceCard : Card, IResourceCard
         }
     }
 
-    public override void Clash(ICard withOther)
+    public override bool CanClash(ICard other)
     {
-        // No clash defined yet
+        return false;
     }
 
     public override void Flip(CardFace toFace)

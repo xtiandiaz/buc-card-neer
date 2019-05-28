@@ -11,6 +11,7 @@ public abstract class CardController : ICardController
 {
     protected readonly CompositeDisposable disposables = new CompositeDisposable();
     
+    private static readonly TimeSpan ClashTiltTimeSpan = TimeSpan.FromSeconds(0.25f);
     private readonly ICard model;
     private readonly ICardView view;
     private readonly GameCamera gameCamera;
@@ -80,6 +81,13 @@ public abstract class CardController : ICardController
         disposables.Add(model.WhenFogged.Subscribe(withColorByFactor =>
             view.Fog(withColorByFactor.Item1, withColorByFactor.Item2)));
 
+        #endregion
+
+        #region Clashing
+
+        disposables.Add(model.WhenClashed
+            .Subscribe(withDirection => view.Tilt(withDirection, ClashTiltTimeSpan)));
+        
         #endregion
 
         #region Destruction

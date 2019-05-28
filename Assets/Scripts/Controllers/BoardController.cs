@@ -16,32 +16,31 @@ public class BoardController : IBoardController
     private readonly IBoard model;
     private readonly IBoardView view;
     private readonly ISea sea;
-    private readonly IMoveObservable moveObservable;
+    private readonly IMoveListener moveListener;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private BoardController(
         IBoard model, 
         IBoardView view,
         ISea sea,
-        IMoveObservable moveObservable
+        IMoveListener moveListener
         )
     {
         this.model = model;
         this.view = view;
         this.sea = sea;
-        this.moveObservable = moveObservable;
+        this.moveListener = moveListener;
     }
 
     [Inject]
     public void Initialize()
     {
-        disposables.Add(moveObservable.WhenMoved
+        disposables.Add(moveListener.WhenMoved
             .Subscribe(_ =>
             {
                 Debug.Log("Player Moved!");
                 
                 sea.Clash();
-                sea.Unlock(); // For Supply Slots are locked upon release 
             }));
     }
 
