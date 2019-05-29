@@ -48,11 +48,11 @@ public class ShipController : IShipController
 
         #region Battling
 
-        disposables.Add(model.WhenArmed
+        /*disposables.Add(model.WhenArmed
             .Do(_ => model.Lock())
             .Delay(ShootingDelay)
             .Do(_ => model.Shoot())
-            .Subscribe());
+            .Subscribe());*/
 
         #endregion
     }
