@@ -38,12 +38,13 @@ public interface ICard
     Sprite FrontFace { get; }
     Sprite BackFace { get; }
     ICardBond Bond { get; }
-    bool IsBoarded { get; }
+    bool IsBoarded { get; set; }
+    bool IsStored { get; set; }
     
     IObservable<int> ValueAsObservable { get; }
     IObservable<Direction> WhenClashed { get; }
+    IObservable<Unit> WhenImpacted { get; }
     IObservable<Transform> WhenBound { get; }
-    IObservable<Unit> WhenBoarded { get; }
     IObservable<Unit> WhenArranged { get; }
     IObservable<Unit> WhenPicked { get; }
     IObservable<Unit> WhenDragged { get; }
@@ -59,8 +60,9 @@ public interface ICard
     void Match(ICard withOther);
     bool CanClash(ICard other);
     void Clash(ICard other, Direction withDirection);
+    bool CanBeImpacted();
+    void Impact(int withValue);
     void Bind(ICardBond withBond);
-    void Board();
     void Pick();
     void Drag(Vector3 byDeltaPosition);
     void Drop();
@@ -77,6 +79,7 @@ public abstract class Card : ScriptableObject, ICard
     [SerializeField] protected IntReactiveProperty value = new IntReactiveProperty();
 
     private readonly Subject<Direction> clashing = new Subject<Direction>();
+    private readonly Subject<Unit> impacting = new Subject<Unit>();
     private readonly Subject<Transform> binding = new Subject<Transform>();
     private readonly Subject<Unit> boarding = new Subject<Unit>();
     private readonly Subject<Unit> arranging = new Subject<Unit>();
@@ -103,7 +106,8 @@ public abstract class Card : ScriptableObject, ICard
     public Sprite BackFace => backFace;
     public Vector3 LocalPosition { get; private set; }
     public ICardBond Bond { get; private set; }
-    public bool IsBoarded { get; private set; }
+    public bool IsBoarded { get; set; }
+    public bool IsStored { get; set; }
 
     public int Value
     {
@@ -123,8 +127,8 @@ public abstract class Card : ScriptableObject, ICard
 
     public IObservable<int> ValueAsObservable => value;
     public IObservable<Direction> WhenClashed => clashing;
+    public IObservable<Unit> WhenImpacted => impacting;
     public IObservable<Transform> WhenBound => binding;
-    public IObservable<Unit> WhenBoarded => boarding;
     public IObservable<Unit> WhenArranged => arranging;
     public IObservable<Unit> WhenPicked => picking;
     public IObservable<Unit> WhenDragged => dragging;
@@ -136,7 +140,7 @@ public abstract class Card : ScriptableObject, ICard
     public IObservable<(Color, float)> WhenFogged => fogging;
     public IObservable<Unit> WhenDestroyed => destruction;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         OriginalValue = Value;
     }
@@ -154,6 +158,15 @@ public abstract class Card : ScriptableObject, ICard
         clashing.OnNext(withDirection);
     }
 
+    public abstract bool CanBeImpacted();
+
+    public virtual void Impact(int withValue)
+    {
+        Hit(withValue);
+
+        impacting.OnNext(Unit.Default);
+    }
+
     public void Bind(ICardBond withBond)
     {
         if (withBond == Bond || withBond == null)
@@ -163,13 +176,6 @@ public abstract class Card : ScriptableObject, ICard
         Bond = withBond;
 
         binding.OnNext(withBond.TransformBond);
-    }
-
-    public void Board()
-    {
-        IsBoarded = true;
-        
-        boarding.OnNext(Unit.Default);
     }
 
     public void Pick()
@@ -224,5 +230,10 @@ public abstract class Card : ScriptableObject, ICard
         
         destruction.OnNext(Unit.Default);
         destruction.OnCompleted();
+    }
+
+    protected virtual void Hit(int withValue)
+    {
+        Value -= withValue;
     }
 }

@@ -16,6 +16,7 @@ public class SeaController : ISeaController
     private const int FeedCountPerSlot = 3;
     private static readonly TimeSpan DealingInterval = TimeSpan.FromSeconds(0.1);
     private static readonly TimeSpan ClashingInterval = TimeSpan.FromSeconds(0.5);
+    private static readonly TimeSpan SupplyDelay = TimeSpan.FromSeconds(0.75);
     
     private readonly ISea model;
     private readonly ISeaView view;
@@ -47,6 +48,7 @@ public class SeaController : ISeaController
         disposables.Add(model.Slots
             .Select(slot => slot.WhenEmptied.Select(_ => slot))
             .Merge()
+            .Delay(SupplyDelay)
             .SelectMany(slot => Observable.Timer(TimeSpan.Zero, DealingInterval)
                 .Take(FeedCountPerSlot)
                 .Do(_ => slot.Consume(1)))

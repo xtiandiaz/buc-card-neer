@@ -64,12 +64,13 @@ public class GameInstaller : MonoInstaller
 
         #endregion
         
-        #region Ships
+        #region Ship
 
         Container.BindFactory<ISlot[], Ship, Ship.Factory>().AsSingle();
         Container.BindFactory<ShipView, ShipView.Factory>().FromInstance(shipView);
         Container.BindFactory<IShip, IShipView, ShipController, ShipController.Factory>().AsSingle();
-        Container.BindInterfacesAndSelfTo<ShipFactory>().AsSingle();
+        //Container.BindInterfacesAndSelfTo<ShipFactory>().AsSingle();
+        Container.Bind<IShip>().FromFactory<ShipFactory>().AsSingle().NonLazy();
 
         #endregion
         

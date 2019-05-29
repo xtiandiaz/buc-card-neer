@@ -16,6 +16,7 @@ MonoBehaviour:
   capacity: 3
   shouldStartLocked: 0
   entryway: 1
+  lodgingFace: 1
   arrangement: {fileID: 11400000, guid: 8c652235ab686451bbe0cde2d23cc2a1, type: 2}
   doesSelfArrangeOnLodging: 1
   doesSelfArrangeOnReleasing: 1

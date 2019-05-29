@@ -13,9 +13,14 @@ public class BoardController : IBoardController
     {
     }
     
+    private static readonly TimeSpan ShootingImpactDelay = TimeSpan.FromSeconds(0.25f);
+    private static readonly TimeSpan CollectionDelay = TimeSpan.FromSeconds(0.5f);
+    
     private readonly IBoard model;
     private readonly IBoardView view;
     private readonly ISea sea;
+    private readonly IShip ship;
+    private readonly IPlayerCard player;
     private readonly IMoveListener moveListener;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
@@ -23,12 +28,16 @@ public class BoardController : IBoardController
         IBoard model, 
         IBoardView view,
         ISea sea,
+        IShip ship,
+        IPlayerCard player,
         IMoveListener moveListener
         )
     {
         this.model = model;
         this.view = view;
         this.sea = sea;
+        this.ship = ship;
+        this.player = player;
         this.moveListener = moveListener;
     }
 
@@ -42,6 +51,36 @@ public class BoardController : IBoardController
                 
                 sea.Clash();
             }));
+
+        #region Battling
+
+        disposables.Add(ship.WhenArmed.Subscribe(_ => sea.Lock()));
+        
+        disposables.Add(ship.WhenShot
+            .Delay(ShootingImpactDelay)
+            .Do(sea.Impact)
+            .Delay(CollectionDelay)
+            .Do(_ => sea.Collect())
+            .Subscribe(_ =>
+            {
+                sea.Unlock();
+                ship.Unlock();
+            }));
+
+        #endregion
+
+        #region Collection & Plunder
+
+        disposables.Add(sea.WhenCollected.Subscribe(resource =>
+        {
+            resource.IsBoarded = true;
+            
+            ship.Store(resource);
+        }));
+        
+        disposables.Add(sea.WhenPlundered.Subscribe(player.Plunder));
+
+        #endregion
     }
 
     public void Dispose()

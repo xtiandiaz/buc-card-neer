@@ -349,7 +349,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3811403f69f8b41f8988a951b48e8715, type: 3}
+  - {fileID: 2100000, guid: 9151eb029ebee461c848fbdd48d5b57f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -441,7 +441,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3811403f69f8b41f8988a951b48e8715, type: 3}
+  - {fileID: 2100000, guid: 9151eb029ebee461c848fbdd48d5b57f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -512,6 +512,7 @@ GameObject:
   - component: {fileID: 4141944539622565620}
   - component: {fileID: 10141778675253309}
   - component: {fileID: 9099243857038372407}
+  - component: {fileID: 1256868144175007448}
   m_Layer: 0
   m_Name: Inspector
   m_TagString: Untagged
@@ -560,9 +561,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   valueLabel: {fileID: 1755363637573206423}
   frontFace: {fileID: 2394089882030168721}
+  backFace: {fileID: 1036552923604472217}
   contentWrapper: {fileID: 4196249751627446869}
   sortingGroup: {fileID: 4141944539622565620}
-  backFace: {fileID: 1036552923604472217}
 --- !u!114 &9099243857038372407
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -581,6 +582,20 @@ MonoBehaviour:
   targetSpriteRenderers:
   - {fileID: 5304362483095993766}
   - {fileID: 5816174328690173628}
+--- !u!114 &1256868144175007448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4639396434572544147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 203791d48ba9431fb688c810199e72f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  frontFace: {fileID: 2394089882030168721}
+  backFace: {fileID: 1036552923604472217}
 --- !u!1 &5372911298522929148
 GameObject:
   m_ObjectHideFlags: 0

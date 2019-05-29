@@ -1,8 +1,7 @@
 using UnityEngine;
 
-public interface IPirateCard : ICard
+public interface IPirateCard : ICard, ILootCarrier
 {
-    int LootMultiplier { get; }
 }
 
 [CreateAssetMenu(menuName = "Game/Card/Pirate")]
@@ -11,7 +10,7 @@ public class PirateCard : Card, IPirateCard
     [SerializeField] [Range(1, 4)] private int lootMultiplier;
     
     public override CardType Type => CardType.Pirate;
-    public int LootMultiplier => lootMultiplier;
+    public bool IsDead => Value <= 0;
 
     public override bool CanMatch(ICard withOther, ISlot fromSlot)
     {
@@ -31,5 +30,15 @@ public class PirateCard : Card, IPirateCard
     public override bool CanClash(ICard other)
     {
         return (other.Type & CardType.Merchant) != 0;
+    }
+
+    public override bool CanBeImpacted()
+    {
+        return true;
+    }
+
+    public int GetLoot()
+    {
+        return OriginalValue;
     }
 }

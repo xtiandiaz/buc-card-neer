@@ -23,27 +23,17 @@ public enum ResourceType
 public interface IResourceCard : ICard
 {
     ResourceType ResourceType { get; }
-    IResourceAgent Owner { get; }
     Sprite Container { get; }
     Sprite Item { get; }
     ISuit Suit { get; }
     int LockValue { get; }
     bool IsWrapped { get; }
+    bool WasLocked { get; }
     bool IsLocked { get; }
 
     IObservable<int> WhenLockValueChanged { get; }
-    IObservable<Unit> WhenCanBeCollected { get; }
-    IObservable<Unit> WhenCollected { get; }
-    IObservable<Unit> WhenBought { get; } 
-    IObservable<Unit> WhenSold { get; } 
-    IObservable<Unit> WhenConsumed { get; }
     IObservable<Unit> WhenUnlocked { get; }
-
-    bool CanBeCollected();
-    void OnCollected(IResourceAgent byAgent);
-    void OnBought(IResourceAgent byAgent);
-    void OnSold(IResourceAgent toAgent);
-    void OnConsumed(IResourceAgent byAgent);
+    
     void Unwrap();
     void Unlock();
 }
@@ -51,45 +41,39 @@ public interface IResourceCard : ICard
 [CreateAssetMenu(fileName = "CardResource", menuName = "Game/Card/Resource", order = 1)]
 public class ResourceCard : Card, IResourceCard
 {
-    private readonly Subject<Unit> collection = new Subject<Unit>();
-    private readonly Subject<Unit> buying = new Subject<Unit>();
-    private readonly Subject<Unit> selling = new Subject<Unit>();
-    private readonly Subject<Unit> consumption = new Subject<Unit>();
-    private readonly BehaviorSubject<IResourceAgent> ownership = new BehaviorSubject<IResourceAgent>(null);
-
     [SerializeField] private Sprite container;
     [SerializeField] private Sprite item;
     [SerializeField] private Suit suit;
     [SerializeField] private IntReactiveProperty lockValue = new IntReactiveProperty();
 
     public override CardType Type => (CardType) ResourceType;
-    public IResourceAgent Owner => ownership.Value;
     public ResourceType ResourceType => suit.ResourceType;
     public Sprite Container => container;
     public Sprite Item => item;
     public ISuit Suit => suit;
     public bool IsWrapped { get; private set; } = true;
+    public bool WasLocked { get; private set; }
     public bool IsLocked => LockValue > 0;
 
     public int LockValue
     {
         get => lockValue.Value;
-        private set => lockValue.Value = value;
+        private set
+        {
+            lockValue.Value = value;
+            WasLocked |= value > 0;
+        }
     }
 
     public IObservable<int> WhenLockValueChanged => lockValue;
-
-    public IObservable<Unit> WhenCanBeCollected => lockValue.CombineLatest(
-            ownership,
-            (lockVal, owner) => lockVal <= 0 && owner == null)
-        .Where(x => x)
-        .AsUnitObservable();
-    
-    public IObservable<Unit> WhenCollected => collection;
-    public IObservable<Unit> WhenBought => buying;
-    public IObservable<Unit> WhenSold => selling;
-    public IObservable<Unit> WhenConsumed => consumption;
     public IObservable<Unit> WhenUnlocked => lockValue.Where(x => x <= 0).Take(1).AsUnitObservable();
+    
+    protected override void Awake()
+    {
+        base.Awake();
+
+        WasLocked = IsLocked;
+    }
 
     public override bool CanMatch(ICard withOther, ISlot fromSlot)
     {
@@ -128,44 +112,9 @@ public class ResourceCard : Card, IResourceCard
         return false;
     }
 
-    public override void Flip(CardFace toFace)
+    public override bool CanBeImpacted()
     {
-        if (IsLocked && toFace == CardFace.Front)
-            return;
-        
-        base.Flip(toFace);
-    }
-
-    public bool CanBeCollected()
-    {
-        return Owner == null && !IsLocked;
-    }
-
-    public void OnCollected(IResourceAgent byAgent)
-    {
-        ownership.OnNext(byAgent);
-        collection.OnNext(Unit.Default);
-    }
-
-    public void OnBought(IResourceAgent byAgent)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnSold(IResourceAgent toAgent)
-    {
-        selling.OnNext(Unit.Default);
-        selling.OnCompleted();
-        
-        Destroy();
-    }
-
-    public void OnConsumed(IResourceAgent byAgent)
-    {
-        consumption.OnNext(Unit.Default);
-        consumption.OnCompleted();
-
-        Destroy();
+        return IsLocked;
     }
 
     public void Unwrap()
@@ -178,5 +127,10 @@ public class ResourceCard : Card, IResourceCard
     public void Unlock()
     {
         LockValue = 0;
+    }
+
+    protected override void Hit(int withValue)
+    {
+        LockValue -= withValue;
     }
 }

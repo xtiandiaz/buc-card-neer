@@ -7,7 +7,7 @@ public interface IPlayerCard : ICard, IResourceTrader, IResourceCollector, IReso
     IObservable<int> Health { get; }
     IObservable<int> Funds { get; }
 
-    void Seize(IPirateCard pirate);
+    void Plunder(ILootCarrier lootCarrier);
 }
 
 [CreateAssetMenu(menuName = "Game/Card/Player")]
@@ -40,7 +40,7 @@ public class PlayerCard : Card, IPlayerCard
             return true;
 
         if (withOther is IResourceCard resourceCard)
-            return CanCollect(resourceCard) || CanConsume(resourceCard) || CanUnlock(resourceCard);
+            return resourceCard.IsLocked || CanConsume(resourceCard);
 
         return false;
     }
@@ -62,10 +62,8 @@ public class PlayerCard : Card, IPlayerCard
         if (!(withOther is IResourceCard resourceCard))
             return;
 
-        if (CanUnlock(resourceCard))
+        if (resourceCard.IsLocked)
             Unlock(resourceCard);
-        else if (CanCollect(resourceCard))
-            Collect(resourceCard);
         else if (CanConsume(resourceCard))
             Consume(resourceCard);
     }
@@ -75,9 +73,9 @@ public class PlayerCard : Card, IPlayerCard
         return false;
     }
 
-    public bool CanCollect(IResourceCard resourceCard)
+    public override bool CanBeImpacted()
     {
-        return resourceCard.CanBeCollected();
+        return false;
     }
 
     public bool CanBuy(IResourceCard resource)
@@ -87,7 +85,7 @@ public class PlayerCard : Card, IPlayerCard
     
     public bool CanSell(IResourceCard resourceCard)
     {
-        return resourceCard.Owner == (IResourceAgent) this;
+        throw new NotImplementedException();
     }
 
     public bool CanConsume(IResourceCard resourceCard)
@@ -95,9 +93,13 @@ public class PlayerCard : Card, IPlayerCard
         return (resourceCard.Type & CardType.Medicine) != 0;
     }
 
+    public bool CanCollect(IResourceCard resourceCard)
+    {
+        return !resourceCard.IsLocked;
+    }
+
     public void Collect(IResourceCard resourceCard)
     {
-        resourceCard.OnCollected(this);
     }
     
     public void Buy(IResourceCard resourceCard)
@@ -108,27 +110,22 @@ public class PlayerCard : Card, IPlayerCard
     public void Sell(IResourceCard resourceCard, IMerchantCard toMerchant)
     {
         Coins += toMerchant.GetOffer(resourceCard);
-
-        resourceCard.OnSold(toMerchant);
+        
+        resourceCard.Destroy();
     }
 
     public void Consume(IResourceCard resourceCard)
     {
         HealthPoints += resourceCard.Value;
-        
-        resourceCard.OnConsumed(this);
+
+        resourceCard.Value = 0;
     }
     
-    public void Seize(IPirateCard fromPirate)
+    public void Plunder(ILootCarrier lootCarrier)
     {
-        Coins += fromPirate.OriginalValue;
+        Coins += lootCarrier.GetLoot();
     }
-
-    private bool CanUnlock(IResourceCard resourceCard)
-    {
-        return resourceCard.IsLocked;
-    }
-
+    
     private void Unlock(IResourceCard resourceCard)
     {
         HealthPoints -= resourceCard.LockValue;
@@ -145,7 +142,7 @@ public class PlayerCard : Card, IPlayerCard
         if (!IsAlive) 
             return;
         
-        Seize(pirate);
+        Plunder(pirate);
         
         pirate.Destroy();
     }
@@ -153,8 +150,6 @@ public class PlayerCard : Card, IPlayerCard
     private void Bribe(IInspectorCard inspector)
     {
         Coins -= inspector.Value;
-
-        //TODO what if Player has no funds to bribe?
 
         inspector.Destroy();
     }

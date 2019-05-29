@@ -30,14 +30,7 @@ public class BoardingSlot : Slot, IBoardingSlot
     {
         if (!card.IsBoarded)
             return (card.Type & (CardType.Resource | CardType.Agent)) != 0;
-        
-        return IsEmpty && (card.Type & CardType.WeaponRanged) != 0;
-    }
 
-    protected override void OnLodged(ICard card)
-    {
-        base.OnLodged(card);
-        
-        card.Board();
+        return IsEmpty && (card.Type & CardType.WeaponRanged) != 0;
     }
 }

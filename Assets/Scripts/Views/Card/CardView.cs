@@ -1,5 +1,4 @@
 using System;
-using DG.Tweening;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -18,9 +17,9 @@ public interface ICardView
     IObservable<Unit> OnDropped();
     void Flip(CardFace toFace, bool animated);
     void Tilt(Direction towardDirection, TimeSpan duringTime);
+    void Spin(int times);
     void MoveLocal(Vector3 toPosition);
     IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition);
-    void ToggleVisibility(bool toValue);
     void SetParent(Transform toTransform);
     void Fade(float toAlphaValue);
     IObservable<Unit> FadeAsObservable(float toAlphaValue);
@@ -37,9 +36,9 @@ public class CardView : MonoBehaviour, ICardView
 
     [SerializeField] protected CardLabel valueLabel;
     [SerializeField] protected CardFaceView frontFace;
+    [SerializeField] protected CardFaceView backFace;
     [SerializeField] private Transform contentWrapper;
     [SerializeField] private SortingGroup sortingGroup;
-    [SerializeField] private CardFaceView backFace;
     
     [Inject] private CardAnimationSettings animationSettings;
     private ICardAnimator animator;
@@ -98,7 +97,7 @@ public class CardView : MonoBehaviour, ICardView
 
     private void Awake()
     {
-        animator = GetComponent<ICardAnimator>() ?? gameObject.AddComponent<CardAnimator>();
+        animator = GetComponent<ICardAnimator>();
         shader = GetComponent<ICardShader>();
         
         animator.Initialize(animationSettings, contentWrapper);
@@ -118,16 +117,17 @@ public class CardView : MonoBehaviour, ICardView
 
     public void Flip(CardFace toFace, bool animated)
     {
-        animator.Flip(toFace, animated, () =>
-        {
-            frontFace.ToggleVisibility(toFace == CardFace.Front);
-            backFace.ToggleVisibility(toFace == CardFace.Back);
-        });
+        animator.Flip(toFace, animated);
     }
 
     public void Tilt(Direction towardDirection, TimeSpan duringTime)
     {
         animator.Tilt(towardDirection, duringTime);
+    }
+
+    public void Spin(int times)
+    {
+        animator.Spin(times);
     }
 
     public void MoveLocal(Vector3 toPosition)
@@ -138,11 +138,6 @@ public class CardView : MonoBehaviour, ICardView
     public IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition)
     {
         return animator.MoveLocalAsObservable(toPosition, 0.5f);
-    }
-    
-    public void ToggleVisibility(bool toValue)
-    {
-        gameObject.SetActive(toValue);
     }
 
     public void Fade(float toAlphaValue)

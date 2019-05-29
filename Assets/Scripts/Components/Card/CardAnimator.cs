@@ -17,8 +17,9 @@ public interface ICardAnimator
     void Lift();
     void Drop();
     IObservable<Unit> DropAsObservable();
-    void Flip(CardFace toFace, bool whileAnimating, Action andDoAmidFlip = null);
+    void Flip(CardFace toFace, bool whileAnimating);
     void Tilt(Direction towardDirection, TimeSpan duringTime);
+    void Spin(int times);
     Tween MoveLocal(Vector3 toPosition);
     IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition, float duringSeconds);
     void Kill(CardAnimationType animationType);
@@ -26,12 +27,15 @@ public interface ICardAnimator
 
 public class CardAnimator : MonoBehaviour, ICardAnimator
 {
+    [SerializeField] private CardFaceView frontFace;
+    [SerializeField] private CardFaceView backFace;
+        
     private CardAnimationSettings settings;
     private Transform contentWrapper;
     private Tween moveTween, liftTween;
     private Sequence flipSequence, tiltSequence;
     private CardFace currentFace;
-
+    
     public void Initialize(CardAnimationSettings withSettings, Transform andContentWrapper)
     {
         settings = withSettings;
@@ -60,7 +64,7 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
         });
     }
     
-    public void Flip(CardFace toFace, bool whileAnimating, Action andDoAmidFlip = null)
+    public void Flip(CardFace toFace, bool whileAnimating)
     {
         Kill(CardAnimationType.Flip);
         Kill(CardAnimationType.Lift);
@@ -72,7 +76,7 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
         if (!whileAnimating)
         {
             transform.eulerAngles = destEulerAngles;
-            andDoAmidFlip?.Invoke();
+            ToggleFace(toFace);
 
             return;
         }
@@ -83,7 +87,7 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
         
         flipSequence.Append(
             contentWrapper.DORotate(Vector3.up * 90f, halfTweenDuration)
-                .OnComplete(() => andDoAmidFlip?.Invoke())
+                .OnComplete(() => ToggleFace(toFace))
                 .SetEase(settings.InEase));
 
         flipSequence.Join(Lift(-settings.LiftDepth, halfTweenDuration).SetEase(settings.InEase));
@@ -110,6 +114,20 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
             contentWrapper.DORotate(originalRotation, settings.TiltDuration)
                 .SetDelay((float) duringTime.TotalSeconds)
                 .SetEase(settings.OutEase));
+    }
+
+    public void Spin(int times)
+    {
+        Kill(CardAnimationType.Flip);
+        Kill(CardAnimationType.Tilt);
+        
+        var originalRotation = GetRotationEulerAnglesDestination(currentFace);
+        
+        ToggleFaces(true);
+
+        contentWrapper.DORotate(originalRotation - 360f * times * Vector3.up, settings.SpinDuration, RotateMode.FastBeyond360)
+            .SetEase(settings.OutEase)
+            .OnComplete(() => ToggleFace(currentFace));
     }
 
     public Tween MoveLocal(Vector3 toPosition)
@@ -192,6 +210,18 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
             default:
                 return Vector3.zero;       
         }
+    }
+    
+    private void ToggleFace(CardFace toValue)
+    {
+        frontFace.ToggleVisibility(toValue == CardFace.Front);
+        backFace.ToggleVisibility(toValue == CardFace.Back);
+    }
+
+    private void ToggleFaces(bool on)
+    {
+        frontFace.ToggleVisibility(on);
+        backFace.ToggleVisibility(on);
     }
     
     private void KillAll()

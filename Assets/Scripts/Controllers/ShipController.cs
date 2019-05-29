@@ -1,6 +1,5 @@
 using System;
 using UniRx;
-using UnityEngine;
 using Zenject;
 
 public interface IShipController : IInitializable, IDisposable
@@ -13,48 +12,49 @@ public class ShipController : IShipController
     {
     }
     
-    protected readonly CompositeDisposable disposables = new CompositeDisposable();
+    private static readonly TimeSpan ShootingDelay = TimeSpan.FromSeconds(0.25);
+    private static readonly TimeSpan SelfStoringDelay = TimeSpan.FromSeconds(0.5);
     
     private readonly IShip model;
     private readonly IShipView view;
-    private readonly IPlayerCard playerCard;
-    private readonly CardAnimationSettings cardAnimationSettings;
+    private readonly CompositeDisposable disposables = new CompositeDisposable();
 
-    protected ShipController(
-        IShip model, 
-        IShipView view, 
-        IPlayerCard playerCard, 
-        CardAnimationSettings cardAnimationSettings
-        )
+    protected ShipController(IShip model, IShipView view)
     {
         this.model = model;
         this.view = view;
-        this.playerCard = playerCard;
-        this.cardAnimationSettings = cardAnimationSettings;
     }
 
     [Inject]
     public void Initialize()
     {
-        model.PlayerSlot?.Lodge(playerCard);
+        #region Boarding
 
-        disposables.Add(model.WhenBoardedResource
-            .Delay(TimeSpan.FromSeconds(cardAnimationSettings.BoardingDelay))
-            .SelectMany(resCard =>
+        disposables.Add(model.WhenBoarded
+            .Do(card =>
             {
-                if (resCard.CanBeCollected())
-                {
-                    playerCard.Collect(resCard);
-                    return Observable.Return(resCard);
-                }
-
-                return resCard.WhenCanBeCollected
-                    .Select(_ => resCard)
-                    .Take(1)
-                    .Do(playerCard.Collect);
+                if (!(card is IResourceCard resourceCard) || !resourceCard.IsLocked)
+                    card.Flip(CardFace.Front);
             })
+            .Where(card => card is IResourceCard)
+            .Cast<ICard, IResourceCard>()
+            .Delay(SelfStoringDelay)
+            .SelectMany(resCard =>
+                resCard.IsLocked ? resCard.WhenUnlocked.Select(_ => resCard) : Observable.Return(resCard))
             .Do(resCard => model.Store(resCard))
             .Subscribe());
+
+        #endregion
+
+        #region Battling
+
+        disposables.Add(model.WhenArmed
+            .Do(_ => model.Lock())
+            .Delay(ShootingDelay)
+            .Do(_ => model.Shoot())
+            .Subscribe());
+
+        #endregion
     }
 
     public void Dispose()

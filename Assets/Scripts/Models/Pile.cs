@@ -14,9 +14,8 @@ public interface IPile
     bool CanInsert { get; }
 
     ICard Peek();
-    bool Insert(ICard card, PileInsertionMode withMode, bool andShouldThenArrange = true);
-    bool Remove(ICard card, bool andShouldThenArrange = true);
-    ICard[] Take(int count);
+    bool Insert(ICard card, PileInsertionMode withMode);
+    bool Remove(ICard card);
     void Arrange();
     bool DoesContain(ICard card);
 }
@@ -42,7 +41,7 @@ public class Pile : IPile
         return contents.FirstOrDefault();
     }
 
-    public bool Insert(ICard card, PileInsertionMode withMode, bool andShouldThenArrange = true)
+    public bool Insert(ICard card, PileInsertionMode withMode)
     {
         if (card == null || !CanInsert || DoesContain(card))
             return false;
@@ -59,29 +58,12 @@ public class Pile : IPile
                 return false;
         }
         
-        if (andShouldThenArrange)
-            Arrange();
-
         return true;
     }
 
-    public bool Remove(ICard card, bool andShouldThenArrange = true)
+    public bool Remove(ICard card)
     {
-        var didRemove = contents.Remove(card);
-        
-        if (didRemove && andShouldThenArrange)
-            Arrange();
-
-        return didRemove;
-    }
-
-    public ICard[] Take(int count)
-    {
-        var taken = contents.Take(count).ToArray();
-
-        Arrange();
-        
-        return taken;
+        return contents.Remove(card);
     }
 
     public void Arrange()

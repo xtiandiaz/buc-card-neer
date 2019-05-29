@@ -803,11 +803,13 @@
               </e>
               <e p="Card.cs" t="Include" />
               <e p="CardAnimationSettings.cs" t="Include" />
+              <e p="ILootCarrier.cs" t="Include" />
               <e p="InspectorCard.cs" t="Include" />
               <e p="MerchantCard.cs" t="Include" />
               <e p="PirateCard.cs" t="Include" />
               <e p="PlayerCard.cs" t="Include" />
               <e p="Resource" t="Include">
+                <e p="ArtilleryCard.cs" t="Include" />
                 <e p="IResourceAgent.cs" t="Include" />
                 <e p="IResourceBuyer.cs" t="Include" />
                 <e p="IResourceCollector.cs" t="Include" />

@@ -1,6 +1,5 @@
 using System;
 using UniRx;
-using UnityEngine.EventSystems;
 using Zenject;
 
 public interface IGameController : IInitializable, IDisposable
@@ -12,12 +11,11 @@ public class GameController : IGameController
     private readonly IGame model;
     private readonly IGameMenuView menuView;
     private readonly IAppController appController;
-    private readonly IBoardFactory boardFactory;
     private readonly IDeckFactory deckFactory;
     private readonly ICardFactory cardFactory;
-    private readonly IShipFactory shipFactory;
     private readonly IDeck deck;
     private readonly IPlayerCard playerCard;
+    private readonly IShip ship;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     public GameController(
@@ -26,9 +24,9 @@ public class GameController : IGameController
         IAppController appController,
         IDeckFactory deckFactory,
         ICardFactory cardFactory,
-        IShipFactory shipFactory,
         IDeck deck,
-        IPlayerCard playerCard
+        IPlayerCard playerCard,
+        IShip ship
         )
     {
         this.model = model;
@@ -36,16 +34,17 @@ public class GameController : IGameController
         this.appController = appController;
         this.deckFactory = deckFactory;
         this.cardFactory = cardFactory;
-        this.shipFactory = shipFactory;
         this.deck = deck;
         this.playerCard = playerCard;
+        this.ship = ship;
     }
 
     public void Initialize()
     {
         deckFactory.Create(deck);
         cardFactory.Create(playerCard);
-        shipFactory.Create();
+        
+        ship.PlayerSlot?.Lodge(playerCard);
 
         #region Conclusion
 

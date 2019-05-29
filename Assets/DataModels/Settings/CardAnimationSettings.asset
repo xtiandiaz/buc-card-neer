@@ -16,6 +16,7 @@ MonoBehaviour:
   <FlipDuration>k__BackingField: 0.4
   <TiltDuration>k__BackingField: 0.2
   <TiltAngle>k__BackingField: 60
+  <SpinDuration>k__BackingField: 0.4
   <JoltDuration>k__BackingField: 0.5
   <LiftDepth>k__BackingField: 1.25
   <LiftDuration>k__BackingField: 0.2

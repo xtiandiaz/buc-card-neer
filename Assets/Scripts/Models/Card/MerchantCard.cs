@@ -39,13 +39,11 @@ public class MerchantCard : Card, IMerchantCard
 
     public bool CanBuy(IResourceCard resource)
     {
-        return resource.Owner != null && resource.Owner != (IResourceAgent) this;
+        return resource.IsStored;
     }
 
     public void Buy(IResourceCard resourceCard)
     {
-        // No side-effects (yet)
-        
         buying.OnNext(resourceCard);
     }
 
@@ -57,5 +55,10 @@ public class MerchantCard : Card, IMerchantCard
     public override bool CanClash(ICard other)
     {
         return (other.Type & CardType.Inspector) != 0;
+    }
+
+    public override bool CanBeImpacted()
+    {
+        return false;
     }
 }

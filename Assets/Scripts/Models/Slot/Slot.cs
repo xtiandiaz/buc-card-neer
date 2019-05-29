@@ -17,6 +17,13 @@ public enum SlotEntryway
     Rear
 }
 
+public enum LodgingFace
+{
+    Current,
+    Front = CardFace.Front,
+    Back = CardFace.Back
+}
+
 public interface ISlot : ICardBond, ICardConsumer
 {
     bool IsLocked { get; }
@@ -113,12 +120,17 @@ public abstract class Slot : ISlot
 
     public bool CanMatch(ICard withCard, ISlot fromSlot)
     {
-        return CanMatch(withCard) && pile.Peek()?.CanMatch(withCard, fromSlot) == true;
+        return CanMatch(withCard) 
+               && pile.Peek()?.CanMatch(withCard, fromSlot) == true;
     }
     
     public bool CanLodge(ICard card, ISlot fromSlot)
     {
-        return card != null && pile.CanInsert && !pile.DoesContain(card) && CanLodge(fromSlot) && CanLodge(card);
+        return card != null 
+               && pile.CanInsert 
+               && !pile.DoesContain(card) 
+               && CanLodge(fromSlot) 
+               && CanLodge(card);
     }
 
     public void Match(ICard card)
@@ -138,19 +150,23 @@ public abstract class Slot : ISlot
 
         if (!pile.Insert(
             card, 
-            settings.Entryway == SlotEntryway.Front ? PileInsertionMode.Unshift : PileInsertionMode.Push,
-            settings.DoesSelfArrangeOnLodging))
+            settings.Entryway == SlotEntryway.Front ? PileInsertionMode.Unshift : PileInsertionMode.Push))
         {
             Debug.LogError($"[Slot] Couldn't insert {card} in Pile.");
             return;
         }
 
-        OnLodged(card);
+        card.Bind(this);
+        
+        if (settings.LodgingFace != LodgingFace.Current)
+            card.Flip((CardFace) settings.LodgingFace);
+        
+        lodging.OnNext(card);
     }
 
     public void Release(ICard card)
     {
-        if (pile.Remove(card, settings.DoesSelfArrangeOnReleasing))
+        if (pile.Remove(card))
             releasing.OnNext(Unit.Default);
         
         if (IsEmpty)
@@ -200,11 +216,4 @@ public abstract class Slot : ISlot
     protected abstract bool CanLodge(ICard card);
          
     protected abstract bool CanLodge(ISlot fromSlot);
-
-    protected virtual void OnLodged(ICard card)
-    {
-        card.Bind(this);
-        
-        lodging.OnNext(card);
-    }
 }

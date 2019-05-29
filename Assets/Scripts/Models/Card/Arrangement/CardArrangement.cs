@@ -26,6 +26,5 @@ public class CardArrangement : ScriptableObject, ICardArrangement
     protected virtual void Apply(ICard toCard, int withIndex, Vector3 atPosition, float andTimeStep)
     {
         toCard.Arrange(atPosition, withIndex);
-        toCard.Flip(facing);
     }
 }

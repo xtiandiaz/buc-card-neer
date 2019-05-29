@@ -42,7 +42,7 @@ public abstract class CardController : ICardController
         }));
         
         disposables.Add(model.WhenFaceChanged.Subscribe(face => view.Flip(face, false)));
-        disposables.Add(model.WhenFlipped.Subscribe(face => view.Flip(face, true)));   
+        disposables.Add(model.WhenFlipped.Subscribe(face => view.Flip(face, true)));
 
         #region Binding & Arrangement
 
@@ -88,6 +88,13 @@ public abstract class CardController : ICardController
         disposables.Add(model.WhenClashed
             .Subscribe(withDirection => view.Tilt(withDirection, ClashTiltTimeSpan)));
         
+        #endregion
+
+        #region Impacting
+
+        disposables.Add(model.WhenImpacted
+            .Subscribe(_ => view.Spin(2)));
+
         #endregion
 
         #region Destruction

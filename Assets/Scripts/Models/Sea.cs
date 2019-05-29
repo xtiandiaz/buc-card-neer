@@ -7,10 +7,15 @@ public interface ISea : ICardProviderManager
     ISlot[] Slots { get; }
     
     IObservable<Unit> WhenClashed { get; }
+    IObservable<IResourceCard> WhenCollected { get; }
+    IObservable<ILootCarrier> WhenPlundered { get; }
 
     void Clash();
     bool CanClash(int slotAtIndex);
     void Clash(int slotAtIndex);
+    void Impact(int withValue);
+    void Collect();
+    void Lock();
     void Unlock();
 }
 
@@ -21,6 +26,8 @@ public class Sea : ISea
     }
 
     private readonly Subject<Unit> clashing = new Subject<Unit>();
+    private readonly Subject<IResourceCard> collection = new Subject<IResourceCard>();
+    private readonly Subject<ILootCarrier> plunder = new Subject<ILootCarrier>();
     private readonly ICardProvider cardProvider;
 
     private Sea(
@@ -35,6 +42,8 @@ public class Sea : ISea
     public ISlot[] Slots { get; }
 
     public IObservable<Unit> WhenClashed => clashing;
+    public IObservable<IResourceCard> WhenCollected => collection;
+    public IObservable<ILootCarrier> WhenPlundered => plunder;
 
     public void AssignProviders()
     {
@@ -75,12 +84,45 @@ public class Sea : ISea
             nextSlot?.Peek()?.Clash(cardToClash, Direction.Left);
     }
 
+    public void Impact(int withValue)
+    {
+        foreach (var slot in Slots)
+        {
+            if (!CanImpact(slot))
+                continue;
+            
+            var target = slot.Peek(); 
+            
+            target.Impact(withValue);
+            
+            if (target is ILootCarrier lootCarrier && lootCarrier.IsDead)
+                plunder.OnNext(lootCarrier);
+        }
+    }
+
+    public void Collect()
+    {
+        foreach (var slot in Slots)
+        {
+            if (!CanCollect(slot))
+                continue;
+
+            collection.OnNext((IResourceCard) slot.Peek());
+        }
+    }
+    
+    public void Lock()
+    {
+        foreach (var slot in Slots)
+            slot.Lock();
+    }
+
     public void Unlock()
     {
         foreach (var slot in Slots)
             slot.Unlock();
     }
-    
+
     private bool CanClash(ISlot slot, ISlot withOther)
     {
         if (slot == null || slot.IsLocked || withOther == null || withOther.IsLocked)
@@ -88,6 +130,16 @@ public class Sea : ISea
         
         var targetCard = slot.Peek();
         return targetCard != null && withOther.Peek()?.CanClash(targetCard) == true;
+    }
+
+    private bool CanImpact(ISlot slot)
+    {
+        return slot != null && slot.Peek()?.CanBeImpacted() == true;
+    }
+
+    private bool CanCollect(ISlot fromSlot)
+    {
+        return fromSlot?.Peek() is IResourceCard resourceCard && resourceCard.WasLocked && !resourceCard.IsLocked;
     }
 
     private (ISlot, ISlot) GetNeighboringSlots(int atIndex)
