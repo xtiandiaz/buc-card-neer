@@ -1,5 +1,7 @@
-using UnityEngine;
+public interface IPirateCardView : ICardView
+{
+}
 
-public class PirateCardView : CardView
+public class PirateCardView : CardView, IPirateCardView
 {
 }

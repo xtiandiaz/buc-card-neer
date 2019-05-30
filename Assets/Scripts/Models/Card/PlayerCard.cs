@@ -2,12 +2,10 @@ using System;
 using UniRx;
 using UnityEngine;
 
-public interface IPlayerCard : ICard, IResourceTrader, IResourceCollector, IResourceConsumer
+public interface IPlayerCard : ICard, IResourceTrader, IResourceCollector, IResourceConsumer, IPlunderer
 {
     IObservable<int> Health { get; }
     IObservable<int> Funds { get; }
-
-    void Plunder(ILootCarrier lootCarrier);
 }
 
 [CreateAssetMenu(menuName = "Game/Card/Player")]
@@ -27,7 +25,6 @@ public class PlayerCard : Card, IPlayerCard
     public IObservable<int> Health => value;
     public IObservable<int> Funds => coins;
     
-    private bool IsAlive => HealthPoints > 0;
     private int HealthPoints
     {
         get => Value;
@@ -49,13 +46,13 @@ public class PlayerCard : Card, IPlayerCard
     {
         if (withOther is IPirateCard pirateCard)
         {
-            Fight(pirateCard);
+            Confront(pirateCard);
             return;
         }
 
         if (withOther is IInspectorCard inspectorCard)
         {
-            Bribe(inspectorCard);
+            Confront(inspectorCard);
             return;
         }
 
@@ -100,6 +97,7 @@ public class PlayerCard : Card, IPlayerCard
 
     public void Collect(IResourceCard resourceCard)
     {
+        throw new NotImplementedException();
     }
     
     public void Buy(IResourceCard resourceCard)
@@ -131,26 +129,21 @@ public class PlayerCard : Card, IPlayerCard
         HealthPoints -= resourceCard.LockValue;
         
         resourceCard.Unlock();
-        
-        Collect(resourceCard);
     }
 
-    private void Fight(IPirateCard pirate)
+    private void Confront(IPirateCard pirate)
     {
-        HealthPoints -= pirate.Value;
+        var pirateHealth = pirate.Value;
 
-        if (!IsAlive) 
-            return;
-        
-        Plunder(pirate);
-        
-        pirate.Destroy();
+        pirate.Value -= Math.Min(HealthPoints, pirateHealth);
+        HealthPoints -= pirateHealth;
     }
 
-    private void Bribe(IInspectorCard inspector)
+    private void Confront(IInspectorCard inspector)
     {
-        Coins -= inspector.Value;
+        var inspectorPrice = inspector.Value;
 
-        inspector.Destroy();
+        inspector.Value -= Math.Min(Coins, inspectorPrice);
+        Coins -= inspectorPrice;
     }
 }

@@ -28,7 +28,7 @@ public class ShipController : IShipController
     [Inject]
     public void Initialize()
     {
-        #region Boarding
+        #region Boarding & Storing
 
         disposables.Add(model.WhenBoarded
             .Do(card =>
@@ -41,7 +41,7 @@ public class ShipController : IShipController
             .Delay(SelfStoringDelay)
             .SelectMany(resCard =>
                 resCard.IsLocked ? resCard.WhenUnlocked.Select(_ => resCard) : Observable.Return(resCard))
-            .Do(resCard => model.Store(resCard))
+            .Do(model.Store)
             .Subscribe());
 
         #endregion

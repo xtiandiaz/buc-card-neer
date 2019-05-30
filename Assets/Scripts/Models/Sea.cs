@@ -8,7 +8,6 @@ public interface ISea : ICardProviderManager
     
     IObservable<Unit> WhenClashed { get; }
     IObservable<IResourceCard> WhenCollected { get; }
-    IObservable<ILootCarrier> WhenPlundered { get; }
 
     void Clash();
     bool CanClash(int slotAtIndex);
@@ -27,7 +26,6 @@ public class Sea : ISea
 
     private readonly Subject<Unit> clashing = new Subject<Unit>();
     private readonly Subject<IResourceCard> collection = new Subject<IResourceCard>();
-    private readonly Subject<ILootCarrier> plunder = new Subject<ILootCarrier>();
     private readonly ICardProvider cardProvider;
 
     private Sea(
@@ -43,7 +41,6 @@ public class Sea : ISea
 
     public IObservable<Unit> WhenClashed => clashing;
     public IObservable<IResourceCard> WhenCollected => collection;
-    public IObservable<ILootCarrier> WhenPlundered => plunder;
 
     public void AssignProviders()
     {
@@ -90,13 +87,8 @@ public class Sea : ISea
         {
             if (!CanImpact(slot))
                 continue;
-            
-            var target = slot.Peek(); 
-            
-            target.Impact(withValue);
-            
-            if (target is ILootCarrier lootCarrier && lootCarrier.IsDead)
-                plunder.OnNext(lootCarrier);
+
+            slot.Peek().Impact(withValue);
         }
     }
 

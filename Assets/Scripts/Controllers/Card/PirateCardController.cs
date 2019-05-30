@@ -1,17 +1,27 @@
+using UniRx;
 using Zenject;
 
 public class PirateCardController : CardController
 {
-    public class Factory : PlaceholderFactory<PirateCard, PirateCardView, PirateCardController>
+    public class Factory : PlaceholderFactory<IPirateCard, IPirateCardView, PirateCardController>
     {
     }
     
-    private readonly PirateCard model;
-    private readonly PirateCardView view;
+    private readonly IPirateCard model;
+    private readonly IPirateCardView view;
+
+    [Inject] private IPlunderer plunderer;
     
-    public PirateCardController(PirateCard model, PirateCardView view) : base(model, view)
+    public PirateCardController(IPirateCard model, IPirateCardView view) : base(model, view)
     {
         this.model = model;
         this.view = view;
+    }
+
+    public override void Initialize()
+    {
+        base.Initialize();
+        
+        disposables.Add(model.WhenDestroyed.Subscribe(_ => plunderer.Plunder(model)));
     }
 }

@@ -99,7 +99,7 @@ public class GameInstaller : MonoInstaller
         
         #region Cards
 
-        Container.BindFactory<PirateCard, PirateCardView, PirateCardController, PirateCardController.Factory>().AsSingle();
+        Container.BindFactory<IPirateCard, IPirateCardView, PirateCardController, PirateCardController.Factory>().AsSingle();
         Container.BindFactory<IMerchantCard, IMerchantCardView, MerchantCardController, MerchantCardController.Factory>().AsSingle();
         Container.BindFactory<IInspectorCard, IInspectorCardView, InspectorCardController, InspectorCardController.Factory>().AsSingle();
         Container.BindFactory<ResourceCard, ResourceCardView, ResourceCardController, ResourceCardController.Factory>().AsSingle();

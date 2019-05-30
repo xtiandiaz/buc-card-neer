@@ -20,7 +20,6 @@ public class BoardController : IBoardController
     private readonly IBoardView view;
     private readonly ISea sea;
     private readonly IShip ship;
-    private readonly IPlayerCard player;
     private readonly IMoveListener moveListener;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
@@ -29,7 +28,6 @@ public class BoardController : IBoardController
         IBoardView view,
         ISea sea,
         IShip ship,
-        IPlayerCard player,
         IMoveListener moveListener
         )
     {
@@ -37,7 +35,6 @@ public class BoardController : IBoardController
         this.view = view;
         this.sea = sea;
         this.ship = ship;
-        this.player = player;
         this.moveListener = moveListener;
     }
 
@@ -69,7 +66,7 @@ public class BoardController : IBoardController
 
         #endregion
 
-        #region Collection & Plunder
+        #region Automatic Collection & Storing
 
         disposables.Add(sea.WhenCollected.Subscribe(resource =>
         {
@@ -77,8 +74,6 @@ public class BoardController : IBoardController
             
             ship.Store(resource);
         }));
-        
-        disposables.Add(sea.WhenPlundered.Subscribe(player.Plunder));
 
         #endregion
     }
