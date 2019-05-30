@@ -20,7 +20,7 @@ public class SlotController : ISlotController
     private static readonly Subject<(ICard, ISlot)> CardPicking = new Subject<(ICard, ISlot)>();
     private static readonly Subject<(ICard, ISlot, Vector3)> CardDropping = new Subject<(ICard, ISlot, Vector3)>();
     
-    [Inject] private IMoveObserver moveObserver;
+    [Inject] private IMoveRouter moveRouter;
 
     protected SlotController(ISlot model, ISlotView view)
     {
@@ -95,12 +95,12 @@ public class SlotController : ISlotController
                 if (model.CanMatch(card, slot))
                 {
                     model.Match(card);
-                    moveObserver.OnNext();
+                    moveRouter.OnNext();
                 }
                 else if (model.CanLodge(card, slot))
                 {
                     model.Lodge(card);
-                    moveObserver.OnNext();
+                    moveRouter.OnNext();
                 }
             }));
 

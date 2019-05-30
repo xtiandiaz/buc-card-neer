@@ -20,7 +20,7 @@ public class BoardController : IBoardController
     private readonly IBoardView view;
     private readonly ISea sea;
     private readonly IShip ship;
-    private readonly IMoveListener moveListener;
+    private readonly IMoveRouter moveRouter;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private BoardController(
@@ -28,20 +28,20 @@ public class BoardController : IBoardController
         IBoardView view,
         ISea sea,
         IShip ship,
-        IMoveListener moveListener
+        IMoveRouter moveRouter
         )
     {
         this.model = model;
         this.view = view;
         this.sea = sea;
         this.ship = ship;
-        this.moveListener = moveListener;
+        this.moveRouter = moveRouter;
     }
 
     [Inject]
     public void Initialize()
     {
-        disposables.Add(moveListener.WhenMoved
+        disposables.Add(moveRouter.WhenMoved
             .Subscribe(_ =>
             {
                 Debug.Log("Player Moved!");
