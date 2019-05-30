@@ -121,7 +121,7 @@ public abstract class Slot : ISlot
     public bool CanMatch(ICard withCard, ISlot fromSlot)
     {
         return CanMatch(withCard) 
-               && pile.Peek()?.CanMatch(withCard, fromSlot) == true;
+               && pile.Peek()?.CanMatch(withCard) == true;
     }
     
     public bool CanLodge(ICard card, ISlot fromSlot)

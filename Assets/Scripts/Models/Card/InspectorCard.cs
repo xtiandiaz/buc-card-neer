@@ -9,7 +9,7 @@ public class InspectorCard : Card, IInspectorCard
 {
     public override CardType Type => CardType.Inspector;
     
-    public override bool CanMatch(ICard withOther, ISlot fromSlot)
+    public override bool CanMatch(ICard withOther)
     {
         return withOther is IResourceCard resourceCard && (resourceCard.ResourceType & ResourceType.Item) != 0;
     }

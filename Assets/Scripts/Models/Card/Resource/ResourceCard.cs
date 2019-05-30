@@ -75,7 +75,7 @@ public class ResourceCard : Card, IResourceCard
         WasLocked = IsLocked;
     }
 
-    public override bool CanMatch(ICard withOther, ISlot fromSlot)
+    public override bool CanMatch(ICard withOther)
     {
         if (IsLocked)
             return (withOther.Type & CardType.WeaponMelee) != 0;

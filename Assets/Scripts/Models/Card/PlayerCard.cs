@@ -31,7 +31,7 @@ public class PlayerCard : Card, IPlayerCard
         set => Value = Math.Min(value, maxHealthPoints);
     }
 
-    public override bool CanMatch(ICard withOther, ISlot fromSlot)
+    public override bool CanMatch(ICard withOther)
     {
         if ((withOther.Type & (CardType.Pirate | CardType.Inspector)) != 0)
             return true;

@@ -24,7 +24,7 @@ public class MerchantCard : Card, IMerchantCard
 
     public IObservable<IResourceCard> WhenBought => buying;
 
-    public override bool CanMatch(ICard withOther, ISlot fromSlot)
+    public override bool CanMatch(ICard withOther)
     {
         return withOther is IResourceCard resourceCard && CanBuy(resourceCard);
     }

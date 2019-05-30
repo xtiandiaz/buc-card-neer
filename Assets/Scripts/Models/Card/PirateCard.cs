@@ -12,7 +12,7 @@ public class PirateCard : Card, IPirateCard
     public override CardType Type => CardType.Pirate;
     public bool IsDead => Value <= 0;
 
-    public override bool CanMatch(ICard withOther, ISlot fromSlot)
+    public override bool CanMatch(ICard withOther)
     {
         return withOther is IResourceCard resourceCard && (resourceCard.ResourceType & ResourceType.WeaponMelee) != 0;
     }

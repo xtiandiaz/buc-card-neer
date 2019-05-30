@@ -1,7 +1,6 @@
 using System;
 using UniRx;
 using UnityEngine;
-using Zenject;
 
 [Flags]
 public enum CardType
@@ -56,7 +55,7 @@ public interface ICard
     IObservable<(Color, float)> WhenFogged { get; }
     IObservable<Unit> WhenDestroyed { get; }
 
-    bool CanMatch(ICard withOther, ISlot fromSlot);
+    bool CanMatch(ICard withOther);
     void Match(ICard withOther);
     bool CanClash(ICard other);
     void Clash(ICard other, Direction withDirection);
@@ -145,7 +144,7 @@ public abstract class Card : ScriptableObject, ICard
         OriginalValue = Value;
     }
 
-    public abstract bool CanMatch(ICard withOther, ISlot fromSlot);
+    public abstract bool CanMatch(ICard withOther);
 
     public abstract void Match(ICard withOther);
 
