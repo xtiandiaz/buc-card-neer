@@ -10,6 +10,7 @@ public interface ICardController : IInitializable, IDisposable
 public abstract class CardController : ICardController
 {
     protected readonly CompositeDisposable disposables = new CompositeDisposable();
+    private readonly CompositeDisposable lateDisposables = new CompositeDisposable();
     
     private static readonly TimeSpan ClashTiltTimeSpan = TimeSpan.FromSeconds(0.25f);
     private readonly ICard model;
@@ -18,7 +19,6 @@ public abstract class CardController : ICardController
 
     [Inject] private Viewport viewport;
     [Inject] private BoardLayoutSettings layoutSettings;
-    private IDisposable destructionDisposable;
 
     protected CardController(ICard model, ICardView view)
     {
@@ -92,14 +92,14 @@ public abstract class CardController : ICardController
 
         #region Impacting
 
-        disposables.Add(model.WhenImpacted
+        lateDisposables.Add(model.WhenImpacted
             .Subscribe(_ => view.Spin(2)));
 
         #endregion
 
         #region Destruction
 
-        destructionDisposable = model.WhenDestroyed
+        lateDisposables.Add(model.WhenDestroyed
             .Do(_ => disposables.Clear())
             .ContinueWith(view.FadeAsObservable(0))
             .Subscribe(
@@ -108,7 +108,7 @@ public abstract class CardController : ICardController
                     view.Destroy();
                     Dispose();
                 },
-                e => Debug.LogError(e.Message));
+                e => Debug.LogError(e.Message)));
 
         #endregion
     }
@@ -116,7 +116,7 @@ public abstract class CardController : ICardController
     public void Dispose()
     {
         disposables.Dispose();
-        destructionDisposable?.Dispose();
+        lateDisposables.Dispose();
     }
 }
 

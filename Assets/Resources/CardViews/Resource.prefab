@@ -550,7 +550,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: f4b843705e125434c8cc2cf50701a11b, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.7490196}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -676,7 +676,6 @@ MonoBehaviour:
   frontFace: {fileID: 48035879172936117}
   backFace: {fileID: 1986598855785608113}
   contentWrapper: {fileID: 481732668797973513}
-  sortingGroup: {fileID: 0}
   containerRenderer: {fileID: 3534175723581999632}
   itemRenderer: {fileID: 5680537882834299515}
   suitRenderer: {fileID: 4273950628521150157}
