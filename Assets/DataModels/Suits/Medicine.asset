@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Medicine
   m_EditorClassIdentifier: 
   resourceType: 512
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 8e7b16c9bc8674e62ab8af2f2462ea75, type: 3}
   color: {r: 0.53333336, g: 0.32941177, b: 0.8156863, a: 1}

@@ -24,9 +24,10 @@ public class MerchantCardView : CardView, IMerchantCardView
         set
         {
             suitGraphic.Sprite = value.Icon;
-            suitGraphic.Color = value.Color;
-            valueLabel.Color = 
+            suitGraphic.Color = 
                 multiplierLabel.color = value.Color;
+            
+            valueLabel.Color = Color.white;
         }
     }
 }
