@@ -6,12 +6,12 @@ public class SeaCardArrangement : CardArrangement
     [SerializeField] private Color fogColor = Color.white;
     [SerializeField] [Range(0, 1f)] private float fogIntensity = 0.5f;
 
-    protected override void Apply(ICard toCard, int withIndex, Vector3 atPosition, float andTimeStep)
+    protected override void Apply(ICard toCard, int withIndex, Vector3 atPosition, float andTimeStep, CardArrangementMode withMode)
     {
         var offsetAtIndex = offset * withIndex;
         var arrangedPosition = new Vector3(offsetAtIndex.x, offset.y * withIndex, offsetAtIndex.z);
         
-        base.Apply(toCard, withIndex, arrangedPosition, andTimeStep);
+        base.Apply(toCard, withIndex, arrangedPosition, andTimeStep, withMode);
         
         toCard.Fog(fogColor, andTimeStep * fogIntensity);
     }

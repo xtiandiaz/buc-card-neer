@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 454eca3f32b049618625291e0c756fe0, type: 3}
   m_Name: ShipDefault
   m_EditorClassIdentifier: 
-  offset: {x: 0, y: -0.65, z: -0.05}
+  offset: {x: 0, y: -0.25, z: -0.05}
   offsetFunction:
     serializedVersion: 2
     m_Curve:

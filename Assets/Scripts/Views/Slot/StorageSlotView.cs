@@ -2,7 +2,7 @@ using System;
 using UniRx;
 using UnityEngine;
 
-public interface IStorageSlotView
+public interface IStorageSlotView : ISlotView
 {
     IObservable<Unit> WhenSortingControlTapped { get; }
 }

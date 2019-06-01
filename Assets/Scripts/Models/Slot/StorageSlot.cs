@@ -1,9 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Zenject;
 
 public interface IStorageSlot : ISlot
 {
     ResourceType ResourceMask { get; }
+
+    void Sort();
 }
 
 public class StorageSlot : Slot, IStorageSlot
@@ -12,12 +17,38 @@ public class StorageSlot : Slot, IStorageSlot
     {
     }
 
+    private Queue<CardType> sortingQueue;
+
     public StorageSlot(IPile pile, ISlotSettings settings, Bounds bounds, Transform transformBond) 
         : base(pile, settings, bounds, transformBond)
     {
     }
 
     public ResourceType ResourceMask => settings.ResourceMask;
+
+    public void Sort()
+    {
+        if (pile.Count < 2)
+            return;
+        
+        sortingQueue.Enqueue(sortingQueue.Dequeue());
+
+        pile.Sort(new StorageComparer(sortingQueue.ToArray()));
+    }
+
+    public override void Lodge(ICard card)
+    {
+        base.Lodge(card);
+        
+        sortingQueue = new Queue<CardType>(pile.Types);
+    }
+
+    public override void Release(ICard card)
+    {
+        base.Release(card);
+        
+        sortingQueue = new Queue<CardType>(pile.Types);
+    }
 
     protected override bool CanMatch(ICard withCard)
     {

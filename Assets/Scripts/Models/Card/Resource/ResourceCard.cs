@@ -16,8 +16,7 @@ public enum ResourceType
     Medicine            = CardType.Medicine,
     
     Item                = Food | Artifact | Gem,
-    Tool                = WeaponMelee | WeaponRanged | Medicine,
-    Weapon              = WeaponMelee | WeaponRanged
+    Tool                = WeaponMelee | WeaponRanged | Medicine
 }
 
 public interface IResourceCard : ICard

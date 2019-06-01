@@ -14,8 +14,9 @@ public class ResourceCardView : CardView, IResourceCardView
 {
     [SerializeField] private SpriteRenderer containerRenderer;
     [SerializeField] private SpriteRenderer itemRenderer;
-    [SerializeField] private SpriteRenderer suitRenderer;
+    [SerializeField] private CardGraphic suitGraphic;
     [SerializeField] private CardLabel lockLabel;
+    [SerializeField] private SpriteRenderer borderRenderer;
 
     public Sprite Container
     {
@@ -31,10 +32,11 @@ public class ResourceCardView : CardView, IResourceCardView
     {
         set
         {
-            suitRenderer.sprite = value.Icon;
+            suitGraphic.Sprite = value.Icon;
             itemRenderer.color = 
                 valueLabel.Color = 
-                    suitRenderer.color = value.Color;
+                    suitGraphic.Color = 
+                        borderRenderer.color = value.Color;
 
             if ((value.ResourceType & ResourceType.Tool) != 0)
                 return;

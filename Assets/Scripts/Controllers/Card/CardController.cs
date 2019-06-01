@@ -49,8 +49,16 @@ public abstract class CardController : ICardController
         disposables.Add(model.WhenBound.Subscribe(view.SetParent));
         
         disposables.Add(model.WhenArranged
-            .Do(_ => view.SortingOrder = - model.Index * 10)
-            .SelectMany(_ => view.MoveLocalAsObservable(model.LocalPosition))
+            .Do(mode => view.SortingOrder = - model.Index * 10)
+            .SelectMany(mode =>
+            {
+                if (mode == CardArrangementMode.Transitional)
+                    return view.MoveLocalAsObservable(model.LocalPosition);
+
+                view.LocalPosition = model.LocalPosition;
+
+                return Observable.ReturnUnit();
+            })
             .Subscribe());
 
         #endregion

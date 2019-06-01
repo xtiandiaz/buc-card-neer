@@ -26,7 +26,7 @@ public enum CardFace
     Back
 }
 
-public interface ICard
+public interface ICard : IComparable<ICard>
 {
     int Value { get; set; }
     int OriginalValue { get; }
@@ -39,12 +39,13 @@ public interface ICard
     ICardBond Bond { get; }
     bool IsBoarded { get; set; }
     bool IsStored { get; set; }
+    DateTimeOffset BindingTimestamp { get; }
     
     IObservable<int> ValueAsObservable { get; }
     IObservable<Direction> WhenClashed { get; }
     IObservable<Unit> WhenImpacted { get; }
     IObservable<Transform> WhenBound { get; }
-    IObservable<Unit> WhenArranged { get; }
+    IObservable<CardArrangementMode> WhenArranged { get; }
     IObservable<Unit> WhenPicked { get; }
     IObservable<Unit> WhenDragged { get; }
     IObservable<Unit> WhenDropped { get; }
@@ -65,7 +66,7 @@ public interface ICard
     void Pick();
     void Drag(Vector3 byDeltaPosition);
     void Drop();
-    void Arrange(Vector3 atLocalPosition, int withIndex);
+    void Arrange(Vector3 atLocalPosition, int withIndex, CardArrangementMode andMode);
     void Flip(CardFace toFace);
     void Fade(float toAlphaValue);
     void Tint(Color withColor, float byFactor);
@@ -80,8 +81,7 @@ public abstract class Card : ScriptableObject, ICard
     private readonly Subject<Direction> clashing = new Subject<Direction>();
     private readonly Subject<Unit> impacting = new Subject<Unit>();
     private readonly Subject<Transform> binding = new Subject<Transform>();
-    private readonly Subject<Unit> boarding = new Subject<Unit>();
-    private readonly Subject<Unit> arranging = new Subject<Unit>();
+    private readonly Subject<CardArrangementMode> arranging = new Subject<CardArrangementMode>();
     private readonly Subject<Unit> picking = new Subject<Unit>();
     private readonly Subject<Unit> dragging = new Subject<Unit>();
     private readonly Subject<Unit> dropping = new Subject<Unit>();
@@ -107,6 +107,7 @@ public abstract class Card : ScriptableObject, ICard
     public ICardBond Bond { get; private set; }
     public bool IsBoarded { get; set; }
     public bool IsStored { get; set; }
+    public DateTimeOffset BindingTimestamp { get; private set; }
 
     public int Value
     {
@@ -128,7 +129,7 @@ public abstract class Card : ScriptableObject, ICard
     public IObservable<Direction> WhenClashed => clashing;
     public IObservable<Unit> WhenImpacted => impacting;
     public IObservable<Transform> WhenBound => binding;
-    public IObservable<Unit> WhenArranged => arranging;
+    public IObservable<CardArrangementMode> WhenArranged => arranging;
     public IObservable<Unit> WhenPicked => picking;
     public IObservable<Unit> WhenDragged => dragging;
     public IObservable<Unit> WhenDropped => dropping;
@@ -172,7 +173,9 @@ public abstract class Card : ScriptableObject, ICard
             return;
         
         Bond?.Release(this);
+        
         Bond = withBond;
+        BindingTimestamp = DateTimeOffset.Now;
 
         binding.OnNext(withBond.TransformBond);
     }
@@ -194,12 +197,12 @@ public abstract class Card : ScriptableObject, ICard
         dropping.OnNext(Unit.Default);
     }
 
-    public void Arrange(Vector3 atLocalPosition, int withIndex)
+    public void Arrange(Vector3 atLocalPosition, int withIndex, CardArrangementMode andMode)
     {
         LocalPosition = atLocalPosition;
         Index = withIndex;
         
-        arranging.OnNext(Unit.Default);
+        arranging.OnNext(andMode);
     }
 
     public virtual void Flip(CardFace toFace)
@@ -229,6 +232,11 @@ public abstract class Card : ScriptableObject, ICard
         
         destruction.OnNext(Unit.Default);
         destruction.OnCompleted();
+    }
+    
+    public virtual int CompareTo(ICard other)
+    {
+        throw new NotImplementedException();
     }
 
     protected virtual void Hit(int withValue)

@@ -14,6 +14,7 @@ public class SlotFactory : ISlotFactory
     private readonly SupplySlot.Factory modelEventFactory;
     private readonly SlotController.Factory controllerFactory;
     private readonly BoardingSlotController.Factory controllerFactoryBoarding;
+    private readonly StorageSlotController.Factory controllerFactoryStorage;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private SlotFactory(
@@ -22,7 +23,8 @@ public class SlotFactory : ISlotFactory
         StorageSlot.Factory modelResourceFactory,
         SupplySlot.Factory modelEventFactory,
         SlotController.Factory controllerFactory,
-        BoardingSlotController.Factory controllerFactoryBoarding
+        BoardingSlotController.Factory controllerFactoryBoarding,
+        StorageSlotController.Factory controllerFactoryStorage
         )
     {
         this.modelBoardingFactory = modelBoardingFactory;
@@ -31,6 +33,7 @@ public class SlotFactory : ISlotFactory
         this.modelEventFactory = modelEventFactory;
         this.controllerFactory = controllerFactory;
         this.controllerFactoryBoarding = controllerFactoryBoarding;
+        this.controllerFactoryStorage = controllerFactoryStorage;
     }
     
     public ISlot Create(ISlotView fromView)
@@ -65,9 +68,15 @@ public class SlotFactory : ISlotFactory
 
     private ISlotController CreateController(ISlot forModel, ISlotView andView)
     {
-        return (forModel.Type & SlotType.Boarding) != 0 
-            ? controllerFactoryBoarding.Create((IBoardingSlot) forModel, andView) 
-            : controllerFactory.Create(forModel, andView);
+        switch (forModel.Type)
+        {
+            case SlotType.Boarding:
+                return controllerFactoryBoarding.Create((IBoardingSlot) forModel, andView);
+            case SlotType.Storage:
+                return controllerFactoryStorage.Create((IStorageSlot) forModel, (IStorageSlotView) andView);
+            default:
+                return controllerFactory.Create(forModel, andView);
+        }
     }
 
     public void Dispose()
