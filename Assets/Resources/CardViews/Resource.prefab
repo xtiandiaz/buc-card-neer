@@ -71,7 +71,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 2b92a5fadefb84c6b89311ccdb35b9eb, type: 3}
-  m_Color: {r: 0.92156863, g: 0.23137255, b: 0.3529412, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -166,7 +166,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 2b92a5fadefb84c6b89311ccdb35b9eb, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.98039216, g: 0.50980395, b: 0.19215687, a: 1}
   m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
@@ -259,7 +259,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: e535f8e23f8b244f2a19fb1e3dac3bea, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.92156863, g: 0.23137255, b: 0.3529412, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -296,7 +296,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1281494084774115218}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1, y: -1.35, z: 0}
+  m_LocalPosition: {x: 1, y: 1.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7864990087495052822}
@@ -375,8 +375,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textRenderers:
   - {fileID: 8840121596520852176}
-  sortingLayerName: Card
-  sortingOrder: 4
 --- !u!1 &2265604882894350938
 GameObject:
   m_ObjectHideFlags: 0
@@ -408,7 +406,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4670283315904929716}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &252957393834449272
 MeshRenderer:
@@ -468,7 +466,7 @@ TextMesh:
   m_Font: {fileID: 12800000, guid: 3811403f69f8b41f8988a951b48e8715, type: 3}
   m_Color:
     serializedVersion: 2
-    rgba: 4281434874
+    rgba: 4294967295
 --- !u!114 &839611787441810362
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -483,8 +481,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textRenderers:
   - {fileID: 3405710251552458544}
-  sortingLayerName: Card
-  sortingOrder: 4
 --- !u!1 &2514324958653011726
 GameObject:
   m_ObjectHideFlags: 0
@@ -514,7 +510,7 @@ Transform:
   m_LocalScale: {x: 0.84999996, y: 0.84999996, z: 1}
   m_Children: []
   m_Father: {fileID: 4670283315904929716}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3534175723581999632
 SpriteRenderer:
@@ -554,7 +550,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: f4b843705e125434c8cc2cf50701a11b, type: 3}
-  m_Color: {r: 0.98039216, g: 0.50980395, b: 0.19215687, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -623,8 +619,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 2106587027737248335}
   - {fileID: 9012451682822462623}
+  - {fileID: 2106587027737248335}
   m_Father: {fileID: 6217112578164284440}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -637,10 +633,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8007272462152954247}
-  - component: {fileID: 4141944539622565620}
   - component: {fileID: 6560927429145502690}
   - component: {fileID: 6974834733811567500}
   - component: {fileID: 3068496546479081572}
+  - component: {fileID: -4001739656412585711}
   m_Layer: 0
   m_Name: Resource
   m_TagString: Untagged
@@ -664,17 +660,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &4141944539622565620
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4639396434572544147}
-  m_Enabled: 1
-  m_SortingLayerID: 1266636441
-  m_SortingLayer: 3
-  m_SortingOrder: -100
 --- !u!114 &6560927429145502690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -691,7 +676,7 @@ MonoBehaviour:
   frontFace: {fileID: 48035879172936117}
   backFace: {fileID: 1986598855785608113}
   contentWrapper: {fileID: 481732668797973513}
-  sortingGroup: {fileID: 4141944539622565620}
+  sortingGroup: {fileID: 0}
   containerRenderer: {fileID: 3534175723581999632}
   itemRenderer: {fileID: 5680537882834299515}
   suitRenderer: {fileID: 4273950628521150157}
@@ -731,6 +716,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   frontFace: {fileID: 48035879172936117}
   backFace: {fileID: 1986598855785608113}
+--- !u!114 &-4001739656412585711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4639396434572544147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646205c7f504482c906717c197b281ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetSpriteRenderers:
+  - {fileID: 5816174328690173628}
+  - {fileID: 5304362483095993766}
+  - {fileID: 4273950628521150157}
+  - {fileID: 3534175723581999632}
+  - {fileID: 5680537882834299515}
+  targetTextRenderers:
+  - {fileID: 4646353274661442325}
+  - {fileID: 252957393834449272}
+  textDefaultSortingOrder: 4
+  textSortingLayerName: Card
 --- !u!1 &5146925509634939122
 GameObject:
   m_ObjectHideFlags: 0
@@ -800,7 +808,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 8d004ab7b083e452fa85daffcd3ee4bf, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.5019608}
+  m_Color: {r: 0.05882353, g: 0.7254902, b: 0.69411767, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
