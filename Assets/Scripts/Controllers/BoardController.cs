@@ -55,6 +55,8 @@ public class BoardController : IBoardController
         
         disposables.Add(ship.WhenShot
             .Delay(ShootingImpactDelay)
+            
+            // TODO Clash after Impact
             .Do(sea.Impact)
             .Delay(CollectionDelay)
             .Do(_ => sea.Collect())
