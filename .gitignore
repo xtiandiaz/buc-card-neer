@@ -38,7 +38,8 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
-#Unity3D Generated Misc Files
-ProjectSettings/XRSettings.asset
-ProjectSettings/ProjectVersion.txt
+# Generated on demand
+*.spriteatlas
+
+# Mac
 .DS_Store
