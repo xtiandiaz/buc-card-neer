@@ -38,4 +38,7 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
+#Unity3D Generated Misc Files
+ProjectSettings/XRSettings.asset
+ProjectSettings/ProjectVersion.txt
 .DS_Store
