@@ -45,14 +45,20 @@ public class SeaController : ISeaController
             .Do(i => model.Slots[i % model.Slots.Length].Consume(1))
             .Subscribe());
 
-        disposables.Add(model.Slots
+        /*disposables.Add(model.Slots
             .Select(slot => slot.WhenEmptied.Select(_ => slot))
             .Merge()
             .Delay(SupplyDelay)
             .SelectMany(slot => Observable.Timer(TimeSpan.Zero, DealingInterval)
                 .Take(FeedCountPerSlot)
                 .Do(_ => slot.Consume(1)))
-            .Subscribe());
+            .Subscribe());*/
+        
+        disposables.Add(model.Slots
+            .Select(slot => slot.WhenReleased.Select(_ => slot))
+            .Merge()
+            .Delay(SupplyDelay)
+            .Subscribe(slot => slot.Consume(1)));
 
         #endregion
 

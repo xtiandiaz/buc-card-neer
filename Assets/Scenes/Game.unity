@@ -194,7 +194,7 @@ PrefabInstance:
     - target: {fileID: 3296003705870509419, guid: 2fbe541c3947b49e9898dc04ca06b96e,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2
+      value: -1.875
       objectReference: {fileID: 0}
     - target: {fileID: 3296003705870509419, guid: 2fbe541c3947b49e9898dc04ca06b96e,
         type: 3}
@@ -734,7 +734,7 @@ PrefabInstance:
     - target: {fileID: 3296003705870509419, guid: 2fbe541c3947b49e9898dc04ca06b96e,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2
+      value: 1.875
       objectReference: {fileID: 0}
     - target: {fileID: 3296003705870509419, guid: 2fbe541c3947b49e9898dc04ca06b96e,
         type: 3}
@@ -1151,7 +1151,7 @@ PrefabInstance:
     - target: {fileID: 3296003705870509419, guid: 05249f141d1b44cc1835cae3974764bd,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3
+      value: 2.75
       objectReference: {fileID: 0}
     - target: {fileID: 3296003705870509419, guid: 05249f141d1b44cc1835cae3974764bd,
         type: 3}
@@ -1285,7 +1285,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1116054137}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1, z: 0}
+  m_LocalPosition: {x: 0, y: -0.9375, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1586207630}
@@ -1491,7 +1491,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: 3.5, y: 4.5}
+  m_Size: {x: 3.5, y: 4.25}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -1526,7 +1526,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 019cefaf719e4059917811e9f0bd0058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  height: 8.5
+  height: 8.25
   slots:
   - {fileID: 52973590}
   - {fileID: 186601377}
@@ -2062,7 +2062,7 @@ MonoBehaviour:
   - {fileID: 2006237918}
   slotWrapper: {fileID: 873621017}
   background: {fileID: 2038039560}
-  height: 2.75
+  height: 2.25
 --- !u!1 &1969069923
 GameObject:
   m_ObjectHideFlags: 0
@@ -2368,7 +2368,7 @@ PrefabInstance:
     - target: {fileID: 3296003705870509419, guid: 05249f141d1b44cc1835cae3974764bd,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3
+      value: -2.75
       objectReference: {fileID: 0}
     - target: {fileID: 3296003705870509419, guid: 05249f141d1b44cc1835cae3974764bd,
         type: 3}
