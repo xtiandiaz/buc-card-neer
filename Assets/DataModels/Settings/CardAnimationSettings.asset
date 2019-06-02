@@ -9,19 +9,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 23ed6d03c77f4ef1b92f686dcfa96e9d, type: 3}
   m_Name: CardAnimationSettings
   m_EditorClassIdentifier: Assembly-CSharp::CardAnimationSettings
-  <MoveDuration>k__BackingField: 0.3
-  <FlipDuration>k__BackingField: 0.4
+  <MoveDuration>k__BackingField: 0.5
+  <FlipDuration>k__BackingField: 0.5
   <TiltDuration>k__BackingField: 0.2
   <TiltAngle>k__BackingField: 60
   <SpinDuration>k__BackingField: 0.4
   <JoltDuration>k__BackingField: 0.5
-  <LiftDepth>k__BackingField: 1.25
+  <LiftDepth>k__BackingField: 2.5
   <LiftDuration>k__BackingField: 0.2
-  <ReturnToLocationWerePickedDuration>k__BackingField: 0.3
-  <BoardingDelay>k__BackingField: 0.5
+  <ReturnToLocationWerePickedDuration>k__BackingField: 0.5
   <FadeDuration>k__BackingField: 0.5
   <InEase>k__BackingField: 11
   <OutEase>k__BackingField: 12
