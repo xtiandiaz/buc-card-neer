@@ -38,14 +38,14 @@ public class CardView : MonoBehaviour, ICardView
     [SerializeField] protected CardFaceView frontFace;
     [SerializeField] protected CardFaceView backFace;
     [SerializeField] private Transform contentWrapper;
-    [SerializeField] private SortingGroup sortingGroup;
-    
+
     [Inject] private CardAnimationSettings animationSettings;
     private ICardAnimator animator;
     private ICardShader shader;
+    private ISortingSet sortingSet;
     private Vector3 lastLodgingPosition;
 
-    public int Value
+    public virtual int Value
     {
         set
         {
@@ -84,21 +84,14 @@ public class CardView : MonoBehaviour, ICardView
 
     public int SortingOrder
     {
-        set
-        {
-            sortingGroup.sortingOrder = value;
-
-            /*var shouldToggleFaceContent = value >= -1;
-
-            frontFace.ToggleContent(shouldToggleFaceContent);
-            backFace.ToggleContent(shouldToggleFaceContent);*/
-        }
+        set => sortingSet.SortingOrder = value;
     }
 
     private void Awake()
     {
         animator = GetComponent<ICardAnimator>();
         shader = GetComponent<ICardShader>();
+        sortingSet = GetComponent<ISortingSet>();
         
         animator.Initialize(animationSettings, contentWrapper);
         shader.Initialize(animationSettings);

@@ -249,7 +249,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4258162417991596720}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1, y: -1.3, z: 0}
+  m_LocalPosition: {x: 1, y: 1.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4448150071633430010}
@@ -328,8 +328,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textRenderers:
   - {fileID: 1047839365642814312}
-  sortingLayerName: Card
-  sortingOrder: 4
 --- !u!1 &4562180761676098948
 GameObject:
   m_ObjectHideFlags: 0
@@ -418,10 +416,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8007272462152954247}
-  - component: {fileID: 4141944539622565620}
   - component: {fileID: 3745072886839764397}
   - component: {fileID: 9099243857038372407}
   - component: {fileID: 5074909376754311272}
+  - component: {fileID: 8648731498353818581}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -445,17 +443,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &4141944539622565620
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4639396434572544147}
-  m_Enabled: 1
-  m_SortingLayerID: 1266636441
-  m_SortingLayer: 3
-  m_SortingOrder: -100
 --- !u!114 &3745072886839764397
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -472,7 +459,7 @@ MonoBehaviour:
   frontFace: {fileID: 2394089882030168721}
   backFace: {fileID: 1036552923604472217}
   contentWrapper: {fileID: 4196249751627446869}
-  sortingGroup: {fileID: 4141944539622565620}
+  sortingGroup: {fileID: 0}
   coinsLabel: {fileID: 886440129847321570}
 --- !u!114 &9099243857038372407
 MonoBehaviour:
@@ -506,6 +493,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   frontFace: {fileID: 2394089882030168721}
   backFace: {fileID: 1036552923604472217}
+--- !u!114 &8648731498353818581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4639396434572544147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646205c7f504482c906717c197b281ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetSpriteRenderers:
+  - {fileID: 5816174328690173628}
+  targetTextRenderers:
+  - {fileID: 3919300728649846905}
+  - {fileID: 230791434025993563}
+  textDefaultSortingOrder: 4
+  textSortingLayerName: Card
 --- !u!1 &4683056772038271617
 GameObject:
   m_ObjectHideFlags: 0
@@ -533,7 +539,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4683056772038271617}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1, y: 1.3, z: 0}
+  m_LocalPosition: {x: -1, y: -1.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4448150071633430010}
@@ -612,8 +618,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textRenderers:
   - {fileID: 6937104389268057122}
-  sortingLayerName: Card
-  sortingOrder: 4
 --- !u!1 &5372911298522929148
 GameObject:
   m_ObjectHideFlags: 0

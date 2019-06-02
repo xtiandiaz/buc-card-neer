@@ -8,13 +8,26 @@ public interface IMerchantCardView : ICardView
 public class MerchantCardView : CardView, IMerchantCardView
 {
     [SerializeField] private CardGraphic suitGraphic;
+    [SerializeField] private TextMesh multiplierLabel;
+
+    public override int Value
+    {
+        set
+        {
+            base.Value = value;
+            multiplierLabel.text = $"×{value}";
+        }
+    }
 
     public ISuit Suit
     {
         set
         {
             suitGraphic.Sprite = value.Icon;
-            suitGraphic.Color = value.Color;
+            suitGraphic.Color = 
+                multiplierLabel.color = value.Color;
+            
+            valueLabel.Color = Color.white;
         }
     }
 }
