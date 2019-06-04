@@ -49,7 +49,6 @@ public interface ICard : IComparable<ICard>
     IObservable<Unit> WhenPicked { get; }
     IObservable<Unit> WhenDragged { get; }
     IObservable<Unit> WhenDropped { get; }
-    IObservable<CardFace> WhenFaceChanged { get; }
     IObservable<CardFace> WhenFlipped { get; }
     IObservable<float> WhenFaded { get; }
     IObservable<(Color, float)> WhenTinted { get; }
@@ -85,7 +84,6 @@ public abstract class Card : ScriptableObject, ICard
     private readonly Subject<Unit> picking = new Subject<Unit>();
     private readonly Subject<Unit> dragging = new Subject<Unit>();
     private readonly Subject<Unit> dropping = new Subject<Unit>();
-    private readonly Subject<CardFace> facing = new Subject<CardFace>();
     private readonly Subject<CardFace> flipping = new Subject<CardFace>();
     private readonly Subject<float> fading = new Subject<float>();
     private readonly Subject<(Color, float)> tinting = new Subject<(Color, float)>();
@@ -115,16 +113,6 @@ public abstract class Card : ScriptableObject, ICard
         set => this.value.Value = Mathf.Max(value, 0);
     }
 
-    public CardFace Face
-    {
-        get => face;
-        set
-        {
-            face = value;
-            facing.OnNext(value);
-        }
-    }
-
     public IObservable<int> ValueAsObservable => value;
     public IObservable<Direction> WhenClashed => clashing;
     public IObservable<Unit> WhenImpacted => impacting;
@@ -133,7 +121,6 @@ public abstract class Card : ScriptableObject, ICard
     public IObservable<Unit> WhenPicked => picking;
     public IObservable<Unit> WhenDragged => dragging;
     public IObservable<Unit> WhenDropped => dropping;
-    public IObservable<CardFace> WhenFaceChanged => facing.DistinctUntilChanged();
     public IObservable<CardFace> WhenFlipped => flipping.DistinctUntilChanged();
     public IObservable<float> WhenFaded => fading;
     public IObservable<(Color, float)> WhenTinted => tinting;

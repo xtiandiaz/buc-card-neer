@@ -12,7 +12,7 @@ public interface IShip
     IObservable<ICard> WhenBoarded { get; }
     IObservable<Unit> WhenArmed { get; }
     IObservable<int> WhenShot { get; }
-    
+
     void Shoot();
     void Store(IResourceCard card);
     void Lock();
@@ -22,9 +22,9 @@ public interface IShip
 public class Ship : IShip
 {
     public class Factory : PlaceholderFactory<ISlot[], Ship>
-    {   
+    {
     }
-    
+
     private readonly Subject<int> shooting = new Subject<int>();
     private readonly ISlot[] slots;
     private readonly ISlot boardingSlot;
@@ -37,10 +37,10 @@ public class Ship : IShip
         boardingSlot = this.slots.FirstOrDefault(slot => slot.Type == SlotType.Boarding);
         storage = slots.Where(slot => slot.Type == SlotType.Storage).Cast<IStorageSlot>()
             .ToDictionary(resSlot => resSlot.ResourceMask, resSlot => resSlot);
-        
+
         PlayerSlot = this.slots.FirstOrDefault(slot => slot.Type == SlotType.Player);
     }
-    
+
     public ISlot PlayerSlot { get; }
 
     public IObservable<ICard> WhenBoarded => boardingSlot.WhenLodged
@@ -50,7 +50,7 @@ public class Ship : IShip
     public IObservable<Unit> WhenArmed => boardingSlot.WhenLodged
         .Where(card => (card.Type & CardType.WeaponRanged) != 0 && card.IsStored)
         .AsUnitObservable();
-    
+
     public IObservable<int> WhenShot => shooting;
 
     public void Shoot()
@@ -60,21 +60,21 @@ public class Ship : IShip
             return;
 
         shooting.OnNext(weapon.Value);
-        
+
         weapon.Destroy();
     }
-    
+
     public void Store(IResourceCard card)
     {
         card.IsStored = true;
-        
+
         var slot = storage.FirstOrDefault(s => (s.Key & card.ResourceType) != 0);
         if (slot.Value == null)
         {
             Debug.LogError($"[Ship] There's no storage Slot for Card with Resource Type {card.ResourceType}");
             return;
         }
-        
+
         slot.Value.Lodge(card);
     }
 
@@ -90,7 +90,7 @@ public class Ship : IShip
         {
             if ((slot.Type & SlotType.Player) != 0)
                 continue;
-            
+
             slot.Unlock();
         }
     }

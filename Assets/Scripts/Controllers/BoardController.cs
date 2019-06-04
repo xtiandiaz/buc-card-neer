@@ -13,8 +13,9 @@ public class BoardController : IBoardController
     {
     }
     
-    private static readonly TimeSpan ShootingImpactDelay = TimeSpan.FromSeconds(0.25f);
-    private static readonly TimeSpan CollectionDelay = TimeSpan.FromSeconds(0.5f);
+    private static readonly TimeSpan ShotDelay = TimeSpan.FromSeconds(0.25);
+    private static readonly TimeSpan ImpactDelay = TimeSpan.FromSeconds(0.25);
+    private static readonly TimeSpan CollectionDelay = TimeSpan.FromSeconds(0.5);
     
     private readonly IBoard model;
     private readonly IBoardView view;
@@ -22,6 +23,7 @@ public class BoardController : IBoardController
     private readonly IShip ship;
     private readonly IMoveRouter moveRouter;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
+    private readonly Subject<Unit> clashing = new Subject<Unit>();
 
     private BoardController(
         IBoard model, 
@@ -41,32 +43,34 @@ public class BoardController : IBoardController
     [Inject]
     public void Initialize()
     {
-        disposables.Add(moveRouter.WhenMoved
-            .Subscribe(_ =>
-            {
-                Debug.Log("Player Moved!");
-                
-                sea.Clash();
-            }));
-
-        #region Battling
-
-        disposables.Add(ship.WhenArmed.Subscribe(_ => sea.Lock()));
+        #region Clashing
         
-        disposables.Add(ship.WhenShot
-            .Delay(ShootingImpactDelay)
-            .Do(sea.Impact)
-            .Delay(CollectionDelay)
-            .Do(_ => sea.Collect())
-            .Subscribe(_ =>
-            {
-                sea.Unlock();
-                ship.Unlock();
-            }));
+        disposables.Add(moveRouter.WhenPlayerMoved
+            .Subscribe(clashing));
+        
+        disposables.Add(clashing
+            .Subscribe(_ => sea.Clash()));
 
         #endregion
 
-        #region Automatic Collection & Storing
+        #region Battling
+
+        disposables.Add(ship.WhenArmed
+            .Subscribe(_ => sea.Lock()));
+        
+        disposables.Add(ship.WhenShot
+            .Delay(ShotDelay)
+            .Do(sea.Impact)
+            .Delay(ImpactDelay)
+            .Do(_ => sea.Collect())
+            .Delay(CollectionDelay)
+            .Do(_ => ship.Unlock())
+            .AsUnitObservable()
+            .Subscribe(clashing));
+
+        #endregion
+
+        #region Looting
 
         disposables.Add(sea.WhenCollected.Subscribe(resource =>
         {
