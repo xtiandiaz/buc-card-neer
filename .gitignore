@@ -38,5 +38,8 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
+<<<<<<< HEAD
 # Mac
+=======
+>>>>>>> parent of af3d477... Refrain from versioning .spriteatlas files. Change build info in Project Settings.
 .DS_Store
