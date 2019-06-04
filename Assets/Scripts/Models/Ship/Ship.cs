@@ -7,6 +7,7 @@ using Zenject;
 
 public interface IShip
 {
+    ISlot[] Slots { get; }
     ISlot PlayerSlot { get; }
 
     IObservable<ICard> WhenBoarded { get; }
@@ -26,21 +27,21 @@ public class Ship : IShip
     }
 
     private readonly Subject<int> shooting = new Subject<int>();
-    private readonly ISlot[] slots;
     private readonly ISlot boardingSlot;
     private readonly IDictionary<ResourceType, IStorageSlot> storage;
     private ICardProvider cardProvider;
 
     protected Ship(ISlot[] slots)
     {
-        this.slots = slots;
-        boardingSlot = this.slots.FirstOrDefault(slot => slot.Type == SlotType.Boarding);
+        Slots = slots;
+        boardingSlot = Slots.FirstOrDefault(slot => slot.Type == SlotType.Boarding);
         storage = slots.Where(slot => slot.Type == SlotType.Storage).Cast<IStorageSlot>()
             .ToDictionary(resSlot => resSlot.ResourceMask, resSlot => resSlot);
 
-        PlayerSlot = this.slots.FirstOrDefault(slot => slot.Type == SlotType.Player);
+        PlayerSlot = Slots.FirstOrDefault(slot => slot.Type == SlotType.Player);
     }
 
+    public ISlot[] Slots { get; }
     public ISlot PlayerSlot { get; }
 
     public IObservable<ICard> WhenBoarded => boardingSlot.WhenLodged
@@ -80,13 +81,13 @@ public class Ship : IShip
 
     public void Lock()
     {
-        foreach (var slot in slots)
+        foreach (var slot in Slots)
             slot.Lock();
     }
 
     public void Unlock()
     {
-        foreach (var slot in slots)
+        foreach (var slot in Slots)
         {
             if ((slot.Type & SlotType.Player) != 0)
                 continue;

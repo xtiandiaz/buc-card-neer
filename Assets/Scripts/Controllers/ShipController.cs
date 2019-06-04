@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UniRx;
 using Zenject;
 
@@ -54,6 +55,15 @@ public class ShipController : IShipController
             .Delay(ShootingDelay)
             .Do(_ => model.Shoot())
             .Subscribe());
+
+        #endregion
+
+        #region Arrangement
+
+        disposables.Add(model.Slots
+            .Select(slot => slot.WhenReleased.Select(_ => slot))
+            .Merge()
+            .Subscribe(slot => slot.Arrange()));
 
         #endregion
     }
