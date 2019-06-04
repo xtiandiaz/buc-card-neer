@@ -41,7 +41,6 @@ public abstract class CardController : ICardController
                 model.Destroy();
         }));
         
-        disposables.Add(model.WhenFaceChanged.Subscribe(face => view.Flip(face, false)));
         disposables.Add(model.WhenFlipped.Subscribe(face => view.Flip(face, true)));
 
         #region Binding & Arrangement
@@ -49,9 +48,11 @@ public abstract class CardController : ICardController
         disposables.Add(model.WhenBound.Subscribe(view.SetParent));
         
         disposables.Add(model.WhenArranged
-            .Do(_ => view.SortingOrder = - model.Index * 10)
-            .SelectMany(_ => view.MoveLocalAsObservable(model.LocalPosition))
-            .Subscribe());
+            .Subscribe(_ =>
+            {
+                view.SortingOrder = -model.Index * 10;   
+                view.MoveLocal(model.LocalPosition);
+            }));
 
         #endregion
 
@@ -100,7 +101,11 @@ public abstract class CardController : ICardController
         #region Destruction
 
         lateDisposables.Add(model.WhenDestroyed
-            .Do(_ => disposables.Clear())
+            .Do(_ =>
+            {
+                disposables.Clear();
+                view.Halt();
+            })
             .ContinueWith(view.FadeAsObservable(0))
             .Subscribe(
                 _ => 

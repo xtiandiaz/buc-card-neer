@@ -1,7 +1,6 @@
 using System;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Rendering;
 using Zenject;
 
 public interface ICardView
@@ -19,12 +18,12 @@ public interface ICardView
     void Tilt(Direction towardDirection, TimeSpan duringTime);
     void Spin(int times);
     void MoveLocal(Vector3 toPosition);
-    IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition);
     void SetParent(Transform toTransform);
     void Fade(float toAlphaValue);
     IObservable<Unit> FadeAsObservable(float toAlphaValue);
     void Tint(Color withColor, float byFactor);
     void Fog(Color withColor, float byFactor);
+    void Halt();
     void Destroy();
 }
 
@@ -127,11 +126,6 @@ public class CardView : MonoBehaviour, ICardView
     {
         animator.MoveLocal(toPosition);
     }
-    
-    public IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition)
-    {
-        return animator.MoveLocalAsObservable(toPosition, 0.5f);
-    }
 
     public void Fade(float toAlphaValue)
     {
@@ -156,6 +150,11 @@ public class CardView : MonoBehaviour, ICardView
     public void SetParent(Transform toTransform)
     {
         transform.SetParent(toTransform, true);
+    }
+
+    public void Halt()
+    {
+        animator.Kill(CardAnimationType.Move);
     }
 
     public void Destroy()

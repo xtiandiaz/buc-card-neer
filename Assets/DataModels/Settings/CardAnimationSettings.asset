@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CardAnimationSettings
   m_EditorClassIdentifier: Assembly-CSharp::CardAnimationSettings
   <MoveDuration>k__BackingField: 0.5
-  <FlipDuration>k__BackingField: 0.5
+  <FlipDuration>k__BackingField: 0.4
   <TiltDuration>k__BackingField: 0.2
   <TiltAngle>k__BackingField: 60
   <SpinDuration>k__BackingField: 0.4

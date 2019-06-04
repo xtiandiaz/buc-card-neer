@@ -14,10 +14,11 @@ public class SeaController : ISeaController
     }
 
     private const int FeedCountPerSlot = 3;
-    private static readonly TimeSpan DealingInterval = TimeSpan.FromSeconds(0.1);
-    private static readonly TimeSpan ClashingInterval = TimeSpan.FromSeconds(0.5);
-    private static readonly TimeSpan SupplyDelay = TimeSpan.FromSeconds(0.75);
     
+    private static readonly TimeSpan DealingInterval = TimeSpan.FromSeconds(0.1);
+    private static readonly TimeSpan ClashInterval = TimeSpan.FromSeconds(0.5);
+    private static readonly TimeSpan AfterMathDelay = TimeSpan.FromSeconds(0.6);
+
     private readonly ISea model;
     private readonly ISeaView view;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
@@ -46,10 +47,11 @@ public class SeaController : ISeaController
             .Subscribe());
 
         disposables.Add(model.Slots
-            .Select(slot => slot.WhenEmptied.Select(_ => slot))
+            .Select(slot => slot.WhenEmptied.Concat(model.WhenClashed).Select(_ => slot))
             .Merge()
-            .Delay(SupplyDelay)
-            .SelectMany(slot => Observable.Timer(TimeSpan.Zero, DealingInterval)
+            .Delay(ClashInterval)
+            .SelectMany(slot => 
+                Observable.Timer(TimeSpan.Zero, DealingInterval)
                 .Take(FeedCountPerSlot)
                 .Do(_ => slot.Consume(1)))
             .Subscribe());
@@ -62,13 +64,18 @@ public class SeaController : ISeaController
             .SelectMany(_ =>
             {
                 var indicesToClash = Enumerable.Range(0, model.Slots.Length).Where(i => model.CanClash(i)).ToArray();
-                
-                return Observable.Timer(TimeSpan.Zero, ClashingInterval)
+
+                return Observable.Timer(TimeSpan.Zero, ClashInterval)
                     .Take(indicesToClash.Length)
                     .Do(i => model.Clash(indicesToClash[(int) i]))
-                    .DoOnCompleted(model.Unlock); // For Supply Slots are locked upon release
-            }) 
-            .Subscribe());
+                    .AsSingleUnitObservable();
+            })
+            .Delay(AfterMathDelay)
+            .Subscribe(_ => 
+            {
+                model.Arrange();
+                model.Unlock(); // For Supply Slots are locked upon release
+            }));
 
         #endregion
     }

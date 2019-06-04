@@ -13,11 +13,12 @@ public class ShipController : IShipController
     }
     
     private static readonly TimeSpan ShootingDelay = TimeSpan.FromSeconds(0.25);
-    private static readonly TimeSpan SelfStoringDelay = TimeSpan.FromSeconds(0.5);
-    
+
     private readonly IShip model;
     private readonly IShipView view;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
+
+    [Inject] private CardAnimationSettings cardAnimationSettings;
 
     protected ShipController(IShip model, IShipView view)
     {
@@ -38,7 +39,7 @@ public class ShipController : IShipController
             })
             .Where(card => card is IResourceCard)
             .Cast<ICard, IResourceCard>()
-            .Delay(SelfStoringDelay)
+            .Delay(TimeSpan.FromSeconds(cardAnimationSettings.FlipDuration))
             .SelectMany(resCard =>
                 resCard.IsLocked ? resCard.WhenUnlocked.Select(_ => resCard) : Observable.Return(resCard))
             .Do(model.Store)
@@ -46,7 +47,7 @@ public class ShipController : IShipController
 
         #endregion
 
-        #region Battling
+        #region Shooting
 
         disposables.Add(model.WhenArmed
             .Do(_ => model.Lock())
