@@ -38,8 +38,5 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
-# Generated on demand
-*.spriteatlas
-
 # Mac
 .DS_Store
