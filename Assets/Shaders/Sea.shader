@@ -23,9 +23,7 @@
 		
 		Pass
 		{
-			Lighting Off
-			ZWrite On
-			//ZTest Always
+			Lighting Off			
 
 			CGPROGRAM
 			#pragma vertex vert

@@ -41,8 +41,6 @@ public class PileCardArrangement : ScriptableObject, IPileCardArrangement
         if (shouldFog)
             toCard.Fog(fogColor, andTimeStep * fogIntensity);
 
-        toCard.Index = withIndex;
-
-        toCard.Move(atPosition, withMoveType);
+        toCard.Arrange(atPosition, withIndex);
     }
 }

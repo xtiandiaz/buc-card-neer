@@ -57,10 +57,14 @@ public abstract class CardController : ICardController
         
         #endregion
 
-        #region Appearance
+        #region Arrangement
 
-        disposables.Add(model.IndexAsObservable
-            .Subscribe(index => view.SortingOrder = -index * 10));
+        disposables.Add(model.WhenArranged
+            .Subscribe(_ =>
+            {
+                view.MoveLocal(model.ArrangedPosition);
+                SortView();
+            }));
 
         #endregion
 
@@ -76,7 +80,7 @@ public abstract class CardController : ICardController
         disposables.Add(model.WhenPicked
             .Subscribe(_ => 
             {
-                view.Lift();
+                view.Pick();
                 view.SortingOrder = layoutSettings.FloatingCardSortingOrder;
             }));
         
@@ -85,10 +89,9 @@ public abstract class CardController : ICardController
         
         disposables.Add(model.WhenDropped
             .Subscribe(_ =>
-            {
-                view.Drop();
-                view.MoveLocal(model.LocalPosition)
-                    .OnComplete(() => view.SortingOrder = -model.Index * 10);
+            { 
+                view.Drop(model.ArrangedPosition)
+                    .OnComplete(SortView);
             }));
 
         #endregion
@@ -146,6 +149,11 @@ public abstract class CardController : ICardController
     {
         disposables.Dispose();
         lateDisposables.Dispose();
+    }
+
+    private void SortView()
+    {
+        view.SortingOrder = -model.Index * 10;
     }
 }
 

@@ -13,8 +13,8 @@ public interface ICardView
     Vector3 LocalPosition { set; }
     int SortingOrder { set; }
 
-    void Lift();
-    void Drop();
+    void Pick();
+    Tween Drop(Vector3 toLocalPosition);
     void Flip(CardFace toFace, bool animated);
     void Tilt(Direction towardDirection, TimeSpan duringTime);
     void Spin(int times);
@@ -41,7 +41,7 @@ public class CardView : MonoBehaviour, ICardView
     [SerializeField] private Transform contentWrapper;
 
     [Inject] private CardAnimationSettings animationSettings;
-    private ICardAnimator animator;
+    private CardAnimator animator;
     private ICardShader shader;
     private ISortingSet sortingSet;
     private Vector3 lastLodgingPosition;
@@ -90,7 +90,7 @@ public class CardView : MonoBehaviour, ICardView
 
     private void Awake()
     {
-        animator = GetComponent<ICardAnimator>();
+        animator = GetComponent<CardAnimator>();
         shader = GetComponent<ICardShader>();
         sortingSet = GetComponent<ISortingSet>();
         
@@ -98,15 +98,14 @@ public class CardView : MonoBehaviour, ICardView
         shader.Initialize(animationSettings);
     }
     
-    public void Lift()
+    public void Pick()
     {
-        animator.Kill(CardAnimationType.Move);
-        animator.Lift();
+        animator.Pick();
     }
 
-    public void Drop()
+    public Tween Drop(Vector3 toLocalPosition)
     {
-        animator.Drop();
+        return animator.Drop(toLocalPosition);
     }
 
     public void Flip(CardFace toFace, bool animated)

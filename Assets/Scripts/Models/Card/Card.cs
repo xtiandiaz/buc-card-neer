@@ -6,24 +6,24 @@ public interface ICard
 {
     int Value { get; set; }
     int OriginalValue { get; }
-    int Index { get; set; }
+    int Index { get; }
     string Name { get; }
     CardType Type { get; }
-    Vector3 LocalPosition { get; }
-    Sprite FrontFace { get; }
-    Sprite BackFace { get; }
-    ICardBond Bond { get; }
     bool IsBoarded { get; set; }
     bool IsStored { get; set; }
+    ICardBond Bond { get; }
     DateTimeOffset BindingTimestamp { get; }
+    Sprite FrontFace { get; }
+    Sprite BackFace { get; }
+    Vector3 LocalPosition { get; }
+    Vector3 ArrangedPosition { get; }
     
     IObservable<int> ValueAsObservable { get; }
-    IObservable<int> IndexAsObservable { get; }
-    
+    IObservable<CardMoveType> WhenMoved { get; }
+    IObservable<Unit> WhenArranged { get; }
     IObservable<Direction> WhenClashed { get; }
     IObservable<Unit> WhenImpacted { get; }
     IObservable<Transform> WhenBound { get; }
-    IObservable<CardMoveType> WhenMoved { get; }
     IObservable<Unit> WhenPicked { get; }
     IObservable<Unit> WhenDragged { get; }
     IObservable<Unit> WhenDropped { get; }
@@ -43,6 +43,7 @@ public interface ICard
     void Pick();
     void Drag(Vector3 byDeltaPosition);
     void Drop();
+    void Arrange(Vector3 atLocalPosition, int withIndex);
     void Move(Vector3 toLocalPosition, CardMoveType withType);
     void Flip(CardFace toFace);
     void Fade(float toAlphaValue);
@@ -54,8 +55,7 @@ public interface ICard
 public abstract class Card : ScriptableObject, ICard
 {
     [SerializeField] protected IntReactiveProperty value = new IntReactiveProperty();
-
-    private readonly ReactiveProperty<int> index = new ReactiveProperty<int>();
+    
     private readonly Subject<Direction> clashing = new Subject<Direction>();
     private readonly Subject<Unit> impacting = new Subject<Unit>();
     private readonly Subject<Transform> binding = new Subject<Transform>();
@@ -75,36 +75,32 @@ public abstract class Card : ScriptableObject, ICard
     private CardFace face;
     private float arrangedDepth;
 
-    public abstract CardType Type { get; }
-    public int OriginalValue { get; private set; }
-    public string Name => name;
-    public Sprite FrontFace => frontFace;
-    public Sprite BackFace => backFace;
-    public Vector3 LocalPosition { get; private set; }
-    public ICardBond Bond { get; private set; }
-    public bool IsBoarded { get; set; }
-    public bool IsStored { get; set; }
-    public DateTimeOffset BindingTimestamp { get; private set; }
-
-    public int Index
-    {
-        get => index.Value;
-        set => index.Value = value;
-    }
-    
     public int Value
     {
         get => value.Value;
         set => this.value.Value = Mathf.Max(value, 0);
     }
 
-    public IObservable<int> ValueAsObservable => value;
-    public IObservable<int> IndexAsObservable => index;
+    public int OriginalValue { get; private set; }
+    public int Index { get; private set; }
     
+    public abstract CardType Type { get; }
+    public string Name => name;
+    public bool IsBoarded { get; set; }
+    public bool IsStored { get; set; }
+    public ICardBond Bond { get; private set; }
+    public DateTimeOffset BindingTimestamp { get; private set; }
+    public Sprite FrontFace => frontFace;
+    public Sprite BackFace => backFace;
+    public Vector3 LocalPosition { get; private set; }
+    public Vector3 ArrangedPosition { get; private set; }
+
+    public IObservable<int> ValueAsObservable => value;
+    public IObservable<CardMoveType> WhenMoved => movement;
+    public IObservable<Unit> WhenArranged => arrangement;
     public IObservable<Direction> WhenClashed => clashing;
     public IObservable<Unit> WhenImpacted => impacting;
     public IObservable<Transform> WhenBound => binding;
-    public IObservable<CardMoveType> WhenMoved => movement;
     public IObservable<Unit> WhenPicked => picking;
     public IObservable<Unit> WhenDragged => dragging;
     public IObservable<Unit> WhenDropped => dropping;
@@ -168,9 +164,17 @@ public abstract class Card : ScriptableObject, ICard
 
     public void Drop()
     {
-        LocalPosition = Vector3.zero;
+        LocalPosition = ArrangedPosition;
         
         dropping.OnNext(Unit.Default);
+    }
+
+    public void Arrange(Vector3 atLocalPosition, int withIndex)
+    {
+        ArrangedPosition = LocalPosition = atLocalPosition;
+        Index = withIndex;
+        
+        arrangement.OnNext(Unit.Default);
     }
 
     public void Move(Vector3 toLocalPosition, CardMoveType withType)

@@ -64,6 +64,7 @@ public class SlotController : ISlotController
             .Subscribe(cardFromSlot =>
             {
                 var (card, slot) = cardFromSlot;
+                
                 model.ToggleHighlight(model.CanMatch(card, slot) || model.CanLodge(card, slot));
             }));
 
@@ -80,12 +81,12 @@ public class SlotController : ISlotController
                 .Do(pickedCard.Drag)
                 .Last()
                 .Select(_ => new
-                {
-                    Card = pickedCard,
-                    Position = new Vector3(
-                        model.Position.x + pickedCard.LocalPosition.x,
-                        model.Position.y + pickedCard.LocalPosition.y)
-                }))
+                    {
+                        Card = pickedCard,
+                        Position = new Vector3(
+                            model.Position.x + pickedCard.LocalPosition.x,
+                            model.Position.y + pickedCard.LocalPosition.y)
+                    }))
             .RepeatSafe()
             .Subscribe(droppedCardAtPosition =>
             {

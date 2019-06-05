@@ -1497,7 +1497,7 @@ GameObject:
   - component: {fileID: 1239149158}
   - component: {fileID: 1239149160}
   - component: {fileID: 1239149159}
-  m_Layer: 0
+  m_Layer: 4
   m_Name: Surface
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1535,7 +1535,7 @@ MeshRenderer:
   m_GameObject: {fileID: 1239149157}
   m_Enabled: 1
   m_CastShadows: 1
-  m_ReceiveShadows: 1
+  m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
@@ -2130,7 +2130,7 @@ Canvas:
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 534669904}
-  m_PlaneDistance: 17.28
+  m_PlaneDistance: 5
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
