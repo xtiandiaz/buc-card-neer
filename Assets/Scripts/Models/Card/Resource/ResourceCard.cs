@@ -74,7 +74,7 @@ public class ResourceCard : Card, IResourceCard
             if ((withOther.Type & CardType.WeaponMelee) == 0)
                 return;
         
-            LockValue -= withOther.Value;
+            Hit(withOther.Value);
         
             withOther.Destroy();
         }
@@ -84,9 +84,9 @@ public class ResourceCard : Card, IResourceCard
         
         // Ranged combat ensues:
 
-        if ((withOther.Type & CardType.Pirate) != 0)
+        if (withOther is IPirateCard pirate)
         {
-            withOther.Value -= Value;
+            pirate.Hit(Value);
             Destroy();
         }
     }
@@ -113,7 +113,7 @@ public class ResourceCard : Card, IResourceCard
         LockValue = 0;
     }
 
-    protected override void Hit(int withValue)
+    public override void Hit(int withValue)
     {
         LockValue -= withValue;
     }

@@ -39,6 +39,7 @@ public interface ICard
     void Clash(ICard other, Direction withDirection);
     bool CanBeImpacted();
     void Impact(int withValue);
+    void Hit(int withValue);
     void Bind(ICardBond withBond);
     void Pick();
     void Drag(Vector3 byDeltaPosition);
@@ -130,11 +131,16 @@ public abstract class Card : ScriptableObject, ICard
 
     public abstract bool CanBeImpacted();
 
-    public virtual void Impact(int withValue)
+    public void Impact(int withValue)
     {
         Hit(withValue);
 
         impacting.OnNext(Unit.Default);
+    }
+    
+    public virtual void Hit(int withValue)
+    {
+        Value -= withValue;
     }
 
     public void Bind(ICardBond withBond)
@@ -209,13 +215,8 @@ public abstract class Card : ScriptableObject, ICard
     public virtual void Destroy()
     {
         Bond?.Release(this);
-        
+
         destruction.OnNext(Unit.Default);
         destruction.OnCompleted();
-    }
-
-    protected virtual void Hit(int withValue)
-    {
-        Value -= withValue;
     }
 }

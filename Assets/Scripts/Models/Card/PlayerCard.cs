@@ -123,10 +123,15 @@ public class PlayerCard : Card, IPlayerCard
     {
         Coins += lootCarrier.GetLoot();
     }
-    
+
+    public override void Hit(int withValue)
+    {
+        HealthPoints -= withValue;
+    }
+
     private void Unlock(IResourceCard resourceCard)
     {
-        HealthPoints -= resourceCard.LockValue;
+        Hit(resourceCard.LockValue);
         
         resourceCard.Unlock();
     }
@@ -135,8 +140,9 @@ public class PlayerCard : Card, IPlayerCard
     {
         var pirateHealth = pirate.Value;
 
-        pirate.Value -= Math.Min(HealthPoints, pirateHealth);
-        HealthPoints -= pirateHealth;
+        pirate.Hit(Math.Min(HealthPoints, pirateHealth));
+        
+        Hit(pirateHealth);
     }
 
     private void Confront(IInspectorCard inspector)

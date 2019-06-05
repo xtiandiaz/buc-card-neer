@@ -22,6 +22,7 @@ public class PirateCardController : CardController
     {
         base.Initialize();
         
-        disposables.Add(model.WhenDestroyed.Subscribe(_ => plunderer.Plunder(model)));
+        lateDisposables.Add(model.WhenDefeated
+            .Subscribe(_ => plunderer.Plunder(model)));
     }
 }

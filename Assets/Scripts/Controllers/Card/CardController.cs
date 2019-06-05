@@ -11,7 +11,7 @@ public interface ICardController : IInitializable, IDisposable
 public abstract class CardController : ICardController
 {
     protected readonly CompositeDisposable disposables = new CompositeDisposable();
-    private readonly CompositeDisposable lateDisposables = new CompositeDisposable();
+    protected readonly CompositeDisposable lateDisposables = new CompositeDisposable();
     
     private static readonly TimeSpan ClashTiltTimeSpan = TimeSpan.FromSeconds(0.25f);
     private readonly ICard model;
