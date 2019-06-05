@@ -131,7 +131,7 @@ public abstract class CardController : ICardController
             .Do(_ =>
             {
                 disposables.Clear();
-                view.Halt();
+                view.KillMove();
             })
             .ContinueWith(view.FadeAsObservable(0))
             .Subscribe(

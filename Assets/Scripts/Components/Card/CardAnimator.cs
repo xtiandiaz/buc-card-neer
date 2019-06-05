@@ -18,8 +18,8 @@ public class CardAnimator : MonoBehaviour
         
     private CardAnimationSettings settings;
     private Transform contentWrapper;
-    private Tween moveTween, pickDropTween;
-    private Sequence flipSequence, tiltSequence;
+    private Tween moveTween;
+    private Sequence flipSequence, tiltSequence, pickDropSequence;
     private CardFace currentFace;
     
     public void Initialize(CardAnimationSettings withSettings, Transform andContentWrapper)
@@ -30,20 +30,32 @@ public class CardAnimator : MonoBehaviour
 
     public void Pick()
     {
-        pickDropTween?.Kill();
+        pickDropSequence?.Kill();
+        moveTween?.Kill();
 
-        pickDropTween = contentWrapper
-            .DOMoveZ(0, settings.LiftDuration)
-            .SetEase(settings.OutEase);
+        pickDropSequence = DOTween.Sequence();
+        
+        pickDropSequence.Append(contentWrapper
+            .DOMoveZ(0, settings.LiftDuration));
+
+        pickDropSequence.Join(contentWrapper
+            .DOScale(1.1f, settings.LiftDuration));
+        
+        pickDropSequence.SetEase(settings.OutEase);
     }
 
     public Tween Drop(Vector3 toLocalPosition)
     {
-        pickDropTween?.Kill();
+        pickDropSequence?.Kill();
+        moveTween?.Kill();
 
-        pickDropTween = contentWrapper
-            .DOLocalMoveZ(0, settings.MoveDuration)
-            .SetEase(settings.OutEase);
+        pickDropSequence.Append(contentWrapper
+            .DOLocalMoveZ(0, settings.MoveDuration));
+        
+        pickDropSequence.Join(contentWrapper
+            .DOScale(1f, settings.MoveDuration));
+
+        pickDropSequence.SetEase(settings.OutEase);
 
         return MoveLocal(toLocalPosition);
     }
@@ -141,7 +153,7 @@ public class CardAnimator : MonoBehaviour
         {
             case CardAnimationType.Lift:
                 
-                pickDropTween?.Kill();
+                pickDropSequence?.Kill();
                 
                 break;
             case CardAnimationType.Flip:

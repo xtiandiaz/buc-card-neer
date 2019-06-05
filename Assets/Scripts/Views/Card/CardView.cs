@@ -18,14 +18,13 @@ public interface ICardView
     void Flip(CardFace toFace, bool animated);
     void Tilt(Direction towardDirection, TimeSpan duringTime);
     void Spin(int times);
-    Tween MoveLocal(Vector3 toPosition);
-    IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition);
+    void MoveLocal(Vector3 toPosition);
     void SetParent(Transform toTransform);
     void Fade(float toAlphaValue);
     IObservable<Unit> FadeAsObservable(float toAlphaValue);
     void Tint(Color withColor, float byFactor);
     void Fog(Color withColor, float byFactor);
-    void Halt();
+    void KillMove();
     void Destroy();
 }
 
@@ -123,14 +122,9 @@ public class CardView : MonoBehaviour, ICardView
         animator.Spin(times);
     }
 
-    public Tween MoveLocal(Vector3 toPosition)
+    public void MoveLocal(Vector3 toPosition)
     {
-        return animator.MoveLocal(toPosition);
-    }
-
-    public IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition)
-    {
-        return animator.MoveLocalAsObservable(toPosition);
+        animator.MoveLocal(toPosition);
     }
 
     public void Fade(float toAlphaValue)
@@ -158,7 +152,7 @@ public class CardView : MonoBehaviour, ICardView
         transform.SetParent(toTransform, true);
     }
 
-    public void Halt()
+    public void KillMove()
     {
         animator.Kill(CardAnimationType.Move);
     }
