@@ -17,8 +17,12 @@ public class CardArrangement : ScriptableObject, ICardArrangement
 {
     [SerializeField] protected Vector3 offset;
     [SerializeField] protected AnimationCurve offsetFunction;
-    [SerializeField] protected CardFace facing;
     [SerializeField] protected bool shouldTopMostRemainInPlace;
+
+    [Header("Fog")] 
+    [SerializeField] private bool shouldFog;
+    [SerializeField] private Color fogColor = Color.white;
+    [SerializeField] [Range(0, 1f)] private float fogIntensity = 0.5f;
 
     public void Apply(IList<ICard> toCards, int? fromTotalCount, CardArrangementMode withMode)
     {
@@ -29,8 +33,13 @@ public class CardArrangement : ScriptableObject, ICardArrangement
             Apply(toCards[i], i, offset * (shouldTopMostRemainInPlace ? countM1 - i : i), i / total, withMode);
     }
 
-    protected virtual void Apply(ICard toCard, int withIndex, Vector3 atPosition, float andTimeStep, CardArrangementMode withMode)
+    private void Apply(ICard toCard, int withIndex, Vector3 atPosition, float andTimeStep, CardArrangementMode withMode)
     {
-        toCard.Arrange(atPosition, withIndex, withMode);
+        if (shouldFog)
+            toCard.Fog(fogColor, andTimeStep * fogIntensity);
+
+        toCard.Index = withIndex;
+
+        toCard.Move(atPosition, CardMoveType.Lodging);
     }
 }
