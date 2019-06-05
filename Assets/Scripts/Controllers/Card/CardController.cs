@@ -1,4 +1,5 @@
 using System;
+using DG.Tweening;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -33,60 +34,77 @@ public abstract class CardController : ICardController
         view.BackFace = model.BackFace;
         view.Position = (viewport.Size.y + layoutSettings.CardSize.y) * 0.5f * Vector2.up; // Dealing position
 
-        disposables.Add(model.ValueAsObservable.Subscribe(value =>
-        {
-            view.Value = value;
+        #region Transform
 
-            if (value <= 0)
-                model.Destroy();
-        }));
+        disposables.Add(model.WhenMoved
+            .Subscribe(_ => view.MoveLocal(model.LocalPosition)));
         
-        disposables.Add(model.WhenFlipped.Subscribe(face => view.Flip(face, true)));
+        disposables.Add(model.WhenFlipped
+            .Subscribe(face => view.Flip(face, true)));
 
-        #region Binding & Arrangement
-
-        disposables.Add(model.WhenBound.Subscribe(view.SetParent));
+        #endregion
         
-        disposables.Add(model.WhenArranged
-            .Do(mode =>
+        #region Content
+
+        disposables.Add(model.ValueAsObservable
+            .Subscribe(value =>
             {
-                view.SortingOrder = -model.Index * 10;
-                
-                if (mode == CardArrangementMode.Transitional)
-                    view.MoveLocal(model.LocalPosition);
-                else
-                    view.LocalPosition = model.LocalPosition;
-                
-            })
-            .Subscribe());
+                view.Value = value;
 
+                if (value <= 0)
+                    model.Destroy();
+            }));
+        
+        #endregion
+
+        #region Appearance
+
+        disposables.Add(model.IndexAsObservable
+            .Subscribe(index => view.SortingOrder = -index * 10));
+
+        #endregion
+
+        #region Binding
+
+        disposables.Add(model.WhenBound
+            .Subscribe(view.SetParent));
+        
         #endregion
 
         #region Interaction
 
-        disposables.Add(model.WhenPicked.Subscribe(_ => 
-        {
-            view.OnPicked();
-            view.SortingOrder = layoutSettings.FloatingCardSortingOrder;
-        }));
+        disposables.Add(model.WhenPicked
+            .Subscribe(_ => 
+            {
+                view.Lift();
+                view.SortingOrder = layoutSettings.FloatingCardSortingOrder;
+            }));
         
-        disposables.Add(model.WhenDragged.Subscribe(_ => view.LocalPosition = model.LocalPosition));
+        disposables.Add(model.WhenDragged
+            .Subscribe(_ => view.LocalPosition = model.LocalPosition));
         
         disposables.Add(model.WhenDropped
-            .SelectMany(_ => view.OnDropped())
-            .Subscribe());
+            .Subscribe(_ =>
+            {
+                view.Drop();
+                view.MoveLocal(model.LocalPosition)
+                    .OnComplete(() => view.SortingOrder = -model.Index * 10);
+            }));
 
         #endregion
 
         #region Effects
 
-        disposables.Add(model.WhenFaded.Subscribe(view.Fade));
+        disposables.Add(model.WhenFaded
+            .Subscribe(view.Fade));
         
-        disposables.Add(model.WhenTinted.Subscribe(withColorByFactor => 
-            view.Tint(withColorByFactor.Item1, withColorByFactor.Item2)));
+        disposables.Add(model.WhenTinted
+            .Subscribe(withColorByFactor => 
+                view.Tint(withColorByFactor.Item1, withColorByFactor.Item2)));
         
-        disposables.Add(model.WhenFogged.Subscribe(withColorByFactor =>
-            view.Fog(withColorByFactor.Item1, withColorByFactor.Item2)));
+        disposables.Add(model.WhenFogged
+            .Subscribe(withColorByFactor => 
+                view.Fog(withColorByFactor.Item1, withColorByFactor.Item2)));
 
         #endregion
 
@@ -107,7 +125,11 @@ public abstract class CardController : ICardController
         #region Destruction
 
         lateDisposables.Add(model.WhenDestroyed
-            .Do(_ => disposables.Clear())
+            .Do(_ =>
+            {
+                disposables.Clear();
+                view.Halt();
+            })
             .ContinueWith(view.FadeAsObservable(0))
             .Subscribe(
                 _ => 

@@ -19,7 +19,10 @@ Shader "GUI/Text Shader OneSided"
             "RenderType"="Transparent"
             "PreviewType"="Plane"
         }
-        Lighting Off Cull Back ZTest Always ZWrite Off
+        
+        Lighting Off 
+        Cull Back 
+        ZWrite Off
         Blend One OneMinusSrcAlpha
 
         Pass 

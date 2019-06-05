@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1414ef01d490457d85d9df16d2d72cc3, type: 3}
   m_Name: BoardLayoutSettings
   m_EditorClassIdentifier: 
-  margins: {x: 0.25, y: 0.25}
+  margins: {x: 0.5, y: 0.5}
   cardSize: {x: 2.5, y: 3.5}
-  cardSpacing: {x: 0.25, y: 0.25}
+  cardSpacing: {x: 0.2, y: 0.2}
   maxCardCountInRow: 4
   slotSortingLayerName: Slot
   cardSortingLayerName: Card

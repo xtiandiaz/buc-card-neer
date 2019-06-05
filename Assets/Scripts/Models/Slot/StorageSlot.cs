@@ -24,7 +24,7 @@ public class StorageSlot : Slot, IStorageSlot
     {
     }
 
-    public ResourceType ResourceMask => settings.ResourceMask;
+    public ResourceType ResourceMask => Settings.ResourceMask;
 
     public void Sort()
     {

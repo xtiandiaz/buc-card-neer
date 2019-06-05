@@ -2,35 +2,11 @@ using System;
 using UniRx;
 using UnityEngine;
 
-[Flags]
-public enum CardType
-{
-    Player             = 1 << 0,
-    Pirate             = 1 << 1,
-    Merchant           = 1 << 2,
-    Inspector          = 1 << 3,
-    Food               = 1 << 4,
-    Artifact           = 1 << 5,
-    Gem                = 1 << 6,
-    WeaponMelee        = 1 << 7,
-    WeaponRanged       = 1 << 8,
-    Medicine           = 1 << 9,
-                         
-    Resource           = Food | Gem | Artifact | WeaponMelee | WeaponRanged | Medicine,
-    Agent              = Pirate | Merchant | Inspector
-}
-
-public enum CardFace
-{
-    Front,
-    Back
-}
-
-public interface ICard : IComparable<ICard>
+public interface ICard
 {
     int Value { get; set; }
     int OriginalValue { get; }
-    int Index { get; }
+    int Index { get; set; }
     string Name { get; }
     CardType Type { get; }
     Vector3 LocalPosition { get; }
@@ -42,10 +18,12 @@ public interface ICard : IComparable<ICard>
     DateTimeOffset BindingTimestamp { get; }
     
     IObservable<int> ValueAsObservable { get; }
+    IObservable<int> IndexAsObservable { get; }
+    
     IObservable<Direction> WhenClashed { get; }
     IObservable<Unit> WhenImpacted { get; }
     IObservable<Transform> WhenBound { get; }
-    IObservable<CardArrangementMode> WhenArranged { get; }
+    IObservable<CardMoveType> WhenMoved { get; }
     IObservable<Unit> WhenPicked { get; }
     IObservable<Unit> WhenDragged { get; }
     IObservable<Unit> WhenDropped { get; }
@@ -65,7 +43,7 @@ public interface ICard : IComparable<ICard>
     void Pick();
     void Drag(Vector3 byDeltaPosition);
     void Drop();
-    void Arrange(Vector3 atLocalPosition, int withIndex, CardArrangementMode andMode);
+    void Move(Vector3 toLocalPosition, CardMoveType withType);
     void Flip(CardFace toFace);
     void Fade(float toAlphaValue);
     void Tint(Color withColor, float byFactor);
@@ -77,10 +55,12 @@ public abstract class Card : ScriptableObject, ICard
 {
     [SerializeField] protected IntReactiveProperty value = new IntReactiveProperty();
 
+    private readonly ReactiveProperty<int> index = new ReactiveProperty<int>();
     private readonly Subject<Direction> clashing = new Subject<Direction>();
     private readonly Subject<Unit> impacting = new Subject<Unit>();
     private readonly Subject<Transform> binding = new Subject<Transform>();
-    private readonly Subject<CardArrangementMode> arranging = new Subject<CardArrangementMode>();
+    private readonly Subject<Unit> arrangement = new Subject<Unit>();
+    private readonly Subject<CardMoveType> movement = new Subject<CardMoveType>();
     private readonly Subject<Unit> picking = new Subject<Unit>();
     private readonly Subject<Unit> dragging = new Subject<Unit>();
     private readonly Subject<Unit> dropping = new Subject<Unit>();
@@ -97,7 +77,6 @@ public abstract class Card : ScriptableObject, ICard
 
     public abstract CardType Type { get; }
     public int OriginalValue { get; private set; }
-    public int Index { get; private set; }
     public string Name => name;
     public Sprite FrontFace => frontFace;
     public Sprite BackFace => backFace;
@@ -107,6 +86,12 @@ public abstract class Card : ScriptableObject, ICard
     public bool IsStored { get; set; }
     public DateTimeOffset BindingTimestamp { get; private set; }
 
+    public int Index
+    {
+        get => index.Value;
+        set => index.Value = value;
+    }
+    
     public int Value
     {
         get => value.Value;
@@ -114,10 +99,12 @@ public abstract class Card : ScriptableObject, ICard
     }
 
     public IObservable<int> ValueAsObservable => value;
+    public IObservable<int> IndexAsObservable => index;
+    
     public IObservable<Direction> WhenClashed => clashing;
     public IObservable<Unit> WhenImpacted => impacting;
     public IObservable<Transform> WhenBound => binding;
-    public IObservable<CardArrangementMode> WhenArranged => arranging;
+    public IObservable<CardMoveType> WhenMoved => movement;
     public IObservable<Unit> WhenPicked => picking;
     public IObservable<Unit> WhenDragged => dragging;
     public IObservable<Unit> WhenDropped => dropping;
@@ -181,20 +168,22 @@ public abstract class Card : ScriptableObject, ICard
 
     public void Drop()
     {
+        LocalPosition = Vector3.zero;
+        
         dropping.OnNext(Unit.Default);
     }
 
-    public void Arrange(Vector3 atLocalPosition, int withIndex, CardArrangementMode andMode)
+    public void Move(Vector3 toLocalPosition, CardMoveType withType)
     {
-        LocalPosition = atLocalPosition;
-        Index = withIndex;
-        
-        arranging.OnNext(andMode);
+        LocalPosition = toLocalPosition;
+
+        movement.OnNext(withType);
     }
 
     public virtual void Flip(CardFace toFace)
     {
         face = toFace;
+        
         flipping.OnNext(toFace);
     }
     
@@ -219,11 +208,6 @@ public abstract class Card : ScriptableObject, ICard
         
         destruction.OnNext(Unit.Default);
         destruction.OnCompleted();
-    }
-    
-    public virtual int CompareTo(ICard other)
-    {
-        throw new NotImplementedException();
     }
 
     protected virtual void Hit(int withValue)

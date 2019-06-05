@@ -30,8 +30,28 @@ public class SlotController : ISlotController
 
     [Inject]
     public virtual void Initialize()
-    {        
-        disposables.Add(model.WhenToggledHighlighting.Subscribe(view.ToggleHighlight));
+    {
+        #region Appearance
+
+        disposables.Add(model.WhenToggledHighlighting
+            .Subscribe(view.ToggleHighlight));
+
+        #endregion
+        
+        #region Arrangement
+
+        disposables.Add(model.WhenLodged
+            .Subscribe(card =>
+            {
+                var lodgingFace = model.Settings.LodgingFace;
+                
+                if (lodgingFace != LodgingFace.Current)
+                    card.Flip((CardFace) lodgingFace);
+                
+                model.Arrange();
+            }));
+
+        #endregion
         
         #region Picking
 
@@ -70,8 +90,7 @@ public class SlotController : ISlotController
             .Subscribe(droppedCardAtPosition =>
             {
                 droppedCardAtPosition.Card.Drop();
-                model.Arrange();
-                
+
                 // Push Card dropping from Slot at Position:
                 CardDropping.OnNext((droppedCardAtPosition.Card, model, droppedCardAtPosition.Position));
             }));
@@ -99,12 +118,6 @@ public class SlotController : ISlotController
                     moveRouter.OnNext();
                 }
             }));
-
-        #endregion
-
-        #region Arrangement
-
-        disposables.Add(model.WhenLodged.Subscribe(_ => model.Arrange()));
 
         #endregion
     }

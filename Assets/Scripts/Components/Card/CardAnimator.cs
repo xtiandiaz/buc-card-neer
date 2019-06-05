@@ -21,7 +21,7 @@ public interface ICardAnimator
     void Tilt(Direction towardDirection, TimeSpan duringTime);
     void Spin(int times);
     Tween MoveLocal(Vector3 toPosition);
-    IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition, float duringSeconds);
+    IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition);
     void Kill(CardAnimationType animationType);
 }
 
@@ -45,13 +45,13 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
     public void Lift()
     {
         Kill(CardAnimationType.Lift);
-        liftTween = Lift(-settings.LiftDepth, settings.LiftDuration);
+        liftTween = Lift(-settings.LiftDeltaZ, settings.LiftDuration);
     }
 
     public void Drop()
     {
         Kill(CardAnimationType.Lift);
-        liftTween = Lift(0, settings.ReturnToLocationWerePickedDuration);
+        liftTween = Lift(0, settings.MoveDuration);
     }
     
     public IObservable<Unit> DropAsObservable()
@@ -90,7 +90,7 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
                 .OnComplete(() => ToggleFace(toFace))
                 .SetEase(settings.InEase));
 
-        flipSequence.Join(Lift(-settings.LiftDepth, halfTweenDuration).SetEase(settings.InEase));
+        flipSequence.Join(Lift(-settings.LiftDeltaZ, halfTweenDuration).SetEase(settings.InEase));
 
         flipSequence.Append(
             contentWrapper.DORotate(destEulerAngles, halfTweenDuration).SetEase(settings.OutEase));
@@ -140,11 +140,11 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
         return moveTween;
     }
     
-    public IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition, float duringSeconds)
+    public IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition)
     {
         return Observable.Create<Unit>(observer =>
         {
-            var tween = transform.DOLocalMove(toPosition, duringSeconds)
+            var tween = transform.DOLocalMove(toPosition, settings.MoveDuration)
                 .SetEase(settings.OutEase)
                 .OnComplete(() =>
                 {

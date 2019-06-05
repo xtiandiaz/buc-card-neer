@@ -2,15 +2,6 @@ using System;
 using UniRx;
 using UnityEngine;
 
-[Flags]
-public enum SlotType
-{
-    Supply     = 1 << 0,
-    Boarding  = 1 << 1,
-    Storage   = 1 << 2,
-    Player    = 1 << 3
-}
-
 public enum SlotEntryway
 {
     Front, 
@@ -30,10 +21,10 @@ public interface ISlot : ICardBond, ICardConsumer
     bool IsEmpty { get; }
     SlotType Type { get; }
     Vector3 Position { get; }
+    ISlotSettings Settings { get; }
 
     IObservable<ICard> WhenPicked { get; }
     IObservable<ICard> WhenLodged { get; }
-    IObservable<ICard> WhenMatched { get; }
     IObservable<Unit> WhenReleased { get; }
     IObservable<Unit> WhenEmptied { get; }
     IObservable<bool> WhenToggledHighlighting { get; }
@@ -51,21 +42,12 @@ public interface ISlot : ICardBond, ICardConsumer
     bool DoesContain(Vector3 worldPoint);
 }
 
-public interface ICardBond
-{
-    Transform TransformBond { get; }
-    
-    void Release(ICard card);
-}
-
 public abstract class Slot : ISlot
 {
-    protected readonly ISlotSettings settings;
     protected readonly IPile pile;
     
     private readonly Subject<ICard> picking = new Subject<ICard>();
     private readonly Subject<ICard> lodging = new Subject<ICard>();
-    private readonly Subject<ICard> matching = new Subject<ICard>();
     private readonly Subject<Unit> releasing = new Subject<Unit>();
     private readonly Subject<Unit> emptying = new Subject<Unit>();
     private readonly Subject<bool> highlighting = new Subject<bool>();
@@ -76,14 +58,14 @@ public abstract class Slot : ISlot
     protected Slot(IPile pile, ISlotSettings settings, Bounds bounds, Transform transformBond)
     {
         this.pile = pile;
-        this.settings = settings;
         this.bounds = bounds;
         
+        Settings = settings;
         TransformBond = transformBond;
         IsLocked = settings.ShouldStartLocked;
     }
 
-    public SlotType Type => settings.Type;
+    public SlotType Type => Settings.Type;
     public Vector3 Position => TransformBond.position;
     public Transform TransformBond { get; }
     public bool IsEmpty => pile.Count <= 0;
@@ -93,10 +75,11 @@ public abstract class Slot : ISlot
         get => isLocked.Value;
         private set => isLocked.Value = value;
     }
+    
+    public ISlotSettings Settings { get; }
 
     public IObservable<ICard> WhenPicked => picking;
     public IObservable<ICard> WhenLodged => lodging;
-    public IObservable<ICard> WhenMatched => matching;
     public IObservable<Unit> WhenReleased => releasing;
     public IObservable<Unit> WhenEmptied => emptying;
     public IObservable<bool> WhenToggledHighlighting => highlighting.DistinctUntilChanged();
@@ -136,8 +119,6 @@ public abstract class Slot : ISlot
     public void Match(ICard card)
     {
         pile.Peek()?.Match(card);
-        
-        matching.OnNext(card);
     }
 
     public virtual void Lodge(ICard card)
@@ -150,17 +131,14 @@ public abstract class Slot : ISlot
 
         if (!pile.Insert(
             card, 
-            settings.Entryway == SlotEntryway.Front ? PileInsertionMode.Unshift : PileInsertionMode.Push))
+            Settings.Entryway == SlotEntryway.Front ? PileInsertionMode.Unshift : PileInsertionMode.Push))
         {
             Debug.LogError($"[Slot] Couldn't insert {card} in Pile.");
             return;
         }
 
         card.Bind(this);
-        
-        if (settings.LodgingFace != LodgingFace.Current)
-            card.Flip((CardFace) settings.LodgingFace);
-        
+
         lodging.OnNext(card);
     }
 

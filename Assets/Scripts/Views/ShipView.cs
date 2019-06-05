@@ -3,12 +3,9 @@ using Zenject;
 
 public interface IShipView
 {
-    float Height { get; }
-    Vector3 Position { get; set; }
+    Vector3 LocalPosition { get; set; }
+    Vector2 HullSize { get; }
     ISlotView[] Slots { get; }
-
-    void Dock(Vector3 atLocalPosition);
-    void SetSail(Vector3 toLocalPosition);
 }
 
 public class ShipView : MonoBehaviour, IShipView
@@ -17,41 +14,18 @@ public class ShipView : MonoBehaviour, IShipView
     {
     }
     
-    [SerializeField] private float height;
     [SerializeField] private SlotView[] slots;
+    [SerializeField] private SpriteRenderer hullBackground;
     [SerializeField] private ShipAnimationSettings animatorSettings;
-
-    private Transform thisTransform;
-    private IShipAnimator animator;
-
-    public float Height => height;
-    public ISlotView[] Slots => slots;
     
-    public Vector3 Position
-    {
-        get => thisTransform.position;
-        set
-        {
-            animator.KillMove();
-            thisTransform.position = value;
-        }
-    }
+    private IShipAnimator animator;
+    
+    public ISlotView[] Slots => slots;
+    public Vector2 HullSize => hullBackground.size;
 
-    private void Awake()
+    public Vector3 LocalPosition
     {
-        thisTransform = transform;
-        
-        animator = GetComponent<IShipAnimator>() ?? gameObject.AddComponent<ShipAnimator>();
-        animator.Initialize(animatorSettings);
-    }
-
-    public void Dock(Vector3 atLocalPosition)
-    {
-        animator.Dock(atLocalPosition);
-    }
-
-    public void SetSail(Vector3 toLocalPosition)
-    {
-        animator.SetSail(toLocalPosition);
+        get => transform.localPosition;
+        set => transform.localPosition = value;
     }
 }

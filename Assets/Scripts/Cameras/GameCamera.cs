@@ -14,23 +14,18 @@ public class GameCamera : MonoBehaviour, IGameCamera, IViewportProvider, IWorldP
     {
         camera = GetComponent<Camera>();
         
-        var desiredViewWidth = (withLayoutSettings.CardSize.x + withLayoutSettings.CardSpacing.x) 
-                               * withLayoutSettings.MaxCardCountInRow
-                               - withLayoutSettings.CardSpacing.x
-                               + withLayoutSettings.Margins.x * 2f;
-        
-        transform.position = new Vector3(
-            0, 
-            0, 
-            - (desiredViewWidth / camera.aspect) * 0.5f / Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad));
+        camera.orthographicSize = ((withLayoutSettings.CardSize.x + withLayoutSettings.CardSpacing.x) 
+                                  * withLayoutSettings.MaxCardCountInRow
+                                  - withLayoutSettings.CardSpacing.x
+                                  + withLayoutSettings.Margins.x * 2f) 
+                                  * Screen.height / Screen.width * 0.5f;
     }
 
     public Viewport GetViewport(float atDepth)
     {
-        var distance = Mathf.Abs(camera.transform.localPosition.z - atDepth);
-        var frustumHeight = 2.0f * distance * Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad);
+        var height = camera.orthographicSize * 2f;
         
-        return new Viewport(frustumHeight * camera.aspect, frustumHeight);
+        return new Viewport(Screen.width * height / Screen.height, height);
     }
 
     public Vector3 GetWorldPoint(Vector2 fromScreenPoint)

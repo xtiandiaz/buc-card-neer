@@ -1,4 +1,5 @@
 using System;
+using DG.Tweening;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -10,14 +11,15 @@ public interface ICardView
     Sprite BackFace { set; }
     Vector3 Position { set; }
     Vector3 LocalPosition { set; }
-    int SortingOrder { set; } 
-    
-    void OnPicked();
-    IObservable<Unit> OnDropped();
+    int SortingOrder { set; }
+
+    void Lift();
+    void Drop();
     void Flip(CardFace toFace, bool animated);
     void Tilt(Direction towardDirection, TimeSpan duringTime);
     void Spin(int times);
-    void MoveLocal(Vector3 toPosition);
+    Tween MoveLocal(Vector3 toPosition);
+    IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition);
     void SetParent(Transform toTransform);
     void Fade(float toAlphaValue);
     IObservable<Unit> FadeAsObservable(float toAlphaValue);
@@ -95,16 +97,16 @@ public class CardView : MonoBehaviour, ICardView
         animator.Initialize(animationSettings, contentWrapper);
         shader.Initialize(animationSettings);
     }
-
-    public void OnPicked()
+    
+    public void Lift()
     {
         animator.Kill(CardAnimationType.Move);
         animator.Lift();
     }
 
-    public IObservable<Unit> OnDropped()
+    public void Drop()
     {
-        return animator.DropAsObservable();
+        animator.Drop();
     }
 
     public void Flip(CardFace toFace, bool animated)
@@ -122,9 +124,14 @@ public class CardView : MonoBehaviour, ICardView
         animator.Spin(times);
     }
 
-    public void MoveLocal(Vector3 toPosition)
+    public Tween MoveLocal(Vector3 toPosition)
     {
-        animator.MoveLocal(toPosition);
+        return animator.MoveLocal(toPosition);
+    }
+
+    public IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition)
+    {
+        return animator.MoveLocalAsObservable(toPosition);
     }
 
     public void Fade(float toAlphaValue)
