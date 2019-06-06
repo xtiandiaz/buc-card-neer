@@ -70,7 +70,7 @@ public class PlayerCard : Card, IPlayerCard
         return false;
     }
 
-    public override bool CanBeImpacted()
+    public override bool CanBeStruck()
     {
         return false;
     }
@@ -123,15 +123,15 @@ public class PlayerCard : Card, IPlayerCard
     {
         Coins += lootCarrier.GetLoot();
     }
-
-    public override void Hit(int withValue)
+    
+    protected override void Strike(int withValue)
     {
         HealthPoints -= withValue;
     }
 
     private void Unlock(IResourceCard resourceCard)
     {
-        Hit(resourceCard.LockValue);
+        Strike(resourceCard.LockValue);
         
         resourceCard.Unlock();
     }
@@ -140,9 +140,9 @@ public class PlayerCard : Card, IPlayerCard
     {
         var pirateHealth = pirate.Value;
 
-        pirate.Hit(Math.Min(HealthPoints, pirateHealth));
+        pirate.Strike(Math.Min(HealthPoints, pirateHealth), PlayerAttackType.Blow);
         
-        Hit(pirateHealth);
+        Strike(pirateHealth);
     }
 
     private void Confront(IInspectorCard inspector)

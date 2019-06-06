@@ -120,8 +120,12 @@ public abstract class CardController : ICardController
 
         #region Impacting
 
-        lateDisposables.Add(model.WhenImpacted
-            .Subscribe(_ => view.Spin(2)));
+        lateDisposables.Add(model.WhenStruck
+            .Subscribe(attackType =>
+            {
+                if (attackType == PlayerAttackType.Ranged)
+                    view.Spin(2);
+            }));
 
         #endregion
 

@@ -29,7 +29,7 @@ public class InspectorCard : Card, IInspectorCard
         return (other.Type & CardType.Pirate) != 0;
     }
 
-    public override bool CanBeImpacted()
+    public override bool CanBeStruck()
     {
         return false;
     }

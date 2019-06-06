@@ -89,7 +89,7 @@ public class Sea : ISea
             if (!CanImpact(slot))
                 continue;
 
-            slot.Peek().Impact(withValue);
+            slot.Peek().Strike(withValue, PlayerAttackType.Ranged);
         }
     }
 
@@ -133,7 +133,7 @@ public class Sea : ISea
 
     private bool CanImpact(ISlot slot)
     {
-        return slot != null && slot.Peek()?.CanBeImpacted() == true;
+        return slot != null && slot.Peek()?.CanBeStruck() == true;
     }
 
     private bool CanCollect(ISlot fromSlot)

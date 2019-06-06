@@ -69,26 +69,12 @@ public class ResourceCard : Card, IResourceCard
 
     public override void Match(ICard withOther)
     {
-        if (IsLocked)
-        {
-            if ((withOther.Type & CardType.WeaponMelee) == 0)
-                return;
-        
-            Hit(withOther.Value);
-        
-            withOther.Destroy();
-        }
-
-        if ((ResourceType & ResourceType.WeaponRanged) == 0) 
+        if (!IsLocked || (withOther.Type & CardType.WeaponMelee) == 0) 
             return;
-        
-        // Ranged combat ensues:
 
-        if (withOther is IPirateCard pirate)
-        {
-            pirate.Hit(Value);
-            Destroy();
-        }
+        Strike(withOther.Value, PlayerAttackType.Blow);
+
+        withOther.Value = 0;
     }
 
     public override bool CanClash(ICard other)
@@ -96,7 +82,7 @@ public class ResourceCard : Card, IResourceCard
         return false;
     }
 
-    public override bool CanBeImpacted()
+    public override bool CanBeStruck()
     {
         return IsLocked;
     }
@@ -113,7 +99,7 @@ public class ResourceCard : Card, IResourceCard
         LockValue = 0;
     }
 
-    public override void Hit(int withValue)
+    protected override void Strike(int withValue)
     {
         LockValue -= withValue;
     }

@@ -22,7 +22,7 @@ public interface ICard
     IObservable<CardMoveType> WhenMoved { get; }
     IObservable<Unit> WhenArranged { get; }
     IObservable<Direction> WhenClashed { get; }
-    IObservable<Unit> WhenImpacted { get; }
+    IObservable<PlayerAttackType> WhenStruck { get; }
     IObservable<Transform> WhenBound { get; }
     IObservable<Unit> WhenPicked { get; }
     IObservable<Unit> WhenDragged { get; }
@@ -37,9 +37,8 @@ public interface ICard
     void Match(ICard withOther);
     bool CanClash(ICard other);
     void Clash(ICard other, Direction withDirection);
-    bool CanBeImpacted();
-    void Impact(int withValue);
-    void Hit(int withValue);
+    bool CanBeStruck();
+    void Strike(int withValue, PlayerAttackType andAttackType);
     void Bind(ICardBond withBond);
     void Pick();
     void Drag(Vector3 byDeltaPosition);
@@ -58,7 +57,7 @@ public abstract class Card : ScriptableObject, ICard
     [SerializeField] protected IntReactiveProperty value = new IntReactiveProperty();
     
     private readonly Subject<Direction> clashing = new Subject<Direction>();
-    private readonly Subject<Unit> impacting = new Subject<Unit>();
+    private readonly Subject<PlayerAttackType> striking = new Subject<PlayerAttackType>();
     private readonly Subject<Transform> binding = new Subject<Transform>();
     private readonly Subject<Unit> arrangement = new Subject<Unit>();
     private readonly Subject<CardMoveType> movement = new Subject<CardMoveType>();
@@ -100,7 +99,7 @@ public abstract class Card : ScriptableObject, ICard
     public IObservable<CardMoveType> WhenMoved => movement;
     public IObservable<Unit> WhenArranged => arrangement;
     public IObservable<Direction> WhenClashed => clashing;
-    public IObservable<Unit> WhenImpacted => impacting;
+    public IObservable<PlayerAttackType> WhenStruck => striking;
     public IObservable<Transform> WhenBound => binding;
     public IObservable<Unit> WhenPicked => picking;
     public IObservable<Unit> WhenDragged => dragging;
@@ -124,23 +123,21 @@ public abstract class Card : ScriptableObject, ICard
 
     public void Clash(ICard other, Direction withDirection)
     {
+        /* Note that the other Card isn't Struck upon Clashing; we simply affect its Value.
+         * This is to prevent side-effects associated with deliberate attacks by the player.
+         */
         other.Value--;
 
         clashing.OnNext(withDirection);
     }
 
-    public abstract bool CanBeImpacted();
+    public abstract bool CanBeStruck();
 
-    public void Impact(int withValue)
+    public void Strike(int withValue, PlayerAttackType andAttackType)
     {
-        Hit(withValue);
-
-        impacting.OnNext(Unit.Default);
-    }
-    
-    public virtual void Hit(int withValue)
-    {
-        Value -= withValue;
+        Strike(withValue);
+        
+        striking.OnNext(andAttackType);
     }
 
     public void Bind(ICardBond withBond)
@@ -218,5 +215,10 @@ public abstract class Card : ScriptableObject, ICard
 
         destruction.OnNext(Unit.Default);
         destruction.OnCompleted();
+    }
+    
+    protected virtual void Strike(int withValue)
+    {
+        Value -= withValue;
     }
 }
