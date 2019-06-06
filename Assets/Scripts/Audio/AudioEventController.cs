@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Audio;
 
 public class AudioEventController : MonoBehaviour
 {
@@ -13,10 +14,12 @@ public class AudioEventController : MonoBehaviour
 
     public AudioClip Clip;
 
+    public AudioMixerGroup Output;
+
     public bool Loop = false;
 
-    [Range(0, 1)] //0=2D; 1=3D
-    public float SpatialBlend = 0f;
+    //[Range(0, 1)] //0=2D; 1=3D
+    private readonly float SpatialBlend = 0f;
     
     [Range(0,1)]
     public float Volume = 1f;
@@ -30,7 +33,7 @@ public class AudioEventController : MonoBehaviour
     void awake()
 	{
 		//Fetch the AudioSource from the GameObject
-		source = GetComponent<AudioSource>();
+		source = GetComponent<AudioSource>();   
     }
 		
 
