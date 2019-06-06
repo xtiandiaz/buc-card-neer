@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Tool_WR_6_Chest
   m_EditorClassIdentifier: 
   value:
-    value: 7
+    value: 6
   frontFace: {fileID: 21300000, guid: 2b92a5fadefb84c6b89311ccdb35b9eb, type: 3}
   backFace: {fileID: 21300000, guid: 2b92a5fadefb84c6b89311ccdb35b9eb, type: 3}
   container: {fileID: 21300000, guid: 660a931e5ce194a7baa14d20c1452089, type: 3}

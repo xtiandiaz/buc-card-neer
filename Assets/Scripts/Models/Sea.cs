@@ -6,14 +6,15 @@ public interface ISea : ICardProviderManager
 {
     ISlot[] Slots { get; }
     
-    IObservable<Unit> WhenClashed { get; }
     IObservable<IResourceCard> WhenCollected { get; }
+    IObservable<Unit> WhenClashed { get; }
 
     void Clash();
     bool CanClash(int slotAtIndex);
     void Clash(int slotAtIndex);
     void Impact(int withValue);
     void Collect();
+    void Arrange();
     void Lock();
     void Unlock();
 }
@@ -31,7 +32,7 @@ public class Sea : ISea
     private Sea(
         ISlot[] slots,
         ICardProvider cardProvider
-    )
+        )
     {
         Slots = slots;
         this.cardProvider = cardProvider;
@@ -101,6 +102,12 @@ public class Sea : ISea
 
             collection.OnNext((IResourceCard) slot.Peek());
         }
+    }
+    
+    public void Arrange()
+    {
+        foreach (var slot in Slots)
+            slot.Arrange();
     }
     
     public void Lock()

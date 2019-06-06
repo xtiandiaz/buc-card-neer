@@ -26,11 +26,7 @@ public class SlotController : ISlotController
     {
         this.model = model;
         this.view = view;
-        
-        ArrangementDelayUponRelease = TimeSpan.FromSeconds(model.Type == SlotType.Supply ? 0.5 : 0);
     }
-    
-    private TimeSpan ArrangementDelayUponRelease { get; }
 
     [Inject]
     public virtual void Initialize()
@@ -109,10 +105,6 @@ public class SlotController : ISlotController
         #region Arrangement
 
         disposables.Add(model.WhenLodged.Subscribe(_ => model.Arrange()));
-        
-        disposables.Add(model.WhenReleased
-            .Delay(ArrangementDelayUponRelease)
-            .Subscribe(_ => model.Arrange()));
 
         #endregion
     }

@@ -61,8 +61,8 @@ public interface ICardBond
 public abstract class Slot : ISlot
 {
     protected readonly ISlotSettings settings;
+    protected readonly IPile pile;
     
-    private readonly IPile pile;
     private readonly Subject<ICard> picking = new Subject<ICard>();
     private readonly Subject<ICard> lodging = new Subject<ICard>();
     private readonly Subject<ICard> matching = new Subject<ICard>();
@@ -140,7 +140,7 @@ public abstract class Slot : ISlot
         matching.OnNext(card);
     }
 
-    public void Lodge(ICard card)
+    public virtual void Lodge(ICard card)
     {
         if (!CanLodge(card))
         {
@@ -164,7 +164,7 @@ public abstract class Slot : ISlot
         lodging.OnNext(card);
     }
 
-    public void Release(ICard card)
+    public virtual void Release(ICard card)
     {
         if (pile.Remove(card))
             releasing.OnNext(Unit.Default);

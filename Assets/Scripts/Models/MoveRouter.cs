@@ -3,7 +3,7 @@ using UniRx;
 
 public interface IMoveDispatcher
 {
-    IObservable<Unit> WhenMoved { get; }
+    IObservable<Unit> WhenPlayerMoved { get; }
 }
 
 public interface IMoveRouter : IMoveDispatcher
@@ -15,7 +15,7 @@ public class MoveRouter : IMoveRouter
 {
     private readonly Subject<Unit> moving = new Subject<Unit>();
     
-    public IObservable<Unit> WhenMoved => moving;
+    public IObservable<Unit> WhenPlayerMoved => moving;
 
     public void OnNext()
     {
