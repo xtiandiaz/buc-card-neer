@@ -27,7 +27,7 @@ public class PirateCard : Card, IPirateCard
         if (!(withOther is IResourceCard resourceCard) || (resourceCard.ResourceType & ResourceType.WeaponMelee) == 0) 
             return;
         
-        Strike(withOther.Value);
+        Strike(withOther.Value, PlayerAttackType.Blow);
 
         withOther.Destroy();
     }

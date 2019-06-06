@@ -2,12 +2,6 @@ using System;
 using UniRx;
 using UnityEngine;
 
-public enum SlotEntryway
-{
-    Front, 
-    Rear
-}
-
 public enum LodgingFace
 {
     Current,
@@ -25,6 +19,7 @@ public interface ISlot : ICardBond, ICardConsumer
 
     IObservable<ICard> WhenPicked { get; }
     IObservable<ICard> WhenLodged { get; }
+    IObservable<ICard> WhenMatched { get; }
     IObservable<Unit> WhenReleased { get; }
     IObservable<Unit> WhenEmptied { get; }
     IObservable<bool> WhenToggledHighlighting { get; }
@@ -48,6 +43,7 @@ public abstract class Slot : ISlot
     
     private readonly Subject<ICard> picking = new Subject<ICard>();
     private readonly Subject<ICard> lodging = new Subject<ICard>();
+    private readonly Subject<ICard> matching = new Subject<ICard>();
     private readonly Subject<Unit> releasing = new Subject<Unit>();
     private readonly Subject<Unit> emptying = new Subject<Unit>();
     private readonly Subject<bool> highlighting = new Subject<bool>();
@@ -80,6 +76,7 @@ public abstract class Slot : ISlot
 
     public IObservable<ICard> WhenPicked => picking;
     public IObservable<ICard> WhenLodged => lodging;
+    public IObservable<ICard> WhenMatched => matching;
     public IObservable<Unit> WhenReleased => releasing;
     public IObservable<Unit> WhenEmptied => emptying;
     public IObservable<bool> WhenToggledHighlighting => highlighting.DistinctUntilChanged();
@@ -119,6 +116,8 @@ public abstract class Slot : ISlot
     public void Match(ICard card)
     {
         pile.Peek()?.Match(card);
+        
+        matching.OnNext(card);
     }
 
     public virtual void Lodge(ICard card)
@@ -183,10 +182,13 @@ public abstract class Slot : ISlot
 
     public void Consume(int count)
     {
-        if (cardProvider.IsExhausted)
-            return;
+        for (var i = 0; i < count; i++)
+        {
+            if (cardProvider.IsExhausted)
+                break;
 
-        Lodge(cardProvider.Provide());
+            Lodge(cardProvider.Provide());
+        }
     }
 
     protected abstract bool CanMatch(ICard withCard);
