@@ -10,7 +10,8 @@ public enum ResourceType
     WeaponMelee         = CardType.WeaponMelee,
     WeaponRanged        = CardType.WeaponRanged,
     Medicine            = CardType.Medicine,
+    Trap                = CardType.Trap,
     
     Item                = Food | Artifact | Gem,
-    Tool                = WeaponMelee | WeaponRanged | Medicine
+    Tool                = WeaponMelee | WeaponRanged | Medicine | Trap
 }

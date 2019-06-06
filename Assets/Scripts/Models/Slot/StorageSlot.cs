@@ -50,6 +50,11 @@ public class StorageSlot : Slot, IStorageSlot
         sortingQueue = new Queue<CardType>(pile.Types);
     }
 
+    public override bool CanDefer(ICard card)
+    {
+        return false;
+    }
+
     protected override bool CanMatch(ICard withCard)
     {
         return false;

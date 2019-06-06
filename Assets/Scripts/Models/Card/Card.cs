@@ -11,15 +11,16 @@ public interface ICard
     CardType Type { get; }
     bool IsBoarded { get; set; }
     bool IsStored { get; set; }
+    bool ShouldDisplayValue { get; }
     ICardBond Bond { get; }
     DateTimeOffset BindingTimestamp { get; }
     Sprite FrontFace { get; }
     Sprite BackFace { get; }
     Vector3 LocalPosition { get; }
     Vector3 ArrangedPosition { get; }
+    float RotationAngle { get; }
     
     IObservable<int> ValueAsObservable { get; }
-    IObservable<CardMoveType> WhenMoved { get; }
     IObservable<Unit> WhenArranged { get; }
     IObservable<Direction> WhenClashed { get; }
     IObservable<PlayerAttackType> WhenStruck { get; }
@@ -27,12 +28,16 @@ public interface ICard
     IObservable<Unit> WhenPicked { get; }
     IObservable<Unit> WhenDragged { get; }
     IObservable<Unit> WhenDropped { get; }
+    IObservable<CardMoveType> WhenMoved { get; }
+    IObservable<Unit> WhenBounced { get; }
     IObservable<CardFace> WhenFlipped { get; }
+    IObservable<Unit> WhenRotated { get; }
     IObservable<float> WhenFaded { get; }
     IObservable<(Color, float)> WhenTinted { get; }
     IObservable<(Color, float)> WhenFogged { get; }
     IObservable<Unit> WhenDestroyed { get; }
 
+    bool CanReflect(ICard other);
     bool CanMatch(ICard withOther);
     void Match(ICard withOther);
     bool CanClash(ICard other);
@@ -43,9 +48,11 @@ public interface ICard
     void Pick();
     void Drag(Vector3 byDeltaPosition);
     void Drop();
-    void Arrange(Vector3 atLocalPosition, int withIndex);
+    void Arrange(Vector3 atLocalPosition, float withRotationAngle, int andIndex);
     void Move(Vector3 toLocalPosition, CardMoveType withType);
+    void Bounce();
     void Flip(CardFace toFace);
+    void Rotate(float toAngle);
     void Fade(float toAlphaValue);
     void Tint(Color withColor, float byFactor);
     void Fog(Color withColor, float byFactor);
@@ -60,18 +67,22 @@ public abstract class Card : ScriptableObject, ICard
     private readonly Subject<PlayerAttackType> striking = new Subject<PlayerAttackType>();
     private readonly Subject<Transform> binding = new Subject<Transform>();
     private readonly Subject<Unit> arrangement = new Subject<Unit>();
-    private readonly Subject<CardMoveType> movement = new Subject<CardMoveType>();
     private readonly Subject<Unit> picking = new Subject<Unit>();
     private readonly Subject<Unit> dragging = new Subject<Unit>();
     private readonly Subject<Unit> dropping = new Subject<Unit>();
+    private readonly Subject<CardMoveType> movement = new Subject<CardMoveType>();
+    private readonly Subject<Unit> bouncing = new Subject<Unit>();
     private readonly Subject<CardFace> flipping = new Subject<CardFace>();
+    private readonly Subject<Unit> rotation = new Subject<Unit>();
     private readonly Subject<float> fading = new Subject<float>();
     private readonly Subject<(Color, float)> tinting = new Subject<(Color, float)>();
     private readonly Subject<(Color, float)> fogging = new Subject<(Color, float)>();
     private readonly Subject<Unit> destruction = new Subject<Unit>();
 
+    [SerializeField] private bool shouldDisplayValue = true;
     [SerializeField] private Sprite frontFace;
     [SerializeField] private Sprite backFace;
+    
     private CardFace face;
     private float arrangedDepth;
 
@@ -88,15 +99,16 @@ public abstract class Card : ScriptableObject, ICard
     public string Name => name;
     public bool IsBoarded { get; set; }
     public bool IsStored { get; set; }
+    public bool ShouldDisplayValue => shouldDisplayValue;
     public ICardBond Bond { get; private set; }
     public DateTimeOffset BindingTimestamp { get; private set; }
     public Sprite FrontFace => frontFace;
     public Sprite BackFace => backFace;
     public Vector3 LocalPosition { get; private set; }
     public Vector3 ArrangedPosition { get; private set; }
+    public float RotationAngle { get; private set; }
 
     public IObservable<int> ValueAsObservable => value;
-    public IObservable<CardMoveType> WhenMoved => movement;
     public IObservable<Unit> WhenArranged => arrangement;
     public IObservable<Direction> WhenClashed => clashing;
     public IObservable<PlayerAttackType> WhenStruck => striking;
@@ -104,7 +116,10 @@ public abstract class Card : ScriptableObject, ICard
     public IObservable<Unit> WhenPicked => picking;
     public IObservable<Unit> WhenDragged => dragging;
     public IObservable<Unit> WhenDropped => dropping;
+    public IObservable<CardMoveType> WhenMoved => movement;
+    public IObservable<Unit> WhenBounced => bouncing;
     public IObservable<CardFace> WhenFlipped => flipping.DistinctUntilChanged();
+    public IObservable<Unit> WhenRotated => rotation;
     public IObservable<float> WhenFaded => fading;
     public IObservable<(Color, float)> WhenTinted => tinting;
     public IObservable<(Color, float)> WhenFogged => fogging;
@@ -113,6 +128,11 @@ public abstract class Card : ScriptableObject, ICard
     protected virtual void Awake()
     {
         OriginalValue = Value;
+    }
+
+    public virtual bool CanReflect(ICard other)
+    {
+        return false;
     }
 
     public abstract bool CanMatch(ICard withOther);
@@ -172,10 +192,11 @@ public abstract class Card : ScriptableObject, ICard
         dropping.OnNext(Unit.Default);
     }
 
-    public void Arrange(Vector3 atLocalPosition, int withIndex)
+    public void Arrange(Vector3 atLocalPosition, float withRotationAngle, int andIndex)
     {
         ArrangedPosition = LocalPosition = atLocalPosition;
-        Index = withIndex;
+        RotationAngle = withRotationAngle;
+        Index = andIndex;
         
         arrangement.OnNext(Unit.Default);
     }
@@ -187,11 +208,23 @@ public abstract class Card : ScriptableObject, ICard
         movement.OnNext(withType);
     }
 
+    public void Bounce()
+    {
+        bouncing.OnNext(Unit.Default);
+    }
+
     public virtual void Flip(CardFace toFace)
     {
         face = toFace;
         
         flipping.OnNext(toFace);
+    }
+
+    public void Rotate(float toAngle)
+    {
+        RotationAngle = toAngle;
+        
+        rotation.OnNext(Unit.Default);
     }
     
     public void Fade(float toAlphaValue)

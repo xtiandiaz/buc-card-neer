@@ -10,7 +10,8 @@ public interface IPileCardArrangement
 [CreateAssetMenu(fileName = "CardArrangement", menuName = "Game/Card Arrangement/Default", order = 1)]
 public class PileCardArrangement : ScriptableObject, IPileCardArrangement
 {
-    [SerializeField] protected Vector3 offset;
+    [SerializeField] private Vector3 offset;
+    [SerializeField] private float maxRotationAngle;
 
     [Header("Fog")] 
     [SerializeField] private bool shouldFog;
@@ -41,6 +42,9 @@ public class PileCardArrangement : ScriptableObject, IPileCardArrangement
         if (shouldFog)
             toCard.Fog(fogColor, andTimeStep * fogIntensity);
 
-        toCard.Arrange(atPosition, withIndex);
+        toCard.Arrange(
+            atPosition,
+            withIndex == 0 ? 0 : Random.Range(-1f, 1f) * maxRotationAngle,
+            withIndex);
     }
 }

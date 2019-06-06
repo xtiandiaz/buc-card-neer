@@ -28,8 +28,6 @@ public class DeckController : IDeckController
     [Inject]
     public void Initialize()
     {
-        model.Shuffle();
-        
         disposables.Add(model.WhenProvided.Subscribe(card => cardFactory.Create(card)));
     }
 

@@ -69,8 +69,7 @@ public class Ship : IShip
             .Delay(TimeSpan.FromSeconds(0.3))
             .Do(Store);
     }
-    
-    
+
     public void Lock()
     {
         foreach (var slot in Slots)

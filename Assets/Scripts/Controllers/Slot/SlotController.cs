@@ -63,7 +63,7 @@ public class SlotController : ISlotController
             {
                 var (card, slot) = cardFromSlot;
                 
-                model.ToggleHighlight(model.CanMatch(card, slot) || model.CanLodge(card, slot));
+                model.ToggleHighlight(model.CanDefer(card) || model.CanMatch(card, slot) || model.CanLodge(card, slot));
             }));
 
         #endregion
@@ -102,15 +102,25 @@ public class SlotController : ISlotController
             .Do(_ => model.ToggleHighlight(false))
             .Where(cardFromSlotAtPosition => 
                 model != cardFromSlotAtPosition.Item2 && model.DoesContain(cardFromSlotAtPosition.Item3))
-            .Subscribe(cardFromSlotAtPosition =>
+            .SelectMany(cardFromSlotAtPosition =>
             {
                 var (card, slot, position) = cardFromSlotAtPosition;
 
+                if (model.CanDefer(card))
+                {
+                    model.KnockOut();
+
+                    return slot.Defer(card);
+                }
+                
                 if (model.CanMatch(card, slot))
                     model.Match(card);
                 else if (model.CanLodge(card, slot))
                     model.Lodge(card);
-            }));
+
+                return Observable.ReturnUnit();
+            })
+            .Subscribe());
 
         #endregion
     }

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   value:
     value: 2
-  frontFace: {fileID: 21300000, guid: 2b92a5fadefb84c6b89311ccdb35b9eb, type: 3}
-  backFace: {fileID: 21300000, guid: 2b92a5fadefb84c6b89311ccdb35b9eb, type: 3}
+  frontFace: {fileID: 21300000, guid: 5af9b78f8d1c94e3c979e4fd381cb83a, type: 3}
+  backFace: {fileID: 21300000, guid: 3524d803fc7b741fdbaa13e573d40f7c, type: 3}
   container: {fileID: 21300000, guid: 5cdc031aeba884e8ea0ae9c583dc414b, type: 3}
   item: {fileID: 21300000, guid: c244a891d20d44bbe8c4be6fb1317350, type: 3}
   suit: {fileID: 11400000, guid: d0ae5989adafa491fb5bfc71a3337137, type: 2}

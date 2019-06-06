@@ -19,12 +19,14 @@ public interface ICardView
     void Tilt(Direction towardDirection, TimeSpan duringTime);
     void Spin(int times);
     void MoveLocal(Vector3 toPosition);
+    void Rotate(Vector3 toEulerAngles);
     void SetParent(Transform toTransform);
     void Fade(float toAlphaValue);
     IObservable<Unit> FadeAsObservable(float toAlphaValue);
     void Tint(Color withColor, float byFactor);
     void Fog(Color withColor, float byFactor);
     void KillMove();
+    void ToggleValueVisibility(bool toValue);
     void Destroy();
 }
 
@@ -84,7 +86,15 @@ public class CardView : MonoBehaviour, ICardView
 
     public int SortingOrder
     {
-        set => sortingSet.SortingOrder = value;
+        set
+        {
+            sortingSet.SortingOrder = value;
+
+            var shouldToggleFaceContent = value >= -2;
+
+            frontFace.ToggleContent(shouldToggleFaceContent);
+            backFace.ToggleContent(shouldToggleFaceContent);
+        }
     }
 
     private void Awake()
@@ -127,6 +137,11 @@ public class CardView : MonoBehaviour, ICardView
         animator.MoveLocal(toPosition);
     }
 
+    public void Rotate(Vector3 toEulerAngles)
+    {
+        animator.Rotate(toEulerAngles);
+    }
+
     public void Fade(float toAlphaValue)
     {
         shader.Fade(toAlphaValue);
@@ -155,6 +170,11 @@ public class CardView : MonoBehaviour, ICardView
     public void KillMove()
     {
         animator.Kill(CardAnimationType.Move);
+    }
+
+    public void ToggleValueVisibility(bool toValue)
+    {
+        valueLabel.ToggleVisibility(toValue);
     }
 
     public void Destroy()

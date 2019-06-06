@@ -131,9 +131,11 @@ public class PlayerCard : Card, IPlayerCard
 
     private void Unlock(IResourceCard resourceCard)
     {
-        Strike(resourceCard.LockValue);
+        var lockValue = resourceCard.LockValue;
         
-        resourceCard.Unlock();
+        resourceCard.Strike(Math.Min(HealthPoints, lockValue), PlayerAttackType.Blow);
+        
+        Strike(lockValue);
     }
 
     private void Confront(IPirateCard pirate)

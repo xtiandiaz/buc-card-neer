@@ -1,8 +1,6 @@
 using System;
-using System.Reflection;
 using UniRx;
 using UnityEngine;
-using Zenject;
 
 public interface IResourceCard : ICard
 {
@@ -59,19 +57,21 @@ public class ResourceCard : Card, IResourceCard
         WasLocked = IsLocked;
     }
 
+    public override bool CanReflect(ICard other)
+    {
+        return (ResourceType & ResourceType.Trap) != 0;
+    }
+
     public override bool CanMatch(ICard withOther)
     {
-        if (IsLocked)
-            return (withOther.Type & CardType.WeaponMelee) != 0;
-
-        return (ResourceType & ResourceType.WeaponRanged) != 0 && (withOther.Type & CardType.Pirate) != 0;
+        return IsLocked && (withOther.Type & CardType.WeaponMelee) != 0;
     }
 
     public override void Match(ICard withOther)
     {
-        if (!IsLocked || (withOther.Type & CardType.WeaponMelee) == 0) 
+        if (IsLocked && (withOther.Type & CardType.WeaponMelee) == 0) 
             return;
-
+        
         Strike(withOther.Value, PlayerAttackType.Blow);
 
         withOther.Value = 0;

@@ -24,4 +24,9 @@ public class CardLabel : MonoBehaviour
     {
         textRenderers.ForEach(r => r.text = to);
     }
+
+    public void ToggleVisibility(bool toValue)
+    {
+        gameObject.SetActive(toValue);
+    }
 }

@@ -21,15 +21,17 @@ public interface ISlot : ICardBond, ICardConsumer
     IObservable<ICard> WhenLodged { get; }
     IObservable<ICard> WhenMatched { get; }
     IObservable<Unit> WhenReleased { get; }
-    IObservable<Unit> WhenEmptied { get; }
     IObservable<bool> WhenToggledHighlighting { get; }
 
     ICard Peek();
     ICard Pick();
+    bool CanDefer(ICard card);
+    IObservable<Unit> Defer(ICard card);
     bool CanMatch(ICard withCard, ISlot fromSlot);
     void Match(ICard card);
     bool CanLodge(ICard card, ISlot fromSlot);
     void Lodge(ICard card);
+    void KnockOut();
     void Arrange();
     void Lock();
     void Unlock();
@@ -45,11 +47,11 @@ public abstract class Slot : ISlot
     private readonly Subject<ICard> lodging = new Subject<ICard>();
     private readonly Subject<ICard> matching = new Subject<ICard>();
     private readonly Subject<Unit> releasing = new Subject<Unit>();
-    private readonly Subject<Unit> emptying = new Subject<Unit>();
     private readonly Subject<bool> highlighting = new Subject<bool>();
     private readonly ReactiveProperty<bool> isLocked = new ReactiveProperty<bool>(false);
     private Bounds bounds;
     private ICardProvider cardProvider;
+    private int? provisionCapacity;
     
     protected Slot(IPile pile, ISlotSettings settings, Bounds bounds, Transform transformBond)
     {
@@ -78,8 +80,11 @@ public abstract class Slot : ISlot
     public IObservable<ICard> WhenLodged => lodging;
     public IObservable<ICard> WhenMatched => matching;
     public IObservable<Unit> WhenReleased => releasing;
-    public IObservable<Unit> WhenEmptied => emptying;
     public IObservable<bool> WhenToggledHighlighting => highlighting.DistinctUntilChanged();
+
+    private PileInsertionMode PileInsertionMode => Settings.Entryway == SlotEntryway.Front
+        ? PileInsertionMode.Unshift
+        : PileInsertionMode.Push;
 
     public ICard Peek()
     {
@@ -96,6 +101,45 @@ public abstract class Slot : ISlot
             picking.OnNext(card);
 
         return card;
+    }
+
+    public abstract bool CanDefer(ICard card);
+
+    public IObservable<Unit> Defer(ICard card)
+    {
+        return Observable.Create<Unit>(observer =>
+            {
+                if (!pile.Remove(card))
+                    observer.OnError(new Exception("The Card to defer isn't lodged in this Slot."));
+                else
+                {
+                    if (IsEmpty)
+                    {
+                        if (provisionCapacity.HasValue)
+                            ConsumeAsObservable(provisionCapacity.Value - 1, TimeSpan.FromSeconds(0.1))
+                                .Subscribe(observer);
+                        else
+                            observer.OnError(
+                                new Exception(
+                                    "The Slot must provision itself but no provision capacity has been set."));
+                    }
+                    
+                    card.Bounce();
+                    
+                    observer.OnCompleted();
+                }
+
+                return Disposable.Create(() => { });
+            })
+            .Delay(TimeSpan.FromSeconds(0.4))
+            .DoOnSubscribe(Lock)
+            .DoOnCompleted(() =>
+            {
+                pile.Insert(card, PileInsertionMode);
+                
+                Arrange();
+                Unlock();
+            });
     }
 
     public bool CanMatch(ICard withCard, ISlot fromSlot)
@@ -128,9 +172,7 @@ public abstract class Slot : ISlot
             return;
         }
 
-        if (!pile.Insert(
-            card, 
-            Settings.Entryway == SlotEntryway.Front ? PileInsertionMode.Unshift : PileInsertionMode.Push))
+        if (!pile.Insert(card, PileInsertionMode))
         {
             Debug.LogError($"[Slot] Couldn't insert {card} in Pile.");
             return;
@@ -145,9 +187,11 @@ public abstract class Slot : ISlot
     {
         if (pile.Remove(card))
             releasing.OnNext(Unit.Default);
-        
-        if (IsEmpty)
-            emptying.OnNext(Unit.Default);
+    }
+
+    public void KnockOut()
+    {
+        Peek()?.Destroy();
     }
 
     public void Arrange()
@@ -180,15 +224,32 @@ public abstract class Slot : ISlot
         cardProvider = provider;
     }
 
-    public void Consume(int count)
+    public void SetCapacity(int toValue)
     {
-        for (var i = 0; i < count; i++)
-        {
-            if (cardProvider.IsExhausted)
-                break;
+        provisionCapacity = toValue;
+    }
 
-            Lodge(cardProvider.Provide());
-        }
+    public void Consume()
+    {
+        if (cardProvider.IsExhausted)
+            return;
+
+        Lodge(cardProvider.Provide());
+    }
+
+    public IObservable<Unit> ConsumeAsObservable(int count, TimeSpan atIntervalsWithSpan)
+    {
+        return Observable.Timer(TimeSpan.Zero, atIntervalsWithSpan)
+            .Take(count)
+            .Do(_ => Consume())
+            .AsSingleUnitObservable();
+    }
+
+    public IObservable<Unit> FillToCapacity(TimeSpan atIntervalsWithSpan)
+    {
+        return !provisionCapacity.HasValue 
+            ? Observable.ReturnUnit() 
+            : ConsumeAsObservable(provisionCapacity.Value, atIntervalsWithSpan);
     }
 
     protected abstract bool CanMatch(ICard withCard);

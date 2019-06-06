@@ -3,6 +3,7 @@ using DG.Tweening;
 using UniRx;
 using UnityEngine;
 using Zenject;
+using Random = UnityEngine.Random;
 
 public interface ICardController : IInitializable, IDisposable
 {
@@ -30,22 +31,36 @@ public abstract class CardController : ICardController
     [Inject]
     public virtual void Initialize()
     {
+        var dealingPosition = (viewport.Size.y + layoutSettings.CardSize.y) * 0.5f * Vector2.up;
+        
         view.FrontFace = model.FrontFace;
         view.BackFace = model.BackFace;
-        view.Position = (viewport.Size.y + layoutSettings.CardSize.y) * 0.5f * Vector2.up; // Dealing position
+        view.Position = dealingPosition;
 
         #region Transform
 
         disposables.Add(model.WhenMoved
             .Subscribe(_ => view.MoveLocal(model.LocalPosition)));
         
+        disposables.Add(model.WhenBounced
+            .Subscribe(_ => 
+            {
+                view.MoveLocal(dealingPosition + Vector2.down * layoutSettings.CardSize.y);
+                view.Rotate(Random.Range(5f, 15f) * (Random.value < 0.5f ? -1f : 1f) * Vector3.forward);
+            }));
+        
         disposables.Add(model.WhenFlipped
             .Subscribe(face => view.Flip(face, true)));
+        
+        disposables.Add(model.WhenRotated
+            .Subscribe(_ => view.Rotate(Vector3.forward * model.RotationAngle)));
 
         #endregion
         
         #region Content
 
+        view.ToggleValueVisibility(model.ShouldDisplayValue);
+        
         disposables.Add(model.ValueAsObservable
             .Subscribe(value =>
             {
@@ -63,6 +78,7 @@ public abstract class CardController : ICardController
             .Subscribe(_ =>
             {
                 view.MoveLocal(model.ArrangedPosition);
+                view.Rotate(Vector3.forward * model.RotationAngle);
                 SortView();
             }));
 

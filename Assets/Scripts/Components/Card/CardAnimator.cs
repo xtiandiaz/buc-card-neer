@@ -18,7 +18,7 @@ public class CardAnimator : MonoBehaviour
         
     private CardAnimationSettings settings;
     private Transform contentWrapper;
-    private Tween moveTween;
+    private Tween moveTween, rotationTween;
     private Sequence flipSequence, tiltSequence, pickDropSequence;
     private CardFace currentFace;
     
@@ -129,6 +129,14 @@ public class CardAnimator : MonoBehaviour
             .SetEase(settings.OutEase);
 
         return moveTween;
+    }
+
+    public void Rotate(Vector3 toEulerAngles)
+    {
+        rotationTween?.Kill();
+
+        rotationTween = transform.DORotate(toEulerAngles, 0.25f)
+            .SetEase(settings.OutEase);
     }
     
     public IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition)

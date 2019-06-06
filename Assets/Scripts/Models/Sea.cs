@@ -22,6 +22,8 @@ public class Sea : ISea
     public class Factory : PlaceholderFactory<ISlot[], Sea>
     {
     }
+
+    private const int CardCountPerSlot = 3;
     
     private readonly ICardProvider cardProvider;
 
@@ -36,7 +38,10 @@ public class Sea : ISea
     public void AssignProviders()
     {
         foreach (var slot in Slots)
+        {
             slot.SetProvider(cardProvider);
+            slot.SetCapacity(CardCountPerSlot);
+        }
     }
 
     public IObservable<Unit> Clash()
@@ -94,8 +99,8 @@ public class Sea : ISea
     public IObservable<Unit> Supply()
     {
         return Observable.Timer(TimeSpan.Zero, TimeSpan.FromSeconds(0.1))
-            .Take(Slots.Length * 3)
-            .Do(i => Slots[i % Slots.Length].Consume(1))
+            .Take(Slots.Length * CardCountPerSlot)
+            .Do(i => Slots[i % Slots.Length].Consume())
             .AsSingleUnitObservable();
     }
 
@@ -103,9 +108,7 @@ public class Sea : ISea
     {
         return Slots
             .Where(slot => slot.IsEmpty)
-            .Select(slot => Observable.Timer(TimeSpan.Zero, TimeSpan.FromSeconds(0.1))
-                .Take(3)
-                .Do(_ => slot.Consume(1)))
+            .Select(slot => slot.FillToCapacity(TimeSpan.FromSeconds(0.1)))
             .Concat()
             .AsSingleUnitObservable();
     }

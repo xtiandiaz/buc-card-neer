@@ -6,7 +6,7 @@ SpriteAtlas:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Resource
+  m_Name: Resources
   m_EditorData:
     serializedVersion: 2
     textureSettings:
@@ -64,5 +64,5 @@ SpriteAtlas:
   - Medicine
   - Artifact
   - Chest
-  m_Tag: Resource
+  m_Tag: Resources
   m_IsVariant: 0
