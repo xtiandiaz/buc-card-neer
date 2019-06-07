@@ -82,7 +82,7 @@ public abstract class Slot : ISlot
     public IObservable<Unit> WhenReleased => releasing;
     public IObservable<bool> WhenToggledHighlighting => highlighting.DistinctUntilChanged();
 
-    private PileInsertionMode PileInsertionMode => Settings.Entryway == SlotEntryway.Front
+    protected PileInsertionMode PileInsertionMode => Settings.Entryway == SlotEntryway.Front
         ? PileInsertionMode.Unshift
         : PileInsertionMode.Push;
 
