@@ -16,7 +16,7 @@ public class ShipView : MonoBehaviour, IShipView
     
     [SerializeField] private SlotView[] slots;
     [SerializeField] private SpriteRenderer hullBackground;
-    [SerializeField] private ShipAnimationSettings animatorSettings;
+    [SerializeField] private ShipSettings animatorSettings;
     
     private IShipAnimator animator;
     

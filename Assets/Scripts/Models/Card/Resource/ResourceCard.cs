@@ -50,10 +50,8 @@ public class ResourceCard : Card, IResourceCard
     public IObservable<int> WhenLockValueChanged => lockValue;
     public IObservable<Unit> WhenUnlocked => lockValue.Where(x => x <= 0).Take(1).AsUnitObservable();
     
-    protected override void Awake()
+    protected  void Awake()
     {
-        base.Awake();
-
         WasLocked = IsLocked;
     }
 

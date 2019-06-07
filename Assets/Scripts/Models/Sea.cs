@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UniRx;
+using UnityEngine;
 using Zenject;
 
 public interface ISea : ICardProviderManager
@@ -52,11 +54,10 @@ public class Sea : ISea
 
             if (indicesToClash.Length > 0)
             {
-                return Observable.Timer(TimeSpan.Zero, TimeSpan.FromSeconds(0.5))
-                    .Take(indicesToClash.Length)
-                    .Do(i => Clash(indicesToClash[(int) i]))
-                    .Delay(TimeSpan.FromSeconds(0.5))
-                    .AsSingleUnitObservable()
+                return indicesToClash
+                    .Select(Clash)
+                    .Concat()
+                    .LastOrDefault()
                     .Subscribe(observer);
             }
             
@@ -92,7 +93,7 @@ public class Sea : ISea
             
             observer.OnCompleted();
             
-            return Disposable.Create(() => { });
+            return Disposable.Empty;
         });
     }
 
@@ -142,21 +143,33 @@ public class Sea : ISea
         return CanClash(slotToClash, previousSlot) || CanClash(slotToClash, nextSlot);
     }
 
-    private void Clash(int slotAtIndex)
+    private IObservable<Unit> Clash(int slotAtIndex)
     {
-        var slotToClash = Slots[slotAtIndex];
-        var cardToClash = slotToClash.Peek();
-        
-        if (cardToClash == null)
-            return;
-        
-        var (previousSlot, nextSlot) = GetNeighboringSlots(slotAtIndex);
-        
-        if (CanClash(slotToClash, previousSlot))
-            previousSlot?.Peek()?.Clash(cardToClash, Direction.Right);
-        
-        if (CanClash(slotToClash, nextSlot))
-            nextSlot?.Peek()?.Clash(cardToClash, Direction.Left);
+        return Observable.Create<Unit>(observer =>
+        {
+            var slotToClash = Slots[slotAtIndex];
+            var cardToClash = slotToClash.Peek();
+
+            if (cardToClash != null)
+            {
+                var (previousSlot, nextSlot) = GetNeighboringSlots(slotAtIndex);
+                var clash = new List<IObservable<Unit>>();
+                
+                if (CanClash(slotToClash, previousSlot))
+                    clash.Add(previousSlot?.Peek()?.Clash(cardToClash, Direction.Right));
+                
+                if (CanClash(slotToClash, nextSlot))
+                    clash.Add(nextSlot?.Peek()?.Clash(cardToClash, Direction.Left));
+
+                clash.Concat()
+                    .LastOrDefault()
+                    .Subscribe(observer);
+            }
+            else
+                observer.OnCompleted();
+
+            return Disposable.Empty;
+        });
     }
 
     private bool CanClash(ISlot slot, ISlot withOther)

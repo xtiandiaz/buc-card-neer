@@ -1,4 +1,5 @@
 using System;
+using DG.Tweening;
 using UniRx;
 using UnityEngine;
 
@@ -37,11 +38,12 @@ public interface ICard
     IObservable<(Color, float)> WhenFogged { get; }
     IObservable<Unit> WhenDestroyed { get; }
 
+    void Construct(ICardView view);
     bool CanReflect(ICard other);
     bool CanMatch(ICard withOther);
     void Match(ICard withOther);
     bool CanClash(ICard other);
-    void Clash(ICard other, Direction withDirection);
+    IObservable<Unit> Clash(ICard other, Direction withDirection);
     bool CanBeStruck();
     void Strike(int withValue, PlayerAttackType andAttackType);
     void Bind(ICardBond withBond);
@@ -82,7 +84,8 @@ public abstract class Card : ScriptableObject, ICard
     [SerializeField] private bool shouldDisplayValue = true;
     [SerializeField] private Sprite frontFace;
     [SerializeField] private Sprite backFace;
-    
+
+    private ICardView view;
     private CardFace face;
     private float arrangedDepth;
 
@@ -125,11 +128,13 @@ public abstract class Card : ScriptableObject, ICard
     public IObservable<(Color, float)> WhenFogged => fogging;
     public IObservable<Unit> WhenDestroyed => destruction;
 
-    protected virtual void Awake()
+    public void Construct(ICardView view)
     {
+        this.view = view;
+        
         OriginalValue = Value;
     }
-
+    
     public virtual bool CanReflect(ICard other)
     {
         return false;
@@ -141,14 +146,17 @@ public abstract class Card : ScriptableObject, ICard
 
     public abstract bool CanClash(ICard other);
 
-    public void Clash(ICard other, Direction withDirection)
+    public IObservable<Unit> Clash(ICard other, Direction withDirection)
     {
-        /* Note that the other Card isn't Struck upon Clashing; we simply affect its Value.
-         * This is to prevent side-effects associated with deliberate attacks by the player.
-         */
-        other.Value--;
+        return Observable.Create<Unit>(observer =>
+        {
+            other.Value--;
 
-        clashing.OnNext(withDirection);
+            var sequence = view.Tilt(withDirection, TimeSpan.FromSeconds(0.25))
+                .OnComplete(observer.OnCompleted);
+
+            return Disposable.Create(() => sequence.Kill());
+        });
     }
 
     public abstract bool CanBeStruck();

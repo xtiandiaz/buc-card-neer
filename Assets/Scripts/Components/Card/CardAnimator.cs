@@ -89,7 +89,7 @@ public class CardAnimator : MonoBehaviour
             contentWrapper.DORotate(destEulerAngles, halfTweenDuration).SetEase(settings.OutEase));
     }
 
-    public void Tilt(Direction towardDirection, TimeSpan duringTime)
+    public Sequence Tilt(Direction towardDirection, TimeSpan duringTime)
     {
         Kill(CardAnimationType.Flip);
         Kill(CardAnimationType.Tilt);
@@ -105,6 +105,8 @@ public class CardAnimator : MonoBehaviour
             contentWrapper.DORotate(originalRotation, settings.TiltDuration)
                 .SetDelay((float) duringTime.TotalSeconds)
                 .SetEase(settings.OutEase));
+
+        return tiltSequence;
     }
 
     public void Spin(int times)

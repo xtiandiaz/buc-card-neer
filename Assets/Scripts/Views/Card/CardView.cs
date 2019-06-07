@@ -16,7 +16,7 @@ public interface ICardView
     void Pick();
     Tween Drop(Vector3 toLocalPosition);
     void Flip(CardFace toFace, bool animated);
-    void Tilt(Direction towardDirection, TimeSpan duringTime);
+    Sequence Tilt(Direction towardDirection, TimeSpan duringTime);
     void Spin(int times);
     void MoveLocal(Vector3 toPosition);
     void Rotate(Vector3 toEulerAngles);
@@ -122,9 +122,9 @@ public class CardView : MonoBehaviour, ICardView
         animator.Flip(toFace, animated);
     }
 
-    public void Tilt(Direction towardDirection, TimeSpan duringTime)
+    public Sequence Tilt(Direction towardDirection, TimeSpan duringTime)
     {
-        animator.Tilt(towardDirection, duringTime);
+        return animator.Tilt(towardDirection, duringTime);
     }
 
     public void Spin(int times)

@@ -41,9 +41,11 @@ public class CardFactory : ICardFactory
     public ICard Create(ICard forModel)
     {
         container.Inject(forModel);
-        
+
         var view = viewFactory.Create(GetViewResourcePath(forModel.Type));
 
+        forModel.Construct(view);
+        
         disposables.Add(CreateController(forModel, view));
         
         return forModel;

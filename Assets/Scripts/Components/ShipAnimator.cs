@@ -3,7 +3,7 @@ using UnityEngine;
 
 public interface IShipAnimator
 {
-    void Initialize(ShipAnimationSettings withSettings);
+    void Initialize(ShipSettings withSettings);
     void Dock(Vector3 atLocalPosition);
     void SetSail(Vector3 toLocalPosition);
     void KillMove();
@@ -11,10 +11,10 @@ public interface IShipAnimator
 
 public class ShipAnimator : MonoBehaviour, IShipAnimator
 {
-    private ShipAnimationSettings settings;
+    private ShipSettings settings;
     private Sequence transitionSequence;
 
-    public void Initialize(ShipAnimationSettings withSettings)
+    public void Initialize(ShipSettings withSettings)
     {
         settings = withSettings;
     }
