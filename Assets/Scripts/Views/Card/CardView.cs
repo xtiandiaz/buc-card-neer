@@ -10,7 +10,7 @@ public interface ICardView
     Sprite FrontFace { set; }
     Sprite BackFace { set; }
     Vector3 Position { set; }
-    Vector3 LocalPosition { set; }
+    Vector3 LocalPosition { get; set; }
     int SortingOrder { set; }
 
     void Pick();
@@ -21,12 +21,12 @@ public interface ICardView
     void MoveLocal(Vector3 toPosition);
     void Rotate(Vector3 toEulerAngles);
     void SetParent(Transform toTransform);
-    void Fade(float toAlphaValue);
-    IObservable<Unit> FadeAsObservable(float toAlphaValue);
+    IObservable<Unit> Fade(float toAlphaValue);
     void Tint(Color withColor, float byFactor);
     void Fog(Color withColor, float byFactor);
     void KillMove();
     void ToggleValueVisibility(bool toValue);
+    void FadeAwayAndDestroy();
     void Destroy();
 }
 
@@ -43,7 +43,7 @@ public class CardView : MonoBehaviour, ICardView
 
     [Inject] private CardAnimationSettings animationSettings;
     private CardAnimator animator;
-    private ICardShader shader;
+    private CardShader shader;
     private ISortingSet sortingSet;
     private Vector3 lastLodgingPosition;
 
@@ -77,6 +77,7 @@ public class CardView : MonoBehaviour, ICardView
     
     public Vector3 LocalPosition
     {
+        get => transform.localPosition;
         set
         {
             animator.Kill(CardAnimationType.Move);
@@ -100,7 +101,7 @@ public class CardView : MonoBehaviour, ICardView
     private void Awake()
     {
         animator = GetComponent<CardAnimator>();
-        shader = GetComponent<ICardShader>();
+        shader = GetComponent<CardShader>();
         sortingSet = GetComponent<ISortingSet>();
         
         animator.Initialize(animationSettings, contentWrapper);
@@ -142,14 +143,9 @@ public class CardView : MonoBehaviour, ICardView
         animator.Rotate(toEulerAngles);
     }
 
-    public void Fade(float toAlphaValue)
+    public IObservable<Unit> Fade(float toAlphaValue)
     {
-        shader.Fade(toAlphaValue);
-    }
-    
-    public IObservable<Unit> FadeAsObservable(float toAlphaValue)
-    {
-        return shader.FadeAsObservable(toAlphaValue);
+        return shader.Fade(toAlphaValue);
     }
 
     public void Tint(Color withColor, float byFactor)
@@ -175,6 +171,14 @@ public class CardView : MonoBehaviour, ICardView
     public void ToggleValueVisibility(bool toValue)
     {
         valueLabel.ToggleVisibility(toValue);
+    }
+
+    public void FadeAwayAndDestroy()
+    {
+        shader.Fade(0)
+            .DoOnCompleted(Destroy)
+            .Subscribe()
+            .AddTo(this);
     }
 
     public void Destroy()

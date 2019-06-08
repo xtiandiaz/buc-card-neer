@@ -3,39 +3,23 @@ using DG.Tweening;
 using UniRx;
 using UnityEngine;
 
-public interface ICard
+public interface ICard : IDisposable
 {
+    CardType Type { get; }
+    string Name { get; }
     int Value { get; set; }
     int OriginalValue { get; }
     int Index { get; }
-    string Name { get; }
-    CardType Type { get; }
     bool IsBoarded { get; set; }
     bool IsStored { get; set; }
-    bool ShouldDisplayValue { get; }
-    ICardBond Bond { get; }
-    DateTimeOffset BindingTimestamp { get; }
-    Sprite FrontFace { get; }
-    Sprite BackFace { get; }
     Vector3 LocalPosition { get; }
-    Vector3 ArrangedPosition { get; }
-    float RotationAngle { get; }
-    
-    IObservable<int> ValueAsObservable { get; }
-    IObservable<Unit> WhenArranged { get; }
-    IObservable<Direction> WhenClashed { get; }
-    IObservable<PlayerAttackType> WhenStruck { get; }
-    IObservable<Transform> WhenBound { get; }
+    DateTimeOffset BindingTimestamp { get; }
+
     IObservable<Unit> WhenPicked { get; }
-    IObservable<Unit> WhenDragged { get; }
     IObservable<Unit> WhenDropped { get; }
-    IObservable<CardMoveType> WhenMoved { get; }
+    IObservable<PlayerAttackType> WhenAttacked { get; }
     IObservable<Unit> WhenBounced { get; }
     IObservable<CardFace> WhenFlipped { get; }
-    IObservable<Unit> WhenRotated { get; }
-    IObservable<float> WhenFaded { get; }
-    IObservable<(Color, float)> WhenTinted { get; }
-    IObservable<(Color, float)> WhenFogged { get; }
     IObservable<Unit> WhenDestroyed { get; }
 
     void Construct(ICardView view);
@@ -55,8 +39,7 @@ public interface ICard
     void Bounce();
     void Flip(CardFace toFace);
     void Rotate(float toAngle);
-    void Fade(float toAlphaValue);
-    void Tint(Color withColor, float byFactor);
+    IObservable<Unit> Fade(float toAlphaValue);
     void Fog(Color withColor, float byFactor);
     void Destroy();
 }
@@ -65,20 +48,11 @@ public abstract class Card : ScriptableObject, ICard
 {
     [SerializeField] protected IntReactiveProperty value = new IntReactiveProperty();
     
-    private readonly Subject<Direction> clashing = new Subject<Direction>();
-    private readonly Subject<PlayerAttackType> striking = new Subject<PlayerAttackType>();
-    private readonly Subject<Transform> binding = new Subject<Transform>();
-    private readonly Subject<Unit> arrangement = new Subject<Unit>();
     private readonly Subject<Unit> picking = new Subject<Unit>();
-    private readonly Subject<Unit> dragging = new Subject<Unit>();
     private readonly Subject<Unit> dropping = new Subject<Unit>();
-    private readonly Subject<CardMoveType> movement = new Subject<CardMoveType>();
+    private readonly Subject<PlayerAttackType> striking = new Subject<PlayerAttackType>();
     private readonly Subject<Unit> bouncing = new Subject<Unit>();
     private readonly Subject<CardFace> flipping = new Subject<CardFace>();
-    private readonly Subject<Unit> rotation = new Subject<Unit>();
-    private readonly Subject<float> fading = new Subject<float>();
-    private readonly Subject<(Color, float)> tinting = new Subject<(Color, float)>();
-    private readonly Subject<(Color, float)> fogging = new Subject<(Color, float)>();
     private readonly Subject<Unit> destruction = new Subject<Unit>();
 
     [SerializeField] private bool shouldDisplayValue = true;
@@ -86,55 +60,46 @@ public abstract class Card : ScriptableObject, ICard
     [SerializeField] private Sprite backFace;
 
     private ICardView view;
+    private ICardBond bond;
     private CardFace face;
-    private float arrangedDepth;
+    private Vector3 arrangedPosition;
+    private float rotationAngle;
 
+    public abstract CardType Type { get; }
+    public string Name => name;
+    
     public int Value
     {
         get => value.Value;
-        set => this.value.Value = Mathf.Max(value, 0);
+        set => this.value.Value = view.Value = Mathf.Max(value, 0);
     }
 
     public int OriginalValue { get; private set; }
     public int Index { get; private set; }
-    
-    public abstract CardType Type { get; }
-    public string Name => name;
     public bool IsBoarded { get; set; }
     public bool IsStored { get; set; }
-    public bool ShouldDisplayValue => shouldDisplayValue;
-    public ICardBond Bond { get; private set; }
-    public DateTimeOffset BindingTimestamp { get; private set; }
-    public Sprite FrontFace => frontFace;
-    public Sprite BackFace => backFace;
     public Vector3 LocalPosition { get; private set; }
-    public Vector3 ArrangedPosition { get; private set; }
-    public float RotationAngle { get; private set; }
-
-    public IObservable<int> ValueAsObservable => value;
-    public IObservable<Unit> WhenArranged => arrangement;
-    public IObservable<Direction> WhenClashed => clashing;
-    public IObservable<PlayerAttackType> WhenStruck => striking;
-    public IObservable<Transform> WhenBound => binding;
+    public DateTimeOffset BindingTimestamp { get; private set; }
+    
     public IObservable<Unit> WhenPicked => picking;
-    public IObservable<Unit> WhenDragged => dragging;
     public IObservable<Unit> WhenDropped => dropping;
-    public IObservable<CardMoveType> WhenMoved => movement;
+    public IObservable<PlayerAttackType> WhenAttacked => striking;
     public IObservable<Unit> WhenBounced => bouncing;
     public IObservable<CardFace> WhenFlipped => flipping.DistinctUntilChanged();
-    public IObservable<Unit> WhenRotated => rotation;
-    public IObservable<float> WhenFaded => fading;
-    public IObservable<(Color, float)> WhenTinted => tinting;
-    public IObservable<(Color, float)> WhenFogged => fogging;
     public IObservable<Unit> WhenDestroyed => destruction;
 
     public void Construct(ICardView view)
     {
-        this.view = view;
-        
         OriginalValue = Value;
+        
+        view.FrontFace = frontFace;
+        view.BackFace = backFace;
+        view.Value = Value;
+        view.ToggleValueVisibility(shouldDisplayValue);
+        
+        this.view = view;
     }
-    
+
     public virtual bool CanReflect(ICard other)
     {
         return false;
@@ -150,7 +115,7 @@ public abstract class Card : ScriptableObject, ICard
     {
         return Observable.Create<Unit>(observer =>
         {
-            other.Value--;
+            Strike(1);
 
             var sequence = view.Tilt(withDirection, TimeSpan.FromSeconds(0.25))
                 .OnComplete(observer.OnCompleted);
@@ -165,57 +130,84 @@ public abstract class Card : ScriptableObject, ICard
     {
         Strike(withValue);
         
+        if (andAttackType == PlayerAttackType.Ranged) 
+            view.Spin(2);
+
         striking.OnNext(andAttackType);
+        
+        if (Value <= 0)
+            Destroy();
     }
 
     public void Bind(ICardBond withBond)
     {
-        if (withBond == Bond || withBond == null)
+        if (withBond == bond || withBond == null)
             return;
         
-        Bond?.Release(this);
+        bond?.Release(this);
         
-        Bond = withBond;
+        bond = withBond;
         BindingTimestamp = DateTimeOffset.Now;
-
-        binding.OnNext(withBond.TransformBond);
+        
+        view.SetParent(withBond.TransformBond);
     }
 
     public void Pick()
     {       
+        view.Pick();
+        
+        view.SortingOrder = 100;
+        
         picking.OnNext(Unit.Default);
     }
     
     public void Drag(Vector3 byDeltaPosition)
-    {        
+    {
         LocalPosition += byDeltaPosition;
         
-        dragging.OnNext(Unit.Default);
+        view.LocalPosition = LocalPosition;
     }
 
     public void Drop()
     {
-        LocalPosition = ArrangedPosition;
+        LocalPosition = arrangedPosition;
+        
+        view.Drop(arrangedPosition)
+            .OnComplete(() => Sort(Index));
         
         dropping.OnNext(Unit.Default);
     }
 
     public void Arrange(Vector3 atLocalPosition, float withRotationAngle, int andIndex)
     {
-        ArrangedPosition = LocalPosition = atLocalPosition;
-        RotationAngle = withRotationAngle;
+        arrangedPosition = atLocalPosition;
         Index = andIndex;
         
-        arrangement.OnNext(Unit.Default);
+        Move(arrangedPosition, CardMoveType.Lodging);
+        Rotate(withRotationAngle);
+        Sort(andIndex);
     }
 
     public void Move(Vector3 toLocalPosition, CardMoveType withType)
     {
         LocalPosition = toLocalPosition;
-
-        movement.OnNext(withType);
+        
+        view.MoveLocal(toLocalPosition);
     }
 
+    public void Rotate(float toAngle)
+    {
+        rotationAngle = toAngle;
+
+        view.Rotate(Vector3.forward * rotationAngle);
+    }
+
+    public void Sort(int withIndex)
+    {
+        Index = withIndex;
+        view.SortingOrder = -Index * 10;
+    }
+    
     public void Bounce()
     {
         bouncing.OnNext(Unit.Default);
@@ -224,38 +216,44 @@ public abstract class Card : ScriptableObject, ICard
     public virtual void Flip(CardFace toFace)
     {
         face = toFace;
+
+        view.Flip(face, true);
         
         flipping.OnNext(toFace);
     }
-
-    public void Rotate(float toAngle)
-    {
-        RotationAngle = toAngle;
-        
-        rotation.OnNext(Unit.Default);
-    }
     
-    public void Fade(float toAlphaValue)
+    public IObservable<Unit> Fade(float toAlphaValue)
     {
-        fading.OnNext(toAlphaValue);
+        return view.Fade(toAlphaValue);
     }
 
-    public void Tint(Color withColor, float byFactor)
-    {
-        tinting.OnNext((withColor, byFactor));
-    }
-    
     public void Fog(Color withColor, float byFactor)
     {
-        fogging.OnNext((withColor, byFactor));
+        // TODO animate
+        view.Fog(withColor, byFactor);
     }
 
     public virtual void Destroy()
     {
-        Bond?.Release(this);
-
+        bond?.Release(this);
+        
+        view.KillMove();
+        view.FadeAwayAndDestroy();
+        
         destruction.OnNext(Unit.Default);
         destruction.OnCompleted();
+        
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        value?.Dispose();
+        picking?.Dispose();
+        dropping?.Dispose();
+        bouncing?.Dispose();
+        flipping?.Dispose();
+        destruction?.Dispose();
     }
     
     protected virtual void Strike(int withValue)

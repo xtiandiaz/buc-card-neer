@@ -4,16 +4,7 @@ using DG.Tweening;
 using UniRx;
 using UnityEngine;
 
-public interface ICardShader
-{
-    void Initialize(CardAnimationSettings withSettings);
-    void Fade(float toAlphaValue);
-    IObservable<Unit> FadeAsObservable(float toAlphaValue);
-    void Tint(Color withColor, float byFactor);
-    void Fog(Color withColor, float byFactor);
-}
-
-public class CardShader : MonoBehaviour, ICardShader
+public class CardShader : MonoBehaviour
 {
     private struct ShadingEntry
     {
@@ -68,6 +59,11 @@ public class CardShader : MonoBehaviour, ICardShader
     
     private CardAnimationSettings animationSettings;
 
+    public float Alpha
+    {
+        set => Apply((colorSetter, startColor) => colorSetter(startColor.SetAlpha(value)));
+    }
+
     public void Initialize(CardAnimationSettings withSettings)
     {
         animationSettings = withSettings;
@@ -81,13 +77,8 @@ public class CardShader : MonoBehaviour, ICardShader
         foreach (var textRenderer in targetTextRenderers)
             shadingEntries.Add(ProduceEntry(textRenderer));
     }
-    
-    public void Fade(float toAlphaValue)
-    {
-        Apply((colorSetter, startColor) => colorSetter(startColor.SetAlpha(toAlphaValue)));
-    }
 
-    public IObservable<Unit> FadeAsObservable(float toAlphaValue)
+    public IObservable<Unit> Fade(float toAlphaValue)
     {
         return Observable.Create<Unit>(observer =>
         {
@@ -98,7 +89,7 @@ public class CardShader : MonoBehaviour, ICardShader
                     () => alpha, 
                     a =>
                     {
-                        Fade(a);
+                        Alpha = a;
                         alpha = a;
                     }, 
                     toAlphaValue, 
@@ -112,7 +103,7 @@ public class CardShader : MonoBehaviour, ICardShader
             return Disposable.Create(() => tween.Kill());
         });
     }
-    
+
     public void Tint(Color withColor, float byFactor)
     {
         Apply((colorSetter, startColor) => colorSetter(startColor.Tint(withColor, byFactor)));

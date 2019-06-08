@@ -10,12 +10,10 @@ public interface IPirateCard : ICard, ILootCarrier
 [CreateAssetMenu(menuName = "Game/Card/Pirate")]
 public class PirateCard : Card, IPirateCard
 {
-    [SerializeField] [Range(1, 4)] private int lootMultiplier;
-    
     public override CardType Type => CardType.Pirate;
     public bool IsDead => Value <= 0;
 
-    public IObservable<Unit> WhenDefeated => WhenStruck.Where(_ => Value <= 0).AsUnitObservable();
+    public IObservable<Unit> WhenDefeated => WhenAttacked.Where(_ => Value <= 0).AsUnitObservable();
 
     public override bool CanMatch(ICard withOther)
     {
