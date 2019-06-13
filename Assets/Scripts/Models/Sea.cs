@@ -1,19 +1,19 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UniRx;
+using UnityEngine;
 using Zenject;
 
 public interface ISea : ICardProviderManager
 {
     ISlot[] Slots { get; }
-    
-    IObservable<IResourceCard> WhenCollected { get; }
-    IObservable<Unit> WhenClashed { get; }
 
-    void Clash();
-    bool CanClash(int slotAtIndex);
-    void Clash(int slotAtIndex);
+    IObservable<Unit> Clash();
     void Impact(int withValue);
-    void Collect();
+    IObservable<IResourceCard> Collect();
+    IObservable<Unit> Supply();
+    IObservable<Unit> Resupply();
     void Arrange();
     void Lock();
     void Unlock();
@@ -25,14 +25,11 @@ public class Sea : ISea
     {
     }
 
-    private readonly Subject<Unit> clashing = new Subject<Unit>();
-    private readonly Subject<IResourceCard> collection = new Subject<IResourceCard>();
+    private const int CardCountPerSlot = 3;
+    
     private readonly ICardProvider cardProvider;
 
-    private Sea(
-        ISlot[] slots,
-        ICardProvider cardProvider
-        )
+    private Sea(ISlot[] slots, ICardProvider cardProvider)
     {
         Slots = slots;
         this.cardProvider = cardProvider;
@@ -40,46 +37,35 @@ public class Sea : ISea
 
     public ISlot[] Slots { get; }
 
-    public IObservable<Unit> WhenClashed => clashing;
-    public IObservable<IResourceCard> WhenCollected => collection;
-
     public void AssignProviders()
     {
         foreach (var slot in Slots)
+        {
             slot.SetProvider(cardProvider);
+            slot.SetCapacity(CardCountPerSlot);
+        }
     }
 
-    public void Clash()
+    public IObservable<Unit> Clash()
     {
-        clashing.OnNext(Unit.Default);
-    }
+        return Observable.Create<Unit>(observer =>
+        {
+            var indicesToClash = Enumerable.Range(0, Slots.Length).Where(CanClash).ToArray();
 
-    public bool CanClash(int slotAtIndex)
-    {
-        if (slotAtIndex < 0 || slotAtIndex >= Slots.Length)
-            throw new ArgumentOutOfRangeException();
-        
-        var slotToClash = Slots[slotAtIndex];
-        var (previousSlot, nextSlot) = GetNeighboringSlots(slotAtIndex);
-
-        return CanClash(slotToClash, previousSlot) || CanClash(slotToClash, nextSlot);
-    }
-
-    public void Clash(int slotAtIndex)
-    {
-        var slotToClash = Slots[slotAtIndex];
-        var cardToClash = slotToClash.Peek();
-        
-        if (cardToClash == null)
-            return;
-        
-        var (previousSlot, nextSlot) = GetNeighboringSlots(slotAtIndex);
-        
-        if (CanClash(slotToClash, previousSlot))
-            previousSlot?.Peek()?.Clash(cardToClash, Direction.Right);
-        
-        if (CanClash(slotToClash, nextSlot))
-            nextSlot?.Peek()?.Clash(cardToClash, Direction.Left);
+            if (indicesToClash.Length > 0)
+            {
+                return indicesToClash
+                    .Select(Clash)
+                    .Concat()
+                    .LastOrDefault()
+                    .Subscribe(observer);
+            }
+            
+            observer.OnNext(Unit.Default);
+            observer.OnCompleted();
+            
+            return Disposable.Create(() => { });
+        });
     }
 
     public void Impact(int withValue)
@@ -89,19 +75,43 @@ public class Sea : ISea
             if (!CanImpact(slot))
                 continue;
 
-            slot.Peek().Impact(withValue);
+            slot.Peek().Strike(withValue, PlayerAttackType.Ranged);
         }
     }
 
-    public void Collect()
+    public IObservable<IResourceCard> Collect()
     {
-        foreach (var slot in Slots)
+        return Observable.Create<IResourceCard>(observer =>
         {
-            if (!CanCollect(slot))
-                continue;
+            foreach (var slot in Slots)
+            {
+                if (!CanCollect(slot))
+                    continue;
 
-            collection.OnNext((IResourceCard) slot.Peek());
-        }
+                observer.OnNext((IResourceCard) slot.Peek());
+            }
+            
+            observer.OnCompleted();
+            
+            return Disposable.Empty;
+        });
+    }
+
+    public IObservable<Unit> Supply()
+    {
+        return Observable.Timer(TimeSpan.Zero, TimeSpan.FromSeconds(0.1))
+            .Take(Slots.Length * CardCountPerSlot)
+            .Do(i => Slots[i % Slots.Length].Consume())
+            .AsSingleUnitObservable();
+    }
+
+    public IObservable<Unit> Resupply()
+    {
+        return Slots
+            .Where(slot => slot.IsEmpty)
+            .Select(slot => slot.FillToCapacity(TimeSpan.FromSeconds(0.1)))
+            .Concat()
+            .AsSingleUnitObservable();
     }
     
     public void Arrange()
@@ -121,6 +131,46 @@ public class Sea : ISea
         foreach (var slot in Slots)
             slot.Unlock();
     }
+    
+    private bool CanClash(int slotAtIndex)
+    {
+        if (slotAtIndex < 0 || slotAtIndex >= Slots.Length)
+            throw new ArgumentOutOfRangeException();
+        
+        var slotToClash = Slots[slotAtIndex];
+        var (previousSlot, nextSlot) = GetNeighboringSlots(slotAtIndex);
+
+        return CanClash(slotToClash, previousSlot) || CanClash(slotToClash, nextSlot);
+    }
+
+    private IObservable<Unit> Clash(int slotAtIndex)
+    {
+        return Observable.Create<Unit>(observer =>
+        {
+            var slotToClash = Slots[slotAtIndex];
+            var cardToClash = slotToClash.Peek();
+
+            if (cardToClash != null)
+            {
+                var (previousSlot, nextSlot) = GetNeighboringSlots(slotAtIndex);
+                var clash = new List<IObservable<Unit>>();
+                
+                if (CanClash(slotToClash, previousSlot))
+                    clash.Add(previousSlot?.Peek()?.Clash(cardToClash, Direction.Right));
+                
+                if (CanClash(slotToClash, nextSlot))
+                    clash.Add(nextSlot?.Peek()?.Clash(cardToClash, Direction.Left));
+
+                clash.Concat()
+                    .LastOrDefault()
+                    .Subscribe(observer);
+            }
+            else
+                observer.OnCompleted();
+
+            return Disposable.Empty;
+        });
+    }
 
     private bool CanClash(ISlot slot, ISlot withOther)
     {
@@ -133,7 +183,7 @@ public class Sea : ISea
 
     private bool CanImpact(ISlot slot)
     {
-        return slot != null && slot.Peek()?.CanBeImpacted() == true;
+        return slot != null && slot.Peek()?.CanBeStruck() == true;
     }
 
     private bool CanCollect(ISlot fromSlot)

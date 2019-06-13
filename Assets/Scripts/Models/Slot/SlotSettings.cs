@@ -7,7 +7,7 @@ public interface ISlotSettings
     bool ShouldStartLocked { get; }
     SlotEntryway Entryway { get; }
     LodgingFace LodgingFace { get; }
-    CardArrangement Arrangement { get; }
+    PileCardArrangement Arrangement { get; }
     Color HighlightColor { get; }
     ResourceType ResourceMask { get; }
 }
@@ -22,7 +22,7 @@ public class SlotSettings : ScriptableObject, ISlotSettings
     [SerializeField] private LodgingFace lodgingFace = LodgingFace.Current;
     
     [Header("Arrangement")]
-    [SerializeField] private CardArrangement arrangement;
+    [SerializeField] private PileCardArrangement arrangement;
 
     [Header("Highlighting")] 
     [SerializeField] private Color highlightColor = Color.green;
@@ -35,7 +35,7 @@ public class SlotSettings : ScriptableObject, ISlotSettings
     public bool ShouldStartLocked => shouldStartLocked;
     public SlotEntryway Entryway => entryway;
     public LodgingFace LodgingFace => lodgingFace;
-    public CardArrangement Arrangement => arrangement;
+    public PileCardArrangement Arrangement => arrangement;
     public Color HighlightColor => highlightColor;
     public ResourceType ResourceMask => resourceMask;
 }

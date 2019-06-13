@@ -15,10 +15,15 @@ public class BoardingSlot : Slot, IBoardingSlot
         : base(pile, settings, bounds, transformBond)
     {
     }
-    
+
+    public override bool CanDefer(ICard card)
+    {
+        return Peek()?.CanReflect(card) == true;
+    }
+
     protected override bool CanMatch(ICard withCard)
     {
-        return withCard.IsBoarded || (withCard.Type & CardType.Pirate) != 0;
+        return withCard.IsBoarded;
     }
 
     protected override bool CanLodge(ISlot fromSlot)
@@ -31,6 +36,6 @@ public class BoardingSlot : Slot, IBoardingSlot
         if (!card.IsBoarded)
             return (card.Type & (CardType.Resource | CardType.Agent)) != 0;
 
-        return IsEmpty && (card.Type & CardType.WeaponRanged) != 0;
+        return IsEmpty && (card.Type & (CardType.WeaponRanged | CardType.Trap)) != 0;
     }
 }

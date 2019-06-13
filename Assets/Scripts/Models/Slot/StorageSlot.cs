@@ -24,16 +24,20 @@ public class StorageSlot : Slot, IStorageSlot
     {
     }
 
-    public ResourceType ResourceMask => settings.ResourceMask;
+    public ResourceType ResourceMask => Settings.ResourceMask;
 
     public void Sort()
     {
-        if (pile.Count < 2)
+        if (pile.Count < 1)
             return;
-        
-        sortingQueue.Enqueue(sortingQueue.Dequeue());
 
-        pile.Sort(new StorageComparer(sortingQueue.ToArray()));
+        var card = pile.Peek();
+
+        pile.Remove(card);
+        
+        pile.Insert(card, PileInsertionMode == PileInsertionMode.Push ? PileInsertionMode.Unshift : PileInsertionMode.Push);
+        
+        Arrange();
     }
 
     public override void Lodge(ICard card)
@@ -48,6 +52,11 @@ public class StorageSlot : Slot, IStorageSlot
         base.Release(card);
         
         sortingQueue = new Queue<CardType>(pile.Types);
+    }
+
+    public override bool CanDefer(ICard card)
+    {
+        return false;
     }
 
     protected override bool CanMatch(ICard withCard)

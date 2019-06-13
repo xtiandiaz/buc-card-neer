@@ -1,23 +1,6 @@
 using System;
-using System.Reflection;
 using UniRx;
 using UnityEngine;
-using Zenject;
-
-[Flags]
-public enum ResourceType
-{
-    None                = 0,
-    Food                = CardType.Food,
-    Artifact            = CardType.Artifact,
-    Gem                 = CardType.Gem,
-    WeaponMelee         = CardType.WeaponMelee,
-    WeaponRanged        = CardType.WeaponRanged,
-    Medicine            = CardType.Medicine,
-    
-    Item                = Food | Artifact | Gem,
-    Tool                = WeaponMelee | WeaponRanged | Medicine
-}
 
 public interface IResourceCard : ICard
 {
@@ -67,43 +50,29 @@ public class ResourceCard : Card, IResourceCard
     public IObservable<int> WhenLockValueChanged => lockValue;
     public IObservable<Unit> WhenUnlocked => lockValue.Where(x => x <= 0).Take(1).AsUnitObservable();
     
-    protected override void Awake()
+    protected  void Awake()
     {
-        base.Awake();
-
         WasLocked = IsLocked;
+    }
+
+    public override bool CanReflect(ICard other)
+    {
+        return (ResourceType & ResourceType.Trap) != 0;
     }
 
     public override bool CanMatch(ICard withOther)
     {
-        if (IsLocked)
-            return (withOther.Type & CardType.WeaponMelee) != 0;
-
-        return (ResourceType & ResourceType.WeaponRanged) != 0 && (withOther.Type & CardType.Pirate) != 0;
+        return IsLocked && (withOther.Type & CardType.WeaponMelee) != 0;
     }
 
     public override void Match(ICard withOther)
     {
-        if (IsLocked)
-        {
-            if ((withOther.Type & CardType.WeaponMelee) == 0)
-                return;
-        
-            LockValue -= withOther.Value;
-        
-            withOther.Destroy();
-        }
-
-        if ((ResourceType & ResourceType.WeaponRanged) == 0) 
+        if (IsLocked && (withOther.Type & CardType.WeaponMelee) == 0) 
             return;
         
-        // Ranged combat ensues:
+        Strike(withOther.Value, PlayerAttackType.Blow);
 
-        if ((withOther.Type & CardType.Pirate) != 0)
-        {
-            withOther.Value -= Value;
-            Destroy();
-        }
+        withOther.Value = 0;
     }
 
     public override bool CanClash(ICard other)
@@ -111,7 +80,7 @@ public class ResourceCard : Card, IResourceCard
         return false;
     }
 
-    public override bool CanBeImpacted()
+    public override bool CanBeStruck()
     {
         return IsLocked;
     }
@@ -128,7 +97,7 @@ public class ResourceCard : Card, IResourceCard
         LockValue = 0;
     }
 
-    protected override void Hit(int withValue)
+    protected override void Strike(int withValue)
     {
         LockValue -= withValue;
     }

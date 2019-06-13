@@ -1,74 +1,45 @@
 using System;
+using DG.Tweening;
 using UniRx;
 using UnityEngine;
 
-[Flags]
-public enum CardType
+public interface ICard : IDisposable
 {
-    Player             = 1 << 0,
-    Pirate             = 1 << 1,
-    Merchant           = 1 << 2,
-    Inspector          = 1 << 3,
-    Food               = 1 << 4,
-    Artifact           = 1 << 5,
-    Gem                = 1 << 6,
-    WeaponMelee        = 1 << 7,
-    WeaponRanged       = 1 << 8,
-    Medicine           = 1 << 9,
-                         
-    Resource           = Food | Gem | Artifact | WeaponMelee | WeaponRanged | Medicine,
-    Agent              = Pirate | Merchant | Inspector
-}
-
-public enum CardFace
-{
-    Front,
-    Back
-}
-
-public interface ICard : IComparable<ICard>
-{
+    CardType Type { get; }
+    string Name { get; }
     int Value { get; set; }
     int OriginalValue { get; }
     int Index { get; }
-    string Name { get; }
-    CardType Type { get; }
-    Vector3 LocalPosition { get; }
-    Sprite FrontFace { get; }
-    Sprite BackFace { get; }
-    ICardBond Bond { get; }
     bool IsBoarded { get; set; }
     bool IsStored { get; set; }
+    Vector3 LocalPosition { get; }
     DateTimeOffset BindingTimestamp { get; }
-    
-    IObservable<int> ValueAsObservable { get; }
-    IObservable<Direction> WhenClashed { get; }
-    IObservable<Unit> WhenImpacted { get; }
-    IObservable<Transform> WhenBound { get; }
-    IObservable<CardArrangementMode> WhenArranged { get; }
+
     IObservable<Unit> WhenPicked { get; }
-    IObservable<Unit> WhenDragged { get; }
     IObservable<Unit> WhenDropped { get; }
+    IObservable<PlayerAttackType> WhenAttacked { get; }
+    IObservable<Unit> WhenBounced { get; }
     IObservable<CardFace> WhenFlipped { get; }
-    IObservable<float> WhenFaded { get; }
-    IObservable<(Color, float)> WhenTinted { get; }
-    IObservable<(Color, float)> WhenFogged { get; }
     IObservable<Unit> WhenDestroyed { get; }
 
+    void Construct(ICardView view);
+    bool CanReflect(ICard other);
     bool CanMatch(ICard withOther);
     void Match(ICard withOther);
     bool CanClash(ICard other);
-    void Clash(ICard other, Direction withDirection);
-    bool CanBeImpacted();
-    void Impact(int withValue);
+    IObservable<Unit> Clash(ICard other, Direction withDirection);
+    bool CanBeStruck();
+    void Strike(int withValue, PlayerAttackType andAttackType);
     void Bind(ICardBond withBond);
     void Pick();
     void Drag(Vector3 byDeltaPosition);
     void Drop();
-    void Arrange(Vector3 atLocalPosition, int withIndex, CardArrangementMode andMode);
+    void Arrange(Vector3 atLocalPosition, float withRotationAngle, int andIndex);
+    void Move(Vector3 toLocalPosition, CardMoveType withType);
+    void Bounce();
     void Flip(CardFace toFace);
-    void Fade(float toAlphaValue);
-    void Tint(Color withColor, float byFactor);
+    void Rotate(float toAngle);
+    IObservable<Unit> Fade(float toAlphaValue);
     void Fog(Color withColor, float byFactor);
     void Destroy();
 }
@@ -76,60 +47,62 @@ public interface ICard : IComparable<ICard>
 public abstract class Card : ScriptableObject, ICard
 {
     [SerializeField] protected IntReactiveProperty value = new IntReactiveProperty();
-
-    private readonly Subject<Direction> clashing = new Subject<Direction>();
-    private readonly Subject<Unit> impacting = new Subject<Unit>();
-    private readonly Subject<Transform> binding = new Subject<Transform>();
-    private readonly Subject<CardArrangementMode> arranging = new Subject<CardArrangementMode>();
+    
     private readonly Subject<Unit> picking = new Subject<Unit>();
-    private readonly Subject<Unit> dragging = new Subject<Unit>();
     private readonly Subject<Unit> dropping = new Subject<Unit>();
+    private readonly Subject<PlayerAttackType> striking = new Subject<PlayerAttackType>();
+    private readonly Subject<Unit> bouncing = new Subject<Unit>();
     private readonly Subject<CardFace> flipping = new Subject<CardFace>();
-    private readonly Subject<float> fading = new Subject<float>();
-    private readonly Subject<(Color, float)> tinting = new Subject<(Color, float)>();
-    private readonly Subject<(Color, float)> fogging = new Subject<(Color, float)>();
     private readonly Subject<Unit> destruction = new Subject<Unit>();
 
+    [SerializeField] private bool shouldDisplayValue = true;
     [SerializeField] private Sprite frontFace;
     [SerializeField] private Sprite backFace;
+
+    private ICardView view;
+    private ICardBond bond;
     private CardFace face;
-    private float arrangedDepth;
+    private Vector3 arrangedPosition;
+    private float rotationAngle;
 
     public abstract CardType Type { get; }
-    public int OriginalValue { get; private set; }
-    public int Index { get; private set; }
     public string Name => name;
-    public Sprite FrontFace => frontFace;
-    public Sprite BackFace => backFace;
-    public Vector3 LocalPosition { get; private set; }
-    public ICardBond Bond { get; private set; }
-    public bool IsBoarded { get; set; }
-    public bool IsStored { get; set; }
-    public DateTimeOffset BindingTimestamp { get; private set; }
-
+    
     public int Value
     {
         get => value.Value;
-        set => this.value.Value = Mathf.Max(value, 0);
+        set => this.value.Value = view.Value = Mathf.Max(value, 0);
     }
 
-    public IObservable<int> ValueAsObservable => value;
-    public IObservable<Direction> WhenClashed => clashing;
-    public IObservable<Unit> WhenImpacted => impacting;
-    public IObservable<Transform> WhenBound => binding;
-    public IObservable<CardArrangementMode> WhenArranged => arranging;
+    public int OriginalValue { get; private set; }
+    public int Index { get; private set; }
+    public bool IsBoarded { get; set; }
+    public bool IsStored { get; set; }
+    public Vector3 LocalPosition { get; private set; }
+    public DateTimeOffset BindingTimestamp { get; private set; }
+    
     public IObservable<Unit> WhenPicked => picking;
-    public IObservable<Unit> WhenDragged => dragging;
     public IObservable<Unit> WhenDropped => dropping;
+    public IObservable<PlayerAttackType> WhenAttacked => striking;
+    public IObservable<Unit> WhenBounced => bouncing;
     public IObservable<CardFace> WhenFlipped => flipping.DistinctUntilChanged();
-    public IObservable<float> WhenFaded => fading;
-    public IObservable<(Color, float)> WhenTinted => tinting;
-    public IObservable<(Color, float)> WhenFogged => fogging;
     public IObservable<Unit> WhenDestroyed => destruction;
 
-    protected virtual void Awake()
+    public void Construct(ICardView view)
     {
         OriginalValue = Value;
+        
+        view.FrontFace = frontFace;
+        view.BackFace = backFace;
+        view.Value = Value;
+        view.ToggleValueVisibility(shouldDisplayValue);
+        
+        this.view = view;
+    }
+
+    public virtual bool CanReflect(ICard other)
+    {
+        return false;
     }
 
     public abstract bool CanMatch(ICard withOther);
@@ -138,95 +111,152 @@ public abstract class Card : ScriptableObject, ICard
 
     public abstract bool CanClash(ICard other);
 
-    public void Clash(ICard other, Direction withDirection)
+    public IObservable<Unit> Clash(ICard other, Direction withDirection)
     {
-        other.Value--;
+        return Observable.Create<Unit>(observer =>
+        {
+            Strike(1);
 
-        clashing.OnNext(withDirection);
+            var sequence = view.Tilt(withDirection, TimeSpan.FromSeconds(0.25))
+                .OnComplete(observer.OnCompleted);
+
+            return Disposable.Create(() => sequence.Kill());
+        });
     }
 
-    public abstract bool CanBeImpacted();
+    public abstract bool CanBeStruck();
 
-    public virtual void Impact(int withValue)
+    public void Strike(int withValue, PlayerAttackType andAttackType)
     {
-        Hit(withValue);
+        Strike(withValue);
+        
+        if (andAttackType == PlayerAttackType.Ranged) 
+            view.Spin(2);
 
-        impacting.OnNext(Unit.Default);
+        striking.OnNext(andAttackType);
+        
+        if (Value <= 0)
+            Destroy();
     }
 
     public void Bind(ICardBond withBond)
     {
-        if (withBond == Bond || withBond == null)
+        if (withBond == bond || withBond == null)
             return;
         
-        Bond?.Release(this);
+        bond?.Release(this);
         
-        Bond = withBond;
+        bond = withBond;
         BindingTimestamp = DateTimeOffset.Now;
-
-        binding.OnNext(withBond.TransformBond);
+        
+        view.SetParent(withBond.TransformBond);
     }
 
     public void Pick()
     {       
+        view.Pick();
+        
+        view.SortingOrder = 100;
+        
         picking.OnNext(Unit.Default);
     }
     
     public void Drag(Vector3 byDeltaPosition)
-    {        
+    {
         LocalPosition += byDeltaPosition;
         
-        dragging.OnNext(Unit.Default);
+        view.LocalPosition = LocalPosition;
     }
 
     public void Drop()
     {
+        LocalPosition = arrangedPosition;
+        
+        view.Drop(arrangedPosition)
+            .OnComplete(() => Sort(Index));
+        
         dropping.OnNext(Unit.Default);
     }
 
-    public void Arrange(Vector3 atLocalPosition, int withIndex, CardArrangementMode andMode)
+    public void Arrange(Vector3 atLocalPosition, float withRotationAngle, int andIndex)
     {
-        LocalPosition = atLocalPosition;
-        Index = withIndex;
+        arrangedPosition = atLocalPosition;
+        Index = andIndex;
         
-        arranging.OnNext(andMode);
+        Move(arrangedPosition, CardMoveType.Lodging);
+        Rotate(withRotationAngle);
+        Sort(andIndex);
+    }
+
+    public void Move(Vector3 toLocalPosition, CardMoveType withType)
+    {
+        LocalPosition = toLocalPosition;
+        
+        view.MoveLocal(toLocalPosition);
+    }
+
+    public void Rotate(float toAngle)
+    {
+        rotationAngle = toAngle;
+
+        view.Rotate(Vector3.forward * rotationAngle);
+    }
+
+    public void Sort(int withIndex)
+    {
+        Index = withIndex;
+        view.SortingOrder = -Index * 10;
+    }
+    
+    public void Bounce()
+    {
+        bouncing.OnNext(Unit.Default);
     }
 
     public virtual void Flip(CardFace toFace)
     {
         face = toFace;
+
+        view.Flip(face, true);
+        
         flipping.OnNext(toFace);
     }
     
-    public void Fade(float toAlphaValue)
+    public IObservable<Unit> Fade(float toAlphaValue)
     {
-        fading.OnNext(toAlphaValue);
+        return view.Fade(toAlphaValue);
     }
 
-    public void Tint(Color withColor, float byFactor)
-    {
-        tinting.OnNext((withColor, byFactor));
-    }
-    
     public void Fog(Color withColor, float byFactor)
     {
-        fogging.OnNext((withColor, byFactor));
+        // TODO animate
+        view.Fog(withColor, byFactor);
     }
 
     public virtual void Destroy()
     {
-        Bond?.Release(this);
+        bond?.Release(this);
+        
+        view.KillMove();
+        view.FadeAwayAndDestroy();
         
         destruction.OnNext(Unit.Default);
         destruction.OnCompleted();
-    }
-    
-    public virtual int CompareTo(ICard other)
-    {
-        throw new NotImplementedException();
+        
+        Dispose();
     }
 
-    protected virtual void Hit(int withValue)
+    public void Dispose()
+    {
+        value?.Dispose();
+        picking?.Dispose();
+        dropping?.Dispose();
+        bouncing?.Dispose();
+        flipping?.Dispose();
+        destruction?.Dispose();
+    }
+    
+    protected virtual void Strike(int withValue)
     {
         Value -= withValue;
     }

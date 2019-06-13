@@ -1,16 +1,19 @@
+using System;
+using UniRx;
 using UnityEngine;
 
 public interface IPirateCard : ICard, ILootCarrier
 {
+    IObservable<Unit> WhenDefeated { get; }
 }
 
 [CreateAssetMenu(menuName = "Game/Card/Pirate")]
 public class PirateCard : Card, IPirateCard
 {
-    [SerializeField] [Range(1, 4)] private int lootMultiplier;
-    
     public override CardType Type => CardType.Pirate;
     public bool IsDead => Value <= 0;
+
+    public IObservable<Unit> WhenDefeated => WhenAttacked.Where(_ => Value <= 0).AsUnitObservable();
 
     public override bool CanMatch(ICard withOther)
     {
@@ -22,7 +25,7 @@ public class PirateCard : Card, IPirateCard
         if (!(withOther is IResourceCard resourceCard) || (resourceCard.ResourceType & ResourceType.WeaponMelee) == 0) 
             return;
         
-        Value -= withOther.Value;
+        Strike(withOther.Value, PlayerAttackType.Blow);
 
         withOther.Destroy();
     }
@@ -32,7 +35,7 @@ public class PirateCard : Card, IPirateCard
         return (other.Type & CardType.Merchant) != 0;
     }
 
-    public override bool CanBeImpacted()
+    public override bool CanBeStruck()
     {
         return true;
     }

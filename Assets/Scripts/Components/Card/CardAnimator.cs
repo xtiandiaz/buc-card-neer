@@ -11,29 +11,15 @@ public enum CardAnimationType
     Move
 }
 
-public interface ICardAnimator
-{
-    void Initialize(CardAnimationSettings withSettings, Transform andContentWrapper);
-    void Lift();
-    void Drop();
-    IObservable<Unit> DropAsObservable();
-    void Flip(CardFace toFace, bool whileAnimating);
-    void Tilt(Direction towardDirection, TimeSpan duringTime);
-    void Spin(int times);
-    Tween MoveLocal(Vector3 toPosition);
-    IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition, float duringSeconds);
-    void Kill(CardAnimationType animationType);
-}
-
-public class CardAnimator : MonoBehaviour, ICardAnimator
+public class CardAnimator : MonoBehaviour
 {
     [SerializeField] private CardFaceView frontFace;
     [SerializeField] private CardFaceView backFace;
         
     private CardAnimationSettings settings;
     private Transform contentWrapper;
-    private Tween moveTween, liftTween;
-    private Sequence flipSequence, tiltSequence;
+    private Tween moveTween, rotationTween;
+    private Sequence flipSequence, tiltSequence, pickDropSequence;
     private CardFace currentFace;
     
     public void Initialize(CardAnimationSettings withSettings, Transform andContentWrapper)
@@ -42,32 +28,41 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
         contentWrapper = andContentWrapper;
     }
 
-    public void Lift()
+    public void Pick()
     {
-        Kill(CardAnimationType.Lift);
-        liftTween = Lift(-settings.LiftDepth, settings.LiftDuration);
+        pickDropSequence?.Kill();
+        moveTween?.Kill();
+
+        pickDropSequence = DOTween.Sequence();
+        
+        pickDropSequence.Append(contentWrapper
+            .DOMoveZ(0, settings.LiftDuration));
+
+        pickDropSequence.Join(contentWrapper
+            .DOScale(1.1f, settings.LiftDuration));
+        
+        pickDropSequence.SetEase(settings.OutEase);
     }
 
-    public void Drop()
+    public Tween Drop(Vector3 toLocalPosition)
     {
-        Kill(CardAnimationType.Lift);
-        liftTween = Lift(0, settings.ReturnToLocationWerePickedDuration);
-    }
-    
-    public IObservable<Unit> DropAsObservable()
-    {
-        return Observable.Create<Unit>(observer =>
-        {
-            var tween = Lift(0, settings.LiftDuration);
+        pickDropSequence?.Kill();
+        moveTween?.Kill();
 
-            return Disposable.Create(() => tween.Kill());
-        });
+        pickDropSequence.Append(contentWrapper
+            .DOLocalMoveZ(0, settings.MoveDuration));
+        
+        pickDropSequence.Join(contentWrapper
+            .DOScale(1f, settings.MoveDuration));
+
+        pickDropSequence.SetEase(settings.OutEase);
+
+        return MoveLocal(toLocalPosition);
     }
-    
+
     public void Flip(CardFace toFace, bool whileAnimating)
     {
         Kill(CardAnimationType.Flip);
-        Kill(CardAnimationType.Lift);
 
         currentFace = toFace;
         
@@ -90,15 +85,11 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
                 .OnComplete(() => ToggleFace(toFace))
                 .SetEase(settings.InEase));
 
-        flipSequence.Join(Lift(-settings.LiftDepth, halfTweenDuration).SetEase(settings.InEase));
-
         flipSequence.Append(
             contentWrapper.DORotate(destEulerAngles, halfTweenDuration).SetEase(settings.OutEase));
-
-        flipSequence.Join(Lift(0, halfTweenDuration).SetEase(settings.OutEase));
     }
 
-    public void Tilt(Direction towardDirection, TimeSpan duringTime)
+    public Sequence Tilt(Direction towardDirection, TimeSpan duringTime)
     {
         Kill(CardAnimationType.Flip);
         Kill(CardAnimationType.Tilt);
@@ -114,6 +105,8 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
             contentWrapper.DORotate(originalRotation, settings.TiltDuration)
                 .SetDelay((float) duringTime.TotalSeconds)
                 .SetEase(settings.OutEase));
+
+        return tiltSequence;
     }
 
     public void Spin(int times)
@@ -139,12 +132,20 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
 
         return moveTween;
     }
+
+    public void Rotate(Vector3 toEulerAngles)
+    {
+        rotationTween?.Kill();
+
+        rotationTween = transform.DORotate(toEulerAngles, 0.25f)
+            .SetEase(settings.OutEase);
+    }
     
-    public IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition, float duringSeconds)
+    public IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition)
     {
         return Observable.Create<Unit>(observer =>
         {
-            var tween = transform.DOLocalMove(toPosition, duringSeconds)
+            var tween = transform.DOLocalMove(toPosition, settings.MoveDuration)
                 .SetEase(settings.OutEase)
                 .OnComplete(() =>
                 {
@@ -162,7 +163,7 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
         {
             case CardAnimationType.Lift:
                 
-                liftTween?.Kill();
+                pickDropSequence?.Kill();
                 
                 break;
             case CardAnimationType.Flip:
@@ -187,7 +188,7 @@ public class CardAnimator : MonoBehaviour, ICardAnimator
 
     private Tween Lift(float toDepth, float inSeconds)
     {
-        return contentWrapper.DOLocalMoveZ(toDepth, settings.LiftDuration).SetEase(settings.OutEase);
+        return contentWrapper.DOMoveZ(0, settings.LiftDuration).SetEase(settings.OutEase);
     }
 
     private Vector3 GetRotationEulerAnglesDestination(CardFace forFace)

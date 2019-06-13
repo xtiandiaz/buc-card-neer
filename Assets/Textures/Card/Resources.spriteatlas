@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Resources
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 057ef49c2ccb94364bff7c40fbaf4540, type: 3}
+    totalSpriteSurfaceArea: 1340000
+    bindAsDefault: 1
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: f4b843705e125434c8cc2cf50701a11b, type: 3}
+  - {fileID: 21300000, guid: c244a891d20d44bbe8c4be6fb1317350, type: 3}
+  - {fileID: 21300000, guid: 45494ca11809645c9b2c04fef74d0498, type: 3}
+  - {fileID: 21300000, guid: e535f8e23f8b244f2a19fb1e3dac3bea, type: 3}
+  - {fileID: 21300000, guid: ad870a06e519f4185a129e4813a998bb, type: 3}
+  - {fileID: 21300000, guid: ebf715b7741024f7cbb17f6c21a3b9dd, type: 3}
+  - {fileID: 21300000, guid: 8d004ab7b083e452fa85daffcd3ee4bf, type: 3}
+  - {fileID: 21300000, guid: 17c7f179f62aa4cf8a8b4acf276881fa, type: 3}
+  - {fileID: 21300000, guid: 8e7b16c9bc8674e62ab8af2f2462ea75, type: 3}
+  - {fileID: 21300000, guid: 1c8d13d9fb44e49a58caa6ed9c137313, type: 3}
+  - {fileID: 21300000, guid: 5cdc031aeba884e8ea0ae9c583dc414b, type: 3}
+  - {fileID: 21300000, guid: 2b0916aad59084508a5643a37bbc3722, type: 3}
+  - {fileID: 21300000, guid: 696496bd42a7b4638a412440f1ad26b7, type: 3}
+  - {fileID: 21300000, guid: 660a931e5ce194a7baa14d20c1452089, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - Crate
+  - Any
+  - Gem
+  - Food
+  - WeaponRanged
+  - Monster
+  - WeaponMelee
+  - WeaponRanged
+  - Medicine
+  - WeaponMelee
+  - Barrel
+  - Medicine
+  - Artifact
+  - Chest
+  m_Tag: Resources
+  m_IsVariant: 0

@@ -7,14 +7,14 @@ using Zenject;
 
 public interface IShip
 {
+    ISlot[] Slots { get; }
     ISlot PlayerSlot { get; }
-
+    
     IObservable<ICard> WhenBoarded { get; }
-    IObservable<Unit> WhenArmed { get; }
+    IObservable<ICard> WhenMatched { get; }
     IObservable<int> WhenShot { get; }
-
-    void Shoot();
-    void Store(IResourceCard card);
+    
+    IObservable<IResourceCard> BoardAndStore(IResourceCard card);
     void Lock();
     void Unlock();
 }
@@ -24,48 +24,98 @@ public class Ship : IShip
     public class Factory : PlaceholderFactory<ISlot[], Ship>
     {
     }
-
-    private readonly Subject<int> shooting = new Subject<int>();
-    private readonly ISlot[] slots;
+    
     private readonly ISlot boardingSlot;
     private readonly IDictionary<ResourceType, IStorageSlot> storage;
     private ICardProvider cardProvider;
 
     protected Ship(ISlot[] slots)
     {
-        this.slots = slots;
-        boardingSlot = this.slots.FirstOrDefault(slot => slot.Type == SlotType.Boarding);
+        Slots = slots;
+        boardingSlot = Slots.FirstOrDefault(slot => slot.Type == SlotType.Boarding);
         storage = slots.Where(slot => slot.Type == SlotType.Storage).Cast<IStorageSlot>()
             .ToDictionary(resSlot => resSlot.ResourceMask, resSlot => resSlot);
 
-        PlayerSlot = this.slots.FirstOrDefault(slot => slot.Type == SlotType.Player);
+        PlayerSlot = Slots.FirstOrDefault(slot => slot.Type == SlotType.Player);
     }
 
+    public ISlot[] Slots { get; }
     public ISlot PlayerSlot { get; }
 
     public IObservable<ICard> WhenBoarded => boardingSlot.WhenLodged
         .Where(card => !card.IsBoarded)
-        .Do(card => card.IsBoarded = true);
+        .SelectMany(card =>
+        {
+            if (card is IResourceCard resource)
+                return BoardAndStore(resource);
+            
+            return Board(card);
+        });
 
-    public IObservable<Unit> WhenArmed => boardingSlot.WhenLodged
+    public IObservable<ICard> WhenMatched => Slots
+        .Select(slot => slot.WhenMatched)
+        .Merge();
+
+    public IObservable<int> WhenShot => boardingSlot.WhenLodged
         .Where(card => (card.Type & CardType.WeaponRanged) != 0 && card.IsStored)
-        .AsUnitObservable();
-
-    public IObservable<int> WhenShot => shooting;
-
-    public void Shoot()
+        .Do(_ => Lock())
+        .Delay(TimeSpan.FromSeconds(0.5))
+        .Select(Shoot);
+    
+    public IObservable<IResourceCard> BoardAndStore(IResourceCard resource)
     {
-        var weapon = boardingSlot.Peek();
-        if ((weapon.Type & CardType.WeaponRanged) == 0)
-            return;
-
-        shooting.OnNext(weapon.Value);
-
-        weapon.Destroy();
+        return Board(resource)
+            .Select(_ => resource)
+            .Delay(TimeSpan.FromSeconds(0.3))
+            .Do(Store);
     }
 
-    public void Store(IResourceCard card)
+    public void Lock()
     {
+        foreach (var slot in Slots)
+            slot.Lock();
+    }
+
+    public void Unlock()
+    {
+        foreach (var slot in Slots)
+        {
+            if ((slot.Type & SlotType.Player) != 0)
+                continue;
+
+            slot.Unlock();
+        }
+    }
+    
+    private IObservable<ICard> Board(ICard card)
+    {
+        return Observable.Create<ICard>(observer =>
+        {
+            card.IsBoarded = true;
+
+            if (card is IResourceCard resource && resource.IsLocked)
+                return resource.WhenUnlocked
+                    .Select(_ => resource)
+                    .Do(_ => resource.Flip(CardFace.Front))
+                    .Subscribe(observer);
+
+            card.Flip(CardFace.Front);
+
+            observer.OnNext(card);
+            observer.OnCompleted();
+
+            return Disposable.Create(() => { });
+        });
+    }
+    
+    private void Store(IResourceCard card)
+    {
+        if (card.IsStored)
+        {
+            Debug.LogError("[Ship] Apparently, the Card is already stored.");
+            return;
+        }
+        
         card.IsStored = true;
 
         var slot = storage.FirstOrDefault(s => (s.Key & card.ResourceType) != 0);
@@ -77,21 +127,16 @@ public class Ship : IShip
 
         slot.Value.Lodge(card);
     }
-
-    public void Lock()
+    
+    private int Shoot(ICard withCard)
     {
-        foreach (var slot in slots)
-            slot.Lock();
-    }
+        if ((withCard.Type & CardType.WeaponRanged) == 0)
+            return 0;
 
-    public void Unlock()
-    {
-        foreach (var slot in slots)
-        {
-            if ((slot.Type & SlotType.Player) != 0)
-                continue;
+        var weaponValue = withCard.Value;
 
-            slot.Unlock();
-        }
+        withCard.Destroy();
+
+        return weaponValue;
     }
 }

@@ -16,8 +16,7 @@ MonoBehaviour:
   capacity: 0
   shouldStartLocked: 0
   entryway: 0
+  lodgingFace: 0
   arrangement: {fileID: 11400000, guid: abf818a7cdd644848a362b3e4c9abcf2, type: 2}
-  doesSelfArrangeOnLodging: 1
-  doesSelfArrangeOnReleasing: 1
   highlightColor: {r: 0.003680706, g: 1, b: 0, a: 1}
-  resourceMask: 896
+  resourceMask: 1920

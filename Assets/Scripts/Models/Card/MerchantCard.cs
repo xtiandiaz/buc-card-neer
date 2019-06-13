@@ -57,7 +57,7 @@ public class MerchantCard : Card, IMerchantCard
         return (other.Type & CardType.Inspector) != 0;
     }
 
-    public override bool CanBeImpacted()
+    public override bool CanBeStruck()
     {
         return false;
     }

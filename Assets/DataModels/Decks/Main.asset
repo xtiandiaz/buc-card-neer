@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d7ef6f36f2546b88fa17b44c711103f, type: 3}
   m_Name: Main
   m_EditorClassIdentifier: 
+  shouldShuffleOnAwake: 1
   cards:
   - {fileID: 11400000, guid: 7ce8f165adebe4040b60f7c85a5b4ca5, type: 2}
   - {fileID: 11400000, guid: 7ce8f165adebe4040b60f7c85a5b4ca5, type: 2}
@@ -70,3 +71,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 31d8cd05c1a79491d8e04149824d1d72, type: 2}
   - {fileID: 11400000, guid: 2176889688f2945a4b1b4abfbb44e32e, type: 2}
   - {fileID: 11400000, guid: 3b42725e1b2764c7fb6ddadb4ee3b2d8, type: 2}
+  - {fileID: 11400000, guid: cda5ae37284a74cbab78f2348c4e9aeb, type: 2}
+  - {fileID: 11400000, guid: cda5ae37284a74cbab78f2348c4e9aeb, type: 2}
+  - {fileID: 11400000, guid: cda5ae37284a74cbab78f2348c4e9aeb, type: 2}

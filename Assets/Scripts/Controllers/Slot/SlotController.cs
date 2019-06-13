@@ -19,8 +19,6 @@ public class SlotController : ISlotController
     
     private static readonly Subject<(ICard, ISlot)> CardPicking = new Subject<(ICard, ISlot)>();
     private static readonly Subject<(ICard, ISlot, Vector3)> CardDropping = new Subject<(ICard, ISlot, Vector3)>();
-    
-    [Inject] private IMoveRouter moveRouter;
 
     protected SlotController(ISlot model, ISlotView view)
     {
@@ -30,8 +28,28 @@ public class SlotController : ISlotController
 
     [Inject]
     public virtual void Initialize()
-    {        
-        disposables.Add(model.WhenToggledHighlighting.Subscribe(view.ToggleHighlight));
+    {
+        #region Appearance
+
+        disposables.Add(model.WhenToggledHighlighting
+            .Subscribe(view.ToggleHighlight));
+
+        #endregion
+        
+        #region Arrangement
+
+        disposables.Add(model.WhenLodged
+            .Subscribe(card =>
+            {
+                var lodgingFace = model.Settings.LodgingFace;
+                
+                if (lodgingFace != LodgingFace.Current)
+                    card.Flip((CardFace) lodgingFace);
+                
+                model.Arrange();
+            }));
+
+        #endregion
         
         #region Picking
 
@@ -44,7 +62,8 @@ public class SlotController : ISlotController
             .Subscribe(cardFromSlot =>
             {
                 var (card, slot) = cardFromSlot;
-                model.ToggleHighlight(model.CanMatch(card, slot) || model.CanLodge(card, slot));
+                
+                model.ToggleHighlight(model.CanDefer(card) || model.CanMatch(card, slot) || model.CanLodge(card, slot));
             }));
 
         #endregion
@@ -60,18 +79,17 @@ public class SlotController : ISlotController
                 .Do(pickedCard.Drag)
                 .Last()
                 .Select(_ => new
-                {
-                    Card = pickedCard,
-                    Position = new Vector3(
-                        model.Position.x + pickedCard.LocalPosition.x,
-                        model.Position.y + pickedCard.LocalPosition.y)
-                }))
+                    {
+                        Card = pickedCard,
+                        Position = new Vector3(
+                            model.Position.x + pickedCard.LocalPosition.x,
+                            model.Position.y + pickedCard.LocalPosition.y)
+                    }))
             .RepeatSafe()
             .Subscribe(droppedCardAtPosition =>
             {
                 droppedCardAtPosition.Card.Drop();
-                model.Arrange();
-                
+
                 // Push Card dropping from Slot at Position:
                 CardDropping.OnNext((droppedCardAtPosition.Card, model, droppedCardAtPosition.Position));
             }));
@@ -84,27 +102,25 @@ public class SlotController : ISlotController
             .Do(_ => model.ToggleHighlight(false))
             .Where(cardFromSlotAtPosition => 
                 model != cardFromSlotAtPosition.Item2 && model.DoesContain(cardFromSlotAtPosition.Item3))
-            .Subscribe(cardFromSlotAtPosition =>
+            .SelectMany(cardFromSlotAtPosition =>
             {
                 var (card, slot, position) = cardFromSlotAtPosition;
 
+                if (model.CanDefer(card))
+                {
+                    model.KnockOut();
+
+                    return slot.Defer(card);
+                }
+                
                 if (model.CanMatch(card, slot))
-                {
                     model.Match(card);
-                    moveRouter.OnNext();
-                }
                 else if (model.CanLodge(card, slot))
-                {
                     model.Lodge(card);
-                    moveRouter.OnNext();
-                }
-            }));
 
-        #endregion
-
-        #region Arrangement
-
-        disposables.Add(model.WhenLodged.Subscribe(_ => model.Arrange()));
+                return Observable.ReturnUnit();
+            })
+            .Subscribe());
 
         #endregion
     }

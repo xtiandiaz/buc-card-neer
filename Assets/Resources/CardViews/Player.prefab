@@ -249,7 +249,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4258162417991596720}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1, y: 1.3, z: 0}
+  m_LocalPosition: {x: 0.95, y: 1.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4448150071633430010}
@@ -459,7 +459,6 @@ MonoBehaviour:
   frontFace: {fileID: 2394089882030168721}
   backFace: {fileID: 1036552923604472217}
   contentWrapper: {fileID: 4196249751627446869}
-  sortingGroup: {fileID: 0}
   coinsLabel: {fileID: 886440129847321570}
 --- !u!114 &9099243857038372407
 MonoBehaviour:
@@ -539,7 +538,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4683056772038271617}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1, y: -1.3, z: 0}
+  m_LocalPosition: {x: -0.95, y: -1.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4448150071633430010}

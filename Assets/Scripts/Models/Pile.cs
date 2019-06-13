@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using Zenject;
 
 public enum PileInsertionMode
 {
@@ -26,10 +24,10 @@ public interface IPile
 public class Pile : IPile
 {
     private readonly List<ICard> contents;
-    private readonly ICardArrangement arrangement;
+    private readonly IPileCardArrangement arrangement;
     private readonly int? extent;
 
-    public Pile(ICardArrangement arrangement, int? extent)
+    public Pile(IPileCardArrangement arrangement, int? extent)
     {
         this.arrangement = arrangement;
         this.extent = extent;
@@ -61,7 +59,7 @@ public class Pile : IPile
             default:
                 return false;
         }
-        
+
         return true;
     }
 
@@ -74,24 +72,19 @@ public class Pile : IPile
     {
         if (contents.Count < 2)
             return;
-        
+
         contents.Sort(usingComparer);
-        
-        Arrange(CardArrangementMode.Immediate);
+
+        arrangement.OnSorted(contents);
     }
 
     public void Arrange()
     {
-        Arrange(CardArrangementMode.Transitional);
+        arrangement?.Apply(contents, extent);
     }
 
     public bool DoesContain(ICard card)
     {
         return contents.Contains(card);
-    }
-
-    private void Arrange(CardArrangementMode withMode)
-    {
-        arrangement?.Apply(contents, extent, withMode);
     }
 }

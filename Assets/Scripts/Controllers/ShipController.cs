@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UniRx;
 using Zenject;
 
@@ -11,8 +12,6 @@ public class ShipController : IShipController
     public class Factory : PlaceholderFactory<IShip, IShipView, ShipController>
     {
     }
-    
-    private static readonly TimeSpan ShootingDelay = TimeSpan.FromSeconds(0.25);
 
     private readonly IShip model;
     private readonly IShipView view;
@@ -29,31 +28,12 @@ public class ShipController : IShipController
     [Inject]
     public void Initialize()
     {
-        #region Boarding & Storing
+        #region Arrangement
 
-        disposables.Add(model.WhenBoarded
-            .Do(card =>
-            {
-                if (!(card is IResourceCard resourceCard) || !resourceCard.IsLocked)
-                    card.Flip(CardFace.Front);
-            })
-            .Where(card => card is IResourceCard)
-            .Cast<ICard, IResourceCard>()
-            .Delay(TimeSpan.FromSeconds(cardAnimationSettings.FlipDuration))
-            .SelectMany(resCard =>
-                resCard.IsLocked ? resCard.WhenUnlocked.Select(_ => resCard) : Observable.Return(resCard))
-            .Do(model.Store)
-            .Subscribe());
-
-        #endregion
-
-        #region Shooting
-
-        disposables.Add(model.WhenArmed
-            .Do(_ => model.Lock())
-            .Delay(ShootingDelay)
-            .Do(_ => model.Shoot())
-            .Subscribe());
+        disposables.Add(model.Slots
+            .Select(slot => slot.WhenReleased.Select(_ => slot))
+            .Merge()
+            .Subscribe(slot => slot.Arrange()));
 
         #endregion
     }

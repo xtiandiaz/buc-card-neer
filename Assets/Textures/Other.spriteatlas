@@ -32,16 +32,14 @@ SpriteAtlas:
     packables:
     - {fileID: 102900000, guid: 5962c050aaa0d49509a4a57f66647618, type: 3}
     - {fileID: 2800000, guid: 5f9499e54adc14529a032a43fbd601c2, type: 3}
-    totalSpriteSurfaceArea: 30000
+    totalSpriteSurfaceArea: 50000
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
-  - {fileID: 21300000, guid: 46e370e0bcbbb426d9be2e3abe9b5367, type: 3}
+  - {fileID: 21300000, guid: c40f4392584bc41558fa6d02d7875552, type: 3}
   - {fileID: 21300000, guid: 5f9499e54adc14529a032a43fbd601c2, type: 3}
-  - {fileID: 21300000, guid: c9d88dafb542e4bcd93770c57bd53f79, type: 3}
   m_PackedSpriteNamesToIndex:
-  - CardSlot0
+  - CardSlot
   - CardShadow
-  - CardSlot1
   m_Tag: Other
   m_IsVariant: 0

@@ -12,6 +12,11 @@ public class SupplySlot : Slot
     {
     }
 
+    public override bool CanDefer(ICard card)
+    {
+        return false;
+    }
+
     protected override bool CanMatch(ICard withCard)
     {
         // Can't match against any Cards provided by the player

@@ -4,19 +4,26 @@
 	{
         _MainTex("Base (RGB)", 2D) = "white" {}
         _FadeColor("Fade Color (RGB)", Color) = (1,1,1,1)
+        _StartColor("Start Color (RGB)", Color) = (1,1,1,1)
+        _EndColor("End Color (RGB)", Color) = (1,1,1,1)
         _Curvature("Curvature", Range(0, 1)) = 0
         _Depth("Depth", Range(0, 100)) = 0
         _PivotOffset("Pivot Offset", Float) = 0
         _TidalFrequency("Tidal Frequency", Range(0, 50)) = 0
-        _TidalAmplitude("Tidal Amplitude", Range(0, 0.1)) = 0
+        _TidalAmplitude("Tidal Amplitude", Range(0, 1)) = 0
   	}
 	
 	SubShader 
 	{
-		Tags { "RenderType"="Opaque" }
+		Tags 
+		{ 
+		    "RenderType"="Opaque" 
+		    "Queue"="Geometry"
+		}
+		
 		Pass
 		{
-			Lighting Off
+			Lighting Off			
 
 			CGPROGRAM
 			#pragma vertex vert
@@ -26,6 +33,8 @@
 			sampler2D _MainTex;
 			uniform float4 _MainTex_ST;
 			half4 _FadeColor;
+			half4 _StartColor;
+			half4 _EndColor;
 			float _Curvature;
 			float _Depth;
 			float _PivotOffset;
@@ -50,9 +59,9 @@
                 
                 float factor = saturate(IN.pos.y - _PivotOffset);
                 float3 vOffset = float4(
-                    0.0f, 
+                    0, 
+                    0, 
                     (cos(IN.pos.x * _TidalFrequency + _Time[2]) + sin(IN.pos.y * _TidalFrequency + _Time[1])) * _TidalAmplitude, 
-                    (factor * factor) * _Curvature * _Depth, 
                     0.0f);
                 
                 o.pos = UnityObjectToClipPos(IN.pos + vOffset);
@@ -65,7 +74,7 @@
 			fixed4 frag(v2f IN) : SV_Target
 			{
 			    float v = IN.uv.y / _MainTex_ST.y;
-			    return lerp(tex2D(_MainTex, IN.uv), _FadeColor, v * v * _Curvature);
+			    return lerp(_StartColor, _EndColor, IN.uv.y);
 			}
 			ENDCG
 		}

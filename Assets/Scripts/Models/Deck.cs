@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UniRx;
 using UnityEngine;
-using Zenject;
 
 public interface IDeck : ICardProvider
 {
@@ -13,17 +12,21 @@ public interface IDeck : ICardProvider
 [CreateAssetMenu(fileName = "Deck", menuName = "Game/Deck", order = 1)]
 public class Deck : ScriptableObject, IDeck
 {
-    public class Factory : PlaceholderFactory<IDeck>
-    {
-    }
-    
     private readonly Subject<ICard> provision = new Subject<ICard>();
-    
+
+    [SerializeField] private bool shouldShuffleOnAwake = true;
     [SerializeField] private List<Card> cards;
+    
     private Queue<ICard> queue;
 
     public IObservable<ICard> WhenProvided => provision;
     public bool IsExhausted { get; private set; }
+
+    private void Awake()
+    {
+        if (shouldShuffleOnAwake)
+            Shuffle();
+    }
 
     public void Shuffle()
     {

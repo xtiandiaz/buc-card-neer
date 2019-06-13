@@ -16,6 +16,7 @@ public class GameController : IGameController
     private readonly IDeck deck;
     private readonly IPlayerCard playerCard;
     private readonly IShip ship;
+    private readonly ISea sea;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     public GameController(
@@ -26,7 +27,8 @@ public class GameController : IGameController
         ICardFactory cardFactory,
         IDeck deck,
         IPlayerCard playerCard,
-        IShip ship
+        IShip ship,
+        ISea sea
         )
     {
         this.model = model;
@@ -37,6 +39,7 @@ public class GameController : IGameController
         this.deck = deck;
         this.playerCard = playerCard;
         this.ship = ship;
+        this.sea = sea;
     }
 
     public void Initialize()
@@ -45,6 +48,10 @@ public class GameController : IGameController
         cardFactory.Create(playerCard);
         
         ship.PlayerSlot?.Lodge(playerCard);
+
+        disposables.Add(sea
+            .Supply()
+            .Subscribe());
 
         #region Conclusion
 

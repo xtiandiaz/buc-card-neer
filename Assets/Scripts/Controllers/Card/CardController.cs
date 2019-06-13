@@ -2,6 +2,7 @@ using System;
 using UniRx;
 using UnityEngine;
 using Zenject;
+using Random = UnityEngine.Random;
 
 public interface ICardController : IInitializable, IDisposable
 {
@@ -10,12 +11,9 @@ public interface ICardController : IInitializable, IDisposable
 public abstract class CardController : ICardController
 {
     protected readonly CompositeDisposable disposables = new CompositeDisposable();
-    private readonly CompositeDisposable lateDisposables = new CompositeDisposable();
     
-    private static readonly TimeSpan ClashTiltTimeSpan = TimeSpan.FromSeconds(0.25f);
     private readonly ICard model;
     private readonly ICardView view;
-    private readonly GameCamera gameCamera;
 
     [Inject] private Viewport viewport;
     [Inject] private BoardLayoutSettings layoutSettings;
@@ -29,93 +27,25 @@ public abstract class CardController : ICardController
     [Inject]
     public virtual void Initialize()
     {
-        view.FrontFace = model.FrontFace;
-        view.BackFace = model.BackFace;
-        view.Position = (viewport.Size.y + layoutSettings.CardSize.y) * 0.5f * Vector2.up; // Dealing position
-
-        disposables.Add(model.ValueAsObservable.Subscribe(value =>
-        {
-            view.Value = value;
-
-            if (value <= 0)
-                model.Destroy();
-        }));
+        var dealingPosition = (viewport.Size.y + layoutSettings.CardSize.y) * 0.5f * Vector2.up;
         
-        disposables.Add(model.WhenFlipped.Subscribe(face => view.Flip(face, true)));
+        view.Position = dealingPosition;
 
-        #region Binding & Arrangement
-
-        disposables.Add(model.WhenBound.Subscribe(view.SetParent));
+        #region Transform
         
-        disposables.Add(model.WhenArranged
-            .Do(mode =>
+        disposables.Add(model.WhenBounced
+            .Subscribe(_ => 
             {
-                view.SortingOrder = -model.Index * 10;
-                
-                if (mode == CardArrangementMode.Transitional)
-                    view.MoveLocal(model.LocalPosition);
-                else
-                    view.LocalPosition = model.LocalPosition;
-                
-            })
-            .Subscribe());
-
-        #endregion
-
-        #region Interaction
-
-        disposables.Add(model.WhenPicked.Subscribe(_ => 
-        {
-            view.OnPicked();
-            view.SortingOrder = layoutSettings.FloatingCardSortingOrder;
-        }));
-        
-        disposables.Add(model.WhenDragged.Subscribe(_ => view.LocalPosition = model.LocalPosition));
-        
-        disposables.Add(model.WhenDropped
-            .SelectMany(_ => view.OnDropped())
-            .Subscribe());
-
-        #endregion
-
-        #region Effects
-
-        disposables.Add(model.WhenFaded.Subscribe(view.Fade));
-        
-        disposables.Add(model.WhenTinted.Subscribe(withColorByFactor => 
-            view.Tint(withColorByFactor.Item1, withColorByFactor.Item2)));
-        
-        disposables.Add(model.WhenFogged.Subscribe(withColorByFactor =>
-            view.Fog(withColorByFactor.Item1, withColorByFactor.Item2)));
-
-        #endregion
-
-        #region Clashing
-
-        disposables.Add(model.WhenClashed
-            .Subscribe(withDirection => view.Tilt(withDirection, ClashTiltTimeSpan)));
-        
-        #endregion
-
-        #region Impacting
-
-        lateDisposables.Add(model.WhenImpacted
-            .Subscribe(_ => view.Spin(2)));
+                view.MoveLocal(dealingPosition + Vector2.down * layoutSettings.CardSize.y);
+                view.Rotate(Random.Range(5f, 15f) * (Random.value < 0.5f ? -1f : 1f) * Vector3.forward);
+            }));
 
         #endregion
 
         #region Destruction
 
-        lateDisposables.Add(model.WhenDestroyed
-            .Do(_ => disposables.Clear())
-            .ContinueWith(view.FadeAsObservable(0))
-            .Subscribe(
-                _ => 
-                {
-                    view.Destroy();
-                    Dispose();
-                },
-                e => Debug.LogError(e.Message)));
+        disposables.Add(model.WhenDestroyed
+            .Subscribe(_ => Dispose()));
 
         #endregion
     }
@@ -123,7 +53,6 @@ public abstract class CardController : ICardController
     public void Dispose()
     {
         disposables.Dispose();
-        lateDisposables.Dispose();
     }
 }
 
