@@ -10,16 +10,9 @@ public interface IShipView
 
 public class ShipView : MonoBehaviour, IShipView
 {
-    public class Factory : PlaceholderFactory<ShipView>
-    {
-    }
-    
     [SerializeField] private SlotView[] slots;
     [SerializeField] private SpriteRenderer hullBackground;
-    [SerializeField] private ShipSettings animatorSettings;
-    
-    private IShipAnimator animator;
-    
+
     public ISlotView[] Slots => slots;
     public Vector2 HullSize => hullBackground.size;
 

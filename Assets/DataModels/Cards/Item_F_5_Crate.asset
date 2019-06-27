@@ -9,15 +9,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5adb07559524e4f956679be71fcfc98, type: 3}
+  m_Script: {fileID: 11500000, guid: 734b76756e7c4804b06550fb86570ac2, type: 3}
   m_Name: Item_F_5_Crate
   m_EditorClassIdentifier: 
-  value:
-    value: 5
-  frontFace: {fileID: 21300000, guid: 64a8af711c5b24970b443dee89b38ca2, type: 3}
-  backFace: {fileID: 21300000, guid: 3524d803fc7b741fdbaa13e573d40f7c, type: 3}
-  container: {fileID: 21300000, guid: f4b843705e125434c8cc2cf50701a11b, type: 3}
-  item: {fileID: 21300000, guid: c244a891d20d44bbe8c4be6fb1317350, type: 3}
+  type: 16
   suit: {fileID: 11400000, guid: 83397d50a3fc04695a825c34932e8b14, type: 2}
-  lockValue:
-    value: 0
+  value: 5
+  shouldDisplayValue: 1
+  dealingFace: 1
+  lockValue: 0
+  frontCover: {fileID: 21300000, guid: 64a8af711c5b24970b443dee89b38ca2, type: 3}
+  backCover: {fileID: 21300000, guid: 3524d803fc7b741fdbaa13e573d40f7c, type: 3}
+  frontMotif: {fileID: 21300000, guid: c244a891d20d44bbe8c4be6fb1317350, type: 3}
+  backMotif: {fileID: 21300000, guid: f4b843705e125434c8cc2cf50701a11b, type: 3}
+  viewPrefab: {fileID: 6560927429145502690, guid: 75635153fc6794d08a09179ef9122a10,
+    type: 3}

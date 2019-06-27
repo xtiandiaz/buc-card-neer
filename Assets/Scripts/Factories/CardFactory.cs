@@ -1,105 +1,73 @@
 using System;
 using UniRx;
-using UnityEngine;
 using Zenject;
+using UnityEngine;
 
-public interface ICardFactory : IFactory<ICard, ICard>, IDisposable
+public interface ICardFactory : IFactory<ICardModel, ICard>, IDisposable
 {
-    ICard Create(ICard forModel);
 }
 
 public class CardFactory : ICardFactory
 {
     private readonly DiContainer container;
-    private readonly CardView.Factory viewFactory;
-    private readonly PirateCardController.Factory controllerFactoryFoe;
-    private readonly MerchantCardController.Factory controllerFactoryMerchant;
-    private readonly InspectorCardController.Factory controllerFactoryInspector;
-    private readonly ResourceCardController.Factory controllerFactoryResource;
-    private readonly PlayerCardController.Factory controllerFactoryPlayer;
+    private readonly Card.Factory cardFactory;
+    private readonly PlayerCard.Factory playerFactory;
+    private readonly Viewport viewport;
+    private readonly IBoardModel boardModel;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private CardFactory(
         DiContainer container,
-        CardView.Factory viewFactory,
-        PirateCardController.Factory controllerFactoryFoe,
-        MerchantCardController.Factory controllerFactoryMerchant, 
-        InspectorCardController.Factory controllerFactoryInspector, 
-        ResourceCardController.Factory controllerFactoryResource, 
-        PlayerCardController.Factory controllerFactoryPlayer
+        Card.Factory cardFactory,
+        PlayerCard.Factory playerFactory, 
+        IBoardModel boardModel,
+        Viewport viewport
         )
     {
         this.container = container;
-        this.viewFactory = viewFactory;
-        this.controllerFactoryFoe = controllerFactoryFoe;
-        this.controllerFactoryMerchant = controllerFactoryMerchant;
-        this.controllerFactoryInspector = controllerFactoryInspector;
-        this.controllerFactoryResource = controllerFactoryResource;
-        this.controllerFactoryPlayer = controllerFactoryPlayer;
-    }
-    
-    public ICard Create(ICard forModel)
-    {
-        container.Inject(forModel);
-
-        var view = viewFactory.Create(GetViewResourcePath(forModel.Type));
-
-        forModel.Construct(view);
-        
-        disposables.Add(CreateController(forModel, view));
-        
-        return forModel;
+        this.cardFactory = cardFactory;
+        this.playerFactory = playerFactory;
+        this.viewport = viewport;
+        this.boardModel = boardModel;
     }
 
-    private CardController CreateController(ICard forModel, ICardView andView)
+    public ICard Create(ICardModel fromModel)
     {
-        switch (forModel.Type)
+        var view = CreateView(fromModel);
+        var card = CreateCard(fromModel, view);
+
+        disposables.Add(card);
+
+        return card;
+    }
+
+    private ICard CreateCard(ICardModel withModel, ICardView andView)
+    {
+        switch (withModel.Type)
         {
-            case CardType.Pirate:
-                
-                return controllerFactoryFoe.Create((PirateCard) forModel, (PirateCardView) andView);
-            
-            case CardType.Merchant:
-                
-                return controllerFactoryMerchant.Create((MerchantCard) forModel, (MerchantCardView) andView);
-            
-            case CardType.Inspector:
-                
-                return controllerFactoryInspector.Create((IInspectorCard) forModel, (IInspectorCardView) andView);
-            
             case CardType.Player:
-                
-                return controllerFactoryPlayer.Create((PlayerCard) forModel, (PlayerCardView) andView);
-            
+                return playerFactory.Create((IPlayerCardModel) withModel, (IPlayerCardView) andView);
             default:
-                
-                if ((forModel.Type & CardType.Resource) != 0)
-                    return controllerFactoryResource.Create((ResourceCard) forModel, (ResourceCardView) andView); 
-                
-                throw new ArgumentOutOfRangeException();
+                return cardFactory.Create(withModel, andView);
         }
     }
 
-    private string GetViewResourcePath(CardType forCardType)
+    private ICardView CreateView(ICardModel fromModel)
     {
-        const string basePath = "CardViews/";
+        var view = container.InstantiatePrefabForComponent<ICardView>(fromModel.ViewPrefab);
+
+        view.Value = fromModel.Value;
         
-        switch (forCardType)
-        {
-            case CardType.Player:
-            case CardType.Pirate:
-            case CardType.Merchant:
-            case CardType.Inspector:
+        view.FrontCover = fromModel.FrontCover;
+        view.BackCover = fromModel.BackCover;
+        view.FrontMotif = fromModel.FrontMotif;
+        view.BackMotif = fromModel.BackMotif;
+        
+        view.ToggleValueVisibility(fromModel.ShouldDisplayValue);
+        
+        view.Position = (viewport.Size.y + boardModel.CardSize.y) * 0.5f * Vector2.up;
 
-                return $"{basePath}{forCardType}";
-
-            default:
-                
-                if ((forCardType & CardType.Resource) != 0)
-                    return $"{basePath}Resource"; 
-                
-                throw new ArgumentOutOfRangeException(nameof(forCardType), forCardType, null);
-        }
+        return view;
     }
 
     public void Dispose()

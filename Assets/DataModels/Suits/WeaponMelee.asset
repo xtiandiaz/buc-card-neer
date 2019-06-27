@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c09d5aa2d7774994982771bace4d72f9, type: 3}
   m_Name: WeaponMelee
   m_EditorClassIdentifier: 
-  resourceType: 128
+  type: 128
   icon: {fileID: 21300000, guid: 1c8d13d9fb44e49a58caa6ed9c137313, type: 3}
   color: {r: 0.05882353, g: 0.7254902, b: 0.69411767, a: 1}

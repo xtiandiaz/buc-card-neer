@@ -16,7 +16,7 @@ public class GameMenuView : MenuView, IGameMenuView
 
     public Button ResetControl => resetButton;
 
-    [Inject]
+    /*[Inject]
     private void Initialize(IGameStatusNotifier gameStatusNotifier)
     {
         contentWrapper.SetActive(false);
@@ -28,5 +28,5 @@ public class GameMenuView : MenuView, IGameMenuView
                 contentWrapper.SetActive(true);
             })
             .AddTo(this);
-    }
+    }*/
 }

@@ -5,7 +5,7 @@ using Zenject;
 
 public interface ISlotView
 {
-    ISlotSettings Settings { get; }
+    SlotType Type { get; }
     Transform Transform { get; }
     Bounds Bounds { get; }
     
@@ -20,14 +20,14 @@ public interface ISlotView
 
 public class SlotView : MonoBehaviour, ISlotView
 {
-    [SerializeField] private SlotSettings settings;
+    [SerializeField] private SlotType type;
     [SerializeField] private SpriteRenderer faceRenderer;
     [SerializeField] private GestureListener gestureListener;
 
     private Color defaultFaceColor;
-    private BoardLayoutSettings layoutSettings;
+    private IBoardModel boardModel;
 
-    public ISlotSettings Settings => settings;
+    public SlotType Type => type;
     public Transform Transform => transform;
     public Bounds Bounds => faceRenderer.bounds;
     
@@ -38,11 +38,11 @@ public class SlotView : MonoBehaviour, ISlotView
 
     [Inject]
     private void Initialize(
-        BoardLayoutSettings layoutSettings, 
+        IBoardModel boardModel, 
         IWorldPointProvider worldPointProvider
         )
     {
-        this.layoutSettings = layoutSettings;
+        this.boardModel = boardModel;
 
         defaultFaceColor = faceRenderer.color;
         
@@ -53,14 +53,14 @@ public class SlotView : MonoBehaviour, ISlotView
     {
         if (on)
         {
-            faceRenderer.color = settings.HighlightColor;
-            faceRenderer.sortingLayerName = layoutSettings.CardSortingLayerName;
-            faceRenderer.sortingOrder = layoutSettings.FloatingCardSortingOrder - 1;
+            faceRenderer.color = Color.green;
+            faceRenderer.sortingLayerName = boardModel.CardSortingLayerName;
+            faceRenderer.sortingOrder = boardModel.FloatingCardSortingOrder - 1;
         }
         else
         {
             faceRenderer.color = defaultFaceColor;
-            faceRenderer.sortingLayerName = layoutSettings.SlotSortingLayerName;
+            faceRenderer.sortingLayerName = boardModel.SlotSortingLayerName;
             faceRenderer.sortingOrder = 0;
         }
     }

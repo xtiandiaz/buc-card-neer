@@ -1,112 +1,122 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using Zenject;
 
 public class GameInstaller : MonoInstaller
-{    
-    [Header("Models")]
-    [SerializeField] private PlayerCard playerCard;
-    
+{
+    [Header("Prefabs")] 
+    [SerializeField] private BoardView boardView;
+
+    [Header("Data Models")] 
+    [SerializeField] private BoardModel board;
+    [Space]
+    [SerializeField] private DeckModel deck;
+    [Space] 
+    [SerializeField] private PlayerCardModel player;
+    [Space]
+    [SerializeField] private List<SlotModel> supplySlots;
+    [Space]
+    [SerializeField] private SlotModel plank;
+    [SerializeField] private SlotModel helm;
+    [SerializeField] private SlotModel storage;
+    [SerializeField] private SlotModel mount;
+
     [Header("Viewport")]
-    [SerializeField] private GameCamera camera;
+    [SerializeField] private new GameCamera camera;
     
     [Header("Views")]
     [SerializeField] private GameMenuView gameMenuView;
-    [SerializeField] private BoardView boardView;
-    [SerializeField] private SeaView seaView;
-    [SerializeField] private ShipView shipView;
 
     [Header("Decks")] 
     [SerializeField] private Deck mainDeck;
 
     [Header("Settings")] 
     [SerializeField] private CardAnimationSettings cardAnimationSettings;
-    [SerializeField] private BoardLayoutSettings boardLayoutSettings;
 
     public override void InstallBindings()
     {
         #region Viewport
 
         Container.BindInterfacesAndSelfTo<GameCamera>().FromInstance(camera).AsSingle();
-        camera.Initialize(boardLayoutSettings);
+        camera.Initialize(board);
 
         Container.Bind<Viewport>().FromMethod(() => camera.GetViewport(0));
 
         #endregion
-        
-        #region Game
 
-        Container.BindInterfacesAndSelfTo<Game>().AsSingle();
-        Container.BindInterfacesAndSelfTo<GameController>().AsSingle();
+        #region Controllers
+
+        Container.BindInterfacesAndSelfTo<CardRouter>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<CardDealer>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<CardDeferrer>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<CardMatcher>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<CardHost>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<CardClasher>().AsSingle().NonLazy();
+        
+        Container.BindInterfacesAndSelfTo<GameController>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<BoardingController>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<ClashingController>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<SupplyController>().AsSingle().NonLazy();
+
+        #endregion
+        
+        #region UI
+        
         Container.Bind<IGameMenuView>().FromInstance(gameMenuView).AsSingle();
 
         #endregion
         
         #region Board
-
-        Container.Bind<BoardLayoutSettings>().FromInstance(boardLayoutSettings).AsSingle();
-        Container.BindFactory<Board, Board.Factory>().AsSingle();
-        Container.BindFactory<BoardView, BoardView.Factory>().FromInstance(boardView);
-        Container.BindFactory<IBoard, IBoardView, BoardController, BoardController.Factory>().AsSingle();
-        //Container.BindInterfacesAndSelfTo<BoardFactory>().AsSingle();
-        Container.Bind<IBoard>().FromFactory<BoardFactory>().AsSingle().NonLazy();
+        
+        Container.Bind<IBoardModel>().FromInstance(board).AsSingle();
+        Container.Bind<IBoardView>().FromComponentInNewPrefab(boardView).AsSingle();
 
         #endregion
-        
+
         #region Sea
 
-        Container.BindFactory<ISlot[], Sea, Sea.Factory>().AsSingle();
-        Container.BindFactory<ISeaView, SeaView.Factory>().FromInstance(seaView);
-        Container.BindFactory<ISea, ISeaView, SeaController, SeaController.Factory>().AsSingle();
-        //Container.BindInterfacesAndSelfTo<SeaFactory>().AsSingle();
-        Container.Bind<ISea>().FromFactory<SeaFactory>().AsSingle().NonLazy();
+        Container.BindFactory<IEnumerable<ISlot>, ISeaView, Sea, Sea.Factory>().AsSingle();
+        Container.Bind<List<SlotModel>>().FromInstance(supplySlots).WhenInjectedInto<SeaFactory>();
+        Container.Bind<ISea>().FromFactory<SeaFactory>().AsSingle();
 
         #endregion
         
         #region Ship
 
-        Container.BindFactory<ISlot[], Ship, Ship.Factory>().AsSingle();
-        Container.BindFactory<ShipView, ShipView.Factory>().FromInstance(shipView);
-        Container.BindFactory<IShip, IShipView, ShipController, ShipController.Factory>().AsSingle();
-        //Container.BindInterfacesAndSelfTo<ShipFactory>().AsSingle();
-        Container.Bind<IShip>().FromFactory<ShipFactory>().AsSingle().NonLazy();
+        Container.BindFactory<ISlot, ISlot, ISlot, ISlot, IShipView, Ship, Ship.Factory>()
+            .AsSingle();
+        Container.Bind<ISlotModel>().FromInstance(helm).WhenInjectedInto<ShipFactory>();
+        Container.Bind<ISlotModel>().FromInstance(plank).WhenInjectedInto<ShipFactory>();
+        Container.Bind<ISlotModel>().FromInstance(storage).WhenInjectedInto<ShipFactory>();
+        Container.Bind<ISlotModel>().FromInstance(mount).WhenInjectedInto<ShipFactory>();
+        Container.Bind<IShip>().FromFactory<ShipFactory>().AsSingle();
 
         #endregion
         
-        #region Decks & Providers
+        #region Deck & Card Providers
         
-        Container.Bind(typeof(ICardProvider), typeof(IDeck))
-            //.WithId(DeckType.Events)
-            .FromInstance(Instantiate(mainDeck));
-        
-        Container.BindFactory<IDeck, DeckController, DeckController.Factory>().WhenInjectedInto<IDeckFactory>();
-        Container.BindInterfacesAndSelfTo<DeckFactory>().AsSingle();
+        Container.BindFactory<List<ICardModel>, Deck, Deck.Factory>().AsSingle();
+        Container.Bind<IDeckFactory>().To<DeckFactory>().AsSingle();
+        Container.Bind(typeof(IDeck))
+            .FromResolveGetter<IDeckFactory, IDeck>(x => x.Create(deck)).AsSingle();
         
         #endregion
         
         #region Slots
-        
-        Container.BindFactory<IPile, ISlotSettings, Bounds, Transform, BoardingSlot, BoardingSlot.Factory>();
-        Container.BindFactory<IPile, ISlotSettings, Bounds, Transform, SupplySlot, SupplySlot.Factory>();
-        Container.BindFactory<IPile, ISlotSettings, Bounds, Transform, PlayerSlot, PlayerSlot.Factory>();
-        Container.BindFactory<IPile, ISlotSettings, Bounds, Transform, StorageSlot, StorageSlot.Factory>();
-        Container.BindFactory<ISlot, ISlotView, SlotController, SlotController.Factory>().AsSingle();
-        Container.BindFactory<IBoardingSlot, ISlotView, BoardingSlotController, BoardingSlotController.Factory>().AsSingle();
-        Container.BindFactory<IStorageSlot, IStorageSlotView, StorageSlotController, StorageSlotController.Factory>().AsSingle();
+
+        Container.BindFactory<ISlotModel, ISlotView, Slot, Slot.Factory>().AsSingle();
         Container.BindInterfacesAndSelfTo<SlotFactory>().AsSingle();
         
         #endregion
         
         #region Cards
-
-        Container.BindFactory<IPirateCard, IPirateCardView, PirateCardController, PirateCardController.Factory>().AsSingle();
-        Container.BindFactory<IMerchantCard, IMerchantCardView, MerchantCardController, MerchantCardController.Factory>().AsSingle();
-        Container.BindFactory<IInspectorCard, IInspectorCardView, InspectorCardController, InspectorCardController.Factory>().AsSingle();
-        Container.BindFactory<ResourceCard, ResourceCardView, ResourceCardController, ResourceCardController.Factory>().AsSingle();
-        Container.BindFactory<PlayerCard, PlayerCardView, PlayerCardController, PlayerCardController.Factory>().AsSingle();
-        Container.BindFactory<string, CardView, CardView.Factory>().FromFactory<PrefabResourceFactory<CardView>>();
+        
+        Container.BindFactory<ICardModel, ICardView, Card, Card.Factory>().AsSingle();
+        Container.BindFactory<IPlayerCardModel, IPlayerCardView, PlayerCard, PlayerCard.Factory>().AsSingle();
         Container.BindInterfacesAndSelfTo<CardFactory>().AsSingle();
         
-        Container.BindInterfacesAndSelfTo<PlayerCard>().FromInstance(Instantiate(playerCard));
+        Container.BindInterfacesAndSelfTo<IPlayerCard>()
+            .FromResolveGetter<ICardFactory, IPlayerCard>(x => (IPlayerCard) x.Create(player)).AsSingle();
 
         #endregion
         

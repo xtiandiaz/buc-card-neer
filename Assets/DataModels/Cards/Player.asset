@@ -9,13 +9,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93062296798043169c3e0dcdfbb27f7d, type: 3}
+  m_Script: {fileID: 11500000, guid: 9c03779c634044deb6be915113402f71, type: 3}
   m_Name: Player
   m_EditorClassIdentifier: 
-  value:
-    value: 14
-  frontFace: {fileID: 21300000, guid: 3b1beceaca5484967a72d8c2cd76f87c, type: 3}
-  backFace: {fileID: 21300000, guid: e0c5ddc0092624ea18a4afd9dcb6599a, type: 3}
+  type: 1
+  suit: {fileID: 0}
+  value: 14
+  shouldDisplayValue: 1
+  dealingFace: 0
+  lockValue: 0
+  frontCover: {fileID: 21300000, guid: 3b1beceaca5484967a72d8c2cd76f87c, type: 3}
+  backCover: {fileID: 21300000, guid: e0c5ddc0092624ea18a4afd9dcb6599a, type: 3}
+  frontMotif: {fileID: 0}
+  backMotif: {fileID: 0}
+  viewPrefab: {fileID: 3745072886839764397, guid: 6009221ca385c4a5da4f240eb613b67e,
+    type: 3}
   maxHealthPoints: 14
-  coins:
-    value: 7
+  initialCoins: 7

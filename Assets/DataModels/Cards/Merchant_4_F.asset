@@ -9,11 +9,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad3a544c6d4041adb1ba69e71778d832, type: 3}
+  m_Script: {fileID: 11500000, guid: 734b76756e7c4804b06550fb86570ac2, type: 3}
   m_Name: Merchant_4_F
   m_EditorClassIdentifier: 
-  value:
-    value: 4
-  frontFace: {fileID: 21300000, guid: dd8d17801cdb34453afae4bd4bdc8b76, type: 3}
-  backFace: {fileID: 21300000, guid: 2f2aa4140721a48ceb58dbef774bb478, type: 3}
+  type: 4
   suit: {fileID: 11400000, guid: 83397d50a3fc04695a825c34932e8b14, type: 2}
+  value: 4
+  shouldDisplayValue: 1
+  dealingFace: 1
+  lockValue: 0
+  frontCover: {fileID: 21300000, guid: dd8d17801cdb34453afae4bd4bdc8b76, type: 3}
+  backCover: {fileID: 21300000, guid: 2f2aa4140721a48ceb58dbef774bb478, type: 3}
+  frontMotif: {fileID: 0}
+  backMotif: {fileID: 0}
+  viewPrefab: {fileID: 4107266590706619294, guid: 2cbd890f481b3462aa3e37a04d2e8788,
+    type: 3}

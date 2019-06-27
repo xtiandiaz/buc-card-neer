@@ -1935,6 +1935,24 @@ namespace Zenject
         }
 
 #if !NOT_UNITY3D
+
+        public T InstantiateScriptableObject<T>(T fromOriginal)
+            where T : ScriptableObject
+        {
+            return InstantiateScriptableObject(fromOriginal, new object[0]);
+        }
+        
+        public T InstantiateScriptableObject<T>(T fromOriginal, IEnumerable<object> extraArgs) 
+            where T : ScriptableObject
+        {
+            var clone = ScriptableObject.Instantiate(fromOriginal);
+
+            InjectExplicit(clone, InjectUtil.CreateArgList(extraArgs));
+
+            return clone;
+        }
+        
+        
         // Add new component to existing game object and fill in its dependencies
         // This is the same as AddComponent except the [Inject] fields will be filled in
         // NOTE: Gameobject here is not a prefab prototype, it is an instance

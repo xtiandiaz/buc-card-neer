@@ -9,16 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23ed6d03c77f4ef1b92f686dcfa96e9d, type: 3}
+  m_Script: {fileID: 0}
   m_Name: CardAnimationSettings
   m_EditorClassIdentifier: Assembly-CSharp::CardAnimationSettings
-  moveDuration: 0.4
-  flipDuration: 0.3
-  tiltDuration: 0.3
+  moveDuration: 0.5
+  flipDuration: 0.4
+  tiltDuration: 0.4
   tiltAngle: 60
   spinDuration: 0.3
-  liftDeltaZ: 5
-  liftDuration: 0.2
-  fadeDuration: 0.4
+  liftDeltaZ: 0
+  liftDuration: 0
+  fadeDuration: 0.5
   inEase: 11
   outEase: 12

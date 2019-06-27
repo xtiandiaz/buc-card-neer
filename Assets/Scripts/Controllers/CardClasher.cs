@@ -1,0 +1,62 @@
+using System;
+using UniRx;
+
+public interface ICardClasher
+{
+    IObservable<Unit> Clash(ISlot source, ISlot withDestination, Direction toward);
+}
+
+public class CardClasher : ICardClasher
+{
+    public IObservable<Unit> Clash(ISlot source, ISlot withDestination, Direction toward)
+    {
+        return Observable.Create<Unit>(observer =>
+        {
+            var sourceCard = source?.Peek();
+            var destinationCard = withDestination?.Peek();
+            
+            if (CanClash(source, withDestination)) 
+            {
+                return sourceCard.Clash(destinationCard, toward)
+                    .Subscribe(observer);
+            }
+                
+            observer.OnNext(Unit.Default);
+            observer.OnCompleted();
+                    
+            return Disposable.Empty;
+        });
+    }
+    
+    private bool CanClash(ISlot fromSource, ISlot withDestination)
+    {
+        if (fromSource == null || fromSource.IsMessy || withDestination == null || withDestination.IsMessy)
+            return false;
+
+        return CanClash(fromSource.Peek(), withDestination.Peek());
+    }
+    
+    private bool CanClash(ICard source, ICard withDestination)
+    {
+        if (source == null || withDestination == null)
+            return false;
+
+        switch (source.Type)
+        {
+            case CardType.Pirate:
+                    
+                return (withDestination.Type & CardType.Merchant) != 0;
+                
+            case CardType.Merchant:
+                    
+                return (withDestination.Type & CardType.Inspector) != 0;
+                
+            case CardType.Inspector:
+                    
+                return (withDestination.Type & CardType.Pirate) != 0;
+                
+            default:
+                return false;
+        }
+    }
+}

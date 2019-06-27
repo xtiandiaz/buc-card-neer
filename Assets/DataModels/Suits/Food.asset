@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c09d5aa2d7774994982771bace4d72f9, type: 3}
   m_Name: Food
   m_EditorClassIdentifier: 
-  resourceType: 16
+  type: 16
   icon: {fileID: 21300000, guid: e535f8e23f8b244f2a19fb1e3dac3bea, type: 3}
   color: {r: 0.92156863, g: 0.23137255, b: 0.3529412, a: 1}

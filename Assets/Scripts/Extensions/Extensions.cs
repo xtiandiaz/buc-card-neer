@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public static class Extensions
 {
     private static System.Random rng = new System.Random();  
-
+    
     public static void Shuffle<T>(this IList<T> list)  
     {  
         int n = list.Count;  
@@ -58,7 +57,7 @@ public static class Extensions
         if (from.Count == 0)
             return default;
 
-        var randomIndex = Random.Range(0, from.Count);
+        var randomIndex = UnityEngine.Random.Range(0, from.Count);
         var item = from[randomIndex];
         
         from.RemoveAt(randomIndex);
@@ -68,7 +67,7 @@ public static class Extensions
     
     public static T GetRandomItem<T>(this T[] from)
     {
-        return from.Length == 0 ? default : from[Random.Range(0, from.Length)];
+        return from.Length == 0 ? default : from[UnityEngine.Random.Range(0, from.Length)];
     }
     
     /// <summary>

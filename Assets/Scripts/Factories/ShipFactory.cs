@@ -1,47 +1,46 @@
-using System;
+using System.Collections.Generic;
 using System.Linq;
 using UniRx;
-using UnityEngine;
 using Zenject;
 
-public interface IShipFactory : IFactory<IShip>, IDisposable
+public interface IShipFactory : IFactory<IShip>
 {
 }
 
 public class ShipFactory : IShipFactory
 {
-    private readonly Ship.Factory modelFactory;
-    private readonly ShipView.Factory viewFactory;
-    private readonly ShipController.Factory controllerFactory;
+    private readonly Ship.Factory shipFactory;
+    private readonly IBoardView boardView;
     private readonly ISlotFactory slotFactory;
+    private readonly List<ISlotModel> slotData;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private ShipFactory(
-        Ship.Factory modelFactory,
-        ShipView.Factory viewFactory,
-        ShipController.Factory controllerFactory,
-        ISlotFactory slotFactory
+        Ship.Factory shipFactory,
+        IBoardView boardView,
+        ISlotFactory slotFactory,
+        List<ISlotModel> slotData
         )
     {
-        this.modelFactory = modelFactory;
-        this.viewFactory = viewFactory;        
-        this.controllerFactory = controllerFactory;
+        this.shipFactory = shipFactory;
+        this.boardView = boardView;
         this.slotFactory = slotFactory;
+        this.slotData = slotData;
     }
     
     public IShip Create()
     {
-        var view = viewFactory.Create();
-        var slots = view.Slots.Select(slotFactory.Create).ToArray();
-        var model = modelFactory.Create(slots);
+        var view = boardView.Ship;
         
-        disposables.Add(controllerFactory.Create(model, view));
+        var slots = slotData
+            .Select(data => slotFactory.Create(data, view.Slots.First(slotView => slotView.Type == data.Type)))
+            .ToDictionary(slot => slot.Type);
 
-        return model;
-    }
-    
-    public void Dispose()
-    {
-        disposables.Dispose();
+        return shipFactory.Create(
+            slots[SlotType.Player],
+            slots[SlotType.Boarding], 
+            slots[SlotType.Storage], 
+            slots[SlotType.Mount],
+            view);
     }
 }

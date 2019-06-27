@@ -2,15 +2,15 @@ using UnityEngine;
 
 public interface IPlayerCardView : ICardView
 {
-    int CoinsValue { set; }
+    int Coins { set; }
 }
 
 public class PlayerCardView : CardView, IPlayerCardView
 {
-    [SerializeField] private CardLabel coinsLabel;
+    [SerializeField] private CardValue coins;
 
-    public int CoinsValue
+    public int Coins
     {
-        set => coinsLabel.SetValue(value);
+        set => coins.SetValue(value);
     }
 }

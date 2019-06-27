@@ -1,7 +1,9 @@
 using System;
 using DG.Tweening;
+using JetBrains.Annotations;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
 public enum CardAnimationType
 {
@@ -11,82 +13,94 @@ public enum CardAnimationType
     Move
 }
 
+public enum CardTimelineAnimationKey
+{
+    Clash,
+    ClashImpact
+}
+
 public class CardAnimator : MonoBehaviour
 {
-    [SerializeField] private CardFaceView frontFace;
-    [SerializeField] private CardFaceView backFace;
-        
+    private readonly Subject<CardTimelineAnimationKey> timelineAnimationCompletion = new Subject<CardTimelineAnimationKey>();
+
+    [SerializeField] private CardCover frontFace;
+    [SerializeField] private CardCover backFace;
+    
+    [Space]
+    [SerializeField] private Animator animator;
+    
+    [Space]
+    [SerializeField] private Transform tweenWrapper;
+    [SerializeField] private Transform covers;
+
     private CardAnimationSettings settings;
-    private Transform contentWrapper;
-    private Tween moveTween, rotationTween;
+    private Tween rotationTween, depthTween;
+    private Sequence moveSequence;
     private Sequence flipSequence, tiltSequence, pickDropSequence;
     private CardFace currentFace;
-    
-    public void Initialize(CardAnimationSettings withSettings, Transform andContentWrapper)
+
+    private Viewport viewport;
+
+    public void Initialize(CardAnimationSettings withSettings, Viewport viewport)
     {
         settings = withSettings;
-        contentWrapper = andContentWrapper;
+
+        this.viewport = viewport;
     }
 
-    public void Pick()
+    public Tween TweenDepth(float toValue, float duringSeconds, bool shouldDoInLocalSpace = true)
     {
-        pickDropSequence?.Kill();
-        moveTween?.Kill();
+        depthTween?.Kill();
 
-        pickDropSequence = DOTween.Sequence();
-        
-        pickDropSequence.Append(contentWrapper
-            .DOMoveZ(0, settings.LiftDuration));
+        depthTween = (shouldDoInLocalSpace
+            ? tweenWrapper.DOLocalMoveZ(toValue, duringSeconds)
+            : tweenWrapper.DOMoveZ(toValue, duringSeconds));
 
-        pickDropSequence.Join(contentWrapper
-            .DOScale(1.1f, settings.LiftDuration));
-        
-        pickDropSequence.SetEase(settings.OutEase);
+        return depthTween;
     }
-
-    public Tween Drop(Vector3 toLocalPosition)
+    
+    public Sequence Arrange(Vector3 atLocalPosition, float withRotationAngle)
     {
-        pickDropSequence?.Kill();
-        moveTween?.Kill();
+        var sequence = DOTween.Sequence();
+        var duration = settings.MoveDuration;
 
-        pickDropSequence.Append(contentWrapper
-            .DOLocalMoveZ(0, settings.MoveDuration));
+        sequence.Append(transform.DOLocalMove(atLocalPosition, duration)
+            .SetEase(Ease.OutQuart));
         
-        pickDropSequence.Join(contentWrapper
-            .DOScale(1f, settings.MoveDuration));
+        sequence.Join(TweenDepth(0, duration).SetEase(Ease.OutQuart));
 
-        pickDropSequence.SetEase(settings.OutEase);
+        var eulerAngles = tweenWrapper.eulerAngles;
+        eulerAngles.z = withRotationAngle;
+        
+        sequence.Join(Rotate(eulerAngles));
 
-        return MoveLocal(toLocalPosition);
+        return sequence;
     }
 
-    public void Flip(CardFace toFace, bool whileAnimating)
+    public Sequence Flip(CardFace toFace)
     {
         Kill(CardAnimationType.Flip);
 
         currentFace = toFace;
         
         var destEulerAngles = GetRotationEulerAnglesDestination(currentFace);
-
-        if (!whileAnimating)
-        {
-            transform.eulerAngles = destEulerAngles;
-            ToggleFace(toFace);
-
-            return;
-        }
-
-        var halfTweenDuration = settings.FlipDuration * 0.5f;
+        var halfTweenDuration = 0.2f;
 
         flipSequence = DOTween.Sequence();
         
         flipSequence.Append(
-            contentWrapper.DORotate(Vector3.up * 90f, halfTweenDuration)
+            covers.DORotate(Vector3.up * 90f, halfTweenDuration)
                 .OnComplete(() => ToggleFace(toFace))
                 .SetEase(settings.InEase));
 
+        flipSequence.Join(TweenDepth(-1.5f, halfTweenDuration).SetEase(settings.InEase));
+
         flipSequence.Append(
-            contentWrapper.DORotate(destEulerAngles, halfTweenDuration).SetEase(settings.OutEase));
+            covers.DORotate(destEulerAngles, halfTweenDuration).SetEase(settings.OutEase));
+        
+        flipSequence.Join(TweenDepth(0, halfTweenDuration).SetEase(settings.OutEase));
+
+        return flipSequence;
     }
 
     public Sequence Tilt(Direction towardDirection, TimeSpan duringTime)
@@ -98,15 +112,25 @@ public class CardAnimator : MonoBehaviour
         var originalRotation = GetRotationEulerAnglesDestination(currentFace);
 
         tiltSequence.Append(
-            contentWrapper.DORotate(originalRotation + GetTiltingVector(towardDirection) * settings.TiltAngle, settings.TiltDuration)
+            tweenWrapper.DORotate(originalRotation + GetTiltingVector(towardDirection) * settings.TiltAngle, settings.TiltDuration)
                 .SetEase(settings.OutEase));
 
         tiltSequence.Append(
-            contentWrapper.DORotate(originalRotation, settings.TiltDuration)
+            tweenWrapper.DORotate(originalRotation, settings.TiltDuration)
                 .SetDelay((float) duringTime.TotalSeconds)
                 .SetEase(settings.OutEase));
 
         return tiltSequence;
+    }
+
+    public IObservable<Unit> Clash(Direction toward)
+    {
+        return PlayTimelineAnimation($"Clash{toward}", CardTimelineAnimationKey.Clash);
+    }
+    
+    public IObservable<Unit> Impact()
+    {
+        return PlayTimelineAnimation("ClashImpact", CardTimelineAnimationKey.ClashImpact);
     }
 
     public void Spin(int times)
@@ -118,7 +142,7 @@ public class CardAnimator : MonoBehaviour
         
         ToggleFaces(true);
 
-        contentWrapper.DORotate(originalRotation - 360f * times * Vector3.up, settings.SpinDuration, RotateMode.FastBeyond360)
+        tweenWrapper.DORotate(originalRotation - 360f * times * Vector3.up, settings.SpinDuration, RotateMode.FastBeyond360)
             .SetEase(settings.OutEase)
             .OnComplete(() => ToggleFace(currentFace));
     }
@@ -126,37 +150,33 @@ public class CardAnimator : MonoBehaviour
     public Tween MoveLocal(Vector3 toPosition)
     {
         Kill(CardAnimationType.Move);
-        
-        moveTween = transform.DOLocalMove(toPosition, settings.MoveDuration)
-            .SetEase(settings.OutEase);
 
-        return moveTween;
+        moveSequence = DOTween.Sequence();
+        
+        Debug.Log(toPosition.z);
+
+        moveSequence.Append(transform.DOLocalMoveX(toPosition.x, settings.MoveDuration)
+            .SetEase(Ease.InOutQuart));
+        
+        moveSequence.Join(transform.DOLocalMoveY(toPosition.y, settings.MoveDuration)
+            .SetEase(Ease.InOutQuart));
+        
+        moveSequence.Join(transform.DOLocalMoveZ(toPosition.z, settings.MoveDuration)
+            .SetEase(Ease.InOutQuart));
+
+        return moveSequence;
     }
 
-    public void Rotate(Vector3 toEulerAngles)
+    public Tween Rotate(Vector3 toEulerAngles)
     {
         rotationTween?.Kill();
 
-        rotationTween = transform.DORotate(toEulerAngles, 0.25f)
+        rotationTween = tweenWrapper.DORotate(toEulerAngles, 0.25f)
             .SetEase(settings.OutEase);
-    }
-    
-    public IObservable<Unit> MoveLocalAsObservable(Vector3 toPosition)
-    {
-        return Observable.Create<Unit>(observer =>
-        {
-            var tween = transform.DOLocalMove(toPosition, settings.MoveDuration)
-                .SetEase(settings.OutEase)
-                .OnComplete(() =>
-                {
-                    observer.OnNext(Unit.Default);
-                    observer.OnCompleted();
-                });
 
-            return Disposable.Create(() => tween.Kill());
-        });
+        return rotationTween;
     }
-    
+
     public void Kill(CardAnimationType animationType)
     {
         switch (animationType)
@@ -178,17 +198,36 @@ public class CardAnimator : MonoBehaviour
                 break;
             case CardAnimationType.Move:
                 
-                moveTween?.Kill();
+                moveSequence?.Kill();
                 
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(animationType), animationType, null);
         }
     }
+    
+    [UsedImplicitly]
+    public void OnTimelineAnimationFinished(CardTimelineAnimationKey withKey)
+    {
+        timelineAnimationCompletion.OnNext(withKey);
+    }
+
+    private IObservable<Unit> PlayTimelineAnimation(string withName, CardTimelineAnimationKey andKey)
+    {
+        return Observable.Create<Unit>(observer =>
+        {
+            animator.Play(withName);
+            
+            return timelineAnimationCompletion
+                .First(anim => anim == andKey)
+                .AsUnitObservable()
+                .Subscribe(observer);
+        });
+    }
 
     private Tween Lift(float toDepth, float inSeconds)
     {
-        return contentWrapper.DOMoveZ(0, settings.LiftDuration).SetEase(settings.OutEase);
+        return tweenWrapper.DOMoveZ(0, settings.LiftDuration).SetEase(settings.OutEase);
     }
 
     private Vector3 GetRotationEulerAnglesDestination(CardFace forFace)
@@ -224,10 +263,9 @@ public class CardAnimator : MonoBehaviour
         frontFace.ToggleVisibility(on);
         backFace.ToggleVisibility(on);
     }
-    
-    private void KillAll()
+
+    private void OnDestroy()
     {
-        foreach (CardAnimationType animationType in Enum.GetValues(typeof(CardAnimationType)))
-            Kill(animationType);
+        timelineAnimationCompletion.Dispose();
     }
 }

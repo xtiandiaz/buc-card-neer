@@ -42,7 +42,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 5051615c02c57464d89499432909e4a6, type: 3}
   m_PackedSpriteNamesToIndex:
   - Player
-  - Resource
+  - Supply
   - MerchantShip
   - PirateShip
   - InspectorShip

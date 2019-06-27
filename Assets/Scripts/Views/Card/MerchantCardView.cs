@@ -2,12 +2,10 @@ using UnityEngine;
 
 public interface IMerchantCardView : ICardView
 {
-    ISuit Suit { set; }
 }
 
 public class MerchantCardView : CardView, IMerchantCardView
 {
-    [SerializeField] private CardGraphic suitGraphic;
     [SerializeField] private TextMesh multiplierLabel;
 
     public override int Value
@@ -19,15 +17,14 @@ public class MerchantCardView : CardView, IMerchantCardView
         }
     }
 
-    public ISuit Suit
+    public override ISuitModel Suit
     {
         set
         {
-            suitGraphic.Sprite = value.Icon;
-            suitGraphic.Color = 
-                multiplierLabel.color = value.Color;
+            base.Suit = value;
             
-            valueLabel.Color = Color.white;
+            multiplierLabel.color = value.Color;
+            cardValue.Color = Color.white;
         }
     }
 }

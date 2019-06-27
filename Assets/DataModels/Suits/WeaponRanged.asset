@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c09d5aa2d7774994982771bace4d72f9, type: 3}
   m_Name: WeaponRanged
   m_EditorClassIdentifier: 
-  resourceType: 256
+  type: 256
   icon: {fileID: 21300000, guid: 17c7f179f62aa4cf8a8b4acf276881fa, type: 3}
   color: {r: 0.6392157, g: 0.79607844, b: 0.21960784, a: 1}

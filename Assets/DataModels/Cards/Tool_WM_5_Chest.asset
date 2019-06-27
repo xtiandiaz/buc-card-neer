@@ -9,15 +9,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5adb07559524e4f956679be71fcfc98, type: 3}
+  m_Script: {fileID: 11500000, guid: 734b76756e7c4804b06550fb86570ac2, type: 3}
   m_Name: Tool_WM_5_Chest
   m_EditorClassIdentifier: 
-  value:
-    value: 5
-  frontFace: {fileID: 21300000, guid: c13ad1a5c2def48b487f9e6e51d89fe1, type: 3}
-  backFace: {fileID: 21300000, guid: 3524d803fc7b741fdbaa13e573d40f7c, type: 3}
-  container: {fileID: 21300000, guid: 660a931e5ce194a7baa14d20c1452089, type: 3}
-  item: {fileID: 21300000, guid: 8d004ab7b083e452fa85daffcd3ee4bf, type: 3}
+  type: 128
   suit: {fileID: 11400000, guid: 62112fda4c357429abf01f0a94a64c6f, type: 2}
-  lockValue:
-    value: 0
+  value: 5
+  shouldDisplayValue: 1
+  dealingFace: 1
+  lockValue: 0
+  frontCover: {fileID: 21300000, guid: c13ad1a5c2def48b487f9e6e51d89fe1, type: 3}
+  backCover: {fileID: 21300000, guid: 3524d803fc7b741fdbaa13e573d40f7c, type: 3}
+  frontMotif: {fileID: 21300000, guid: 8d004ab7b083e452fa85daffcd3ee4bf, type: 3}
+  backMotif: {fileID: 21300000, guid: 660a931e5ce194a7baa14d20c1452089, type: 3}
+  viewPrefab: {fileID: 6560927429145502690, guid: 75635153fc6794d08a09179ef9122a10,
+    type: 3}

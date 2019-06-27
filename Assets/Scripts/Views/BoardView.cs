@@ -3,29 +3,48 @@ using Zenject;
 
 public interface IBoardView
 {
+    ISkyView Sky { get; }
+    ISeaView Sea { get; }
+    IShipView Ship { get; }
+    Vector3 WorldPosition { get; set; }
 }
 
 public class BoardView : MonoBehaviour, IBoardView
 {
-    public class Factory : PlaceholderFactory<BoardView>
-    {
-    }
-    
     [SerializeField] private SkyView sky;
     [SerializeField] private SeaView sea;
     [SerializeField] private ShipView ship;
 
-    [Inject]
-    private void Initialize(Viewport viewport)
+    public ISkyView Sky => sky;
+    public ISeaView Sea => sea;
+    public IShipView Ship => ship;
+    
+    public Vector3 WorldPosition
     {
-        var viewportCenter = viewport.Size * 0.5f;
+        get => transform.position;
+        set => transform.position = value;
+    }
+
+    [Inject]
+    private void Initialize(IViewportProvider viewportProvider)
+    {
+        var seaHeight = sea.Height;
+        var seaDepth = sea.Depth;
         
-        transform.position = Vector3.down * (viewportCenter.y);
+        var nearViewport = viewportProvider.GetViewport(0);
+        var farViewport = viewportProvider.GetViewport(seaDepth);
+
+        var nearViewportCenter = nearViewport.Size * 0.5f;
+        
         ship.LocalPosition = Vector3.zero;
         sea.LocalPosition = ship.LocalPosition + Vector3.up * ship.HullSize.y;
-        sky.LocalPosition = sea.LocalPosition + Vector3.up * sea.Height;
 
         var skyScale = sky.LocalScale;
-        sky.LocalScale = new Vector3(skyScale.x, viewport.Size.y - sky.LocalPosition.y, skyScale.z);
+        skyScale.y = farViewport.Size.y - sea.LocalPosition.y - seaHeight;
+        sky.LocalScale = skyScale;
+        
+        sky.LocalPosition = sea.LocalPosition + Vector3.up * seaHeight + Vector3.forward * sea.Depth;
+        
+        WorldPosition = Vector3.down * (nearViewportCenter.y);
     }
 }
