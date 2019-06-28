@@ -61,3 +61,6 @@ MonoBehaviour:
   gameMenuView: {fileID: 0}
   cardAnimationSettings: {fileID: 11400000, guid: 82c18c688b13c467c9b2c21f495c904d,
     type: 2}
+  audioManager: {fileID: 11400000, guid: 7a05be8b1021f4edd88c559cb93dbbeb, type: 2}
+  cardAudioSourcePrefab: {fileID: 5710264892906250546, guid: cf1d97fdab1294fbebd55eedc9468732,
+    type: 3}

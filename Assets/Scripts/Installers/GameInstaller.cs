@@ -33,6 +33,10 @@ public class GameInstaller : MonoInstaller
     [Header("Settings")] 
     [SerializeField] private CardAnimationSettings cardAnimationSettings;
 
+    [Header("Audio")] 
+    [SerializeField] private AudioManager audioManager;
+    [SerializeField] private AudioSource cardAudioSourcePrefab;
+
     public override void InstallBindings()
     {
         #region Viewport
@@ -111,8 +115,8 @@ public class GameInstaller : MonoInstaller
         
         #region Cards
         
-        Container.BindFactory<ICardModel, ICardView, Card, Card.Factory>().AsSingle();
-        Container.BindFactory<IPlayerCardModel, IPlayerCardView, PlayerCard, PlayerCard.Factory>().AsSingle();
+        Container.BindFactory<ICardModel, ICardView, AudioSource, Card, Card.Factory>().AsSingle();
+        Container.BindFactory<IPlayerCardModel, IPlayerCardView, AudioSource, PlayerCard, PlayerCard.Factory>().AsSingle();
         Container.BindInterfacesAndSelfTo<CardFactory>().AsSingle();
         
         Container.BindInterfacesAndSelfTo<IPlayerCard>()
@@ -123,6 +127,14 @@ public class GameInstaller : MonoInstaller
         #region Settings
 
         Container.Bind<CardAnimationSettings>().FromInstance(cardAnimationSettings).AsSingle();
+
+        #endregion
+
+        #region Audio
+
+        Container.BindInterfacesAndSelfTo<AudioManager>().FromInstance(audioManager).AsSingle().NonLazy();
+        Container.Bind<AudioSource>().WithId("Card Audio Source").FromInstance(cardAudioSourcePrefab)
+            .WhenInjectedInto<CardFactory>();
 
         #endregion
     }

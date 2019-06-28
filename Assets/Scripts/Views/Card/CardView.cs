@@ -31,6 +31,7 @@ public interface ICardView
     void Drag(Vector3 byDeltaPosition);
     void Fog(Color withColor, float byFactor);
     void SetParent(Transform toTransform);
+    void Parent(Transform child);
     void KillMove();
     void ToggleValueVisibility(bool toValue);
     void ToggleLockVisibility(bool toValue);
@@ -166,8 +167,9 @@ public class CardView : MonoBehaviour, ICardView
         }
     }
 
-    public int SortingOrder
+    private int SortingOrder
     {
+        get => sortingGroup.sortingOrder;
         set
         {
             //sortingSet.SortingOrder = value;
@@ -208,7 +210,7 @@ public class CardView : MonoBehaviour, ICardView
         {
             void Sort()
             {
-                sortingGroup.sortingOrder = - withArrangement.index;
+                SortingOrder = -withArrangement.index;
             }
 
             if (!shouldSortLazily)
@@ -248,8 +250,8 @@ public class CardView : MonoBehaviour, ICardView
     public IObservable<Unit> Clash(Direction toward)
     {
         return animator.Clash(toward)
-            .DoOnSubscribe(() => sortingGroup.sortingOrder += 1)
-            .DoOnCompleted(() => sortingGroup.sortingOrder -= 1);
+            .DoOnSubscribe(() => SortingOrder += 1)
+            .DoOnCompleted(() => SortingOrder -= 1);
     }
 
     public IObservable<Unit> Impact()
@@ -270,6 +272,11 @@ public class CardView : MonoBehaviour, ICardView
     public void SetParent(Transform toTransform)
     {
         transform.SetParent(toTransform, true);
+    }
+
+    public void Parent(Transform child)
+    {
+        child.SetParent(transform, false);
     }
 
     public void KillMove()

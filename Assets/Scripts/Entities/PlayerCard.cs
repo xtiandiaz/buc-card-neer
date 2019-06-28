@@ -15,15 +15,15 @@ public interface IPlayerCard : ICard
 
 public class PlayerCard : Card, IPlayerCard
 {
-    public class Factory : PlaceholderFactory<IPlayerCardModel, IPlayerCardView, PlayerCard>
+    public class Factory : PlaceholderFactory<IPlayerCardModel, IPlayerCardView, AudioSource, PlayerCard>
     {
     }
 
     private readonly int maxHealthPoints;
     private readonly ReactiveProperty<int> coins;
 
-    private PlayerCard(IPlayerCardModel model, IPlayerCardView view)
-        : base(model, view)
+    private PlayerCard(IPlayerCardModel model, IPlayerCardView view, AudioSource audioSource)
+        : base(model, view, audioSource)
     {
         IsBoarded = true;
         HealthPoints = maxHealthPoints = model.MaxHealthPoints;

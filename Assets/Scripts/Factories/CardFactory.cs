@@ -13,6 +13,7 @@ public class CardFactory : ICardFactory
     private readonly Card.Factory cardFactory;
     private readonly PlayerCard.Factory playerFactory;
     private readonly Viewport viewport;
+    private readonly AudioSource audioSourcePrefab;
     private readonly IBoardModel boardModel;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
@@ -21,34 +22,40 @@ public class CardFactory : ICardFactory
         Card.Factory cardFactory,
         PlayerCard.Factory playerFactory, 
         IBoardModel boardModel,
-        Viewport viewport
+        Viewport viewport,
+        [Inject(Id = "Card Audio Source")] AudioSource audioSourcePrefab
         )
     {
         this.container = container;
         this.cardFactory = cardFactory;
         this.playerFactory = playerFactory;
         this.viewport = viewport;
+        this.audioSourcePrefab = audioSourcePrefab;
         this.boardModel = boardModel;
     }
 
     public ICard Create(ICardModel fromModel)
     {
         var view = CreateView(fromModel);
-        var card = CreateCard(fromModel, view);
+        
+        var audioSource = container.InstantiatePrefabForComponent<AudioSource>(audioSourcePrefab);
+        view.Parent(audioSource.transform);
+        
+        var card = CreateCard(fromModel, view, audioSource);
 
         disposables.Add(card);
 
         return card;
     }
 
-    private ICard CreateCard(ICardModel withModel, ICardView andView)
+    private ICard CreateCard(ICardModel withModel, ICardView view, AudioSource andAudioSource)
     {
         switch (withModel.Type)
         {
             case CardType.Player:
-                return playerFactory.Create((IPlayerCardModel) withModel, (IPlayerCardView) andView);
+                return playerFactory.Create((IPlayerCardModel) withModel, (IPlayerCardView) view, andAudioSource);
             default:
-                return cardFactory.Create(withModel, andView);
+                return cardFactory.Create(withModel, view, andAudioSource);
         }
     }
 
