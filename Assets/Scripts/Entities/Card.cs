@@ -46,7 +46,7 @@ public interface ICard : IDisposable
 
 public class Card : ICard
 {
-    public class Factory : PlaceholderFactory<ICardModel, ICardView, AudioSource, Card>
+    public class Factory : PlaceholderFactory<ICardModel, ICardView, Card>
     {
     }
     
@@ -55,22 +55,19 @@ public class Card : ICard
     private readonly Subject<Unit> destruction = new Subject<Unit>();
     
     private readonly ICardView view;
-    private readonly AudioSource audioSource;
 
     private bool isExhausted;
     private CardArrangement arrangement;
     private IDisposable fadingAwaySubscription;
 
-    [Inject] private AudioManager audioManager;
+    [Inject] private IAudioManager audioManager;
 
-    protected Card(ICardModel model, ICardView view, AudioSource audioSource)
+    protected Card(ICardModel model, ICardView view)
     {
         view.Suit = model.Suit;
         view.Face = model.DealingFace;
         view.ToggleLockVisibility(model.LockValue > 0);
         this.view = view;
-        
-        this.audioSource = audioSource;
 
         Type = model.Type;
         Name = model.Name;
@@ -157,7 +154,7 @@ public class Card : ICard
     public IObservable<Unit> Reveal()
     {
         return view.Reveal()
-            .DoOnSubscribe(() => audioManager.PlayEvent(AudioEventKey.CardReveal, audioSource));
+            .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardReveal));
     }
 
     public IObservable<Unit> Arrange(CardArrangement withArrangement)

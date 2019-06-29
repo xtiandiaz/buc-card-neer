@@ -27,15 +27,12 @@ public class GameInstaller : MonoInstaller
     [Header("Views")]
     [SerializeField] private GameMenuView gameMenuView;
 
-    [Header("Decks")] 
-    [SerializeField] private Deck mainDeck;
-
     [Header("Settings")] 
     [SerializeField] private CardAnimationSettings cardAnimationSettings;
 
     [Header("Audio")] 
-    [SerializeField] private AudioManager audioManager;
-    [SerializeField] private AudioSource cardAudioSourcePrefab;
+    [SerializeField] private AudioRepository audioRepository;
+    [SerializeField] private AudioSource audioSourcePrefab;
 
     public override void InstallBindings()
     {
@@ -115,8 +112,8 @@ public class GameInstaller : MonoInstaller
         
         #region Cards
         
-        Container.BindFactory<ICardModel, ICardView, AudioSource, Card, Card.Factory>().AsSingle();
-        Container.BindFactory<IPlayerCardModel, IPlayerCardView, AudioSource, PlayerCard, PlayerCard.Factory>().AsSingle();
+        Container.BindFactory<ICardModel, ICardView, Card, Card.Factory>().AsSingle();
+        Container.BindFactory<IPlayerCardModel, IPlayerCardView, PlayerCard, PlayerCard.Factory>().AsSingle();
         Container.BindInterfacesAndSelfTo<CardFactory>().AsSingle();
         
         Container.BindInterfacesAndSelfTo<IPlayerCard>()
@@ -132,9 +129,12 @@ public class GameInstaller : MonoInstaller
 
         #region Audio
 
-        Container.BindInterfacesAndSelfTo<AudioManager>().FromInstance(audioManager).AsSingle().NonLazy();
-        Container.Bind<AudioSource>().WithId("Card Audio Source").FromInstance(cardAudioSourcePrefab)
-            .WhenInjectedInto<CardFactory>();
+        Container.BindInterfacesAndSelfTo<AudioRepository>().FromInstance(audioRepository).AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<AudioManager>().AsSingle();
+        Container.BindMemoryPool<AudioSource, AudioSourcePool>()
+            .WithMaxSize(16)
+            .FromComponentInNewPrefab(audioSourcePrefab)
+            .AsSingle();
 
         #endregion
     }

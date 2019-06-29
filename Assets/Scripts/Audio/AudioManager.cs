@@ -1,24 +1,44 @@
-using System.Collections.Generic;
-using UnityEngine;
-using Zenject;
+using System;
+using UniRx;
 
-[CreateAssetMenu(menuName = "Audio/Manager")]
-public class AudioManager : ScriptableObject, IInitializable
+public interface IAudioManager : IDisposable
 {
-    private readonly Dictionary<AudioEventKey, AudioEvent> index = new Dictionary<AudioEventKey, AudioEvent>();
+    void Play(AudioEventKey withKey);
+}
 
-    [SerializeField] private AudioEvent[] events;
+public class AudioManager : IAudioManager
+{
+    private readonly CompositeDisposable disposables = new CompositeDisposable();
     
-    public void Initialize()
+    private readonly AudioRepository repository;
+    private readonly AudioSourcePool sourcePool;
+
+    private AudioManager(
+        AudioRepository repository,
+        AudioSourcePool sourcePool
+        )
     {
-        foreach (var audioEvent in events)
-        {
-            index.Add(audioEvent.Key, audioEvent);
-        }
+        this.repository = repository;
+        this.sourcePool = sourcePool;
+    }
+
+    public void Play(AudioEventKey withKey)
+    {
+        Play(repository[withKey]);
     }
     
-    public void PlayEvent(AudioEventKey withKey, AudioSource andSource)
+    private void Play(IAudioEvent audioEvent)
     {
-        index[withKey].Play(andSource);
+        var source = sourcePool.Spawn(audioEvent);
+        
+        disposables.Add(Observable.Timer(TimeSpan.FromSeconds(source.clip.length))
+            .Subscribe(_ => sourcePool.Despawn(source)));
+       
+        source.Play();
+    }
+
+    public void Dispose()
+    {
+        disposables?.Dispose();
     }
 }

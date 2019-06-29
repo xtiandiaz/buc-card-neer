@@ -26,7 +26,14 @@ public class AudioEventEditor : Editor
 		EditorGUI.BeginDisabledGroup(serializedObject.isEditingMultipleObjects);
 		if (GUILayout.Button("Preview"))
 		{
-			((AudioEvent) target).Play(_previewer);
+			var audioEvent = (AudioEvent) target;
+			
+			_previewer.clip = audioEvent.Clip;
+			_previewer.volume = audioEvent.Volume;
+			_previewer.pitch = audioEvent.Pitch;	
+			_previewer.loop = false;	
+			
+			_previewer.Play();
 		}
 		EditorGUI.EndDisabledGroup();
 	}
