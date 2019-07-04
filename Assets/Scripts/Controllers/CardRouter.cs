@@ -18,16 +18,19 @@ public class CardRouter : ICardRouter
     private readonly CompositeDisposable disposables = new CompositeDisposable();
     
     private readonly ICardDeferrer deferrer;
+    private readonly ICardDismisser dismisser;
     private readonly ICardMatcher matcher;
     private readonly ICardHost host;
 
     private CardRouter(
         ICardDeferrer deferrer,
+        ICardDismisser dismisser,
         ICardMatcher matcher,
         ICardHost host
         )
     {
         this.deferrer = deferrer;
+        this.dismisser = dismisser;
         this.matcher = matcher;
         this.host = host;
     }
@@ -63,7 +66,7 @@ public class CardRouter : ICardRouter
             })
             .SelectMany(route => route.DestinationSlot != null 
                 ? Route(route.Card, route.SourceSlot, route.DestinationSlot)
-                : route.Card.Drop())
+                : dismisser.CanDismiss(route.SourceSlot) ? dismisser.Dismiss(route.SourceSlot) : route.Card.Drop())
             .Subscribe());
     }
     

@@ -16,12 +16,11 @@ public class CardClasher : ICardClasher
             var destinationCard = withDestination?.Peek();
             
             if (CanClash(source, withDestination)) 
-            {
+            { 
                 return sourceCard.Clash(destinationCard, toward)
                     .Subscribe(observer);
             }
-                
-            observer.OnNext(Unit.Default);
+            
             observer.OnCompleted();
                     
             return Disposable.Empty;

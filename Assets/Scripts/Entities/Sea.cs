@@ -83,7 +83,7 @@ public class Sea : ISea
             if (!CanImpact(slot))
                 continue;
 
-            slot.Peek().Hit(withValue);
+            //slot.Peek().Hit(withValue);
         }
     }
 
@@ -132,7 +132,7 @@ public class Sea : ISea
             var (previousSlot, nextSlot) = GetNeighboringSlots(slotAtIndex);
 
             return clasher.Clash(previousSlot, slotToClash, Direction.Right)
-                .ContinueWith(clasher.Clash(nextSlot, slotToClash, Direction.Left))
+                .Concat(clasher.Clash(nextSlot, slotToClash, Direction.Left))
                 .Subscribe(observer);
         });
     }

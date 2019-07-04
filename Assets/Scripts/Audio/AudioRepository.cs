@@ -5,12 +5,14 @@ using Zenject;
 [CreateAssetMenu(menuName = "Audio/Repository")]
 public class AudioRepository : ScriptableObject, IInitializable
 {
-    private readonly Dictionary<AudioEventKey, IAudioEvent> index = new Dictionary<AudioEventKey, IAudioEvent>();
+    private Dictionary<AudioEventKey, IAudioEvent> index;
 
     [SerializeField] private AudioEvent[] events;
     
     public void Initialize()
     {
+        index = new Dictionary<AudioEventKey, IAudioEvent>();
+        
         foreach (var audioEvent in events)
         {
             index.Add(audioEvent.Key, audioEvent);

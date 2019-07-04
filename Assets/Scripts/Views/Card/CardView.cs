@@ -29,9 +29,7 @@ public interface ICardView
 
     void Pick();
     void Drag(Vector3 byDeltaPosition);
-    void Fog(Color withColor, float byFactor);
     void SetParent(Transform toTransform);
-    void Parent(Transform child);
     void KillMove();
     void ToggleValueVisibility(bool toValue);
     void ToggleLockVisibility(bool toValue);

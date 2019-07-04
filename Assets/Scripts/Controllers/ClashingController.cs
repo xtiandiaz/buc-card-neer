@@ -13,14 +13,17 @@ public class ClashingController : IClashingController
     private readonly CompositeDisposable disposables = new CompositeDisposable();
     
     private readonly IBoardingController boardingController;
+    private readonly ICardMatcher matcher;
     private readonly ISea sea;
 
     private ClashingController(
         IBoardingController boardingController,
+        ICardMatcher matcher,
         ISea sea
         )
     {
         this.boardingController = boardingController;
+        this.matcher = matcher;
         this.sea = sea;
     }
 
@@ -32,6 +35,7 @@ public class ClashingController : IClashingController
             .Subscribe(slot => slot.Lock()));
         
         disposables.Add(boardingController.WhenBoarded
+            .Merge(matcher.WhenMatched)
             .SelectMany(sea.Clash())
             .Do(unit =>
             {

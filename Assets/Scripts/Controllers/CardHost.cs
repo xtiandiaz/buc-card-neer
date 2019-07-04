@@ -71,7 +71,7 @@ public class CardHost : ICardHost
             return intoDestination.Lodge(fromSource.Pop())
                 .Subscribe(observer);
             
-        }).DoOnError(e => Debug.LogException(e));
+        }).DoOnError(Debug.LogException);
     }
 
     private bool CanLodge(ICard card, ISlot intoDestination)

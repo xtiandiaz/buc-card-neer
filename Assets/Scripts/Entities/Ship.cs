@@ -91,7 +91,7 @@ public class Ship : IShip
 
         var weaponValue = withCard.Value;
 
-        withCard.Destroy();
+        //withCard.Destroy();
 
         return weaponValue;
     }

@@ -50,6 +50,7 @@ public class GameInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<CardRouter>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<CardDealer>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<CardDeferrer>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<CardDismisser>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<CardMatcher>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<CardHost>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<CardClasher>().AsSingle().NonLazy();

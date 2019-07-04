@@ -23,25 +23,23 @@ public interface ICard : IDisposable
     bool IsStored { get; set; }
     bool IsLocked { get; }
     bool WasLocked { get; }
-    bool IsExhausted { get; set; }
-    
+
     Vector3 LocalPosition { get; }
 
     IObservable<Unit> WhenUnlocked { get; }
 
+    void Bind(ICardBond withBond);
     void Pick();
     void Drag(Vector3 byDeltaPosition);
-    void Hit(int withValue);
-    IObservable<Unit> Impact(int withValue);
     void Hack(int withValue);
-    void Fog(Color withColor, float byFactor);
-    void SetParent(Transform asTransform);
-    void Destroy();
     
     IObservable<Unit> Drop();
     IObservable<Unit> Reveal();
+    IObservable<Unit> Hit(int withValue);
+    IObservable<Unit> Impact(int withValue);
     IObservable<Unit> Clash(ICard other, Direction toward);
     IObservable<Unit> Arrange(CardArrangement withArrangement);
+    IObservable<Unit> Destroy();
 }
 
 public class Card : ICard
@@ -56,7 +54,7 @@ public class Card : ICard
     
     private readonly ICardView view;
 
-    private bool isExhausted;
+    private ICardBond bond;
     private CardArrangement arrangement;
     private IDisposable fadingAwaySubscription;
 
@@ -84,11 +82,7 @@ public class Card : ICard
     public int Value
     {
         get => value.Value;
-        protected set
-        {
-            this.value.Value = view.Value = value;
-            IsExhausted = value <= 0;
-        }
+        protected set => this.value.Value = view.Value = value;
     }
 
     public int LockValue
@@ -110,11 +104,6 @@ public class Card : ICard
     public bool IsStored { get; set; }
     public bool IsLocked => LockValue > 0;
     public bool WasLocked { get; }
-    public bool IsExhausted
-    {
-        get => isExhausted;
-        set => isExhausted |= value;
-    }
 
     public Vector3 LocalPosition => view.LocalPosition;
 
@@ -135,15 +124,26 @@ public class Card : ICard
         return view.Arrange(arrangement, true);
     }
 
-    public void Hit(int withValue)
+    public IObservable<Unit> Hit(int withValue)
     {
-        Value -= withValue;
+        return Observable.Create<Unit>(observer =>
+        {
+            Value -= withValue;
+
+            if (Value <= 0)
+                return Destroy().Subscribe(observer);
+            
+            observer.OnNext(Unit.Default);
+            observer.OnCompleted();
+            
+            return Disposable.Empty;
+        });
     }
 
     public IObservable<Unit> Impact(int withValue)
     {
         return view.Impact()
-            .Do(_ => Hit(withValue));
+            .ContinueWith(_ => Hit(withValue));
     }
 
     public void Hack(int withValue)
@@ -169,30 +169,37 @@ public class Card : ICard
             .Merge(other.Impact(1))
             .AsSingleUnitObservable();
     }
-    
-    public void SetParent(Transform asTransform)
+
+    public void Bind(ICardBond withBond)
     {
-        view.SetParent(asTransform);
+        if (withBond == null || withBond == bond)
+            return;
+
+        bond?.Release(this);
+        bond = withBond;
+        
+        view.SetParent(bond.Transform);
     }
 
-    public void Fog(Color withColor, float byFactor)
+    public IObservable<Unit> Destroy()
     {
-        view.Fog(withColor, byFactor);
-    }
+        return Observable.Create<Unit>(observer => 
+        {
+            view.KillMove();
+            
+            bond?.Release(this);
 
-    public void Destroy()
-    {
-        view.KillMove();
-
-        destruction.OnNext(Unit.Default);
-        destruction.OnCompleted();
-
-        fadingAwaySubscription = view.Fade(0, TimeSpan.FromSeconds(0.5f))
-            .Subscribe(_ =>
-            {
-                view.Destroy();
-                Dispose();
-            });
+            destruction.OnNext(Unit.Default);
+            destruction.OnCompleted();
+            
+            return view.Fade(0, TimeSpan.FromSeconds(0.5f))
+                .DoOnCompleted(() =>
+                {
+                    view.Destroy();
+                    Dispose();
+                })
+                .Subscribe(observer);
+        });
     }
 
     public void Dispose()

@@ -10,6 +10,7 @@ public interface IPlayerCard : ICard
 
     void Heal(int byAmount);
     void Debit(int amount);
+    IObservable<Unit> DebitAsObservable(int amount);
     void Credit(int amount);
 }
 
@@ -52,6 +53,22 @@ public class PlayerCard : Card, IPlayerCard
     public void Debit(int amount)
     {
         Coins -= amount;
+    }
+
+    public IObservable<Unit> DebitAsObservable(int amount)
+    {
+        return Observable.Create<Unit>(observer =>
+        {
+            Coins -= amount;
+            
+            if (Coins <= 0)
+                return Destroy().Subscribe(observer);
+            
+            observer.OnNext(Unit.Default);
+            observer.OnCompleted();
+            
+            return Disposable.Empty;
+        });
     }
 
     public void Credit(int amount)

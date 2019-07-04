@@ -3,7 +3,14 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-public interface ISlot : IDisposable
+public interface ICardBond
+{
+    Transform Transform { get; }
+    
+    void Release(ICard card);
+}
+
+public interface ISlot : ICardBond, IDisposable
 {
     SlotType Type { get; }
     
@@ -11,7 +18,6 @@ public interface ISlot : IDisposable
     bool IsMessy { get; } 
     bool IsEmpty { get; }
     bool HasRoom { get; }
-    int Order { get; }
 
     Vector3 Position { get; }
 
@@ -44,7 +50,7 @@ public class Slot : ISlot
     private readonly Subject<Unit> releasing = new Subject<Unit>();
     private readonly ReactiveProperty<bool> isLocked = new ReactiveProperty<bool>(false);
     private readonly CompositeDisposable disposables = new CompositeDisposable();
-    private readonly ICardHeap heap;
+    private readonly IPile pile;
     
     private readonly ISlotView view;
     private readonly CardArrangementModel arrangementModel;
@@ -53,15 +59,21 @@ public class Slot : ISlot
     {
         Type = model.Type;
         IsLocked = model.ShouldStartLocked;
-        Order = model.Order;
 
-        heap = (Type & SlotType.Supply) != 0
-            ? new CardQueue(model.Capacity) as ICardHeap
-            : new CardStack();
+        pile = (Type & SlotType.Supply) != 0
+            ? new Pile(model.Capacity)
+            : new Pile();
 
         arrangementModel = model.Arrangement;
 
         this.view = view;
+    }
+
+    Transform ICardBond.Transform => view.Transform;
+
+    void ICardBond.Release(ICard card)
+    {
+        pile.Remove(card);
     }
 
     public SlotType Type { get; }
@@ -73,9 +85,8 @@ public class Slot : ISlot
     }
 
     public bool IsMessy { get; private set; }
-    public bool IsEmpty => heap.Count <= 0;
-    public bool HasRoom => heap.HasRoom;
-    public int Order { get; }
+    public bool IsEmpty => pile.Count <= 0;
+    public bool HasRoom => pile.HasRoom;
 
     public Vector3 Position => view.Transform.position;
 
@@ -88,12 +99,12 @@ public class Slot : ISlot
 
     public ICard Peek()
     {
-        return heap.Peek();
+        return pile.Peek();
     }
     
     public ICard Pop()
     {
-        var poppedCard = heap.Pop();
+        var poppedCard = pile.Pop();
 
         IsMessy = poppedCard != null;
         
@@ -104,7 +115,7 @@ public class Slot : ISlot
     {
         return Observable.Create<Unit>(observer =>
             {
-                var cardIndex = heap.Insert(card);
+                var cardIndex = pile.Insert(card);
                 if (!cardIndex.HasValue)
                 {
                     observer.OnError(new Exception($"[Slot] Couldn't insert {card} in Pile."));
@@ -112,7 +123,7 @@ public class Slot : ISlot
                     return Disposable.Empty;
                 }
 
-                card.SetParent(view.Transform);
+                card.Bind(this);
 
                 return Arrange()
                     .Subscribe(observer);
@@ -123,7 +134,7 @@ public class Slot : ISlot
 
     public IObservable<Unit> Arrange()
     {
-        return heap.Map((card, index) => card.Arrange(arrangementModel.GetArrangementForIndex(index)))
+        return pile.Map((card, index) => card.Arrange(arrangementModel.GetArrangementForIndex(index)))
             .Merge()
             .AsSingleUnitObservable()
             .DoOnCompleted(() => IsMessy = false);
@@ -146,7 +157,7 @@ public class Slot : ISlot
 
     public bool DoesContain(ICard card)
     {
-        return heap.DoesContain(card);
+        return pile.DoesContain(card);
     }
 
     public bool DoesContain(Vector3 position)
