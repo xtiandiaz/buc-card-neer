@@ -10,6 +10,7 @@ public interface IShip
     ISlot Plank { get; }
     
     IObservable<int> WhenShot { get; }
+    IObservable<Unit> WhenArmed { get; }
     
     void Lock();
     void Unlock();
@@ -55,6 +56,10 @@ public class Ship : IShip
         .Do(_ => Lock())
         .Delay(TimeSpan.FromSeconds(0.5))
         .Select(Shoot);
+
+    public IObservable<Unit> WhenArmed => Plank.WhenLodged
+        .Where(card => card.IsRangeWeapon && card.IsStored)
+        .AsUnitObservable();
 
     public void Lock()
     {

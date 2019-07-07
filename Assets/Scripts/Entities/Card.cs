@@ -17,6 +17,7 @@ public interface ICard : IDisposable
     bool IsItem { get; }
     bool IsTool { get; }
     bool IsMeleeWeapon { get; }
+    bool IsRangeWeapon { get; }
     bool IsMedicine { get; }
     bool IsRangeTarget { get; }
     bool IsBoarded { get; set; }
@@ -28,7 +29,7 @@ public interface ICard : IDisposable
 
     IObservable<Unit> WhenUnlocked { get; }
 
-    void Bind(ICardBond withBond);
+    void Bind(ICardBond toBond);
     void Pick();
     void Drag(Vector3 byDeltaPosition);
     void Hack(int withValue);
@@ -36,8 +37,9 @@ public interface ICard : IDisposable
     IObservable<Unit> Drop();
     IObservable<Unit> Reveal();
     IObservable<Unit> Hit(int withValue);
-    IObservable<Unit> Impact(int withValue);
-    IObservable<Unit> Clash(ICard other, Direction toward);
+    IObservable<Unit> Clash(ICard withOther, Direction toward);
+    IObservable<Unit> OnClashed(int withValue);
+    IObservable<Unit> OnShot(int withValue);
     IObservable<Unit> Arrange(CardArrangement withArrangement);
     IObservable<Unit> Destroy();
 }
@@ -82,13 +84,13 @@ public class Card : ICard
     public int Value
     {
         get => value.Value;
-        protected set => this.value.Value = view.Value = value;
+        protected set => this.value.Value = view.Value = Mathf.Max(value, 0);
     }
 
     public int LockValue
     {
         get => lockValue.Value;
-        private set => lockValue.Value = view.LockValue = value;
+        private set => lockValue.Value = view.LockValue =  Mathf.Max(value, 0);
     }
 
     public int OriginalValue { get; }
@@ -97,9 +99,10 @@ public class Card : ICard
     public bool IsItem => (Type & CardType.Item) != 0;
     public bool IsTool => (Type & CardType.Tool) != 0;
     public bool IsMeleeWeapon => (Type & CardType.WeaponMelee) != 0;
+    public bool IsRangeWeapon => (Type & CardType.WeaponRanged) != 0;
     public bool IsMedicine => (Type & CardType.Medicine) != 0;
-    public bool IsRangeTarget => (Type & CardType.Pirate) != 0 || 
-                                 (Type & CardType.Resource) != 0 && IsLocked;
+    public bool IsRangeTarget => !IsBoarded && 
+                                 ((Type & CardType.Pirate) != 0 || IsResource && IsLocked);
     public bool IsBoarded { get; set; }
     public bool IsStored { get; set; }
     public bool IsLocked => LockValue > 0;
@@ -140,12 +143,6 @@ public class Card : ICard
         });
     }
 
-    public IObservable<Unit> Impact(int withValue)
-    {
-        return view.Impact()
-            .ContinueWith(_ => Hit(withValue));
-    }
-
     public void Hack(int withValue)
     {
         LockValue -= withValue;
@@ -163,20 +160,34 @@ public class Card : ICard
             .DoOnSubscribe(() => arrangement = withArrangement);
     }
 
-    public IObservable<Unit> Clash(ICard other, Direction toward)
+    public IObservable<Unit> Clash(ICard withOther, Direction toward)
     {
         return view.Clash(toward)
-            .Merge(other.Impact(1))
+            .Merge(withOther.OnClashed(1))
             .AsSingleUnitObservable();
     }
-
-    public void Bind(ICardBond withBond)
+    
+    public IObservable<Unit> OnClashed(int withValue)
     {
-        if (withBond == null || withBond == bond)
+        return view.OnClashed()
+            .ContinueWith(_ => Hit(withValue));
+    }
+
+    public IObservable<Unit> OnShot(int withValue)
+    {
+        return view.OnShot()
+            .ContinueWith(_ => IsResource && IsLocked 
+                ? Observable.ReturnUnit().Do(__ => Hack(withValue))
+                : Hit(withValue));
+    }
+
+    public void Bind(ICardBond toBond)
+    {
+        if (toBond == null || toBond == bond)
             return;
 
         bond?.Release(this);
-        bond = withBond;
+        bond = toBond;
         
         view.SetParent(bond.Transform);
     }

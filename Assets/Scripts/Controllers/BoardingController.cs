@@ -55,8 +55,14 @@ public class BoardingController : IBoardingController
     {
         return card.Reveal()
             .ContinueWith(_ => card.IsResource
-                ? cardHost.Lodge(ship.Plank, ship.GetStash(card.Type))
+                ? Store(card)
                 : Observable.Empty<Unit>())
             .LastOrDefault();
+    }
+
+    private IObservable<Unit> Store(ICard card)
+    {
+        return cardHost.Lodge(ship.Plank, ship.GetStash(card.Type))
+            .Do(_ => card.IsStored = true);
     }
 }

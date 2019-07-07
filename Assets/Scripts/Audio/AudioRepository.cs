@@ -9,6 +9,8 @@ public class AudioRepository : ScriptableObject, IInitializable
 
     [SerializeField] private AudioEvent[] events;
     
+    public IAudioEvent this[AudioEventKey key] => index[key];
+    
     public void Initialize()
     {
         index = new Dictionary<AudioEventKey, IAudioEvent>();
@@ -19,5 +21,8 @@ public class AudioRepository : ScriptableObject, IInitializable
         }
     }
 
-    public IAudioEvent this[AudioEventKey key] => index[key];
+    public bool DoesContain(AudioEventKey key)
+    {
+        return index.ContainsKey(key);
+    }
 }

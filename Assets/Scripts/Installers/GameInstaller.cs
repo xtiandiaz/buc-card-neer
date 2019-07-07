@@ -54,11 +54,13 @@ public class GameInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<CardMatcher>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<CardHost>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<CardClasher>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<CardShooter>().AsSingle().NonLazy();
         
         Container.BindInterfacesAndSelfTo<GameController>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<BoardingController>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<ClashingController>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<SupplyController>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<CombatController>().AsSingle().NonLazy();
 
         #endregion
         

@@ -16,7 +16,8 @@ public enum CardAnimationType
 public enum CardTimelineAnimationKey
 {
     Clash,
-    ClashImpact
+    ClashImpact,
+    RangeShot
 }
 
 public class CardAnimator : MonoBehaviour
@@ -103,68 +104,19 @@ public class CardAnimator : MonoBehaviour
         return flipSequence;
     }
 
-    public Sequence Tilt(Direction towardDirection, TimeSpan duringTime)
-    {
-        Kill(CardAnimationType.Flip);
-        Kill(CardAnimationType.Tilt);
-        
-        tiltSequence = DOTween.Sequence();
-        var originalRotation = GetRotationEulerAnglesDestination(currentFace);
-
-        tiltSequence.Append(
-            tweenWrapper.DORotate(originalRotation + GetTiltingVector(towardDirection) * settings.TiltAngle, settings.TiltDuration)
-                .SetEase(settings.OutEase));
-
-        tiltSequence.Append(
-            tweenWrapper.DORotate(originalRotation, settings.TiltDuration)
-                .SetDelay((float) duringTime.TotalSeconds)
-                .SetEase(settings.OutEase));
-
-        return tiltSequence;
-    }
-
     public IObservable<Unit> Clash(Direction toward)
     {
         return PlayTimelineAnimation($"Clash{toward}", CardTimelineAnimationKey.Clash);
     }
     
-    public IObservable<Unit> Impact()
+    public IObservable<Unit> OnClashed()
     {
         return PlayTimelineAnimation("ClashImpact", CardTimelineAnimationKey.ClashImpact);
     }
-
-    public void Spin(int times)
+    
+    public IObservable<Unit> OnShot()
     {
-        Kill(CardAnimationType.Flip);
-        Kill(CardAnimationType.Tilt);
-        
-        var originalRotation = GetRotationEulerAnglesDestination(currentFace);
-        
-        ToggleFaces(true);
-
-        tweenWrapper.DORotate(originalRotation - 360f * times * Vector3.up, settings.SpinDuration, RotateMode.FastBeyond360)
-            .SetEase(settings.OutEase)
-            .OnComplete(() => ToggleFace(currentFace));
-    }
-
-    public Tween MoveLocal(Vector3 toPosition)
-    {
-        Kill(CardAnimationType.Move);
-
-        moveSequence = DOTween.Sequence();
-        
-        Debug.Log(toPosition.z);
-
-        moveSequence.Append(transform.DOLocalMoveX(toPosition.x, settings.MoveDuration)
-            .SetEase(Ease.InOutQuart));
-        
-        moveSequence.Join(transform.DOLocalMoveY(toPosition.y, settings.MoveDuration)
-            .SetEase(Ease.InOutQuart));
-        
-        moveSequence.Join(transform.DOLocalMoveZ(toPosition.z, settings.MoveDuration)
-            .SetEase(Ease.InOutQuart));
-
-        return moveSequence;
+        return PlayTimelineAnimation("RangeShot", CardTimelineAnimationKey.RangeShot);
     }
 
     public Tween Rotate(Vector3 toEulerAngles)

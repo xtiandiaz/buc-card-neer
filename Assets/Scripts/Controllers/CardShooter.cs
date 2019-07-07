@@ -1,0 +1,93 @@
+using System;
+using System.Linq;
+using UniRx;
+
+public interface ICardShooter : IDisposable
+{
+    IObservable<Unit> WhenShot { get; }
+    
+    bool CanShoot(ISlot fromSource, ISlot intoDestination);
+    IObservable<Unit> Shoot(ISlot fromSource, ISlot intoDestination);
+    IObservable<Unit> Shoot(ISlot fromSource, ISlot[] intoDestinations);
+}
+
+public class CardShooter : ICardShooter
+{
+    private readonly Subject<Unit> shooting = new Subject<Unit>();
+
+    public IObservable<Unit> WhenShot => shooting;
+    
+    public bool CanShoot(ISlot fromSource, ISlot intoDestination)
+    { 
+        return (fromSource.Type & SlotType.Boarding) != 0 &&
+               CanShoot(fromSource.Peek(), intoDestination.Peek());
+    }
+    
+    public IObservable<Unit> Shoot(ISlot fromSource, ISlot[] intoDestinations)
+    {
+        return Observable.Create<Unit>(observer =>
+        {
+            var weapon = fromSource.Peek();
+            
+            if (!CanShoot(weapon))
+            {
+                observer.OnCompleted();
+                return Disposable.Empty;
+            }
+            
+            var targets = intoDestinations.Select(slot => slot.Peek()).ToArray();
+
+            return Shoot(weapon, targets)
+                .Merge(weapon.Destroy())
+                .LastOrDefault()
+                .Do(shooting.OnNext)
+                .Subscribe(observer);
+        });
+    }
+
+    public IObservable<Unit> Shoot(ISlot fromSource, ISlot intoDestination)
+    {
+        return Shoot(fromSource.Peek(), intoDestination.Peek())
+            .Merge(fromSource.Pop()?.Destroy())
+            .LastOrDefault();
+    }
+
+    private bool CanShoot(ICard withSource)
+    {
+        return withSource != null && withSource.IsRangeWeapon;
+    }
+    
+    private bool CanShoot(ICard withSource, ICard toDestination)
+    {
+        return CanShoot(withSource) && 
+               toDestination != null && toDestination.IsRangeTarget;
+    }
+
+    private IObservable<Unit> Shoot(ICard withSource, ICard[] atTargets)
+    {
+        return Observable.Range(0, atTargets.Length)
+            .Select(i => Shoot(withSource, atTargets[i]))
+            .Merge();
+    }
+
+    private IObservable<Unit> Shoot(ICard withSource, ICard atTarget)
+    {
+        return Observable.Create<Unit>(observer =>
+        {
+            if (CanShoot(withSource, atTarget))
+            {
+                return atTarget.OnShot(withSource.Value)
+                    .Subscribe(observer);
+            }
+            
+            observer.OnCompleted();
+                
+            return Disposable.Empty;
+        });
+    }
+
+    public void Dispose()
+    {
+        shooting?.Dispose();
+    }
+}

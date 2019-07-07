@@ -36,7 +36,8 @@ public interface ICardView
     void Destroy();
     
     IObservable<Unit> Clash(Direction toward);
-    IObservable<Unit> Impact();
+    IObservable<Unit> OnClashed();
+    IObservable<Unit> OnShot();
     IObservable<Unit> Reveal();
     IObservable<Unit> Arrange(CardArrangement withArrangement, bool shouldSortLazily);
     IObservable<Unit> Fade(float toAlphaValue, TimeSpan withDuration);
@@ -252,10 +253,15 @@ public class CardView : MonoBehaviour, ICardView
             .DoOnCompleted(() => SortingOrder -= 1);
     }
 
-    public IObservable<Unit> Impact()
+    public IObservable<Unit> OnClashed()
     {
-        return animator.Impact();
+        return animator.OnClashed();
     }
+    
+    public IObservable<Unit> OnShot()
+    {
+        return animator.OnShot();
+    } 
 
     public IObservable<Unit> Fade(float toAlphaValue, TimeSpan withDuration)
     {

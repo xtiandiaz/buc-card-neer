@@ -6,6 +6,8 @@ using Zenject;
 
 public interface ISea
 {
+    ISlot[] Slots { get; }
+    
     IObservable<ISlot> WhenReleasedSupply { get; }
     
     void Impact(int withValue);
@@ -45,6 +47,8 @@ public class Sea : ISea
         this.dealer = dealer;
         this.clasher = clasher;
     }
+
+    public ISlot[] Slots => slots;
 
     public IObservable<ISlot> WhenReleasedSupply => slots
         .Select(slot => slot.WhenReleased.Select(_ => slot))

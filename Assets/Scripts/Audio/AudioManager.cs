@@ -1,5 +1,6 @@
 using System;
 using UniRx;
+using UnityEngine;
 
 public interface IAudioManager : IDisposable
 {
@@ -24,6 +25,12 @@ public class AudioManager : IAudioManager
 
     public void Play(AudioEventKey withKey)
     {
+        if (!repository.DoesContain(withKey))
+        {
+            Debug.LogWarning($"[AudioManager] The event {withKey} was not found in the repository.");
+            return;
+        }
+        
         Play(repository[withKey]);
     }
     

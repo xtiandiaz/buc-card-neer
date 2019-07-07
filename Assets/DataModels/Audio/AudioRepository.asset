@@ -12,5 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6321124b9064405bb839ddc7a12b6f5, type: 3}
   m_Name: AudioRepository
   m_EditorClassIdentifier: 
-  events:
-  - {fileID: 11400000, guid: 961ba14572f3a489aa637358c99a021a, type: 2}
+  events: []
