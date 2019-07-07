@@ -7,6 +7,8 @@ public interface IPlayerCard : ICard
 {
     int HealthPoints { get; }
     int Coins { get; }
+    
+    IObservable<Unit> WhenBankrupt { get; }
 
     void Heal(int byAmount);
     void Debit(int amount);
@@ -44,6 +46,8 @@ public class PlayerCard : Card, IPlayerCard
         get => Value;
         private set => Value = Math.Min(value, maxHealthPoints);
     }
+
+    public IObservable<Unit> WhenBankrupt => coins.Where(value => value <= 0).AsSingleUnitObservable();
 
     public void Heal(int byAmount)
     {

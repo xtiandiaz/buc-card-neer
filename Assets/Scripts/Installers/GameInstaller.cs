@@ -38,7 +38,7 @@ public class GameInstaller : MonoInstaller
     {
         #region Viewport
 
-        Container.BindInterfacesAndSelfTo<GameCamera>().FromInstance(camera).AsSingle();
+        Container.BindInterfacesTo<GameCamera>().FromInstance(camera).AsSingle();
         camera.Initialize(board);
 
         Container.Bind<Viewport>().FromMethod(() => camera.GetViewport(0));
@@ -47,26 +47,26 @@ public class GameInstaller : MonoInstaller
 
         #region Controllers
 
-        Container.BindInterfacesAndSelfTo<CardRouter>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<CardDealer>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<CardDeferrer>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<CardDismisser>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<CardMatcher>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<CardHost>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<CardClasher>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<CardShooter>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<CardRouter>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<CardDealer>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<CardDeferrer>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<CardDismisser>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<CardMatcher>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<CardHost>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<CardClasher>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<CardShooter>().AsSingle().NonLazy();
         
-        Container.BindInterfacesAndSelfTo<GameController>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<BoardingController>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<ClashingController>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<SupplyController>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<CombatController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<GameController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<BoardingController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<ClashingController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<SupplyController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<CombatController>().AsSingle().NonLazy();
 
         #endregion
         
         #region UI
         
-        Container.Bind<IGameMenuView>().FromInstance(gameMenuView).AsSingle();
+        Container.BindInterfacesTo<GameMenuView>().FromInstance(gameMenuView).AsSingle();
 
         #endregion
         
@@ -109,7 +109,7 @@ public class GameInstaller : MonoInstaller
         #region Slots
 
         Container.BindFactory<ISlotModel, ISlotView, Slot, Slot.Factory>().AsSingle();
-        Container.BindInterfacesAndSelfTo<SlotFactory>().AsSingle();
+        Container.BindInterfacesTo<SlotFactory>().AsSingle();
         
         #endregion
         
@@ -117,8 +117,8 @@ public class GameInstaller : MonoInstaller
         
         Container.BindFactory<ICardModel, ICardView, Card, Card.Factory>().AsSingle();
         Container.BindFactory<IPlayerCardModel, IPlayerCardView, PlayerCard, PlayerCard.Factory>().AsSingle();
-        Container.BindInterfacesAndSelfTo<CardFactory>().AsSingle();
-        
+        Container.BindInterfacesTo<CardFactory>().AsSingle();
+
         Container.BindInterfacesAndSelfTo<IPlayerCard>()
             .FromResolveGetter<ICardFactory, IPlayerCard>(x => (IPlayerCard) x.Create(player)).AsSingle();
 
@@ -133,7 +133,7 @@ public class GameInstaller : MonoInstaller
         #region Audio
 
         Container.BindInterfacesAndSelfTo<AudioRepository>().FromInstance(audioRepository).AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<AudioManager>().AsSingle();
+        Container.BindInterfacesTo<AudioManager>().AsSingle();
         Container.BindMemoryPool<AudioSource, AudioSourcePool>()
             .WithMaxSize(16)
             .FromComponentInNewPrefab(audioSourcePrefab)

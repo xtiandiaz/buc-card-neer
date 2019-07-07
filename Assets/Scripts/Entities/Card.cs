@@ -28,6 +28,7 @@ public interface ICard : IDisposable
     Vector3 LocalPosition { get; }
 
     IObservable<Unit> WhenUnlocked { get; }
+    IObservable<Unit> WhenDestroyed { get; }
 
     void Bind(ICardBond toBond);
     void Pick();
@@ -111,6 +112,7 @@ public class Card : ICard
     public Vector3 LocalPosition => view.LocalPosition;
 
     public IObservable<Unit> WhenUnlocked => lockValue.Where(value => value <= 0).Take(1).AsUnitObservable();
+    public IObservable<Unit> WhenDestroyed => destruction;
 
     public void Pick()
     {       
