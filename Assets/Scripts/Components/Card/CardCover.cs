@@ -10,8 +10,8 @@ public interface ICardCover
 
 public class CardCover : MonoBehaviour, ICardCover
 {
-    [SerializeField] private SpriteRenderer coverRenderer;
-    [SerializeField] private GameObject contentWrapper;
+    [SerializeField] private SpriteRenderer coverRenderer = default;
+    [SerializeField] private GameObject contentWrapper = default;
 
     public Sprite Cover
     {

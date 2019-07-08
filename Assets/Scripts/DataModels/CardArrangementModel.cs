@@ -18,14 +18,14 @@ public struct CardArrangement
 [CreateAssetMenu(menuName = "Models/Card Arrangement")]
 public class CardArrangementModel : ScriptableObject
 {
-    [SerializeField] private Vector3 offset;
-    [SerializeField] private float maxRotationAngle;
-    [SerializeField] private bool shouldUseReverseIndices;
+    [SerializeField] private Vector3 offset = default;
+    [SerializeField] private float maxRotationAngle = default;
+    [SerializeField] private bool shouldUseReverseIndices = default;
 
-    [Header("Fog")] 
-    [SerializeField] private bool shouldFog;
+    /*[Header("Fog")] 
+    [SerializeField] private bool shouldFog = default;
     [SerializeField] private Color fogColor = Color.white;
-    [SerializeField] [Range(0, 1f)] private float fogIntensity = 0.5f;
+    [SerializeField] [Range(0, 1f)] private float fogIntensity = 0.5f;*/
 
     public Vector3 Offset => offset;
     public bool ShouldUseReverseIndices => shouldUseReverseIndices;

@@ -18,7 +18,7 @@ public interface IPlayerCard : ICard
 
 public class PlayerCard : Card, IPlayerCard
 {
-    public class Factory : PlaceholderFactory<IPlayerCardModel, IPlayerCardView, PlayerCard>
+    public new class Factory : PlaceholderFactory<IPlayerCardModel, IPlayerCardView, PlayerCard>
     {
     }
 

@@ -19,8 +19,8 @@ public class CardShader : MonoBehaviour, ICardShader
 
     private readonly List<ShadingEntry> shadingEntries = new List<ShadingEntry>();
 
-    [SerializeField] private TextMesh[] targetTextRenderers;
-    [SerializeField] private SpriteRenderer[] targetSpriteRenderers;
+    [SerializeField] private TextMesh[] targetTextRenderers = default;
+    [SerializeField] private SpriteRenderer[] targetSpriteRenderers = default;
 
     public float Alpha
     {

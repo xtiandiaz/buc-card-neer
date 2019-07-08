@@ -18,12 +18,12 @@ public interface IDeckModel
 public class DeckModel : ScriptableObject, IDeckModel
 {
     [SerializeField] private bool shouldShuffleOnInit = true;
-    [SerializeField] private CardModel[] pirates;
-    [SerializeField] private CardModel[] merchants;
-    [SerializeField] private CardModel[] inspectors;
-    [SerializeField] private CardModel[] items;
-    [SerializeField] private CardModel[] tools;
-    [SerializeField] private CardModel[] monsters;
+    [SerializeField] private CardModel[] pirates = default;
+    [SerializeField] private CardModel[] merchants = default;
+    [SerializeField] private CardModel[] inspectors = default;
+    [SerializeField] private CardModel[] items = default;
+    [SerializeField] private CardModel[] tools = default;
+    [SerializeField] private CardModel[] monsters = default;
 
     public bool ShouldShuffleOnInit => shouldShuffleOnInit;
     

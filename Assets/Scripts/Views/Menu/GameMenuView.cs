@@ -9,11 +9,11 @@ public interface IGameMenuView : IInitializable
 
 public class GameMenuView : MenuView, IGameMenuView
 {
-    [SerializeField] private GameObject contentWrapper;
-    [SerializeField] private Button resetButton;
-    [SerializeField] private Text heading;
+    [SerializeField] private GameObject contentWrapper = default;
+    [SerializeField] private Button resetButton = default;
+    [SerializeField] private Text heading = default;
     
-    [Inject] private IGameController gameController;
+    [Inject] private IGameController gameController = default;
 
     [Inject]
     public void Initialize()

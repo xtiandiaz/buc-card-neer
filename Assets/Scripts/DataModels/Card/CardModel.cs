@@ -22,23 +22,23 @@ public interface ICardModel
 [CreateAssetMenu(menuName = "Model/Card")]
 public class CardModel : ScriptableObject, ICardModel
 {
-    [SerializeField] private CardType type;
-    [SerializeField] private SuitModel suit;
-    [SerializeField] private int value;
+    [SerializeField] private CardType type = default;
+    [SerializeField] private SuitModel suit = default;
+    [SerializeField] private int value = default;
     [SerializeField] private bool shouldDisplayValue = true;
     [SerializeField] private CardFace dealingFace = CardFace.Back;
     
     [Space]
-    [SerializeField] private int lockValue;
+    [SerializeField] private int lockValue = default;
     
     [Space]
-    [SerializeField] private Sprite frontCover;
-    [SerializeField] private Sprite backCover;
-    [SerializeField] private Sprite frontMotif;
-    [SerializeField] private Sprite backMotif;
+    [SerializeField] private Sprite frontCover = default;
+    [SerializeField] private Sprite backCover = default;
+    [SerializeField] private Sprite frontMotif = default;
+    [SerializeField] private Sprite backMotif = default;
     
     [Space]
-    [SerializeField] private CardView viewPrefab;
+    [SerializeField] private CardView viewPrefab = default;
 
     public virtual CardType Type => type;
     public SuitModel Suit => suit;

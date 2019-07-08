@@ -13,14 +13,11 @@ public interface ISeaView
 
 public class SeaView : MonoBehaviour, ISeaView
 {
-    public class Factory : PlaceholderFactory<ISeaView>
-    {
-    }
-
-    [SerializeField] private SlotView[] slots;
+    [SerializeField] private SlotView[] slots = default;
+    
     [Header("Water")]
-    [SerializeField] private Transform waterTransform;
-    [SerializeField] private Transform waterSurfaceTransform;
+    [SerializeField] private Transform waterTransform = default;
+    [SerializeField] private Transform waterSurfaceTransform = default;
     
     private Material oceanMaterial;
     private Sequence projectionSequence;

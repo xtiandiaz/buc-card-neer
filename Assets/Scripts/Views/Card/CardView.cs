@@ -30,7 +30,6 @@ public interface ICardView
     void Pick();
     void Drag(Vector3 byDeltaPosition);
     void SetParent(Transform toTransform);
-    void KillMove();
     void ToggleValueVisibility(bool toValue);
     void ToggleLockVisibility(bool toValue);
     void Destroy();
@@ -45,29 +44,29 @@ public interface ICardView
 
 public class CardView : MonoBehaviour, ICardView
 {
-    [SerializeField] protected CardValue cardValue;
+    [SerializeField] protected CardValue cardValue = default;
     [CanBeNull]
-    [SerializeField] protected CardValue lockValue;
+    [SerializeField] protected CardValue lockValue = default;
     
     [Space]
     [CanBeNull]
-    [SerializeField] protected Suit suit;
+    [SerializeField] protected Suit suit = default;
 
     [Space]
-    [SerializeField] protected CardCover frontCover;
-    [SerializeField] protected CardCover backCover;
+    [SerializeField] protected CardCover frontCover = default;
+    [SerializeField] protected CardCover backCover = default;
     
     [CanBeNull]
-    [SerializeField] protected SpriteRenderer frontMotif;
+    [SerializeField] protected SpriteRenderer frontMotif = default;
     [CanBeNull] 
-    [SerializeField] protected SpriteRenderer backMotif;
+    [SerializeField] protected SpriteRenderer backMotif = default;
     
     [Space]
-    [SerializeField] private Transform tweenWrapper;
-    [SerializeField] private Transform covers;
+    [SerializeField] private Transform tweenWrapper = default;
+    [SerializeField] private Transform covers = default;
 
-    [Inject] private CardAnimationSettings animationSettings;
-    [Inject] private Viewport viewport;
+    [Inject] private CardAnimationSettings animationSettings = default;
+    [Inject] private Viewport viewport = default;
     
     private CardAnimator animator;
     private ICardShader shader;
@@ -108,7 +107,6 @@ public class CardView : MonoBehaviour, ICardView
 
     public CardFace Face
     {
-        private get => face;
         set
         {
             var eulerAngles = tweenWrapper.eulerAngles;
@@ -149,21 +147,13 @@ public class CardView : MonoBehaviour, ICardView
 
     public Vector3 Position
     {
-        set
-        {
-            animator.Kill(CardAnimationType.Move);
-            transform.position = value;
-        }
+        set => transform.position = value;
     }
     
     public Vector3 LocalPosition
     {
         get => transform.localPosition;
-        set
-        {
-            animator.Kill(CardAnimationType.Move);
-            transform.localPosition = value;
-        }
+        private set => transform.localPosition = value;
     }
 
     private int SortingOrder
@@ -281,11 +271,6 @@ public class CardView : MonoBehaviour, ICardView
     public void Parent(Transform child)
     {
         child.SetParent(transform, false);
-    }
-
-    public void KillMove()
-    {
-        animator.Kill(CardAnimationType.Move);
     }
 
     public void ToggleValueVisibility(bool toValue)

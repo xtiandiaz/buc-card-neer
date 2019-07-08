@@ -10,9 +10,9 @@ public interface ISuitModel
 [CreateAssetMenu(menuName = "Model/Suit")]
 public class SuitModel : ScriptableObject, ISuitModel
 {
-    [SerializeField] private CardType type;
-    [SerializeField] private Sprite icon;
-    [SerializeField] private Color color;
+    [SerializeField] private CardType type = default;
+    [SerializeField] private Sprite icon = default;
+    [SerializeField] private Color color = default;
     
     public CardType Type => type;
     public Sprite Icon => icon;

@@ -20,9 +20,9 @@ public interface ISlotView
 
 public class SlotView : MonoBehaviour, ISlotView
 {
-    [SerializeField] private SlotType type;
-    [SerializeField] private SpriteRenderer faceRenderer;
-    [SerializeField] private GestureListener gestureListener;
+    [SerializeField] private SlotType type = default;
+    [SerializeField] private SpriteRenderer faceRenderer = default;
+    [SerializeField] private GestureListener gestureListener = default;
 
     private Color defaultFaceColor;
     private IBoardModel boardModel;

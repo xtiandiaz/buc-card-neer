@@ -3,15 +3,6 @@ using DG.Tweening;
 using JetBrains.Annotations;
 using UniRx;
 using UnityEngine;
-using Zenject;
-
-public enum CardAnimationType
-{
-    Lift,
-    Flip,
-    Tilt,
-    Move
-}
 
 public enum CardTimelineAnimationKey
 {
@@ -24,20 +15,19 @@ public class CardAnimator : MonoBehaviour
 {
     private readonly Subject<CardTimelineAnimationKey> timelineAnimationCompletion = new Subject<CardTimelineAnimationKey>();
 
-    [SerializeField] private CardCover frontFace;
-    [SerializeField] private CardCover backFace;
+    [SerializeField] private CardCover frontFace = default;
+    [SerializeField] private CardCover backFace = default;
     
     [Space]
-    [SerializeField] private Animator animator;
+    [SerializeField] private Animator animator = default;
     
     [Space]
-    [SerializeField] private Transform tweenWrapper;
-    [SerializeField] private Transform covers;
+    [SerializeField] private Transform tweenWrapper = default;
+    [SerializeField] private Transform covers = default;
 
     private CardAnimationSettings settings;
     private Tween rotationTween, depthTween;
-    private Sequence moveSequence;
-    private Sequence flipSequence, tiltSequence, pickDropSequence;
+    private Sequence flipSequence;
     private CardFace currentFace;
 
     private Viewport viewport;
@@ -45,8 +35,6 @@ public class CardAnimator : MonoBehaviour
     public void Initialize(CardAnimationSettings withSettings, Viewport viewport)
     {
         settings = withSettings;
-
-        this.viewport = viewport;
     }
 
     public Tween TweenDepth(float toValue, float duringSeconds, bool shouldDoInLocalSpace = true)
@@ -80,7 +68,7 @@ public class CardAnimator : MonoBehaviour
 
     public Sequence Flip(CardFace toFace)
     {
-        Kill(CardAnimationType.Flip);
+        flipSequence?.Kill();
 
         currentFace = toFace;
         
@@ -129,35 +117,6 @@ public class CardAnimator : MonoBehaviour
         return rotationTween;
     }
 
-    public void Kill(CardAnimationType animationType)
-    {
-        switch (animationType)
-        {
-            case CardAnimationType.Lift:
-                
-                pickDropSequence?.Kill();
-                
-                break;
-            case CardAnimationType.Flip:
-                
-                flipSequence?.Kill();
-                
-                break;
-            case CardAnimationType.Tilt:
-                
-                tiltSequence?.Kill();
-                
-                break;
-            case CardAnimationType.Move:
-                
-                moveSequence?.Kill();
-                
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(animationType), animationType, null);
-        }
-    }
-    
     [UsedImplicitly]
     public void OnTimelineAnimationFinished(CardTimelineAnimationKey withKey)
     {
@@ -177,33 +136,11 @@ public class CardAnimator : MonoBehaviour
         });
     }
 
-    private Tween Lift(float toDepth, float inSeconds)
-    {
-        return tweenWrapper.DOMoveZ(0, settings.LiftDuration).SetEase(settings.OutEase);
-    }
-
     private Vector3 GetRotationEulerAnglesDestination(CardFace forFace)
     {
         return Vector3.up * (forFace == CardFace.Back ? 180f : 0);
     }
 
-    private Vector3 GetTiltingVector(Direction fromDirection)
-    {
-        switch (fromDirection)
-        {
-            case Direction.Up:
-                return Vector3.right;
-            case Direction.Down:
-                return Vector3.left;
-            case Direction.Right:
-                return Vector3.down;
-            case Direction.Left:
-                return Vector3.up;
-            default:
-                return Vector3.zero;       
-        }
-    }
-    
     private void ToggleFace(CardFace toValue)
     {
         frontFace.ToggleVisibility(toValue == CardFace.Front);

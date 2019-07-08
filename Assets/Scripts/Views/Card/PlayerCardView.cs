@@ -7,7 +7,7 @@ public interface IPlayerCardView : ICardView
 
 public class PlayerCardView : CardView, IPlayerCardView
 {
-    [SerializeField] private CardValue coins;
+    [SerializeField] private CardValue coins = default;
 
     public int Coins
     {

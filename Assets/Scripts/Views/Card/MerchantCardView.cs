@@ -6,7 +6,7 @@ public interface IMerchantCardView : ICardView
 
 public class MerchantCardView : CardView, IMerchantCardView
 {
-    [SerializeField] private TextMesh multiplierLabel;
+    [SerializeField] private TextMesh multiplierLabel = default;
 
     public override int Value
     {

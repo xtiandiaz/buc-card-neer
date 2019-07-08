@@ -9,7 +9,7 @@ public interface IStashSlotView : ISlotView
 
 public class StashSlotView : SlotView, IStashSlotView
 {
-    [SerializeField] private SelectableSprite sortingControl;
+    [SerializeField] private SelectableSprite sortingControl = default;
 
     public IObservable<Unit> WhenSortingControlTapped => sortingControl.WhenTapped;
 }

@@ -10,8 +10,8 @@ public interface IShipView
 
 public class ShipView : MonoBehaviour, IShipView
 {
-    [SerializeField] private SlotView[] slots;
-    [SerializeField] private SpriteRenderer hullBackground;
+    [SerializeField] private SlotView[] slots = default;
+    [SerializeField] private SpriteRenderer hullBackground = default;
 
     public ISlotView[] Slots => slots;
     public Vector2 HullSize => hullBackground.size;

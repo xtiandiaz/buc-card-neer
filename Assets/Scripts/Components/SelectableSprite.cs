@@ -14,7 +14,7 @@ public interface ISelectableSprite
     typeof(ObservableEventTrigger))]
 public class SelectableSprite : MonoBehaviour, ISelectableSprite
 {
-    [SerializeField] private ObservableEventTrigger eventTrigger;
+    [SerializeField] private ObservableEventTrigger eventTrigger = default;
 
     public IObservable<Unit> WhenTapped => eventTrigger.OnPointerClickAsObservable().AsUnitObservable();
 }

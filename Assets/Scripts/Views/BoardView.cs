@@ -11,9 +11,9 @@ public interface IBoardView
 
 public class BoardView : MonoBehaviour, IBoardView
 {
-    [SerializeField] private SkyView sky;
-    [SerializeField] private SeaView sea;
-    [SerializeField] private ShipView ship;
+    [SerializeField] private SkyView sky = default;
+    [SerializeField] private SeaView sea = default;
+    [SerializeField] private ShipView ship = default;
 
     public ISkyView Sky => sky;
     public ISeaView Sea => sea;

@@ -59,9 +59,8 @@ public class Card : ICard
 
     private ICardBond bond;
     private CardArrangement arrangement;
-    private IDisposable fadingAwaySubscription;
 
-    [Inject] private IAudioManager audioManager;
+    [Inject] private IAudioManager audioManager = default;
 
     protected Card(ICardModel model, ICardView view)
     {
@@ -153,7 +152,7 @@ public class Card : ICard
     public IObservable<Unit> Reveal()
     {
         return view.Reveal()
-            .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardReveal));
+            .DoOnSubscribe(() => audioManager.Play(AudioEventSwitchKey.CardReveal, Type));
     }
 
     public IObservable<Unit> Arrange(CardArrangement withArrangement)
@@ -198,8 +197,6 @@ public class Card : ICard
     {
         return Observable.Create<Unit>(observer => 
         {
-            view.KillMove();
-            
             bond?.Release(this);
 
             destruction.OnNext(Unit.Default);
@@ -217,7 +214,6 @@ public class Card : ICard
 
     public void Dispose()
     {
-        fadingAwaySubscription?.Dispose();
         destruction?.Dispose();
     }
 }

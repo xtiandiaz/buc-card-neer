@@ -14,13 +14,13 @@ public interface IBoardModel
 [CreateAssetMenu(menuName = "Model/Board")]
 public class BoardModel : ScriptableObject, IBoardModel
 {
-    [SerializeField] private Vector2 margins;
-    [SerializeField] private Vector2 cardSize;
-    [SerializeField] private Vector2 cardSpacing;
-    [SerializeField] private int maxCardCountInRow;
-    [SerializeField] private string slotSortingLayerName;
-    [SerializeField] private string cardSortingLayerName;
-    [SerializeField] private int floatingCardSortingOrder;
+    [SerializeField] private Vector2 margins = default;
+    [SerializeField] private Vector2 cardSize = default;
+    [SerializeField] private Vector2 cardSpacing = default;
+    [SerializeField] private int maxCardCountInRow = default;
+    [SerializeField] private string slotSortingLayerName = default;
+    [SerializeField] private string cardSortingLayerName = default;
+    [SerializeField] private int floatingCardSortingOrder = default;
     
     public Vector2 Margins => margins;
     public Vector2 CardSize => cardSize;

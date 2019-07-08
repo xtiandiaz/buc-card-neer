@@ -8,12 +8,12 @@ public interface ISortingSet
 
 public class SortingSet : MonoBehaviour, ISortingSet
 {
-    [SerializeField] private SpriteRenderer[] targetSpriteRenderers;
+    [SerializeField] private SpriteRenderer[] targetSpriteRenderers = default;
 
     [Header("Text")] 
-    [SerializeField] private MeshRenderer[] targetTextRenderers;
-    [SerializeField] private int textDefaultSortingOrder;
-    [SerializeField] private string textSortingLayerName;
+    [SerializeField] private MeshRenderer[] targetTextRenderers = default;
+    [SerializeField] private int textDefaultSortingOrder = default;
+    [SerializeField] private string textSortingLayerName = default;
 
     private Dictionary<Object, int> defaultSortingIndex;
 

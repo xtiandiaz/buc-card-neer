@@ -4,16 +4,16 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "CardAnimationSettings", menuName = "Game/Settings/Card Animation Settings", order = 1)]
 public class CardAnimationSettings : ScriptableObject
 {
-    [SerializeField] private float moveDuration;
-    [SerializeField] private float flipDuration;
-    [SerializeField] private float tiltDuration;
-    [SerializeField] private float tiltAngle;
-    [SerializeField] private float spinDuration;
-    [SerializeField] private float liftDeltaZ;
-    [SerializeField] private float liftDuration;
-    [SerializeField] private float fadeDuration;
-    [SerializeField] private Ease inEase;
-    [SerializeField] private Ease outEase;
+    [SerializeField] private float moveDuration = default;
+    [SerializeField] private float flipDuration = default;
+    [SerializeField] private float tiltDuration = default;
+    [SerializeField] private float tiltAngle = default;
+    [SerializeField] private float spinDuration = default;
+    [SerializeField] private float liftDeltaZ = default;
+    [SerializeField] private float liftDuration = default;
+    [SerializeField] private float fadeDuration = default;
+    [SerializeField] private Ease inEase = default;
+    [SerializeField] private Ease outEase = default;
 
     public float MoveDuration => moveDuration;
     public float FlipDuration => flipDuration;

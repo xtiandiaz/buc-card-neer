@@ -23,10 +23,9 @@ public enum AudioEventKey
     CardDefeatMonster = 2301,
     CardDefeatPirate = 2302,
 
-    CardReveal = 2400,
-    CardRevealContainer = 2401,
-    CardRevealMonster = 2402,
-    CardRevealShip = 2403,
+    CardRevealContainer = 2400,
+    CardRevealMonster = 2401,
+    CardRevealShip = 2402,
 
     CardItemBribe = 2500,
     CardItemStash = 2501,

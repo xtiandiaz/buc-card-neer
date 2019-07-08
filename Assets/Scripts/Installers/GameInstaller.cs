@@ -5,34 +5,34 @@ using Zenject;
 public class GameInstaller : MonoInstaller
 {
     [Header("Prefabs")] 
-    [SerializeField] private BoardView boardView;
+    [SerializeField] private BoardView boardView = default;
 
     [Header("Data Models")] 
-    [SerializeField] private BoardModel board;
+    [SerializeField] private BoardModel board = default;
     [Space]
-    [SerializeField] private DeckModel deck;
+    [SerializeField] private DeckModel deck = default;
     [Space] 
-    [SerializeField] private PlayerCardModel player;
+    [SerializeField] private PlayerCardModel player = default;
     [Space]
-    [SerializeField] private List<SlotModel> supplySlots;
+    [SerializeField] private List<SlotModel> supplySlots = default;
     [Space]
-    [SerializeField] private SlotModel plank;
-    [SerializeField] private SlotModel helm;
-    [SerializeField] private SlotModel storage;
-    [SerializeField] private SlotModel mount;
+    [SerializeField] private SlotModel plank = default;
+    [SerializeField] private SlotModel helm = default;
+    [SerializeField] private SlotModel storage = default;
+    [SerializeField] private SlotModel mount = default;
 
     [Header("Viewport")]
-    [SerializeField] private new GameCamera camera;
+    [SerializeField] private new GameCamera camera = default;
     
     [Header("Views")]
-    [SerializeField] private GameMenuView gameMenuView;
+    [SerializeField] private GameMenuView gameMenuView = default;
 
     [Header("Settings")] 
-    [SerializeField] private CardAnimationSettings cardAnimationSettings;
+    [SerializeField] private CardAnimationSettings cardAnimationSettings = default;
 
     [Header("Audio")] 
-    [SerializeField] private AudioRepository audioRepository;
-    [SerializeField] private AudioSource audioSourcePrefab;
+    [SerializeField] private AudioRepository audioRepository = default;
+    [SerializeField] private AudioSource audioSourcePrefab = default;
 
     public override void InstallBindings()
     {

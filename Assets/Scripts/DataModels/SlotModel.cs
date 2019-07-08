@@ -22,17 +22,17 @@ public interface ISlotModel
 [CreateAssetMenu(menuName = "Model/Slot")]
 public class SlotModel : ScriptableObject, ISlotModel
 {
-    [SerializeField] private SlotType type;
-    [SerializeField] private uint capacity;
+    [SerializeField] private SlotType type = default;
+    [SerializeField] private uint capacity = default;
     [SerializeField] private SlotEntryway entryway = SlotEntryway.Front;
-    [SerializeField] private bool shouldStartLocked;
-    [SerializeField] private int order;
+    [SerializeField] private bool shouldStartLocked = default;
+    [SerializeField] private int order = default;
     
     [Space]
     [SerializeField] private Color highlightColor = Color.green;
     
     [Space]
-    [SerializeField] private CardArrangementModel arrangement;
+    [SerializeField] private CardArrangementModel arrangement = default;
 
     public SlotType Type => type;
     public uint Capacity => capacity;

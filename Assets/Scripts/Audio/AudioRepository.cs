@@ -5,24 +5,38 @@ using Zenject;
 [CreateAssetMenu(menuName = "Audio/Repository")]
 public class AudioRepository : ScriptableObject, IInitializable
 {
-    private Dictionary<AudioEventKey, IAudioEvent> index;
+    private readonly Dictionary<AudioEventKey, IAudioEvent> eventIndex = new Dictionary<AudioEventKey, IAudioEvent>();
 
-    [SerializeField] private AudioEvent[] events;
-    
-    public IAudioEvent this[AudioEventKey key] => index[key];
-    
+    private readonly Dictionary<AudioEventSwitchKey, CardAudioEventSwitch> cardSwitchIndex =
+        new Dictionary<AudioEventSwitchKey, CardAudioEventSwitch>();
+
+    [SerializeField] private AudioEvent[] events = default;
+    [SerializeField] private CardAudioEventSwitch[] cardSwitches = default;
+
+    public IAudioEvent this[AudioEventKey key] => eventIndex[key];
+
     public void Initialize()
     {
-        index = new Dictionary<AudioEventKey, IAudioEvent>();
-        
-        foreach (var audioEvent in events)
+        if (eventIndex.Count == 0)
         {
-            index.Add(audioEvent.Key, audioEvent);
+            foreach (var audioEvent in events)
+                eventIndex.Add(audioEvent.Key, audioEvent);
         }
+
+        if (cardSwitchIndex.Count == 0)
+        {
+            foreach (var cardSwitch in cardSwitches)
+                cardSwitchIndex.Add(cardSwitch.Key, cardSwitch);
+        }
+    }
+
+    public ICardAudioEventSwitch GetCardSwitch(AudioEventSwitchKey withKey)
+    {
+        return cardSwitchIndex[withKey];
     }
 
     public bool DoesContain(AudioEventKey key)
     {
-        return index.ContainsKey(key);
+        return eventIndex.ContainsKey(key);
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class CardValue : MonoBehaviour
 {
-    [SerializeField] private List<TextMesh> textRenderers;
+    [SerializeField] private List<TextMesh> textRenderers = default;
 
     public Color Color
     {

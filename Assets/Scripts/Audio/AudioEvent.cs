@@ -13,11 +13,11 @@ public interface IAudioEvent
 [CreateAssetMenu(menuName="Audio/Event")]
 public class AudioEvent : ScriptableObject, IAudioEvent
 {
-	[SerializeField] private AudioEventKey key;
-	[SerializeField] private AudioClip[] clips;
+	[SerializeField] private AudioEventKey key = default;
+	[SerializeField] private AudioClip[] clips = default;
 	[SerializeField] [Range(0, 1f)] private float volume = 1f;
 	[SerializeField] [Range(0.5f, 2f)] private float pitch = 1f;
-	[SerializeField] private bool shouldLoop;
+	[SerializeField] private bool shouldLoop = default;
 	
 	public AudioEventKey Key => key;
 	public AudioClip Clip => clips[Random.Range(0, clips.Length)];
