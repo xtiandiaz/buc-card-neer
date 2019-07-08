@@ -13,10 +13,15 @@ public class CardMatcher : ICardMatcher
 {
     private readonly Subject<Unit> matching = new Subject<Unit>();
     private readonly IPlayerCard player;
+    private readonly IAudioManager audioManager;
 
-    private CardMatcher(IPlayerCard player)
+    private CardMatcher(
+        IPlayerCard player,
+        IAudioManager audioManager
+        )
     {
         this.player = player;
+        this.audioManager = audioManager;
     }
 
     public IObservable<Unit> WhenMatched => matching;
@@ -108,6 +113,7 @@ public class CardMatcher : ICardMatcher
                             var pirateHealth = source.Value;
 
                             return source.Hit(Math.Min(player.Value, pirateHealth))
+                                .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardConfrontPirate))
                                 .Merge(player.Hit(pirateHealth))
                                 .LastOrDefault()
                                 .Subscribe(observer);
@@ -117,6 +123,7 @@ public class CardMatcher : ICardMatcher
                             var inspectorBribe = source.Value;
 
                             return source.Hit(Math.Min(player.Coins, inspectorBribe))
+                                .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardConfrontMarshal))
                                 .Merge(player.DebitAsObservable(inspectorBribe))
                                 .LastOrDefault()
                                 .Subscribe(observer);
@@ -133,6 +140,7 @@ public class CardMatcher : ICardMatcher
                             source.Hack(Math.Min(player.Value, lockValue));
 
                             return player.Hit(lockValue)
+                                .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardConfrontMonster))
                                 .IgnoreElements()
                                 .Subscribe(observer);
                         
@@ -141,11 +149,19 @@ public class CardMatcher : ICardMatcher
                             player.Heal(source.Value);
 
                             return source.Hit(source.Value)
+                                .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardToolHealthUse))
                                 .Subscribe(observer);
                     }
 
                     break;
                 case CardType.Pirate:
+                    
+                    return withDestination.Hit(source.Value)
+                        .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardToolMeleeUse))
+                        .Merge(source.Destroy())
+                        .LastOrDefault()
+                        .Subscribe(observer);
+                    
                 case CardType.Inspector:
 
                     return withDestination.Hit(source.Value)
@@ -168,6 +184,7 @@ public class CardMatcher : ICardMatcher
                     withDestination.Hack(source.Value);
 
                     return source.Hit(source.Value)
+                        .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardToolMeleeUse))
                         .Subscribe(observer);
                 
                 default:

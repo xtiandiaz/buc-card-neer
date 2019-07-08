@@ -12,4 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6321124b9064405bb839ddc7a12b6f5, type: 3}
   m_Name: AudioRepository
   m_EditorClassIdentifier: 
-  events: []
+  events:
+  - {fileID: 11400000, guid: 152805a561e3c904cbd6e0d947a5f612, type: 2}
+  - {fileID: 11400000, guid: 9b37a1bbe1a52254cacb692c357a6e2f, type: 2}
+  - {fileID: 11400000, guid: dca6a92af3f50c440b59a115dc6049f3, type: 2}
+  - {fileID: 11400000, guid: 6fc28d810f10a8741813538105dc396d, type: 2}
+  - {fileID: 11400000, guid: a6ca95275177e7e429ac1e2c014cc4d4, type: 2}
+  - {fileID: 11400000, guid: 4f65956fa1f9aae40963f3416a6f41b9, type: 2}
+  - {fileID: 11400000, guid: b2d8a5001266950428bfe6ad1abd4fd9, type: 2}
+  cardSwitches:
+  - {fileID: 11400000, guid: c7b16936d6b71419e91bae9fac60e46b, type: 2}
+  - {fileID: 11400000, guid: 9d453ac0b67194e88933acf882c715d4, type: 2}
+  - {fileID: 11400000, guid: a9407c0aa93bc4967bbcb5bcfce474ad, type: 2}

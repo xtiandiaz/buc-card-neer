@@ -16,6 +16,7 @@ public interface ICard : IDisposable
     bool IsResource { get; }
     bool IsItem { get; }
     bool IsTool { get; }
+    bool IsMonster { get; }
     bool IsMeleeWeapon { get; }
     bool IsRangeWeapon { get; }
     bool IsMedicine { get; }
@@ -60,8 +61,6 @@ public class Card : ICard
     private ICardBond bond;
     private CardArrangement arrangement;
 
-    [Inject] private IAudioManager audioManager = default;
-
     protected Card(ICardModel model, ICardView view)
     {
         view.Suit = model.Suit;
@@ -98,6 +97,7 @@ public class Card : ICard
     public bool IsResource => (Type & CardType.Resource) != 0;
     public bool IsItem => (Type & CardType.Item) != 0;
     public bool IsTool => (Type & CardType.Tool) != 0;
+    public bool IsMonster => IsResource && (IsLocked || WasLocked); // TODO provisional; remove
     public bool IsMeleeWeapon => (Type & CardType.WeaponMelee) != 0;
     public bool IsRangeWeapon => (Type & CardType.WeaponRanged) != 0;
     public bool IsMedicine => (Type & CardType.Medicine) != 0;
@@ -151,8 +151,7 @@ public class Card : ICard
 
     public IObservable<Unit> Reveal()
     {
-        return view.Reveal()
-            .DoOnSubscribe(() => audioManager.Play(AudioEventSwitchKey.CardReveal, Type));
+        return view.Reveal();
     }
 
     public IObservable<Unit> Arrange(CardArrangement withArrangement)

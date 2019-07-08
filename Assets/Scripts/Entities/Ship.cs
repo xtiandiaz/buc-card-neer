@@ -35,7 +35,7 @@ public class Ship : IShip
         ISlot storage,
         ISlot mount,
         IShipView view
-        )
+    )
     {
         slots = new[] {plank, helm, storage, mount};
 

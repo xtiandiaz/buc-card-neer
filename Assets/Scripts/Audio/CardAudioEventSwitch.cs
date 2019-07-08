@@ -6,7 +6,10 @@ public enum AudioEventSwitchKey
 {
     None,
     
-    CardReveal
+    CardReveal = 1,
+    CardStash = 2,
+    CardBoard = 3,
+    CardConfront = 4,
 }
 
 public interface IAudioEventSwitch<in T> where T : struct
