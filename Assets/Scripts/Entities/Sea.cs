@@ -8,15 +8,16 @@ public interface ISea
 {
     ISlot[] Slots { get; }
     
+    bool IsMessy { get; }
+    bool ShouldResupply { get; }
+    
     IObservable<ISlot> WhenReleasedSupply { get; }
     
-    void Impact(int withValue);
     void Lock();
     void Unlock();
     
     IObservable<Unit> Supply();
     IObservable<Unit> Clash();
-    IObservable<ICard> Collect();
     IObservable<Unit> Resupply();
     IObservable<Unit> Arrange();
 }
@@ -50,13 +51,16 @@ public class Sea : ISea
 
     public ISlot[] Slots => slots;
 
+    public bool IsMessy => slots.FirstOrDefault(slot => slot.IsMessy) != null;
+    public bool ShouldResupply => slots.FirstOrDefault(slot => dealer.CanDeal(slot) && slot.IsEmpty) != null;
+
     public IObservable<ISlot> WhenReleasedSupply => slots
         .Select(slot => slot.WhenReleased.Select(_ => slot))
         .Merge();
 
     public IObservable<Unit> Supply()
     {
-        return Observable.Timer(TimeSpan.Zero, TimeSpan.FromSeconds(0.1))
+        return Observable.Timer(TimeSpan.Zero, TimeSpan.FromSeconds(0.075))
             .Take(slots.Length * CardCountPerSlot)
             .SelectMany(i => dealer.DealOne(slots[i % slots.Length]))
             .AsSingleUnitObservable();
@@ -80,40 +84,11 @@ public class Sea : ISea
             .AsSingleUnitObservable();
     }
 
-    public void Impact(int withValue)
-    {
-        foreach (var slot in slots)
-        {
-            if (!CanImpact(slot))
-                continue;
-
-            //slot.Peek().Hit(withValue);
-        }
-    }
-
-    public IObservable<ICard> Collect()
-    {
-        return Observable.Create<ICard>(observer =>
-        {
-            foreach (var slot in slots)
-            {
-                if (!CanCollect(slot))
-                    continue;
-
-                observer.OnNext(slot.Peek());
-            }
-
-            observer.OnCompleted();
-
-            return Disposable.Empty;
-        });
-    }
-
     public IObservable<Unit> Arrange()
     {
         return slots.Select(slot => slot.Arrange())
             .Merge()
-            .AsSingleUnitObservable();
+            .AsUnitObservable();
     }
     
     public void Lock()
@@ -139,18 +114,6 @@ public class Sea : ISea
                 .Concat(clasher.Clash(nextSlot, slotToClash, Direction.Left))
                 .Subscribe(observer);
         });
-    }
-
-    private bool CanImpact(ISlot slot)
-    {
-        return slot != null && slot.Peek()?.IsRangeTarget == true;
-    }
-
-    private bool CanCollect(ISlot fromSlot)
-    {
-        var card = fromSlot?.Peek();
-        
-        return card?.IsResource == true && card.WasLocked && !card.IsLocked;
     }
 
     private (ISlot, ISlot) GetNeighboringSlots(int atIndex)

@@ -24,6 +24,7 @@ public class GameController : IGameController
     private readonly IDeck deck;
     private readonly IShip ship;
     private readonly IPlayerCard player;
+    private readonly IAudioManager audioManager;
     private readonly ISea sea;
 
     public GameController(
@@ -32,7 +33,8 @@ public class GameController : IGameController
         IClashingController clashingController,
         ICardHost cardHost,
         IShip ship,
-        IPlayerCard player
+        IPlayerCard player,
+        IAudioManager audioManager
         )
     {
         this.appController = appController;
@@ -41,6 +43,7 @@ public class GameController : IGameController
         this.cardHost = cardHost;
         this.ship = ship;
         this.player = player;
+        this.audioManager = audioManager;
     }
 
     public IObservable<Unit> WhenLost => losing;
@@ -48,16 +51,21 @@ public class GameController : IGameController
     public void Initialize()
     {
         disposables.Add(supplyController.Supply()
+            .DoOnSubscribe(() => audioManager.Play(AudioEventKey.GameAssemble))
             .SelectMany(_ => cardHost.Lodge(player, ship.Helm))
             .Subscribe());
         
         disposables.Add(player.WhenDestroyed
+            .Do(_ => audioManager.Play(AudioEventKey.CardAvatarDeath))
             .Merge(player.WhenBankrupt)
             .Take(1)
+            .Delay(TimeSpan.FromSeconds(0.5))
             .Subscribe(_ =>
             {
                 clashingController.Dispose();
                 supplyController.Dispose();
+                
+                audioManager.Play(AudioEventKey.GameLose);
                 
                 losing.OnNext(Unit.Default);
             }));

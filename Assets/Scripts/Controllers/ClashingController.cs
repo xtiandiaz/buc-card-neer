@@ -39,10 +39,11 @@ public class ClashingController : IClashingController
         
         disposables.Add(boardingController.WhenBoarded
             .Merge(matcher.WhenMatched, shooter.WhenShot)
+            .Delay(TimeSpan.FromSeconds(0.25))
             .SelectMany(sea.Clash())
-            .Do(unit =>
+            .Do(_ =>
             {
-                seaClashing.OnNext(unit);
+                seaClashing.OnNext(_);
                 sea.Unlock();
             })
             .Subscribe());

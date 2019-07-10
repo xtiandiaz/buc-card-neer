@@ -4,7 +4,6 @@ using Zenject;
 
 public interface ICombatController : IInitializable, IDisposable
 {
-    
 }
 
 public class CombatController : ICombatController
@@ -12,17 +11,20 @@ public class CombatController : ICombatController
     private readonly ICardShooter shooter;
     private readonly IShip ship;
     private readonly ISea sea;
+    private readonly IAudioManager audioManager;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private CombatController(
         ICardShooter shooter,
         IShip ship,
-        ISea sea
+        ISea sea,
+        IAudioManager audioManager
     )
     {
         this.shooter = shooter;
         this.ship = ship;
         this.sea = sea;
+        this.audioManager = audioManager;
     }
     
     public void Initialize()
@@ -32,8 +34,10 @@ public class CombatController : ICombatController
             {
                 ship.Lock();
                 sea.Lock();
+                
+                audioManager.Play(AudioEventKey.CardToolRangedArm);
             })
-            .Delay(TimeSpan.FromSeconds(0.25))
+            .Delay(TimeSpan.FromSeconds(0.5))
             .SelectMany(_ => shooter.Shoot(ship.Plank, sea.Slots))
             .Do(_ =>
             {

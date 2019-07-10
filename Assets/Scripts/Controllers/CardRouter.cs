@@ -21,18 +21,21 @@ public class CardRouter : ICardRouter
     private readonly ICardDismisser dismisser;
     private readonly ICardMatcher matcher;
     private readonly ICardHost host;
+    private readonly IAudioManager audioManager;
 
     private CardRouter(
         ICardDeferrer deferrer,
         ICardDismisser dismisser,
         ICardMatcher matcher,
-        ICardHost host
+        ICardHost host,
+        IAudioManager audioManager
         )
     {
         this.deferrer = deferrer;
         this.dismisser = dismisser;
         this.matcher = matcher;
         this.host = host;
+        this.audioManager = audioManager;
     }
 
     public void Initialize()
@@ -66,7 +69,10 @@ public class CardRouter : ICardRouter
             })
             .SelectMany(route => route.DestinationSlot != null 
                 ? Route(route.Card, route.SourceSlot, route.DestinationSlot)
-                : dismisser.CanDismiss(route.SourceSlot) ? dismisser.Dismiss(route.SourceSlot) : route.Card.Drop())
+                : dismisser.CanDismiss(route.SourceSlot) 
+                    ? dismisser.Dismiss(route.SourceSlot)
+                        .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardBridgeDismiss))
+                    : route.Card.Drop())
             .Subscribe());
     }
     

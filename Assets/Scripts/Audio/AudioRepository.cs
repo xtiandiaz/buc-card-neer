@@ -3,7 +3,7 @@ using UnityEngine;
 using Zenject;
 
 [CreateAssetMenu(menuName = "Audio/Repository")]
-public class AudioRepository : ScriptableObject, IInitializable
+public class AudioRepository : ScriptableObject
 {
     private readonly Dictionary<AudioEventKey, IAudioEvent> eventIndex = new Dictionary<AudioEventKey, IAudioEvent>();
 
@@ -15,7 +15,7 @@ public class AudioRepository : ScriptableObject, IInitializable
 
     public IAudioEvent this[AudioEventKey key] => eventIndex[key];
 
-    public void Initialize()
+    public void Index()
     {
         if (eventIndex.Count == 0)
         {

@@ -13,8 +13,16 @@ public interface ICardShooter : IDisposable
 
 public class CardShooter : ICardShooter
 {
+    private readonly IAudioManager audioManager;
     private readonly Subject<Unit> shooting = new Subject<Unit>();
 
+    private CardShooter(
+        IAudioManager audioManager
+        )
+    {
+        this.audioManager = audioManager;
+    }
+    
     public IObservable<Unit> WhenShot => shooting;
     
     public bool CanShoot(ISlot fromSource, ISlot intoDestination)
@@ -37,8 +45,12 @@ public class CardShooter : ICardShooter
             
             var targets = intoDestinations.Select(slot => slot.Peek()).ToArray();
 
-            return Shoot(weapon, targets)
-                .Merge(weapon.Destroy())
+            audioManager.Play(AudioEventKey.CardToolRangedUseCannon);
+
+            return Observable.Timer(TimeSpan.FromSeconds(0.25))
+                .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardToolRangedHitCannon))
+                .ContinueWith(Shoot(weapon, targets)
+                    .Merge(weapon.Destroy()))
                 .LastOrDefault()
                 .Do(shooting.OnNext)
                 .Subscribe(observer);

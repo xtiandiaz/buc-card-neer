@@ -22,6 +22,8 @@ public class AudioManager : IAudioManager
     {
         this.repository = repository;
         this.sourcePool = sourcePool;
+        
+        this.repository.Index();
     }
 
     public void Play(AudioEventSwitchKey fromSwitchWithKey, CardType forCardType)

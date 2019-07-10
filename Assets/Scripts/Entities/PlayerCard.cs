@@ -11,9 +11,9 @@ public interface IPlayerCard : ICard
     IObservable<Unit> WhenBankrupt { get; }
 
     void Heal(int byAmount);
-    void Debit(int amount);
-    IObservable<Unit> DebitAsObservable(int amount);
     void Credit(int amount);
+    
+    IObservable<Unit> Debit(int amount);
 }
 
 public class PlayerCard : Card, IPlayerCard
@@ -24,6 +24,7 @@ public class PlayerCard : Card, IPlayerCard
 
     private readonly int maxHealthPoints;
     private readonly ReactiveProperty<int> coins;
+    private readonly IPlayerCardView view;
 
     private PlayerCard(IPlayerCardModel model, IPlayerCardView view)
         : base(model, view)
@@ -33,12 +34,13 @@ public class PlayerCard : Card, IPlayerCard
         coins = new ReactiveProperty<int>(model.InitialCoins);
 
         view.Coins = model.InitialCoins;
+        this.view = view;
     }
 
     public int Coins
     {
         get => coins.Value;
-        private set => coins.Value = Mathf.Max(value, 0);
+        private set => coins.Value = view.Coins = Mathf.Max(value, 0);
     }
 
     public int HealthPoints
@@ -54,12 +56,7 @@ public class PlayerCard : Card, IPlayerCard
         HealthPoints += byAmount;
     }
 
-    public void Debit(int amount)
-    {
-        Coins -= amount;
-    }
-
-    public IObservable<Unit> DebitAsObservable(int amount)
+    public IObservable<Unit> Debit(int amount)
     {
         return Observable.Create<Unit>(observer =>
         {

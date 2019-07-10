@@ -125,6 +125,8 @@ public class Slot : ISlot
 
                 card.Bind(this);
 
+                IsMessy = true;
+
                 return Arrange()
                     .Subscribe(observer);
             })

@@ -3,6 +3,8 @@ using UniRx;
 
 public interface ICardDealer
 {
+    bool CanDeal(ISlot intoSlot);
+    
     IObservable<Unit> DealOne(ISlot intoSlot);
     IObservable<Unit> DealOne(CardType ofType, ISlot intoSlot);
     IObservable<Unit> Deal(int count, ISlot intoSlot);
@@ -15,6 +17,11 @@ public class CardDealer : ICardDealer
     private CardDealer(IDeck deck)
     {
         this.deck = deck;
+    }
+
+    public bool CanDeal(ISlot intoSlot)
+    {
+        return !deck.IsExhausted && intoSlot.HasRoom;
     }
 
     public IObservable<Unit> Deal(int count, ISlot intoSlot)

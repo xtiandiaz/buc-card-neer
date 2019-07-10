@@ -12,12 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13a9f940313d06d4caed9863bf024ebf, type: 3}
   m_Name: MusicGameLoop
   m_EditorClassIdentifier: 
-  key: 0
+  key: 4000
   clips:
   - {fileID: 0}
-  volume:
-    minValue: 1
-    maxValue: 1
-  pitch:
-    minValue: 1.0037217
-    maxValue: 1.0037217
+  volume: 1
+  pitch: 1
+  shouldLoop: 0

@@ -124,7 +124,7 @@ public class CardMatcher : ICardMatcher
 
                             return source.Hit(Math.Min(player.Coins, inspectorBribe))
                                 .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardConfrontMarshal))
-                                .Merge(player.DebitAsObservable(inspectorBribe))
+                                .Merge(player.Debit(inspectorBribe))
                                 .LastOrDefault()
                                 .Subscribe(observer);
                         
@@ -158,6 +158,11 @@ public class CardMatcher : ICardMatcher
                     
                     return withDestination.Hit(source.Value)
                         .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardToolMeleeUse))
+                        .Do(_ =>
+                        {
+                            if (withDestination.Value <= 0)
+                                audioManager.Play(AudioEventKey.CardDefeatPirate);
+                        })
                         .Merge(source.Destroy())
                         .LastOrDefault()
                         .Subscribe(observer);
@@ -165,14 +170,21 @@ public class CardMatcher : ICardMatcher
                 case CardType.Inspector:
 
                     return withDestination.Hit(source.Value)
+                        .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardItemBribe))
+                        .Do(_ =>
+                        {
+                            if (withDestination.Value <= 0)
+                                audioManager.Play(AudioEventKey.CardDefeatMarshal);
+                        })
                         .Merge(source.Destroy())
                         .LastOrDefault()
                         .Subscribe(observer);
                 
                 case CardType.Merchant:
-
-                    // TODO Credit with multiplier
-                    player.Credit(source.Value);
+                    
+                    player.Credit(source.Value * withDestination.Value);
+                    
+                    audioManager.Play(AudioEventKey.CardItemTradeSell);
 
                     return source.Destroy()
                         .Subscribe(observer);
@@ -185,6 +197,11 @@ public class CardMatcher : ICardMatcher
 
                     return source.Hit(source.Value)
                         .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardToolMeleeUse))
+                        .Do(_ =>
+                        {
+                            if (withDestination.LockValue <= 0)
+                                audioManager.Play(AudioEventKey.CardDefeatMonster);
+                        })
                         .Subscribe(observer);
                 
                 default:

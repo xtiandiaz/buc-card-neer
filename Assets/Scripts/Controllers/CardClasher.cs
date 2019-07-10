@@ -8,6 +8,15 @@ public interface ICardClasher
 
 public class CardClasher : ICardClasher
 {
+    private readonly IAudioManager audioManager;
+
+    private CardClasher(
+        IAudioManager audioManager
+        )
+    {
+        this.audioManager = audioManager;
+    }
+    
     public IObservable<Unit> Clash(ISlot source, ISlot withDestination, Direction toward)
     {
         return Observable.Create<Unit>(observer =>
@@ -18,6 +27,7 @@ public class CardClasher : ICardClasher
             if (CanClash(source, withDestination)) 
             { 
                 return sourceCard.Clash(destinationCard, toward)
+                    .DoOnSubscribe(() => audioManager.Play(AudioEventSwitchKey.CardClash, sourceCard.Type))
                     .Subscribe(observer);
             }
             

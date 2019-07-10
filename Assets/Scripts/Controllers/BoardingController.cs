@@ -50,7 +50,7 @@ public class BoardingController : IBoardingController
             .Where(card => card.IsLocked)
             .SelectMany(card => card.WhenUnlocked
                 .ContinueWith(_ => card.Drop())
-                .Delay(TimeSpan.FromSeconds(0.15))
+                .Delay(TimeSpan.FromSeconds(0.25))
                 .ContinueWith(_ => Handle(card))
                 .Do(boarding.OnNext))
             .Subscribe());
@@ -73,7 +73,7 @@ public class BoardingController : IBoardingController
                     audioManager.Play(AudioEventSwitchKey.CardReveal, card.Type);
             })
             .ContinueWith(_ => card.IsResource
-                ? Store(card)
+                ? Observable.Timer(TimeSpan.FromSeconds(0.25)).ContinueWith(Store(card))
                 : Observable.Empty<Unit>())
             .LastOrDefault();
     }

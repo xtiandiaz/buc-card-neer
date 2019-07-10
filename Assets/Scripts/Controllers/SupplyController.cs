@@ -15,21 +15,37 @@ public class SupplyController : ISupplyController
     private readonly IClashingController clashingController;
     private readonly ICardDealer dealer;
     private readonly ISea sea;
+    private readonly IAudioManager audioManager;
 
     private SupplyController(
         IClashingController clashingController,
         ICardDealer dealer, 
-        ISea sea)
+        ISea sea,
+        IAudioManager audioManager
+        )
     {
         this.clashingController = clashingController;
         this.dealer = dealer;
         this.sea = sea;
+        this.audioManager = audioManager;
     }
 
     public void Initialize()
     {
         disposables.Add(clashingController.WhenSeaClashed
-            .SelectMany(_ => sea.Arrange().ContinueWith(__ => sea.Resupply()))
+            .SelectMany(_ => sea.Arrange()
+                .DoOnSubscribe(() =>
+                {
+                    if (sea.IsMessy && !sea.ShouldResupply)
+                        audioManager.Play(AudioEventKey.CardSupplyCascade);
+                })
+                .ContinueWith(__ =>
+                {
+                    if (sea.ShouldResupply)
+                        audioManager.Play(AudioEventKey.CardSupplyRedeal);
+                    
+                    return sea.Resupply();
+                }))
             .Subscribe());
     }
 
