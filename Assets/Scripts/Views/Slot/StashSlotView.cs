@@ -1,15 +1,25 @@
 using System;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
 public interface IStashSlotView : ISlotView
 {
-    IObservable<Unit> WhenSortingControlTapped { get; }
+    void Initialize(IObservable<Unit> whenSorted);
 }
 
 public class StashSlotView : SlotView, IStashSlotView
 {
     [SerializeField] private SelectableSprite sortingControl = default;
 
-    public IObservable<Unit> WhenSortingControlTapped => sortingControl.WhenTapped;
+    [Inject] private IAudioManager audioManager = default;
+
+    public void Initialize(IObservable<Unit> whenSorted)
+    {
+        sortingControl.WhenTapped
+            .Do(_ => audioManager.Play(AudioEventKey.UITapButtonConfirm))
+            .SelectMany(whenSorted)
+            .Subscribe()
+            .AddTo(this);
+    }
 }

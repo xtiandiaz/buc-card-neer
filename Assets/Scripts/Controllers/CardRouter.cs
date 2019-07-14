@@ -41,6 +41,7 @@ public class CardRouter : ICardRouter
     public void Initialize()
     {
         disposables.Add(picking
+            .Do(_ => audioManager.Play(AudioEventKey.UIDragGrab))
             .Subscribe(cardFromSlot =>
             {
                 var (card, fromSlot) = cardFromSlot;
@@ -72,7 +73,8 @@ public class CardRouter : ICardRouter
                 : dismisser.CanDismiss(route.SourceSlot) 
                     ? dismisser.Dismiss(route.SourceSlot)
                         .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardBridgeDismiss))
-                    : route.Card.Drop())
+                    : route.Card.Drop()
+                        .DoOnSubscribe(() => audioManager.Play(AudioEventKey.UIDragCancel)))
             .Subscribe());
     }
     
@@ -148,6 +150,7 @@ public class CardRouter : ICardRouter
             }
 
             return card.Drop()
+                .DoOnSubscribe(() => audioManager.Play(AudioEventKey.UIDragCancel))
                 .Subscribe(observer);
         });
     }

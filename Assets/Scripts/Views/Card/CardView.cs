@@ -65,9 +65,6 @@ public class CardView : MonoBehaviour, ICardView
     [SerializeField] private Transform tweenWrapper = default;
     [SerializeField] private Transform covers = default;
 
-    [Inject] private CardAnimationSettings animationSettings = default;
-    [Inject] private Viewport viewport = default;
-    
     private CardAnimator animator;
     private ICardShader shader;
     private ISortingSet sortingSet;
@@ -114,6 +111,9 @@ public class CardView : MonoBehaviour, ICardView
             
             covers.eulerAngles = eulerAngles;
             face = value;
+            
+            frontCover.ToggleVisibility(face == CardFace.Front);
+            backCover.ToggleVisibility(face == CardFace.Back);
         }
     }
     
@@ -178,7 +178,7 @@ public class CardView : MonoBehaviour, ICardView
         sortingGroup = GetComponent<SortingGroup>();
         shader = GetComponent<ICardShader>();
         
-        animator.Initialize(animationSettings, viewport);
+        
     }
     
     public void Pick()
@@ -227,6 +227,8 @@ public class CardView : MonoBehaviour, ICardView
                 .OnComplete(() =>
                 {
                     Face = CardFace.Front;
+                    
+                    backCover.ToggleVisibility(false);
                     
                     observer.OnNext(Unit.Default);
                     observer.OnCompleted();

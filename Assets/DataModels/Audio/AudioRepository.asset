@@ -34,6 +34,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ff4fd5c3345007349a0d0734cf41db2c, type: 2}
   - {fileID: 11400000, guid: 299a8fa875d8499448c3bbe4996c2ee4, type: 2}
   - {fileID: 11400000, guid: 8ba21ac21fa128f47a443bb13a594b56, type: 2}
+  - {fileID: 11400000, guid: 5550b1bb93662e1489cc2b8a3fafa2bb, type: 2}
+  - {fileID: 11400000, guid: 717c241807a3aee41bc76d20a42be5cf, type: 2}
+  - {fileID: 11400000, guid: 30f8caef9219d074bb8c9b0fd52a9c59, type: 2}
   cardSwitches:
   - {fileID: 11400000, guid: c7b16936d6b71419e91bae9fac60e46b, type: 2}
   - {fileID: 11400000, guid: 9d453ac0b67194e88933acf882c715d4, type: 2}

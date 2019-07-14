@@ -27,9 +27,6 @@ public class GameInstaller : MonoInstaller
     [Header("Views")]
     [SerializeField] private GameMenuView gameMenuView = default;
 
-    [Header("Settings")] 
-    [SerializeField] private CardAnimationSettings cardAnimationSettings = default;
-
     [Header("Audio")] 
     [SerializeField] private AudioRepository audioRepository = default;
     [SerializeField] private AudioSource audioSourcePrefab = default;
@@ -109,6 +106,7 @@ public class GameInstaller : MonoInstaller
         #region Slots
 
         Container.BindFactory<ISlotModel, ISlotView, Slot, Slot.Factory>().AsSingle();
+        Container.BindFactory<ISlotModel, IStashSlotView, StashSlot, StashSlot.Factory>().AsSingle();
         Container.BindInterfacesTo<SlotFactory>().AsSingle();
         
         #endregion
@@ -125,8 +123,6 @@ public class GameInstaller : MonoInstaller
         #endregion
         
         #region Settings
-
-        Container.Bind<CardAnimationSettings>().FromInstance(cardAnimationSettings).AsSingle();
 
         #endregion
 

@@ -25,17 +25,9 @@ public class CardAnimator : MonoBehaviour
     [SerializeField] private Transform tweenWrapper = default;
     [SerializeField] private Transform covers = default;
 
-    private CardAnimationSettings settings;
     private Tween rotationTween, depthTween;
     private Sequence flipSequence;
     private CardFace currentFace;
-
-    private Viewport viewport;
-
-    public void Initialize(CardAnimationSettings withSettings, Viewport viewport)
-    {
-        settings = withSettings;
-    }
 
     public Tween TweenDepth(float toValue, float duringSeconds, bool shouldDoInLocalSpace = true)
     {
@@ -51,16 +43,16 @@ public class CardAnimator : MonoBehaviour
     public Sequence Arrange(Vector3 atLocalPosition, float withRotationAngle)
     {
         var sequence = DOTween.Sequence();
-        var duration = settings.MoveDuration;
+        var duration = 0.4f;
 
         sequence.Append(transform.DOLocalMove(atLocalPosition, duration)
             .SetEase(Ease.OutQuart));
-        
+
         sequence.Join(TweenDepth(0, duration).SetEase(Ease.OutQuart));
 
         var eulerAngles = tweenWrapper.eulerAngles;
         eulerAngles.z = withRotationAngle;
-        
+
         sequence.Join(Rotate(eulerAngles));
 
         return sequence;
@@ -80,14 +72,14 @@ public class CardAnimator : MonoBehaviour
         flipSequence.Append(
             covers.DORotate(Vector3.up * 90f, halfTweenDuration)
                 .OnComplete(() => ToggleFace(toFace))
-                .SetEase(settings.InEase));
+                .SetEase(Ease.InQuart));
 
-        flipSequence.Join(TweenDepth(-1.5f, halfTweenDuration).SetEase(settings.InEase));
+        flipSequence.Join(TweenDepth(-1.5f, halfTweenDuration).SetEase(Ease.InQuart));
 
         flipSequence.Append(
-            covers.DORotate(destEulerAngles, halfTweenDuration).SetEase(settings.OutEase));
+            covers.DORotate(destEulerAngles, halfTweenDuration).SetEase(Ease.OutQuart));
         
-        flipSequence.Join(TweenDepth(0, halfTweenDuration).SetEase(settings.OutEase));
+        flipSequence.Join(TweenDepth(0, halfTweenDuration).SetEase(Ease.OutQuart));
 
         return flipSequence;
     }
@@ -112,7 +104,7 @@ public class CardAnimator : MonoBehaviour
         rotationTween?.Kill();
 
         rotationTween = tweenWrapper.DORotate(toEulerAngles, 0.25f)
-            .SetEase(settings.OutEase);
+            .SetEase(Ease.OutQuart);
 
         return rotationTween;
     }

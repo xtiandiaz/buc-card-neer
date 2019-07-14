@@ -7,8 +7,9 @@ public interface IPile
     int Extent { get; }
     int Count { get; }
     bool HasRoom { get; }
-
-    int? Insert(ICard card);
+    
+    bool Insert(ICard card);
+    bool InsertReverse(ICard card);
     bool Remove(ICard card);
     ICard Peek();
     ICard Pop();
@@ -66,13 +67,10 @@ public class Pile : IPile
         return poppedItem;
     }
 
-    public int? Insert(ICard card)
+    public bool Insert(ICard card)
     {
-        
         if (card == null || DoesContain(card))
-            return default;
-        
-        int? newIndex = null;
+            return false;
 
         switch (mode)
         {
@@ -80,21 +78,39 @@ public class Pile : IPile
                 
                 contents.Insert(0, card);
 
-                newIndex = 0;
-            
                 break;
             case Mode.Queue:
                 
                 contents.Add(card);
 
-                newIndex = contents.Count - 1;
-            
                 break;
         }
 
-        return newIndex;
+        return true;
     }
 
+    public bool InsertReverse(ICard card)
+    {
+        if (card == null || DoesContain(card))
+            return false;
+
+        switch (mode)
+        {
+            case Mode.Queue:
+                
+                contents.Insert(0, card);
+
+                break;
+            case Mode.Stack:
+                
+                contents.Add(card);
+
+                break;
+        }
+
+        return true;
+    }
+    
     public bool Remove(ICard card)
     {
         return contents.Remove(card);

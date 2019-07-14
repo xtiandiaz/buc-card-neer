@@ -46,11 +46,11 @@ public class Slot : ISlot
     {
     }
     
+    protected readonly IPile pile;
     private readonly Subject<ICard> lodging = new Subject<ICard>();
     private readonly Subject<Unit> releasing = new Subject<Unit>();
     private readonly ReactiveProperty<bool> isLocked = new ReactiveProperty<bool>(false);
     private readonly CompositeDisposable disposables = new CompositeDisposable();
-    private readonly IPile pile;
     
     private readonly ISlotView view;
     private readonly CardArrangementModel arrangementModel;
@@ -60,7 +60,7 @@ public class Slot : ISlot
         Type = model.Type;
         IsLocked = model.ShouldStartLocked;
 
-        pile = (Type & SlotType.Supply) != 0
+        pile = (Type & SlotType.Supply) != 0 || model.Capacity > 0
             ? new Pile(model.Capacity)
             : new Pile();
 
@@ -90,7 +90,7 @@ public class Slot : ISlot
 
     public Vector3 Position => view.Transform.position;
 
-    public IObservable<Unit> WhenDraggingStarted => view.WhenDraggingStarted;
+    public IObservable<Unit> WhenDraggingStarted => view.WhenDraggingStarted.Where(_ => !IsLocked);
     public IObservable<Vector3> WhenDragged => view.WhenDragged;
     public IObservable<Vector3> WhenDraggingStopped => view.WhenDraggingStopped;
     
@@ -115,8 +115,7 @@ public class Slot : ISlot
     {
         return Observable.Create<Unit>(observer =>
             {
-                var cardIndex = pile.Insert(card);
-                if (!cardIndex.HasValue)
+                if (!pile.Insert(card))
                 {
                     observer.OnError(new Exception($"[Slot] Couldn't insert {card} in Pile."));
                     

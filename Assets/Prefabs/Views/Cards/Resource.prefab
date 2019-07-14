@@ -685,7 +685,6 @@ MonoBehaviour:
   backMotif: {fileID: 3534175723581999632}
   tweenWrapper: {fileID: 6134397997450919224}
   covers: {fileID: 4188027028167594805}
-  audioSource: {fileID: 0}
 --- !u!114 &3068496546479081572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -703,6 +702,7 @@ MonoBehaviour:
   animator: {fileID: 8666774430191881066}
   tweenWrapper: {fileID: 6134397997450919224}
   covers: {fileID: 4188027028167594805}
+  settings: {fileID: 11400000, guid: 82c18c688b13c467c9b2c21f495c904d, type: 2}
 --- !u!114 &7814817925875043242
 MonoBehaviour:
   m_ObjectHideFlags: 0

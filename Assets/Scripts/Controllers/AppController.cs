@@ -16,7 +16,7 @@ public class AppController : IAppController
     
     public void Initialize()
     {
-        Application.targetFrameRate = 50;
+        Application.targetFrameRate = 60;
     }
 
     public void Reload()
