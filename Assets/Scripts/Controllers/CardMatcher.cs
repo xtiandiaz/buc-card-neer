@@ -43,8 +43,9 @@ public class CardMatcher : ICardMatcher
     public IObservable<Unit> Match(ISlot fromSource, ISlot intoDestination)
     {
         return Match(fromSource.Peek(), intoDestination.Peek())
-            .Do(matching.OnNext)
-            .LastOrDefault();
+            .Merge(fromSource.ConditionallyArrange(), intoDestination.ConditionallyArrange())
+            .LastOrDefault()
+            .Do(matching.OnNext);
     }
 
     public void Dispose()

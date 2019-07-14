@@ -50,9 +50,10 @@ public class GameController : IGameController
     
     public void Initialize()
     {
-        disposables.Add(supplyController.Supply()
-            .DoOnSubscribe(() => audioManager.Play(AudioEventKey.GameAssemble))
-            .SelectMany(_ => cardHost.Lodge(player, ship.Helm))
+        disposables.Add(cardHost.Lodge(player, ship.Helm)
+            .SelectMany(_ => supplyController.Supply()
+                .DoOnSubscribe(() => audioManager.Play(AudioEventKey.GameAssemble)))
+            .DelaySubscription(TimeSpan.FromSeconds(0.5f))
             .Subscribe());
         
         disposables.Add(player.WhenDestroyed

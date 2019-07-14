@@ -177,8 +177,6 @@ public class CardView : MonoBehaviour, ICardView
         sortingSet = GetComponent<ISortingSet>();
         sortingGroup = GetComponent<SortingGroup>();
         shader = GetComponent<ICardShader>();
-        
-        
     }
     
     public void Pick()

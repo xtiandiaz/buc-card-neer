@@ -69,6 +69,8 @@ public class CardHost : ICardHost
             }
 
             return intoDestination.Lodge(fromSource.Pop())
+                .Merge(fromSource.ConditionallyArrange())
+                .AsSingleUnitObservable()
                 .Subscribe(observer);
             
         }).DoOnError(Debug.LogException);

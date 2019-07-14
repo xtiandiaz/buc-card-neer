@@ -64,8 +64,10 @@ public class CardFactory : ICardFactory
         view.BackMotif = fromModel.BackMotif;
         
         view.ToggleValueVisibility(fromModel.ShouldDisplayValue);
-        
-        view.Position = (viewport.Size.y + boardModel.CardSize.y) * 0.5f * Vector2.up;
+
+        view.Position = (viewport.Size.y + boardModel.CardSize.y) * 0.5f *
+                        ((fromModel.Type & CardType.Player) != 0 ? Vector3.down : Vector3.up) +
+                        5f * Vector3.back;
 
         return view;
     }

@@ -1,19 +1,12 @@
 using UnityEngine;
 
-public enum SlotEntryway
-{
-    Front, 
-    Rear
-}
-
 public interface ISlotModel
 {
     SlotType Type { get; }
     uint Capacity { get; }
-    SlotEntryway Entryway { get; }
     bool ShouldStartLocked { get; }
-    int Order { get; }
-    
+    bool ShouldSelfArrange { get; }
+
     Color HighlightColor { get; }
     
     CardArrangementModel Arrangement { get; }
@@ -24,10 +17,9 @@ public class SlotModel : ScriptableObject, ISlotModel
 {
     [SerializeField] private SlotType type = default;
     [SerializeField] private uint capacity = default;
-    [SerializeField] private SlotEntryway entryway = SlotEntryway.Front;
     [SerializeField] private bool shouldStartLocked = default;
-    [SerializeField] private int order = default;
-    
+    [SerializeField] private bool shouldSelfArrange = default;
+
     [Space]
     [SerializeField] private Color highlightColor = Color.green;
     
@@ -36,10 +28,9 @@ public class SlotModel : ScriptableObject, ISlotModel
 
     public SlotType Type => type;
     public uint Capacity => capacity;
-    public SlotEntryway Entryway => entryway;
     public bool ShouldStartLocked => shouldStartLocked;
-    public int Order => order;
-    
+    public bool ShouldSelfArrange => shouldSelfArrange;
+
     public Color HighlightColor => highlightColor;
     
     public CardArrangementModel Arrangement => arrangement;

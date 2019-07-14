@@ -32,6 +32,7 @@ public interface ISlot : ICardBond, IDisposable
     ICard Pop();
     IObservable<Unit> Lodge(ICard card);
     IObservable<Unit> Arrange();
+    IObservable<Unit> ConditionallyArrange();
     void Lock();
     void Unlock();
     void ToggleHighlight(bool on);
@@ -47,18 +48,20 @@ public class Slot : ISlot
     }
     
     protected readonly IPile pile;
+    
     private readonly Subject<ICard> lodging = new Subject<ICard>();
     private readonly Subject<Unit> releasing = new Subject<Unit>();
     private readonly ReactiveProperty<bool> isLocked = new ReactiveProperty<bool>(false);
     private readonly CompositeDisposable disposables = new CompositeDisposable();
-    
     private readonly ISlotView view;
     private readonly CardArrangementModel arrangementModel;
+    private readonly bool shouldSelfArrange;
 
     protected Slot(ISlotModel model, ISlotView view)
     {
         Type = model.Type;
         IsLocked = model.ShouldStartLocked;
+        shouldSelfArrange = model.ShouldSelfArrange;
 
         pile = (Type & SlotType.Supply) != 0 || model.Capacity > 0
             ? new Pile(model.Capacity)
@@ -139,6 +142,13 @@ public class Slot : ISlot
             .Merge()
             .AsSingleUnitObservable()
             .DoOnCompleted(() => IsMessy = false);
+    }
+
+    public IObservable<Unit> ConditionallyArrange()
+    {
+        return shouldSelfArrange
+            ? Arrange()
+            : Observable.Empty<Unit>();
     }
 
     public void Lock()

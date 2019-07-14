@@ -201,7 +201,7 @@ public class Card : ICard
             destruction.OnNext(Unit.Default);
             destruction.OnCompleted();
             
-            return view.Fade(0, TimeSpan.FromSeconds(0.5f))
+            return view.Fade(0, TimeSpan.FromSeconds(0.3f))
                 .DoOnCompleted(() =>
                 {
                     view.Destroy();
