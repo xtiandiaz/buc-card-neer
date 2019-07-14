@@ -14,16 +14,19 @@ public class BoardingController : IBoardingController
     private readonly CompositeDisposable disposables = new CompositeDisposable();
     
     private readonly IShip ship;
+    private readonly ISea sea;
     private readonly IAudioManager audioManager;
 
     private BoardingController(
         ICardHost cardHost,
         IShip ship,
+        ISea sea,
         IAudioManager audioManager
         )
     {
         this.cardHost = cardHost;
         this.ship = ship;
+        this.sea = sea;
         this.audioManager = audioManager;
     }
 
@@ -35,6 +38,8 @@ public class BoardingController : IBoardingController
             .Where(card => !card.IsBoarded)
             .Do(card =>
             {
+                sea.Lock();
+                
                 card.IsBoarded = true;
                 
                 if (card.IsMonster)
@@ -43,7 +48,11 @@ public class BoardingController : IBoardingController
                     audioManager.Play(AudioEventSwitchKey.CardBoard, card.Type);
             })
             .SelectMany(card => card.IsLocked ? Observable.ReturnUnit() : Handle(card))
-            .Do(boarding.OnNext)
+            .Do(_ =>
+            {
+                sea.Unlock();
+                boarding.OnNext(_);
+            })
             .Subscribe());
 
         disposables.Add(ship.Plank.WhenLodged

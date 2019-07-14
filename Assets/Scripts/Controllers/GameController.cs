@@ -5,11 +5,13 @@ using Zenject;
 public interface IGameStatus
 {
     IObservable<Unit> WhenLost { get; }
+    IObservable<int> UndealtCardCount { get; }
+
+    void Reset();
 }
 
 public interface IGameController : IGameStatus, IInitializable, IDisposable
 {
-    void Reset();
 }
 
 public class GameController : IGameController
@@ -34,7 +36,8 @@ public class GameController : IGameController
         ICardHost cardHost,
         IShip ship,
         IPlayerCard player,
-        IAudioManager audioManager
+        IAudioManager audioManager,
+        IDeck deck
         )
     {
         this.appController = appController;
@@ -44,9 +47,11 @@ public class GameController : IGameController
         this.ship = ship;
         this.player = player;
         this.audioManager = audioManager;
+        this.deck = deck;
     }
 
     public IObservable<Unit> WhenLost => losing;
+    public IObservable<int> UndealtCardCount => deck.CardCount;
     
     public void Initialize()
     {

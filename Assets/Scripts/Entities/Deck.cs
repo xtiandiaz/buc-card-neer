@@ -7,6 +7,8 @@ using Zenject;
 public interface IDeck : IDisposable
 {
     bool IsExhausted { get; }
+    
+    IObservable<int> CardCount { get; }
 
     void Shuffle();
     ICard Provide();
@@ -16,22 +18,25 @@ public interface IDeck : IDisposable
 
 public class Deck : IDeck
 {
-    private readonly ICardFactory cardFactory;
-
     public class Factory : PlaceholderFactory<List<ICardModel>, Deck>
     {
     }
 
+    private readonly ICardFactory cardFactory;
     private readonly List<ICardModel> cardModels;
     private readonly Subject<ICard> provision = new Subject<ICard>();
+    private readonly ReactiveProperty<int> cardCount;
 
     private Deck(List<ICardModel> cardModels, ICardFactory cardFactory)
     {
         this.cardModels = cardModels;
         this.cardFactory = cardFactory;
+        
+        cardCount = new ReactiveProperty<int>(cardModels.Count);
     }
     
     public bool IsExhausted { get; private set; }
+    public IObservable<int> CardCount => cardCount;
     
     public void Shuffle()
     {
@@ -62,8 +67,10 @@ public class Deck : IDeck
         
         cardModels.Remove(withModel);
         provision.OnNext(card);
+        
+        cardCount.Value = cardModels.Count;
 
-        IsExhausted = cardModels.Count <= 0;
+        IsExhausted = cardCount.Value <= 0;
 
         return card;
     }

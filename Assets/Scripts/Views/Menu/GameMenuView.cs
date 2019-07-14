@@ -10,17 +10,22 @@ public interface IGameMenuView : IInitializable
 public class GameMenuView : MenuView, IGameMenuView
 {
     [SerializeField] private GameObject contentWrapper = default;
-    [SerializeField] private Button resetButton = default;
     [SerializeField] private Text heading = default;
+
+    [Header("Labels")] 
+    [SerializeField] private Text undealtCount = default;
     
-    [Inject] private IGameController gameController = default;
+    [Header("Controls")]
+    [SerializeField] private Button resetButton = default;
+    
+    [Inject] private IGameStatus gameStatus = default;
 
     [Inject]
     public void Initialize()
     {
         contentWrapper.SetActive(false);
         
-        gameController.WhenLost
+        gameStatus.WhenLost
             .Subscribe(_ =>
             {
                 heading.text = "Game Over";
@@ -28,8 +33,12 @@ public class GameMenuView : MenuView, IGameMenuView
             })
             .AddTo(this);
 
+        gameStatus.UndealtCardCount
+            .SubscribeToText(undealtCount)
+            .AddTo(this);
+
         resetButton.OnClickAsObservable()
-            .Subscribe(_ => gameController.Reset())
+            .Subscribe(_ => gameStatus.Reset())
             .AddTo(this);
     }
 }
