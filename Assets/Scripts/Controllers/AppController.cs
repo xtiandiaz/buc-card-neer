@@ -11,8 +11,13 @@ public interface IAppController : IInitializable, IDisposable
 
 public class AppController : IAppController
 {
-    private readonly CompositeDisposable disposables = new CompositeDisposable();
+    private readonly ZenjectSceneLoader sceneLoader;
     private IDisposable sceneLoading;
+
+    private AppController(ZenjectSceneLoader sceneLoader)
+    {
+        this.sceneLoader = sceneLoader;
+    }
     
     public void Initialize()
     {
@@ -22,14 +27,13 @@ public class AppController : IAppController
     public void Reload()
     {
         sceneLoading?.Dispose();
-        sceneLoading = SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single)
+        sceneLoading = sceneLoader.LoadSceneAsync("Game", LoadSceneMode.Single)
             .AsObservable()
             .Subscribe();
     }
 
     public void Dispose()
     {
-        disposables.Dispose();
         sceneLoading?.Dispose();
     }
 }

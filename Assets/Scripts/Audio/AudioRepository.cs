@@ -1,9 +1,16 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Zenject;
+
+public interface IAudioRepository
+{
+    void Index();
+    bool DoesContain(AudioEventKey key);
+    IAudioEvent GetEvent(AudioEventKey withKey);
+    ICardAudioEventSwitch GetCardSwitch(AudioEventSwitchKey withKey);
+}
 
 [CreateAssetMenu(menuName = "Audio/Repository")]
-public class AudioRepository : ScriptableObject
+public class AudioRepository : ScriptableObject, IAudioRepository
 {
     private readonly Dictionary<AudioEventKey, IAudioEvent> eventIndex = new Dictionary<AudioEventKey, IAudioEvent>();
 
@@ -12,8 +19,6 @@ public class AudioRepository : ScriptableObject
 
     [SerializeField] private AudioEvent[] events = default;
     [SerializeField] private CardAudioEventSwitch[] cardSwitches = default;
-
-    public IAudioEvent this[AudioEventKey key] => eventIndex[key];
 
     public void Index()
     {
@@ -28,6 +33,11 @@ public class AudioRepository : ScriptableObject
             foreach (var cardSwitch in cardSwitches)
                 cardSwitchIndex.Add(cardSwitch.Key, cardSwitch);
         }
+    }
+
+    public IAudioEvent GetEvent(AudioEventKey withKey)
+    {
+        return eventIndex[withKey];
     }
 
     public ICardAudioEventSwitch GetCardSwitch(AudioEventSwitchKey withKey)

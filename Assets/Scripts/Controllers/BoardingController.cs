@@ -60,7 +60,8 @@ public class BoardingController : IBoardingController
             .SelectMany(card => card.WhenUnlocked
                 .ContinueWith(_ => card.Drop())
                 .Delay(TimeSpan.FromSeconds(0.25))
-                .ContinueWith(_ => Handle(card)))
+                .ContinueWith(_ => Handle(card))
+                .Do(boarding.OnNext))
             .Subscribe());
     }
 

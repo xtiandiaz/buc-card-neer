@@ -12,11 +12,11 @@ public class AudioManager : IAudioManager
 {
     private readonly CompositeDisposable disposables = new CompositeDisposable();
     
-    private readonly AudioRepository repository;
+    private readonly IAudioRepository repository;
     private readonly AudioSourcePool sourcePool;
 
     private AudioManager(
-        AudioRepository repository,
+        IAudioRepository repository,
         AudioSourcePool sourcePool
         )
     {
@@ -48,7 +48,7 @@ public class AudioManager : IAudioManager
             return;
         }  
         
-        Play(repository[withKey]);
+        Play(repository.GetEvent(withKey));
     }
 
     private void Play(IAudioEvent audioEvent)

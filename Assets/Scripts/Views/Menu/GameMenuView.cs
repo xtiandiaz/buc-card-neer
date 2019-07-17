@@ -19,8 +19,7 @@ public class GameMenuView : MenuView, IGameMenuView
     [SerializeField] private Button resetButton = default;
     
     [Inject] private IGameStatus gameStatus = default;
-
-    [Inject]
+    
     public void Initialize()
     {
         contentWrapper.SetActive(false);

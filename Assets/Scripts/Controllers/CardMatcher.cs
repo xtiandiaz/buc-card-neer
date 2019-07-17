@@ -44,8 +44,9 @@ public class CardMatcher : ICardMatcher
     {
         return Match(fromSource.Peek(), intoDestination.Peek())
             .Merge(fromSource.ConditionallyArrange(), intoDestination.ConditionallyArrange())
-            .LastOrDefault()
-            .Do(matching.OnNext);
+            .Do(matching.OnNext)
+            // Order matters for some emissions are ignored within the matching stream
+            .LastOrDefault();
     }
 
     public void Dispose()

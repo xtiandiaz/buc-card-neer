@@ -75,8 +75,9 @@ public class CardRouter : ICardRouter
                 if (dismisser.CanDismiss(route.SourceSlot))
                     return dismisser.Dismiss(route.SourceSlot)
                         .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardBridgeDismiss));
-                
-                return Observable.ReturnUnit();
+
+                return route.Card.Drop()
+                    .DoOnSubscribe(() => audioManager.Play(AudioEventKey.UIDragCancel));
             })
             .Subscribe());
     }
@@ -94,37 +95,34 @@ public class CardRouter : ICardRouter
                 card.Pick();
                 picking.OnNext((card, slot));
             })
-            .ContinueWith(card => slot.WhenReleased
+            .ContinueWith(pickedCard => slot.WhenReleased
+                .TakeUntil(slot.WhenDraggingStarted)
                 .Take(1)
                 .Do(_ => ToggleSlotHighlights(false))
-                .ContinueWith(card.Drop()
-                    .DoOnSubscribe(() => audioManager.Play(AudioEventKey.UIDragCancel))))
+                .ContinueWith(pickedCard.Drop()
+                    .DoOnSubscribe(() => audioManager.Play(AudioEventKey.UIDragCancel)))
+                .Merge(slot.WhenDraggingStarted
+                    .Take(1)
+                    .ContinueWith(slot.WhenDragged
+                        .TakeUntil(slot.WhenDraggingStopped)
+                        .Do(pickedCard.Drag)
+                        .AsSingleUnitObservable()
+                        .Do(_ =>
+                        {
+                            ToggleSlotHighlights(false);
+                            
+                            var slotWorldPos = slot.Position;
+
+                            routing.OnNext((
+                                pickedCard, 
+                                slot, 
+                                new Vector3(
+                                    slotWorldPos.x + pickedCard.LocalPosition.x,
+                                    slotWorldPos.y + pickedCard.LocalPosition.y)));
+                        })))
+                .First())
             .RepeatSafe()
             .Subscribe());
-
-        disposables.Add(slot.WhenDraggingStarted
-            .Take(1)
-            .Select(_ => slot.Peek())
-            .Where(card => card != null && !slot.IsLocked)
-            .ContinueWith(pickedCard => slot.WhenDragged
-                .TakeUntil(slot.WhenDraggingStopped)
-                .Do(pickedCard.Drag)
-                .Last()
-                .Select(_ =>
-                {
-                    var slotWorldPos = slot.Position;
-                        
-                    return new 
-                    {
-                        Card = pickedCard,
-                        Position = new Vector3(
-                            slotWorldPos.x + pickedCard.LocalPosition.x,
-                            slotWorldPos.y + pickedCard.LocalPosition.y)
-                    };
-                }))
-            .RepeatSafe()
-            .Subscribe(droppedCardAtPosition => 
-                routing.OnNext((droppedCardAtPosition.Card, slot, droppedCardAtPosition.Position))));
     }
 
     public void Dispose()
@@ -151,13 +149,13 @@ public class CardRouter : ICardRouter
                 return deferrer.Defer(fromSource, fromSource)
                     .Subscribe(observer);
             }
-            
+
             if (matcher.CanMatch(fromSource, intoDestination))
             {
                 return matcher.Match(fromSource, intoDestination)
                     .Subscribe(observer);
             }
-            
+
             if (host.CanLodge(fromSource, intoDestination))
             {
                 return host.Lodge(fromSource, intoDestination)

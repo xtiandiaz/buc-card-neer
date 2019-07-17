@@ -4,6 +4,6 @@ public class AppInstaller : MonoInstaller
 {
     public override void InstallBindings()
     {
-        Container.BindInterfacesAndSelfTo<AppController>().AsSingle();
+        Container.BindInterfacesTo<AppController>().AsSingle();
     }
 }

@@ -69,7 +69,7 @@ public class GameInstaller : MonoInstaller
         
         #region Board
         
-        Container.Bind<IBoardModel>().FromInstance(board).AsSingle();
+        Container.BindInterfacesTo<BoardModel>().FromInstance(board).AsSingle();
         Container.Bind<IBoardView>().FromComponentInNewPrefab(boardView).AsSingle();
 
         #endregion
@@ -128,7 +128,7 @@ public class GameInstaller : MonoInstaller
 
         #region Audio
 
-        Container.BindInterfacesAndSelfTo<AudioRepository>().FromInstance(audioRepository).AsSingle().NonLazy();
+        Container.BindInterfacesTo<AudioRepository>().FromInstance(audioRepository).AsSingle().NonLazy();
         Container.BindInterfacesTo<AudioManager>().AsSingle();
         Container.BindMemoryPool<AudioSource, AudioSourcePool>()
             .WithMaxSize(16)
