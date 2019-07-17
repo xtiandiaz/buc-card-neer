@@ -5,6 +5,8 @@ using UnityEngine;
 
 public interface IGestureListener
 {
+    IObservable<Unit> WhenPressed { get; }
+    IObservable<Unit> WhenReleased { get; }
     IObservable<Unit> WhenDraggingStarted { get; }
     IObservable<Vector3> WhenDragged { get; }
     IObservable<Vector3> WhenDraggingEnded { get; }
@@ -16,6 +18,8 @@ public interface IGestureListener
 [RequireComponent(typeof(Collider2D))]
 public class GestureListener : MonoBehaviour, IGestureListener
 {
+    private readonly Subject<Unit> pressing = new Subject<Unit>();
+    private readonly Subject<Unit> releasing = new Subject<Unit>();
     private readonly Subject<Unit> draggingStart = new Subject<Unit>();
     private readonly Subject<Vector3> dragging = new Subject<Vector3>();
     private readonly Subject<Vector3> draggingEnd = new Subject<Vector3>();
@@ -27,6 +31,8 @@ public class GestureListener : MonoBehaviour, IGestureListener
     private Vector2 startPosition;
     private DateTime startTime;
 
+    public IObservable<Unit> WhenPressed => pressing;
+    public IObservable<Unit> WhenReleased => releasing;
     public IObservable<Unit> WhenDraggingStarted => draggingStart;
     public IObservable<Vector3> WhenDragged => dragging;
     public IObservable<Vector3> WhenDraggingEnded => draggingEnd;
@@ -37,6 +43,20 @@ public class GestureListener : MonoBehaviour, IGestureListener
         eventTrigger = gameObject.AddComponent<ObservableEventTrigger>();
 
         var lastWorldPos = Vector3.zero;
+
+        eventTrigger
+            .OnPointerDownAsObservable()
+            .TakeUntilDisable(this)
+            .AsUnitObservable()
+            .Subscribe(pressing.OnNext)
+            .AddTo(this);
+        
+        eventTrigger
+            .OnPointerUpAsObservable()
+            .TakeUntilDisable(this)
+            .AsUnitObservable()
+            .Subscribe(releasing.OnNext)
+            .AddTo(this);
 
         eventTrigger
             .OnBeginDragAsObservable()
@@ -98,5 +118,15 @@ public class GestureListener : MonoBehaviour, IGestureListener
             })
             .Subscribe(swiping)
             .AddTo(this);
+    }
+
+    private void OnDestroy()
+    {
+        pressing.Dispose();
+        releasing.Dispose();
+        dragging.Dispose();
+        draggingStart.Dispose();
+        draggingEnd.Dispose();
+        swiping.Dispose();
     }
 }

@@ -16,5 +16,5 @@ MonoBehaviour:
   maxRotationAngle: 0
   shouldUseReverseIndices: 1
   shouldFog: 1
-  fogColor: {r: 0.57938766, g: 0.7274499, b: 0.7924528, a: 1}
-  fogIntensity: 1
+  fogColor: {r: 0.63834995, g: 0.8206419, b: 0.8962264, a: 1}
+  fogIntensity: 0.75

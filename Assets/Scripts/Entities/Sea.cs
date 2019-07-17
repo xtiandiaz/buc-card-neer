@@ -10,9 +10,7 @@ public interface ISea
     
     bool IsMessy { get; }
     bool ShouldResupply { get; }
-    
-    IObservable<ISlot> WhenReleasedSupply { get; }
-    
+
     void Lock();
     void Unlock();
     
@@ -53,11 +51,7 @@ public class Sea : ISea
 
     public bool IsMessy => slots.FirstOrDefault(slot => slot.IsMessy) != null;
     public bool ShouldResupply => slots.FirstOrDefault(slot => dealer.CanDeal(slot) && slot.IsEmpty) != null;
-
-    public IObservable<ISlot> WhenReleasedSupply => slots
-        .Select(slot => slot.WhenReleased.Select(_ => slot))
-        .Merge();
-
+    
     public IObservable<Unit> Supply()
     {
         return Observable.Timer(TimeSpan.Zero, TimeSpan.FromSeconds(0.075))

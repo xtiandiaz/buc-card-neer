@@ -34,9 +34,6 @@ public class ClashingController : IClashingController
     
     public void Initialize()
     {
-        disposables.Add(sea.WhenReleasedSupply
-            .Subscribe(slot => slot.Lock()));
-        
         disposables.Add(boardingController.WhenBoarded
             .Merge(matcher.WhenMatched, shooter.WhenShot)
             .Delay(TimeSpan.FromSeconds(0.25))

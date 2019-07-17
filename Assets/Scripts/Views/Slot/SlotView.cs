@@ -9,6 +9,8 @@ public interface ISlotView
     Transform Transform { get; }
     Bounds Bounds { get; }
     
+    IObservable<Unit> WhenPressed { get; }
+    IObservable<Unit> WhenReleased { get; }
     IObservable<Unit> WhenDraggingStarted { get; }
     IObservable<Vector3> WhenDragged { get; }
     IObservable<Vector3> WhenDraggingStopped { get; }
@@ -30,7 +32,9 @@ public class SlotView : MonoBehaviour, ISlotView
     public SlotType Type => type;
     public Transform Transform => transform;
     public Bounds Bounds => faceRenderer.bounds;
-    
+
+    public IObservable<Unit> WhenPressed => gestureListener.WhenPressed;
+    public IObservable<Unit> WhenReleased => gestureListener.WhenReleased;
     public IObservable<Unit> WhenDraggingStarted => gestureListener.WhenDraggingStarted;
     public IObservable<Vector3> WhenDragged => gestureListener.WhenDragged;
     public IObservable<Vector3> WhenDraggingStopped => gestureListener.WhenDraggingEnded;

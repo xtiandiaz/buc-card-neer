@@ -21,13 +21,14 @@ public interface ISlot : ICardBond, IDisposable
 
     Vector3 Position { get; }
 
+    IObservable<Unit> WhenPressed { get; }
+    IObservable<Unit> WhenReleased { get; }
     IObservable<Unit> WhenDraggingStarted { get; }
     IObservable<Vector3> WhenDragged { get; }
     IObservable<Vector3> WhenDraggingStopped { get; } 
 
     IObservable<ICard> WhenLodged { get; }
-    IObservable<Unit> WhenReleased { get; }
-    
+
     ICard Peek();
     ICard Pop();
     IObservable<Unit> Lodge(ICard card);
@@ -50,7 +51,6 @@ public class Slot : ISlot
     protected readonly IPile pile;
     
     private readonly Subject<ICard> lodging = new Subject<ICard>();
-    private readonly Subject<Unit> releasing = new Subject<Unit>();
     private readonly ReactiveProperty<bool> isLocked = new ReactiveProperty<bool>(false);
     private readonly CompositeDisposable disposables = new CompositeDisposable();
     private readonly ISlotView view;
@@ -93,12 +93,13 @@ public class Slot : ISlot
 
     public Vector3 Position => view.Transform.position;
 
+    public IObservable<Unit> WhenPressed => view.WhenPressed;
+    public IObservable<Unit> WhenReleased => view.WhenReleased;
     public IObservable<Unit> WhenDraggingStarted => view.WhenDraggingStarted.Where(_ => !IsLocked);
     public IObservable<Vector3> WhenDragged => view.WhenDragged;
     public IObservable<Vector3> WhenDraggingStopped => view.WhenDraggingStopped;
     
     public IObservable<ICard> WhenLodged => lodging;
-    public IObservable<Unit> WhenReleased => releasing;
 
     public ICard Peek()
     {
@@ -138,7 +139,8 @@ public class Slot : ISlot
 
     public IObservable<Unit> Arrange()
     {
-        return pile.Map((card, index) => card.Arrange(arrangementModel.GetArrangementForIndex(index)))
+        return pile.Map((card, index) => card.Arrange(
+                arrangementModel.GetArrangementForIndex(index, pile.Extent)))
             .Merge()
             .AsSingleUnitObservable()
             .DoOnCompleted(() => IsMessy = false);
@@ -179,7 +181,6 @@ public class Slot : ISlot
     public void Dispose()
     {
         lodging?.Dispose();
-        releasing?.Dispose();
         isLocked?.Dispose();
         disposables?.Dispose();
     }

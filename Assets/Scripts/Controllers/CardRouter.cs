@@ -13,7 +13,7 @@ public interface ICardRouter : IDisposable, IInitializable
 public class CardRouter : ICardRouter
 {
     private readonly Subject<(ICard, ISlot)> picking = new Subject<(ICard, ISlot)>();
-    private readonly Subject<(ICard, ISlot, Vector3)> dropping = new Subject<(ICard, ISlot, Vector3)>();
+    private readonly Subject<(ICard, ISlot, Vector3)> routing = new Subject<(ICard, ISlot, Vector3)>();
     private readonly List<ISlot> slots = new List<ISlot>();
     private readonly CompositeDisposable disposables = new CompositeDisposable();
     
@@ -55,8 +55,7 @@ public class CardRouter : ICardRouter
                 }
             }));
         
-        disposables.Add(dropping
-            .Do(_ => slots.ForEach(slot => slot.ToggleHighlight(false)))
+        disposables.Add(routing
             .Select(cardFromSlotAtPosition =>
             {
                 var (card, fromSlot, dropPos) = cardFromSlotAtPosition;
@@ -68,13 +67,17 @@ public class CardRouter : ICardRouter
                     DestinationSlot = slots.FirstOrDefault(slot => slot != fromSlot && slot.DoesContain(dropPos))
                 };
             })
-            .SelectMany(route => route.DestinationSlot != null 
-                ? Route(route.Card, route.SourceSlot, route.DestinationSlot)
-                : dismisser.CanDismiss(route.SourceSlot) 
-                    ? dismisser.Dismiss(route.SourceSlot)
-                        .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardBridgeDismiss))
-                    : route.Card.Drop()
-                        .DoOnSubscribe(() => audioManager.Play(AudioEventKey.UIDragCancel)))
+            .SelectMany(route =>
+            {
+                if (route.DestinationSlot != null) 
+                    return Route(route.Card, route.SourceSlot, route.DestinationSlot);
+
+                if (dismisser.CanDismiss(route.SourceSlot))
+                    return dismisser.Dismiss(route.SourceSlot)
+                        .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardBridgeDismiss));
+                
+                return Observable.ReturnUnit();
+            })
             .Subscribe());
     }
     
@@ -82,15 +85,27 @@ public class CardRouter : ICardRouter
     {
         slots.Add(slot);
 
-        disposables.Add(slot.WhenDraggingStarted
-            .Take(1)
+        disposables.Add(slot.WhenPressed
             .Select(_ => slot.Peek())
-            .Where(card => card != null)
+            .Where(card => card != null && !slot.IsLocked)
+            .Take(1)
             .Do(card =>
             {
                 card.Pick();
                 picking.OnNext((card, slot));
             })
+            .ContinueWith(card => slot.WhenReleased
+                .Take(1)
+                .Do(_ => ToggleSlotHighlights(false))
+                .ContinueWith(card.Drop()
+                    .DoOnSubscribe(() => audioManager.Play(AudioEventKey.UIDragCancel))))
+            .RepeatSafe()
+            .Subscribe());
+
+        disposables.Add(slot.WhenDraggingStarted
+            .Take(1)
+            .Select(_ => slot.Peek())
+            .Where(card => card != null && !slot.IsLocked)
             .ContinueWith(pickedCard => slot.WhenDragged
                 .TakeUntil(slot.WhenDraggingStopped)
                 .Do(pickedCard.Drag)
@@ -109,13 +124,13 @@ public class CardRouter : ICardRouter
                 }))
             .RepeatSafe()
             .Subscribe(droppedCardAtPosition => 
-                dropping.OnNext((droppedCardAtPosition.Card, slot, droppedCardAtPosition.Position))));
+                routing.OnNext((droppedCardAtPosition.Card, slot, droppedCardAtPosition.Position))));
     }
 
     public void Dispose()
     {
         picking.Dispose();
-        dropping.Dispose();
+        routing.Dispose();
         
         disposables?.Dispose();
     }
@@ -153,5 +168,11 @@ public class CardRouter : ICardRouter
                 .DoOnSubscribe(() => audioManager.Play(AudioEventKey.UIDragCancel))
                 .Subscribe(observer);
         });
+    }
+
+    private void ToggleSlotHighlights(bool toValue)
+    {
+        foreach (var slot in slots)
+            slot.ToggleHighlight(toValue);
     }
 }

@@ -161,7 +161,6 @@ public class CardView : MonoBehaviour, ICardView
         get => sortingGroup.sortingOrder;
         set
         {
-            //sortingSet.SortingOrder = value;
             sortingGroup.sortingOrder = value;
 
             var shouldToggleFaceContent = value >= -2;
@@ -202,6 +201,9 @@ public class CardView : MonoBehaviour, ICardView
 
             if (!shouldSortLazily)
                 Sort();
+            
+            //TODO animate fog
+            shader.Fog(withArrangement.fogColor, withArrangement.fogIntensity);
             
             var arrangementSequence = animator.Arrange(withArrangement.localPosition, withArrangement.rotationZ)
                 .OnComplete(() => 
