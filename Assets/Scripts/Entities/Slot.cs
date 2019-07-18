@@ -76,7 +76,7 @@ public class Slot : ISlot
 
     void ICardBond.Release(ICard card)
     {
-        pile.Remove(card);
+        IsMessy = pile.Remove(card);
     }
 
     public SlotType Type { get; }

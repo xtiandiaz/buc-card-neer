@@ -54,9 +54,10 @@ public class Sea : ISea
     
     public IObservable<Unit> Supply()
     {
-        return Observable.Timer(TimeSpan.Zero, TimeSpan.FromSeconds(0.075))
-            .Take(slots.Length * CardCountPerSlot)
-            .SelectMany(i => dealer.DealOne(slots[i % slots.Length]))
+        return Enumerable.Range(0, slots.Length)
+            .Select(i => dealer.Deal(CardCountPerSlot, slots[i])
+                .DelaySubscription(TimeSpan.FromSeconds(i * 0.2f)))
+            .Merge()
             .AsSingleUnitObservable();
     }
     
