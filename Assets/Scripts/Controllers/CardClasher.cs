@@ -21,11 +21,11 @@ public class CardClasher : ICardClasher
     {
         return Observable.Create<Unit>(observer =>
         {
-            var sourceCard = source?.Peek();
-            var destinationCard = withDestination?.Peek();
-            
             if (CanClash(source, withDestination)) 
             { 
+                var sourceCard = source.Peek();
+                var destinationCard = withDestination.Peek();
+                
                 return sourceCard.Clash(destinationCard, toward)
                     .DoOnSubscribe(() => audioManager.Play(AudioEventSwitchKey.CardClash, sourceCard.Type))
                     .Subscribe(observer);

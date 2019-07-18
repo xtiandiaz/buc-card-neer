@@ -92,7 +92,9 @@ public class CardRouter : ICardRouter
             .Take(1)
             .Do(card =>
             {
+                slot.Lock();
                 card.Pick();
+                
                 picking.OnNext((card, slot));
             })
             .ContinueWith(pickedCard => slot.WhenReleased
@@ -120,7 +122,8 @@ public class CardRouter : ICardRouter
                                     slotWorldPos.x + pickedCard.LocalPosition.x,
                                     slotWorldPos.y + pickedCard.LocalPosition.y)));
                         })))
-                .First())
+                .First()
+                .Do(_ => slot.Unlock()))
             .RepeatSafe()
             .Subscribe());
     }

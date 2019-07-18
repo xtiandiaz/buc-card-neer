@@ -76,7 +76,7 @@ public class Slot : ISlot
 
     void ICardBond.Release(ICard card)
     {
-        IsMessy = pile.Remove(card);
+        IsMessy |= pile.Remove(card);
     }
 
     public SlotType Type { get; }
@@ -95,7 +95,7 @@ public class Slot : ISlot
 
     public IObservable<Unit> WhenPressed => view.WhenPressed;
     public IObservable<Unit> WhenReleased => view.WhenReleased;
-    public IObservable<Unit> WhenDraggingStarted => view.WhenDraggingStarted.Where(_ => !IsLocked);
+    public IObservable<Unit> WhenDraggingStarted => view.WhenDraggingStarted;
     public IObservable<Vector3> WhenDragged => view.WhenDragged;
     public IObservable<Vector3> WhenDraggingStopped => view.WhenDraggingStopped;
     
@@ -110,7 +110,7 @@ public class Slot : ISlot
     {
         var poppedCard = pile.Pop();
 
-        IsMessy = poppedCard != null;
+        IsMessy |= poppedCard != null;
         
         return poppedCard;
     }

@@ -43,7 +43,10 @@ public class CardMatcher : ICardMatcher
     public IObservable<Unit> Match(ISlot fromSource, ISlot intoDestination)
     {
         return Match(fromSource.Peek(), intoDestination.Peek())
-            .Merge(fromSource.ConditionallyArrange(), intoDestination.ConditionallyArrange())
+            .Merge(
+                fromSource.ConditionallyArrange().IgnoreElements(),
+                intoDestination.ConditionallyArrange().IgnoreElements())
+            // Only bubble up matching elements by ignoring the arrangement ones
             .Do(matching.OnNext)
             // Order matters for some emissions are ignored within the matching stream
             .LastOrDefault();
@@ -116,7 +119,12 @@ public class CardMatcher : ICardMatcher
 
                             return source.Hit(Math.Min(player.Value, pirateHealth))
                                 .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardConfrontPirate))
-                                .Merge(player.Hit(pirateHealth))
+                                .Merge(player.Hit(pirateHealth)
+                                    .Do(_ =>
+                                    {
+                                        if (player.HealthPoints > 0)
+                                            player.Credit(source.OriginalValue);
+                                    }))
                                 .LastOrDefault()
                                 .Subscribe(observer);
                         
@@ -162,8 +170,11 @@ public class CardMatcher : ICardMatcher
                         .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardToolMeleeUse))
                         .Do(_ =>
                         {
-                            if (withDestination.Value <= 0)
-                                audioManager.Play(AudioEventKey.CardDefeatPirate);
+                            if (withDestination.Value > 0) 
+                                return;
+                            
+                            player.Credit(withDestination.OriginalValue);
+                            audioManager.Play(AudioEventKey.CardDefeatPirate);
                         })
                         .Merge(source.Destroy())
                         .LastOrDefault()
