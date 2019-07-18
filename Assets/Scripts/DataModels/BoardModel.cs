@@ -3,7 +3,7 @@ using UnityEngine;
 
 public interface IBoardModel : IDisposable
 {
-    Vector2 Margins { get; }
+    Vector2 Padding { get; }
     Vector2 CardSize { get; }
     Vector2 CardSpacing { get; }
     int MaxCardCountInRow { get; }
@@ -15,8 +15,8 @@ public interface IBoardModel : IDisposable
 [CreateAssetMenu(menuName = "Model/Board")]
 public class BoardModel : ScriptableObject, IBoardModel
 {
-    [SerializeField] private Vector2 minMargins = default;
-    [SerializeField] private Vector2 flexibleMargins = default;
+    [SerializeField] private Vector2 minPadding = default;
+    [SerializeField] private Vector2 flexiblePadding = default;
     [SerializeField] private Vector2 referenceAspectRatio = default;
     [SerializeField] private Vector2 widestAspectRatio = default;
     [SerializeField] private Vector2 tallestAspectRatio = default;
@@ -29,14 +29,14 @@ public class BoardModel : ScriptableObject, IBoardModel
     [SerializeField] private string cardSortingLayerName = default;
     [SerializeField] private int floatingCardSortingOrder = default;
 
-    private Vector2? margins = default;
+    private Vector2? padding = default;
 
-    public Vector2 Margins
+    public Vector2 Padding
     {
         get
         {
-            if (margins.HasValue)
-                return margins.Value;
+            if (padding.HasValue)
+                return padding.Value;
             
             var refRatio = new Vector2(
                 referenceAspectRatio.x / referenceAspectRatio.y,
@@ -52,9 +52,9 @@ public class BoardModel : ScriptableObject, IBoardModel
             var tx = (curRatio.x - refRatio.x) / (wideRatio - refRatio.x);
             var ty = (curRatio.y - refRatio.y) / (tallRatio - refRatio.y);
 
-            margins = minMargins + tx * flexibleMargins.x * Vector2.right + ty * flexibleMargins.y * Vector2.up;
+            padding = minPadding + tx * flexiblePadding.x * Vector2.right + ty * flexiblePadding.y * Vector2.up;
 
-            return margins.Value;
+            return padding.Value;
         }
     }
 
@@ -67,6 +67,6 @@ public class BoardModel : ScriptableObject, IBoardModel
 
     public void Dispose()
     {
-        margins = default;
+        padding = default;
     }
 }

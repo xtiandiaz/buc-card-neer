@@ -17,7 +17,7 @@ public class GameCamera : MonoBehaviour, IGameCamera, IViewportProvider, IWorldP
         var desiredViewWidth = (fromModel.CardSize.x + fromModel.CardSpacing.x) 
                                * fromModel.MaxCardCountInRow
                                - fromModel.CardSpacing.x
-                               + fromModel.Margins.x * 2f;
+                               + fromModel.Padding.x * 2f;
 	
         transform.position = new Vector3(
             0, 

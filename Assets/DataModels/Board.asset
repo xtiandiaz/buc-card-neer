@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1414ef01d490457d85d9df16d2d72cc3, type: 3}
   m_Name: Board
   m_EditorClassIdentifier: 
-  minMargins: {x: 0.25, y: 0}
-  flexibleMargins: {x: 1, y: 3}
+  minPadding: {x: 0.25, y: 0}
+  flexiblePadding: {x: 1.25, y: 3}
   referenceAspectRatio: {x: 9, y: 16}
   widestAspectRatio: {x: 3, y: 4}
   tallestAspectRatio: {x: 9, y: 20}
