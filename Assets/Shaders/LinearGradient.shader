@@ -9,7 +9,7 @@
     {
         Tags { "RenderType"="Opaque" }
         
-        ZWrite Off
+        ZWrite On
         
         LOD 100
 

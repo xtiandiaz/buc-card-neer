@@ -1,6 +1,7 @@
+using System;
 using UnityEngine;
-using Zenject;
 using DG.Tweening;
+using Zenject;
 
 public interface ISeaView
 {
@@ -33,5 +34,24 @@ public class SeaView : MonoBehaviour, ISeaView
     {
         get => transform.localPosition;
         set => transform.localPosition = value;
+    }
+
+    [Inject]
+    private void Initialize(
+        IBoardModel boardModel
+        )
+    {
+        var positioner = -slots.Length * 0.5f + 0.5f;
+        
+        foreach (var slot in slots)
+        {
+            var slotPos = slot.Transform.localPosition;
+
+            slotPos.x = positioner * (boardModel.CardSize.x + boardModel.SlotSpacing);
+            
+            slot.Transform.localPosition = slotPos;
+            
+            positioner += 1f;
+        }
     }
 }

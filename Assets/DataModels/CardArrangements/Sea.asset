@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 454eca3f32b049618625291e0c756fe0, type: 3}
   m_Name: Sea
   m_EditorClassIdentifier: 
-  offset: {x: 0, y: 1.73, z: 1}
+  offset: {x: 0, y: 1, z: 1}
   maxRotationAngle: 0
   shouldUseReverseIndices: 1
   shouldFog: 1

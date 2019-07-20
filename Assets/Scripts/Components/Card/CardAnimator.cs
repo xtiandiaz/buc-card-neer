@@ -74,7 +74,7 @@ public class CardAnimator : MonoBehaviour
                 .OnComplete(() => ToggleFace(toFace))
                 .SetEase(Ease.InQuart));
 
-        flipSequence.Join(TweenDepth(-1.5f, halfTweenDuration).SetEase(Ease.InQuart));
+        flipSequence.Join(TweenDepth(-2.5f, halfTweenDuration).SetEase(Ease.InQuart));
 
         flipSequence.Append(
             covers.DORotate(destEulerAngles, halfTweenDuration).SetEase(Ease.OutQuart));

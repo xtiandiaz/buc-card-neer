@@ -6,9 +6,12 @@ using Zenject;
 public abstract class MenuView : MonoBehaviour
 {
     [Inject]
-    private void Initialize(Viewport viewport)
+    private void Initialize(
+        Viewport viewport,
+        IBoardModel boardModel
+        )
     {
         var canvasScaler = GetComponent<CanvasScaler>();
-        canvasScaler.scaleFactor = Screen.width / viewport.Size.x / 10f;
+        canvasScaler.scaleFactor =( boardModel.Tx > 0.25f ? 0.75f : 1f) * Screen.width / viewport.Size.x / 10f;
     }
 }

@@ -13,10 +13,11 @@ public class GameCamera : MonoBehaviour, IGameCamera, IViewportProvider, IWorldP
     public void Initialize(IBoardModel fromModel)
     {
         camera = GetComponent<Camera>();
-        
-        var desiredViewWidth = (fromModel.CardSize.x + fromModel.CardSpacing.x) 
-                               * fromModel.MaxCardCountInRow
-                               - fromModel.CardSpacing.x
+
+        var slotSpacing = fromModel.SlotSpacing;
+        var desiredViewWidth = (fromModel.CardSize.x + slotSpacing) 
+                               * fromModel.MaxSlotsInRow
+                               - slotSpacing
                                + fromModel.Padding.x * 2f;
 	
         transform.position = new Vector3(
