@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
+using UnityEngine;
 using Zenject;
+using Random = UnityEngine.Random;
 
 public interface IDeckFactory : IFactory<IDeckModel, IDeck>, IDisposable
 {
@@ -23,31 +25,61 @@ public class DeckFactory : IDeckFactory
     public IDeck Create(IDeckModel fromModel)
     {
         var cardData = new List<ICardModel>();
+        
+        // TODO Optimize and move to a separate class Shuffling Strategy
+        
+        var suits = new List<CardType> {CardType.Food, CardType.Artifact, CardType.Gem};
+        suits.Shuffle();
 
-        /* var tools = fromModel.Tools.ToList();
+        var suitOrder = Enumerable.Range(0, suits.Count)
+            .ToDictionary(key => suits[key], value => value);
+
+        var tools = fromModel.Tools.ToList();
         tools.Shuffle();
         
-        //cardData.AddRange(tools);
-        
-       var items = fromModel.Items
-            .OrderBy(item => item.Suit.Type)
-            .Select((item, i) => new {Index = i % 4, Item = item})
+        cardData.AddRange(tools);
+
+        var itemsPerSuit = fromModel.Items.Count(item => item.Suit.Type == CardType.Food);
+
+        var items = fromModel.Items
+            .OrderBy(item => suitOrder[item.Suit.Type])
+            .Select((item, i) => new {Index = i % itemsPerSuit, Item = item})
             .OrderBy(itemObj => itemObj.Index)
             .Select(itemObj => itemObj.Item)
             .ToList();
 
-        cardData.AddRange(items);*/
+        cardData = cardData.Apportion(items);
+        
+        var merchantsPerSuit = fromModel.Merchants.Count(merchant => merchant.Suit.Type == CardType.Food);
+        var merchants = fromModel.Merchants
+            .OrderBy(merchant => suitOrder[merchant.Suit.Type])
+            .Select((merchant, i) => new {Index = i % merchantsPerSuit, Merchant = merchant})
+            .OrderBy(merchantObj => merchantObj.Index)
+            .Select(merchantObj => merchantObj.Merchant)
+            .ToList();
 
-        cardData.AddRange(fromModel.Pirates);
-        cardData.AddRange(fromModel.Merchants);
-        cardData.AddRange(fromModel.Inspectors);
-        cardData.AddRange(fromModel.Items);
-        cardData.AddRange(fromModel.Tools);
-        cardData.AddRange(fromModel.Monsters);
+        cardData = cardData.Apportion(merchants);
+
+        var monsterPerSuit = fromModel.Monsters.Count(monster => monster.Suit.Type == CardType.Food);
+        var monsters = fromModel.Monsters
+            .OrderBy(monster => suitOrder[monster.Suit.Type])
+            .Select((monster, i) => new {Index = i % monsterPerSuit, Monster = monster})
+            .OrderBy(monsterObj => monsterObj.Index)
+            .Select(monsterObj => monsterObj.Monster)
+            .ToList();
+
+        cardData = cardData.Apportion(monsters);
         
-        if (fromModel.ShouldShuffleOnInit)
-            cardData.Shuffle();
+        var pirates = fromModel.Pirates.ToList();
+        pirates.Shuffle();
         
+        cardData = cardData.Apportion(pirates);
+        
+        var inspectors = fromModel.Inspectors.ToList();
+        inspectors.Shuffle();
+        
+        cardData = cardData.Apportion(inspectors);
+
         var controller = deckFactory.Create(cardData);
         
         disposables.Add(controller);
@@ -81,19 +113,37 @@ public static class ShufflingUtils
         } 
     }
 
-    public static void Apportion<T>(this IList<T> intoList, IList<T> sample)
+    public static List<T> Apportion<T>(this IList<T> population, IList<T> sample) where T : class
     {
-        var si = sample.Count - 1;
-        var ai = 0;
-        
-        while (si > 0)
-        {
-            var item = sample[si];
+        var totalCount = population.Count + sample.Count;
+        var totalCountM1 = totalCount - 1;
+        var trail = 0f;
+        var result = new T[totalCount];
 
-            //intoList.Insert(0, );
+        for (var i = 0; i < sample.Count; i++)
+        {
+            var step = (totalCount - trail) / (sample.Count - i);
+            //Debug.Log($"Step: {step}");
             
-            si--;
+            trail += Random.Range(1f, step);
+            //Debug.Log($"Trail: {trail}");
+
+            var ai = Mathf.Clamp(Mathf.RoundToInt(trail), 0, totalCountM1);
+            //Debug.Log(ai);
+
+            result[ai] = sample[i];
         }
 
+        var j = 0;
+        for (var i = 0; i < totalCount; i++)
+        {
+            if (result[i] != null)
+                continue;
+
+            result[i] = population[j];
+            j++;
+        }
+
+        return result.ToList();
     }
 }

@@ -11,8 +11,8 @@ public class ShipView : MonoBehaviour, IShipView
     [SerializeField] private SlotView[] slots = default;
     
     [Space]
-    [SerializeField] private Transform storage;
-    [SerializeField] private Transform mount;
+    [SerializeField] private Transform storage = default;
+    [SerializeField] private Transform mount = default;
     
     [Space]
     [SerializeField] private float hullHeight = default;
