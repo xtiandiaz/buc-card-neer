@@ -208,15 +208,19 @@ public class CardMatcher : ICardMatcher
 
                     withDestination.Hack(source.Value);
 
-                    return source.Hit(source.Value)
+                    var result = source.Hit(source.Value)
                         .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardToolMeleeUse))
-                        .Do(_ =>
+                        .DoOnCompleted(() =>
                         {
                             if (withDestination.LockValue <= 0)
                                 audioManager.Play(AudioEventKey.CardDefeatMonster);
-                        })
-                        .Subscribe(observer);
-                
+                        });
+
+                    if (withDestination.LockValue <= 0)
+                        result = result.IgnoreElements();
+                    
+                    return result.Subscribe(observer);
+
                 default:
 
                     observer.OnError(new ArgumentOutOfRangeException());
