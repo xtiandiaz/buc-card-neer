@@ -5,30 +5,32 @@ using Zenject;
 
 public interface ISupplyController : IInitializable, IDisposable
 {
+    IObservable<Unit> WhenSuppliedFirstTime { get; }
+
     IObservable<Unit> Supply();
 }
 
 public class SupplyController : ISupplyController
 {
+    private readonly Subject<Unit> supply =  new Subject<Unit>();
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private readonly IClashingController clashingController;
-    private readonly ICardDealer dealer;
     private readonly ISea sea;
     private readonly IAudioManager audioManager;
 
     private SupplyController(
         IClashingController clashingController,
-        ICardDealer dealer, 
         ISea sea,
         IAudioManager audioManager
         )
     {
         this.clashingController = clashingController;
-        this.dealer = dealer;
         this.sea = sea;
         this.audioManager = audioManager;
     }
+
+    public IObservable<Unit> WhenSuppliedFirstTime => supply.First();
 
     public void Initialize()
     {
@@ -51,11 +53,13 @@ public class SupplyController : ISupplyController
 
     public IObservable<Unit> Supply()
     {
-        return sea.Supply();
+        return sea.Supply()
+            .DoOnCompleted(() => supply.OnNext(Unit.Default));
     }
 
     public void Dispose()
     {
+        supply.Dispose();
         disposables.Dispose();
     }
 }

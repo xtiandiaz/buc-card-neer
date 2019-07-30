@@ -80,11 +80,11 @@ public class DeckFactory : IDeckFactory
         
         cardData = cardData.Apportion(inspectors);*/
 
-        var controller = deckFactory.Create(cardData);
+        var deck = deckFactory.Create(cardData);
         
-        disposables.Add(controller);
+        disposables.Add(deck);
         
-        return controller;
+        return deck;
     }
 
     public void Dispose()

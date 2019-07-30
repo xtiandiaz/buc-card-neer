@@ -6,8 +6,11 @@ public interface IBoardModel : IDisposable
     Vector2 Padding { get; }
     
     Vector2 CardSize { get; }
-    int MaxSlotsInRow { get; }
+    int SupplySlotCount { get; }
     float SlotSpacing { get; }
+    
+    int CardCountPerSupplySlot { get; }
+    int MaxCardsInSupply { get; }
     
     float Tx { get; }
     
@@ -27,9 +30,12 @@ public class BoardModel : ScriptableObject, IBoardModel
     
     [Space]
     [SerializeField] private Vector2 cardSize = default;
-    [SerializeField] private int maxSlotsInRow = default;
+    [SerializeField] private int supplySlotCount = default;
     [SerializeField] private float minSlotSpacing = default;
     [SerializeField] private float flexibleSlotSpacing = default;
+    
+    [Space]
+    [SerializeField] private int cardCountPerSupplySlot = default;
     
     [Space]
     [SerializeField] private string slotSortingLayerName = default;
@@ -53,9 +59,12 @@ public class BoardModel : ScriptableObject, IBoardModel
     }
 
     public Vector2 CardSize => cardSize;
-    public int MaxSlotsInRow => maxSlotsInRow;
+    public int SupplySlotCount => supplySlotCount;
     public float SlotSpacing => minSlotSpacing + flexibleSlotSpacing * Tx;
-    
+
+    public int CardCountPerSupplySlot => cardCountPerSupplySlot;
+    public int MaxCardsInSupply => cardCountPerSupplySlot * supplySlotCount;
+
     public string SlotSortingLayerName => slotSortingLayerName;
     public string CardSortingLayerName => cardSortingLayerName;
     public int FloatingCardSortingOrder => floatingCardSortingOrder;

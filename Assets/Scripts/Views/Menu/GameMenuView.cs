@@ -17,7 +17,7 @@ public class GameMenuView : MenuView, IGameMenuView
     
     [Header("Controls")]
     [SerializeField] private Button resetButton = default;
-    
+
     [Inject] private IGameStatus gameStatus = default;
     
     public void Initialize()
@@ -25,11 +25,13 @@ public class GameMenuView : MenuView, IGameMenuView
         contentWrapper.SetActive(false);
         
         gameStatus.WhenLost
-            .Subscribe(_ =>
-            {
-                heading.text = "Game Over";
-                contentWrapper.SetActive(true);
-            })
+            .Subscribe(_ => ShowHeadline("Game Over", Color.red))
+            .AddTo(this);
+
+        gameStatus.WhenWon
+            .Subscribe(score => ShowHeadline(
+                $"You won!\n<size=10>Earned <color=FFFFFF>{score}</color> coins.</size>",
+                Color.yellow))
             .AddTo(this);
 
         gameStatus.UndealtCardCount
@@ -39,5 +41,12 @@ public class GameMenuView : MenuView, IGameMenuView
         resetButton.OnClickAsObservable()
             .Subscribe(_ => gameStatus.Reset())
             .AddTo(this);
+    }
+
+    private void ShowHeadline(string withText, Color andColor)
+    {
+        heading.text = withText;
+        heading.color = andColor;
+        contentWrapper.SetActive(true);
     }
 }

@@ -16,7 +16,7 @@ public class GameCamera : MonoBehaviour, IGameCamera, IViewportProvider, IWorldP
 
         var slotSpacing = fromModel.SlotSpacing;
         var desiredViewWidth = (fromModel.CardSize.x + slotSpacing) 
-                               * fromModel.MaxSlotsInRow
+                               * fromModel.SupplySlotCount
                                - slotSpacing
                                + fromModel.Padding.x * 2f;
 	

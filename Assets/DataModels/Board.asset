@@ -18,9 +18,10 @@ MonoBehaviour:
   widestAspectRatio: {x: 3, y: 4}
   tallestAspectRatio: {x: 9, y: 20}
   cardSize: {x: 2.5, y: 3.5}
-  maxSlotsInRow: 4
+  supplySlotCount: 4
   minSlotSpacing: 0.25
   flexibleSlotSpacing: 0.25
+  cardCountPerSupplySlot: 3
   slotSortingLayerName: Slot
   cardSortingLayerName: Card
   floatingCardSortingOrder: 50

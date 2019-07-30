@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e44d7704b0741448c2d8e9fcc91ce33, type: 3}
+  m_Name: WinningTester
+  m_EditorClassIdentifier: 
+  shouldShuffleOnInit: 1
+  pirates:
+  - {fileID: 11400000, guid: 432e7ab893c904edeb44ed0d8f684246, type: 2}
+  merchants:
+  - {fileID: 11400000, guid: ad256a47d71364949a19bae8189448b8, type: 2}
+  inspectors: []
+  items:
+  - {fileID: 11400000, guid: cb82d0c9fc815448b8c2ed28d0cd05f1, type: 2}
+  - {fileID: 11400000, guid: b3b1400a481324b6a8d2433a4b93dd58, type: 2}
+  - {fileID: 11400000, guid: 60d182fd993fa43ccb8430775dcebdd7, type: 2}
+  tools:
+  - {fileID: 11400000, guid: 7f984c89b8ac24275ace764476aed2bd, type: 2}
+  - {fileID: 11400000, guid: 1bda311f81b5e470ebc25274a2424ddd, type: 2}
+  - {fileID: 11400000, guid: 8c198c2b68a284cf4a9596d615b8044d, type: 2}
+  monsters:
+  - {fileID: 11400000, guid: 56d6f8f8a93e748ee8bcee42f33fe820, type: 2}

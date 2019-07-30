@@ -422,7 +422,6 @@ MonoBehaviour:
   animator: {fileID: 6808644316406820444}
   tweenWrapper: {fileID: 6101534049218447780}
   covers: {fileID: 5358179571887389444}
-  settings: {fileID: 11400000, guid: 82c18c688b13c467c9b2c21f495c904d, type: 2}
 --- !u!114 &3214169893031366409
 MonoBehaviour:
   m_ObjectHideFlags: 0
