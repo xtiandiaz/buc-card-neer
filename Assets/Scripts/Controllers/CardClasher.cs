@@ -53,19 +53,15 @@ public class CardClasher : ICardClasher
         switch (source.Type)
         {
             case CardType.Pirate:
-                    
-                return (withDestination.Type & CardType.Merchant) != 0;
+
+                return withDestination.IsMerchant;
                 
             case CardType.Merchant:
                     
-                return (withDestination.Type & CardType.Inspector) != 0;
-                
-            case CardType.Inspector:
-                    
-                return (withDestination.Type & CardType.Pirate) != 0;
-                
+                return withDestination.IsMonster;
+
             default:
-                return false;
+                return source.IsMonster && withDestination.IsPirate;
         }
     }
 }

@@ -6,6 +6,7 @@ using Zenject;
 public interface ICard : IDisposable
 {
     CardType Type { get; }
+    CardType? Suit { get; }
     string Name { get; }
     int Index { get; set; }
     
@@ -17,6 +18,8 @@ public interface ICard : IDisposable
     bool IsItem { get; }
     bool IsTool { get; }
     bool IsMonster { get; }
+    bool IsPirate { get; }
+    bool IsMerchant { get; }
     bool IsMeleeWeapon { get; }
     bool IsRangeWeapon { get; }
     bool IsMedicine { get; }
@@ -69,6 +72,7 @@ public class Card : ICard
         this.view = view;
 
         Type = model.Type;
+        Suit = model.Suit?.Type;
         Name = model.Name;
 
         Value = OriginalValue = model.Value;
@@ -77,6 +81,7 @@ public class Card : ICard
     }
 
     public CardType Type { get; }
+    public CardType? Suit { get; }
     public string Name { get; }
     public int Index { get; set; }
 
@@ -98,6 +103,8 @@ public class Card : ICard
     public bool IsItem => (Type & CardType.Item) != 0;
     public bool IsTool => (Type & CardType.Tool) != 0;
     public bool IsMonster => IsResource && (IsLocked || WasLocked); // TODO provisional; remove
+    public bool IsPirate => (Type & CardType.Pirate) != 0;
+    public bool IsMerchant => (Type & CardType.Merchant) != 0;
     public bool IsMeleeWeapon => (Type & CardType.WeaponMelee) != 0;
     public bool IsRangeWeapon => (Type & CardType.WeaponRanged) != 0;
     public bool IsMedicine => (Type & CardType.Medicine) != 0;
@@ -170,7 +177,15 @@ public class Card : ICard
     public IObservable<Unit> OnClashed(int withValue)
     {
         return view.OnClashed()
-            .ContinueWith(_ => Hit(withValue));
+            .ContinueWith(_ =>
+            {
+                if (!IsMonster) 
+                    return Hit(withValue);
+                
+                Hack(withValue);
+
+                return LockValue <= 0 ? Destroy() : Observable.ReturnUnit();
+            });
     }
 
     public IObservable<Unit> OnShot(int withValue)

@@ -53,6 +53,9 @@ public class Deck : IDeck
             cards.Add(card);
         }
 
+        if (cardCount.Value < 12)
+            cards = cards.OrderByDescending(c => c.IsResource && !c.IsLocked && !c.IsMerchant).ToList();
+
         return cards;
     }
     

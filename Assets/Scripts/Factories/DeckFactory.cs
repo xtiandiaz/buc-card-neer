@@ -34,11 +34,6 @@ public class DeckFactory : IDeckFactory
         var suitOrder = Enumerable.Range(0, suits.Count)
             .ToDictionary(key => suits[key], value => value);
 
-        var tools = fromModel.Tools.ToList();
-        tools.Shuffle();
-        
-        cardData.AddRange(tools);
-
         var itemsPerSuit = fromModel.Items.Count(item => item.Suit.Type == CardType.Food);
 
         var items = fromModel.Items
@@ -48,7 +43,7 @@ public class DeckFactory : IDeckFactory
             .Select(itemObj => itemObj.Item)
             .ToList();
 
-        cardData = cardData.Apportion(items);
+        cardData.AddRange(items);
         
         var merchantsPerSuit = fromModel.Merchants.Count(merchant => merchant.Suit.Type == CardType.Food);
         var merchants = fromModel.Merchants
@@ -75,10 +70,15 @@ public class DeckFactory : IDeckFactory
         
         cardData = cardData.Apportion(pirates);
         
-        var inspectors = fromModel.Inspectors.ToList();
+        var tools = fromModel.Tools.ToList();
+        tools.Shuffle();
+        
+        cardData = cardData.Apportion(tools);
+        
+        /*var inspectors = fromModel.Inspectors.ToList();
         inspectors.Shuffle();
         
-        cardData = cardData.Apportion(inspectors);
+        cardData = cardData.Apportion(inspectors);*/
 
         var controller = deckFactory.Create(cardData);
         

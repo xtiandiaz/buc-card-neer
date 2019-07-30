@@ -11,6 +11,8 @@ public interface ICardMatcher : IDisposable
 
 public class CardMatcher : ICardMatcher
 {
+    private const int CreditMultiplierForMatchingSuit = 2;
+    
     private readonly Subject<Unit> matching = new Subject<Unit>();
     private readonly IPlayerCard player;
     private readonly IAudioManager audioManager;
@@ -195,7 +197,8 @@ public class CardMatcher : ICardMatcher
                 
                 case CardType.Merchant:
                     
-                    player.Credit(source.Value * withDestination.Value);
+                    player.Credit(source.Value * 
+                                  ((source.Suit & withDestination.Suit) != 0 ? CreditMultiplierForMatchingSuit : 1));
                     
                     audioManager.Play(AudioEventKey.CardItemTradeSell);
 
