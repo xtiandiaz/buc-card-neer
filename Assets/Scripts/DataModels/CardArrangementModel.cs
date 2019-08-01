@@ -19,7 +19,7 @@ public struct CardArrangement
     }
 }
 
-[CreateAssetMenu(menuName = "Models/Card Arrangement")]
+[CreateAssetMenu(menuName = "Model/Card Arrangement")]
 public class CardArrangementModel : ScriptableObject
 {
     [SerializeField] private Vector3 offset = default;

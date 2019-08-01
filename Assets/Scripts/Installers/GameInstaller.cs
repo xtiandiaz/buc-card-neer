@@ -1,15 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using Zenject;
 
-public class GameInstaller : MonoInstaller
+public class GameInstaller : SceneInstaller
 {
-    [Header("Prefabs")] 
-    [SerializeField] private BoardView boardView = default;
-
-    [Header("Data Models")] 
-    [SerializeField] private BoardModel board = default;
-    [Space]
+    [Header("Data Models")]
     [SerializeField] private DeckModel deck = default;
     [Space] 
     [SerializeField] private PlayerCardModel player = default;
@@ -20,28 +14,17 @@ public class GameInstaller : MonoInstaller
     [SerializeField] private SlotModel helm = default;
     [SerializeField] private SlotModel storage = default;
     [SerializeField] private SlotModel mount = default;
-
-    [Header("Viewport")]
-    [SerializeField] private new GameCamera camera = default;
     
-    [Header("Views")]
-    [SerializeField] private GameMenuView gameMenuView = default;
+    [Header("Views")] 
+    [SerializeField] private BoardView boardViewPrefab = default;
 
-    [Header("Audio")] 
-    [SerializeField] private AudioRepository audioRepository = default;
-    [SerializeField] private AudioSource audioSourcePrefab = default;
+    [Header("Menus")]
+    [SerializeField] private GameMenu gameMenuPrefab = default;
 
     public override void InstallBindings()
     {
-        #region Viewport
-
-        Container.BindInterfacesTo<GameCamera>().FromInstance(camera).AsSingle();
-        camera.Initialize(board);
-
-        Container.Bind<Viewport>().FromMethod(() => camera.GetViewport(0));
-
-        #endregion
-
+        base.InstallBindings();
+        
         #region Controllers
 
         Container.BindInterfacesTo<CardRouter>().AsSingle().NonLazy();
@@ -63,14 +46,13 @@ public class GameInstaller : MonoInstaller
         
         #region UI
         
-        Container.BindInterfacesTo<GameMenuView>().FromInstance(gameMenuView).AsSingle();
+        Container.BindInterfacesTo<GameMenu>().FromComponentInNewPrefab(gameMenuPrefab).AsSingle().NonLazy();
 
         #endregion
         
         #region Board
         
-        Container.BindInterfacesTo<BoardModel>().FromInstance(board).AsSingle();
-        Container.Bind<IBoardView>().FromComponentInNewPrefab(boardView).AsSingle();
+        Container.Bind<IBoardView>().FromComponentInNewPrefab(boardViewPrefab).AsSingle();
 
         #endregion
 
@@ -119,21 +101,6 @@ public class GameInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<IPlayerCard>()
             .FromResolveGetter<ICardFactory, IPlayerCard>(x => (IPlayerCard) x.Create(player)).AsSingle();
-
-        #endregion
-        
-        #region Settings
-
-        #endregion
-
-        #region Audio
-
-        Container.BindInterfacesTo<AudioRepository>().FromInstance(audioRepository).AsSingle().NonLazy();
-        Container.BindInterfacesTo<AudioManager>().AsSingle();
-        Container.BindMemoryPool<AudioSource, AudioSourcePool>()
-            .WithMaxSize(16)
-            .FromComponentInNewPrefab(audioSourcePrefab)
-            .AsSingle();
 
         #endregion
     }

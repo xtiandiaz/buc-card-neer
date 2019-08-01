@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2541193621228281727
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2541193621228281725}
+  - component: {fileID: 2541193621228281726}
+  m_Layer: 0
+  m_Name: GameInstaller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2541193621228281725
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2541193621228281727}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2541193621228281726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2541193621228281727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24e4ab4c67afa4822bbf004051bc2459, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraPrefab: {fileID: 8500073547136508377, guid: 565f95f3650ff403290c2228b7611ad5,
+    type: 3}
+  eventSystemPrefab: {fileID: 4932929182406742490, guid: c3e9f776da964434395a8779c6545ee3,
+    type: 3}
+  deck: {fileID: 11400000, guid: 21c0d3a12db394182b1bc2861f9571c9, type: 2}
+  player: {fileID: 11400000, guid: 155e51e0940104ebaab177e4c174ea4d, type: 2}
+  supplySlots:
+  - {fileID: 11400000, guid: 25dbbfd2ef99248f6aee805c41161aa5, type: 2}
+  - {fileID: 11400000, guid: b875738b0f4ab42dbaff3883f9076da9, type: 2}
+  - {fileID: 11400000, guid: 3c96764cba3324d0d92e3f09a42916b2, type: 2}
+  - {fileID: 11400000, guid: f2c15ea92bae5485bb61b423725d0f46, type: 2}
+  plank: {fileID: 11400000, guid: 2e985bd20dd2c4ad1a8529543955e970, type: 2}
+  helm: {fileID: 11400000, guid: 345c81e59ca2c4c62b26a16b19f91c7e, type: 2}
+  storage: {fileID: 11400000, guid: fdf1f7e2624034272ba6b6d43c3b2dcb, type: 2}
+  mount: {fileID: 11400000, guid: 80ef92dace5844a5cb2d8473db4cf268, type: 2}
+  boardViewPrefab: {fileID: 687086845896097673, guid: 3a064086313d5449abbb005329704baf,
+    type: 3}
+  gameMenuPrefab: {fileID: 4355782393892057426, guid: fc7ed93a0b7304f789064332875a5c9f,
+    type: 3}

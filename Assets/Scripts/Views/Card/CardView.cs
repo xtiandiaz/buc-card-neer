@@ -4,7 +4,6 @@ using JetBrains.Annotations;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
-using Zenject;
 
 public enum CardFace
 {

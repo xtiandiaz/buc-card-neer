@@ -1,24 +1,26 @@
 using System;
+using System.Collections;
 using UniRx;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Zenject;
 
-public interface IAppController : IInitializable, IDisposable
+public interface IAppNavigator
 {
-    void Reload();
+    void GoToMainMenu();
+    void GoToGame();
 }
 
-public class AppController : IAppController
+public interface IAppController : IInitializable, IDisposable
 {
-    private readonly ZenjectSceneLoader sceneLoader;
+    void Reload(); // TODO Refactor
+}
+
+public class AppController : IAppController, IAppNavigator
+{
+    private readonly IMenuFactory menuFactory;
     private IDisposable sceneLoading;
 
-    private AppController(ZenjectSceneLoader sceneLoader)
-    {
-        this.sceneLoader = sceneLoader;
-    }
-    
     public void Initialize()
     {
         Application.targetFrameRate = 60;
@@ -26,14 +28,47 @@ public class AppController : IAppController
 
     public void Reload()
     {
-        sceneLoading?.Dispose();
-        sceneLoading = sceneLoader.LoadSceneAsync("Game", LoadSceneMode.Single)
-            .AsObservable()
-            .Subscribe();
+        GoToScene("Game");
     }
 
     public void Dispose()
     {
         sceneLoading?.Dispose();
+    }
+
+    public void GoToMainMenu()
+    {
+        GoToScene("MainMenu");
+    }
+
+    public void GoToGame()
+    {
+        GoToScene("Game");
+    }
+
+    private void GoToScene(string name)
+    {
+        sceneLoading?.Dispose();
+        sceneLoading = Observable.FromCoroutine(() => LoadScene("Loading", LoadSceneMode.Additive))
+            .ContinueWith(Observable.FromCoroutine(
+                () => LoadScene(name, TimeSpan.FromSeconds(0.5), LoadSceneMode.Single)))
+            .Subscribe();
+    }
+
+    private IEnumerator LoadScene(string name, TimeSpan withDelay, LoadSceneMode andMode)
+    {
+        yield return new WaitForSeconds((float) withDelay.TotalSeconds);
+
+        yield return LoadScene(name, andMode);
+    }
+    
+    private IEnumerator LoadScene(string name, LoadSceneMode withMode)
+    {
+        var asyncLoad = SceneManager.LoadSceneAsync(name, withMode);
+        
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
     }
 }

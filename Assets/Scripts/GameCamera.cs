@@ -1,18 +1,19 @@
 ﻿using UnityEngine;
 using Zenject;
 
-public interface IGameCamera
+public interface IGameCamera : IViewportProvider, IWorldPointProvider
 {
-    void Initialize(IBoardModel fromModel);
+    Camera Camera { get; }
 }
 
-public class GameCamera : MonoBehaviour, IGameCamera, IViewportProvider, IWorldPointProvider
-{   
-    private new Camera camera;
-    
-    public void Initialize(IBoardModel fromModel)
+public class GameCamera : MonoBehaviour, IGameCamera
+{
+    public Camera Camera { get; private set; }
+
+    [Inject]
+    private void Initialize(IBoardModel fromModel)
     {
-        camera = GetComponent<Camera>();
+        Camera = GetComponent<Camera>();
 
         var slotSpacing = fromModel.SlotSpacing;
         var desiredViewWidth = (fromModel.CardSize.x + slotSpacing) 
@@ -23,20 +24,20 @@ public class GameCamera : MonoBehaviour, IGameCamera, IViewportProvider, IWorldP
         transform.position = new Vector3(
             0, 
             0, 
-            - (desiredViewWidth / camera.aspect) * 0.5f / Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad));
+            - (desiredViewWidth / Camera.aspect) * 0.5f / Mathf.Tan(Camera.fieldOfView * 0.5f * Mathf.Deg2Rad));
     }
 
     public Viewport GetViewport(float atDepth)
     {
-        var distance = Mathf.Abs(camera.transform.localPosition.z - atDepth);
-        var frustumHeight = 2.0f * distance * Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad);
+        var distance = Mathf.Abs(Camera.transform.localPosition.z - atDepth);
+        var frustumHeight = 2.0f * distance * Mathf.Tan(Camera.fieldOfView * 0.5f * Mathf.Deg2Rad);
         
-        return new Viewport(frustumHeight * camera.aspect, frustumHeight);
+        return new Viewport(frustumHeight * Camera.aspect, frustumHeight);
     }
 
     public Vector3 GetWorldPoint(Vector2 fromScreenPoint)
     {
-        return camera.ScreenToWorldPoint(
-            new Vector3(fromScreenPoint.x, fromScreenPoint.y, -camera.transform.localPosition.z));
+        return Camera.ScreenToWorldPoint(
+            new Vector3(fromScreenPoint.x, fromScreenPoint.y, -Camera.transform.localPosition.z));
     }
 }

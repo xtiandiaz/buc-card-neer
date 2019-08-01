@@ -1,13 +1,14 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 using UniRx;
 
-public interface IGameMenuView : IInitializable
+public interface IGameMenuView : IMenu
 {
 }
 
-public class GameMenuView : MenuView, IGameMenuView
+public class GameMenu : Menu, IGameMenuView
 {
     [SerializeField] private GameObject contentWrapper = default;
     [SerializeField] private Text heading = default;
@@ -19,11 +20,14 @@ public class GameMenuView : MenuView, IGameMenuView
     [SerializeField] private Button resetButton = default;
 
     [Inject] private IGameStatus gameStatus = default;
-    
-    public void Initialize()
+
+    private void Awake()
     {
         contentWrapper.SetActive(false);
-        
+    }
+
+    private void Start()
+    {
         gameStatus.WhenLost
             .Subscribe(_ => ShowHeadline("Game Over", Color.red))
             .AddTo(this);
