@@ -3,6 +3,7 @@ using DG.Tweening;
 using JetBrains.Annotations;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
 public enum CardTimelineAnimationKey
 {
@@ -28,6 +29,13 @@ public class CardAnimator : MonoBehaviour
     private Tween rotationTween, depthTween;
     private Sequence flipSequence;
     private CardFace currentFace;
+    private IBoardModel boardModel;
+
+    [Inject]
+    private void Initialize(IBoardModel boardModel)
+    {
+        this.boardModel = boardModel;
+    }
 
     public Tween TweenDepth(float toValue, float duringSeconds, bool shouldDoInLocalSpace = true)
     {
@@ -43,12 +51,14 @@ public class CardAnimator : MonoBehaviour
     public Sequence Arrange(Vector3 atLocalPosition, float withRotationAngle)
     {
         var sequence = DOTween.Sequence();
-        var duration = 0.4f;
+        var duration = /*Vector3.Distance(atLocalPosition, transform.localPosition) < boardModel.CardExtent * 0.5f
+            ? 0.25f
+            : */0.5f;
 
         sequence.Append(transform.DOLocalMove(atLocalPosition, duration)
             .SetEase(Ease.OutQuart));
 
-        sequence.Join(TweenDepth(0, duration).SetEase(Ease.OutQuart));
+        //sequence.Join(TweenDepth(0, duration).SetEase(Ease.OutQuart));
 
         var eulerAngles = tweenWrapper.eulerAngles;
         eulerAngles.z = withRotationAngle;
@@ -65,7 +75,7 @@ public class CardAnimator : MonoBehaviour
         currentFace = toFace;
         
         var destEulerAngles = GetRotationEulerAnglesDestination(currentFace);
-        var halfTweenDuration = 0.2f;
+        var halfTweenDuration = 0.25f;
 
         flipSequence = DOTween.Sequence();
         
@@ -74,7 +84,7 @@ public class CardAnimator : MonoBehaviour
                 .OnComplete(() => ToggleFace(toFace))
                 .SetEase(Ease.InQuart));
 
-        flipSequence.Join(TweenDepth(-2.5f, halfTweenDuration).SetEase(Ease.InQuart));
+        flipSequence.Join(TweenDepth(-2f, halfTweenDuration).SetEase(Ease.InQuart));
 
         flipSequence.Append(
             covers.DORotate(destEulerAngles, halfTweenDuration).SetEase(Ease.OutQuart));

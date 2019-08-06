@@ -7,7 +7,6 @@ using Zenject;
 
 public interface ICardRouter : IDisposable, IInitializable
 {
-    void Register(ISlot slot);
 }
 
 public class CardRouter : ICardRouter
@@ -16,7 +15,10 @@ public class CardRouter : ICardRouter
     private readonly Subject<(ICard, ISlot, Vector3)> routing = new Subject<(ICard, ISlot, Vector3)>();
     private readonly List<ISlot> slots = new List<ISlot>();
     private readonly CompositeDisposable disposables = new CompositeDisposable();
-    
+
+    private readonly IShip ship;
+    private readonly ISea sea;
+    private readonly ICardForwarder forwarder;
     private readonly ICardDeferrer deferrer;
     private readonly ICardDismisser dismisser;
     private readonly ICardMatcher matcher;
@@ -24,6 +26,9 @@ public class CardRouter : ICardRouter
     private readonly IAudioManager audioManager;
 
     private CardRouter(
+        IShip ship,
+        ISea sea,
+        ICardForwarder forwarder,
         ICardDeferrer deferrer,
         ICardDismisser dismisser,
         ICardMatcher matcher,
@@ -31,6 +36,9 @@ public class CardRouter : ICardRouter
         IAudioManager audioManager
         )
     {
+        this.ship = ship;
+        this.sea = sea;
+        this.forwarder = forwarder;
         this.deferrer = deferrer;
         this.dismisser = dismisser;
         this.matcher = matcher;
@@ -40,6 +48,14 @@ public class CardRouter : ICardRouter
 
     public void Initialize()
     {
+        foreach (var slot in sea.Slots)
+            Register(slot);
+        
+        Register(ship.Helm);
+        Register(ship.Plank);
+        Register(ship.Mount);
+        Register(ship.Storage);
+
         disposables.Add(picking
             .Do(_ => audioManager.Play(AudioEventKey.UIDragGrab))
             .Subscribe(cardFromSlot =>
@@ -81,8 +97,16 @@ public class CardRouter : ICardRouter
             })
             .Subscribe());
     }
+
+    public void Dispose()
+    {
+        picking.Dispose();
+        routing.Dispose();
+        
+        disposables?.Dispose();
+    }
     
-    public void Register(ISlot slot)
+    private void Register(ISlot slot)
     {
         slots.Add(slot);
 
@@ -128,14 +152,6 @@ public class CardRouter : ICardRouter
             .Subscribe());
     }
 
-    public void Dispose()
-    {
-        picking.Dispose();
-        routing.Dispose();
-        
-        disposables?.Dispose();
-    }
-
     private bool CanRoute(ISlot fromSource, ISlot intoDestination)
     {
         return deferrer.CanDefer(fromSource, intoDestination) || 
@@ -147,6 +163,12 @@ public class CardRouter : ICardRouter
     {
         return Observable.Create<Unit>(observer =>
         {
+            if (forwarder.CanForward(card, intoDestination))
+            {
+                return forwarder.Forward(card, intoDestination)
+                    .Subscribe(observer);
+            }
+            
             if (deferrer.CanDefer(fromSource, intoDestination))
             {
                 return deferrer.Defer(fromSource, fromSource)

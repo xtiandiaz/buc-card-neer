@@ -13,11 +13,16 @@ public class MainMenu : WorldSpaceMenu, IMainMenu
     [SerializeField] private Text buildLabel = default;
 
     private IAppNavigator appNavigator;
+    private IAppInfo appInfo;
     
     [Inject]
-    private void Initialize(IAppNavigator appNavigator)
+    private void Initialize(
+        IAppNavigator appNavigator,
+        IAppInfo appInfo
+        )
     {
         this.appNavigator = appNavigator;
+        this.appInfo = appInfo;
     }
 
     private void Start()
@@ -28,6 +33,6 @@ public class MainMenu : WorldSpaceMenu, IMainMenu
             .AddTo(this);
         
 
-        buildLabel.text = $"{Application.version} ({5})";
+        buildLabel.text = $"{Application.version} ({appInfo.BuildNumber})";
     }
 }

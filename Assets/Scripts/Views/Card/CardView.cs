@@ -181,7 +181,8 @@ public class CardView : MonoBehaviour, ICardView
     {
         SortingOrder = 100;
 
-        animator.TweenDepth(-0.5f, 0.25f, false);
+        transform.DOMoveZ(-0.5f, 0.2f)
+            .SetEase(Ease.OutQuart);
     }
 
     public void Drag(Vector3 byDeltaPosition)

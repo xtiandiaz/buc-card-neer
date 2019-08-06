@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniRx;
 
 public interface IPile
 {
     int Extent { get; }
     int Count { get; }
     bool HasRoom { get; }
+    
+    IObservable<int> WhenCountChanged { get; }
     
     bool Insert(ICard card);
     bool InsertReverse(ICard card);
@@ -20,7 +23,7 @@ public interface IPile
 public class Pile : IPile
 {
     private readonly Mode mode;
-    private readonly List<ICard> contents;
+    private readonly ReactiveCollection<ICard> contents;
     private readonly int extent;
 
     public Pile() : this(Mode.Stack)
@@ -35,7 +38,7 @@ public class Pile : IPile
     private Pile(Mode mode)
     {
         this.mode = mode;
-        contents = new List<ICard>();
+        contents = new ReactiveCollection<ICard>();
     }
     
     private enum Mode
@@ -47,6 +50,8 @@ public class Pile : IPile
     public bool HasRoom => mode == Mode.Stack || contents.Count < Extent;
     public int Extent => mode == Mode.Stack ? contents.Count : extent;
     public int Count => contents.Count;
+
+    public IObservable<int> WhenCountChanged => contents.ObserveCountChanged();
 
     public ICard Peek()
     {

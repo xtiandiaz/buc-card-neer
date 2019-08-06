@@ -81,9 +81,12 @@ public class BoardingController : IBoardingController
                 else
                     audioManager.Play(AudioEventSwitchKey.CardReveal, card.Type);
             })
-            .ContinueWith(_ => card.IsResource
-                ? Observable.Timer(TimeSpan.FromSeconds(0.25)).ContinueWith(Store(card))
+            .Merge(card.IsResource
+                ? Store(card)
                 : Observable.Empty<Unit>())
+            /*.ContinueWith(_ => card.IsResource
+                ? Observable.Timer(TimeSpan.FromSeconds(0.25)).ContinueWith(Store(card))
+                : Observable.Empty<Unit>())*/
             .LastOrDefault();
     }
 

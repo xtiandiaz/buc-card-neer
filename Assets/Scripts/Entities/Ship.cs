@@ -8,8 +8,9 @@ public interface IShip
 {
     ISlot Helm { get; }
     ISlot Plank { get; }
+    ISlot Storage { get; }
+    ISlot Mount { get; }
     
-    IObservable<int> WhenShot { get; }
     IObservable<Unit> WhenArmed { get; }
     
     void Lock();
@@ -25,8 +26,6 @@ public class Ship : IShip
     }
 
     private readonly ISlot[] slots;
-    private readonly ISlot storage;
-    private readonly ISlot mount;
     private readonly IShipView view;
 
     private Ship(
@@ -39,23 +38,18 @@ public class Ship : IShip
     {
         slots = new[] {plank, helm, storage, mount};
 
-        this.storage = storage;
-        this.mount = mount;
-        
         Helm = helm;
         Plank = plank;
-        
+        Storage = storage;
+        Mount = mount;
+
         this.view = view;
     }
     
     public ISlot Helm { get; }
     public ISlot Plank { get; }
-
-    public IObservable<int> WhenShot => Plank.WhenLodged
-        .Where(card => (card.Type & CardType.WeaponRanged) != 0 && card.IsStored)
-        .Do(_ => Lock())
-        .Delay(TimeSpan.FromSeconds(0.5))
-        .Select(Shoot);
+    public ISlot Storage { get; }
+    public ISlot Mount { get; }
 
     public IObservable<Unit> WhenArmed => Plank.WhenLodged
         .Where(card => card.IsRangeWeapon && card.IsStored)
@@ -81,23 +75,11 @@ public class Ship : IShip
     public ISlot GetStash(CardType forType)
     {
         if ((forType & CardType.Item) != 0)
-            return storage;
+            return Storage;
         
         if ((forType & CardType.Tool) != 0)
-            return mount;
+            return Mount;
 
         return null;
-    }
-
-    private int Shoot(ICard withCard)
-    {
-        if ((withCard.Type & CardType.WeaponRanged) == 0)
-            return 0;
-
-        var weaponValue = withCard.Value;
-
-        //withCard.Destroy();
-
-        return weaponValue;
     }
 }

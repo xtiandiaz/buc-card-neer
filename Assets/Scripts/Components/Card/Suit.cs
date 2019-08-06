@@ -13,4 +13,9 @@ public class Suit : MonoBehaviour
             sRenderer.color = fromModel.Color;
         });
     }
+
+    public void ToggleVisibility(bool toValue)
+    {
+        iconRenderers.ForEach(sRenderer => sRenderer.enabled = toValue);
+    }
 }

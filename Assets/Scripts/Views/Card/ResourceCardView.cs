@@ -8,7 +8,8 @@ public class ResourceCardView : CardView, IResourceCardView
     {
         set
         {
-            base.Suit = value;
+            if (suit != null)
+                suit.ToggleVisibility((value.Type & CardType.Item) != 0);
             
             cardValue.Color =
                 frontMotif.color = value.Color;
@@ -16,6 +17,7 @@ public class ResourceCardView : CardView, IResourceCardView
             if ((value.Type & CardType.Tool) != 0)
                 return;
             
+            base.Suit = value;
             backCover.Color = value.Color;
         }
     }

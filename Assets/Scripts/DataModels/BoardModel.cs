@@ -6,6 +6,7 @@ public interface IBoardModel : IDisposable
     Vector2 Padding { get; }
     
     Vector2 CardSize { get; }
+    float CardExtent { get; }
     int SupplySlotCount { get; }
     float SlotSpacing { get; }
     
@@ -44,6 +45,7 @@ public class BoardModel : ScriptableObject, IBoardModel
 
     private Vector2? padding;
     private float? tx, ty;
+    private float? cardExtent;
 
     public Vector2 Padding
     {
@@ -59,6 +61,20 @@ public class BoardModel : ScriptableObject, IBoardModel
     }
 
     public Vector2 CardSize => cardSize;
+    
+    public float CardExtent
+    {
+        get
+        {
+            if (cardExtent.HasValue)
+                return cardExtent.Value;
+            
+            cardExtent = Mathf.Sqrt(Vector2.SqrMagnitude(cardSize));
+
+            return cardExtent.Value;
+        }
+    }
+
     public int SupplySlotCount => supplySlotCount;
     public float SlotSpacing => minSlotSpacing + flexibleSlotSpacing * Tx;
 

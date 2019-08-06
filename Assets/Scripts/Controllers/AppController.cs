@@ -11,15 +11,22 @@ public interface IAppNavigator
     void GoToGame();
 }
 
+public interface IAppInfo
+{
+    int BuildNumber { get; }
+}
+
 public interface IAppController : IInitializable, IDisposable
 {
     void Reload(); // TODO Refactor
 }
 
-public class AppController : IAppController, IAppNavigator
+public class AppController : IAppController, IAppNavigator, IAppInfo
 {
     private readonly IMenuFactory menuFactory;
     private IDisposable sceneLoading;
+
+    public int BuildNumber => 6;
 
     public void Initialize()
     {

@@ -24,6 +24,7 @@ public class SlotView : MonoBehaviour, ISlotView
 {
     [SerializeField] private SlotType type = default;
     [SerializeField] private SpriteRenderer faceRenderer = default;
+    [SerializeField] private SpriteRenderer iconRenderer = default;
     [SerializeField] private GestureListener gestureListener = default;
 
     private Color defaultFaceColor;
@@ -58,11 +59,18 @@ public class SlotView : MonoBehaviour, ISlotView
         if (on)
         {
             faceRenderer.color = Color.green;
+
+            if (iconRenderer != null)
+                iconRenderer.color = Color.green;
+            
             faceRenderer.sortingLayerName = boardModel.CardSortingLayerName;
             faceRenderer.sortingOrder = boardModel.FloatingCardSortingOrder - 1;
         }
         else
         {
+            if (iconRenderer != null)
+                iconRenderer.color = defaultFaceColor;
+            
             faceRenderer.color = defaultFaceColor;
             faceRenderer.sortingLayerName = boardModel.SlotSortingLayerName;
             faceRenderer.sortingOrder = 0;

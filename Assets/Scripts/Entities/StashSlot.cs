@@ -10,12 +10,14 @@ public class StashSlot : Slot
     protected StashSlot(ISlotModel model, IStashSlotView view) 
         : base(model, view)
     {
-        view.Initialize(Observable.Create<Unit>(observer => 
+        view.WhenSorted = Observable.Create<Unit>(observer => 
         { 
             pile.InsertReverse(pile.Pop());
             
             return Arrange()
                 .Subscribe(observer);
-        }));
+        });
+
+        view.WhenCardCountChanged = pile.WhenCountChanged;
     }
 }

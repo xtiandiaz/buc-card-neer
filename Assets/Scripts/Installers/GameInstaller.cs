@@ -30,6 +30,7 @@ public class GameInstaller : SceneInstaller
         Container.BindInterfacesTo<CardRouter>().AsSingle().NonLazy();
         Container.BindInterfacesTo<CardDealer>().AsSingle().NonLazy();
         Container.BindInterfacesTo<CardDeferrer>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<CardForwarder>().AsSingle().NonLazy();
         Container.BindInterfacesTo<CardDismisser>().AsSingle().NonLazy();
         Container.BindInterfacesTo<CardMatcher>().AsSingle().NonLazy();
         Container.BindInterfacesTo<CardHost>().AsSingle().NonLazy();
