@@ -1,23 +1,33 @@
 using UniRx;
-using UniRx.Triggers;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
 interface IMainMenu : IMenu
 {
 }
 
-public class MainMenu : Menu, IMainMenu
+public class MainMenu : WorldSpaceMenu, IMainMenu
 {
-    [SerializeField] private TextButton playButton = default;
+    [SerializeField] private ButtonText playButton = default;
+    [SerializeField] private Text buildLabel = default;
 
-    [Inject] private IAppNavigator appNavigator = default; 
+    private IAppNavigator appNavigator;
+    
+    [Inject]
+    private void Initialize(IAppNavigator appNavigator)
+    {
+        this.appNavigator = appNavigator;
+    }
 
     private void Start()
     {
-        playButton.OnPointerClickAsObservable()
+        playButton.WhenClicked
             .Take(1)
             .Subscribe(_ => appNavigator.GoToGame())
             .AddTo(this);
+        
+
+        buildLabel.text = $"{Application.version} ({5})";
     }
 }

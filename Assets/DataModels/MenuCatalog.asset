@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1cb98d82fbe4bec8abbf13f35d12ab2, type: 3}
   m_Name: MenuCatalog
   m_EditorClassIdentifier: 
-  loading: {fileID: 8006088756006374716, guid: 1ffd524b637734b6eb80f75c981a09b4, type: 3}
+  pause: {fileID: 6147483526974023542, guid: 13e6ef81faf8e4150b17c92ea848c99f, type: 3}

@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -8,7 +7,7 @@ public interface IGameMenuView : IMenu
 {
 }
 
-public class GameMenu : Menu, IGameMenuView
+public class GameMenu : WorldSpaceMenu, IGameMenuView
 {
     [SerializeField] private GameObject contentWrapper = default;
     [SerializeField] private Text heading = default;
@@ -17,9 +16,20 @@ public class GameMenu : Menu, IGameMenuView
     [SerializeField] private Text undealtCount = default;
     
     [Header("Controls")]
-    [SerializeField] private Button resetButton = default;
+    [SerializeField] private ButtonIcon pauseButton = default;
 
-    [Inject] private IGameStatus gameStatus = default;
+    private IGameStatus gameStatus;
+    private IMenuFactory menuFactory;
+
+    [Inject]
+    private void Initialize(
+        IGameStatus gameStatus,
+        IMenuFactory menuFactory
+        )
+    {
+        this.gameStatus = gameStatus;
+        this.menuFactory = menuFactory;
+    }
 
     private void Awake()
     {
@@ -42,8 +52,12 @@ public class GameMenu : Menu, IGameMenuView
             .SubscribeToText(undealtCount)
             .AddTo(this);
 
-        resetButton.OnClickAsObservable()
-            .Subscribe(_ => gameStatus.Reset())
+        pauseButton.WhenClicked
+            .Do(_ => pauseButton.gameObject.SetActive(false))
+            .Select(_ => menuFactory.Create<IPauseMenu>())
+            .SelectMany(pauseMenu => pauseMenu.WhenClosed)
+            .Do(_ => pauseButton.gameObject.SetActive(true))
+            .Subscribe()
             .AddTo(this);
     }
 

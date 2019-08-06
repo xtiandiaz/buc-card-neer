@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TextButton : Selectable
+public class ButtonText : CustomButton
 {
     [SerializeField] private Text label = default;
 
