@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -20,15 +21,18 @@ public class GameMenu : WorldSpaceMenu, IGameMenuView
 
     private IGameStatus gameStatus;
     private IMenuFactory menuFactory;
+    private IAudioManager audioManager;
 
     [Inject]
     private void Initialize(
         IGameStatus gameStatus,
-        IMenuFactory menuFactory
+        IMenuFactory menuFactory,
+        IAudioManager audioManager
         )
     {
         this.gameStatus = gameStatus;
         this.menuFactory = menuFactory;
+        this.audioManager = audioManager;
     }
 
     private void Awake()
@@ -39,13 +43,25 @@ public class GameMenu : WorldSpaceMenu, IGameMenuView
     private void Start()
     {
         gameStatus.WhenLost
-            .Subscribe(_ => ShowHeadline("Game Over", Color.red))
+            .Delay(TimeSpan.FromSeconds(0.5))
+            .Subscribe(_ =>
+            {
+                ShowHeadline("Game Over", Color.red);
+                
+                audioManager.Play(AudioEventKey.GameLose);
+            })
             .AddTo(this);
 
         gameStatus.WhenWon
-            .Subscribe(score => ShowHeadline(
-                $"You won!\n<size=10>Earned <color=FFFFFF>{score}</color> coins.</size>",
-                Color.yellow))
+            .Delay(TimeSpan.FromSeconds(0.5))
+            .Subscribe(score =>
+            {
+                ShowHeadline(
+                    $"You won!\n<size=10>Earned <color=FFFFFF>{score}</color> coins.</size>",
+                    Color.yellow);
+                
+                audioManager.Play(AudioEventKey.GameLose);
+            })
             .AddTo(this);
 
         gameStatus.UndealtCardCount

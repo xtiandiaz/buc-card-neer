@@ -16,18 +16,21 @@ public class BoardingController : IBoardingController
     private readonly IShip ship;
     private readonly ISea sea;
     private readonly IAudioManager audioManager;
+    private readonly IGameStatus gameStatus;
 
     private BoardingController(
         ICardHost cardHost,
         IShip ship,
         ISea sea,
-        IAudioManager audioManager
+        IAudioManager audioManager,
+        IGameStatus gameStatus
         )
     {
         this.cardHost = cardHost;
         this.ship = ship;
         this.sea = sea;
         this.audioManager = audioManager;
+        this.gameStatus = gameStatus;
     }
 
     public IObservable<Unit> WhenBoarded => boarding;
@@ -81,12 +84,9 @@ public class BoardingController : IBoardingController
                 else
                     audioManager.Play(AudioEventSwitchKey.CardReveal, card.Type);
             })
-            .Merge(card.IsResource
-                ? Store(card)
-                : Observable.Empty<Unit>())
-            /*.ContinueWith(_ => card.IsResource
+            .ContinueWith(_ => card.IsResource
                 ? Observable.Timer(TimeSpan.FromSeconds(0.25)).ContinueWith(Store(card))
-                : Observable.Empty<Unit>())*/
+                : Observable.Empty<Unit>())
             .LastOrDefault();
     }
 
@@ -96,6 +96,10 @@ public class BoardingController : IBoardingController
             .Do(_ =>
             {
                 card.IsStored = true;
+
+                gameStatus.PlayerDidStoreItem |= card.IsItem;
+                gameStatus.PlayerDidStoreTool |= card.IsTool;
+                
                 audioManager.Play(AudioEventSwitchKey.CardStash, card.Type);
             });
     }

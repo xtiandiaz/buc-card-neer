@@ -1,36 +1,33 @@
 using System;
 using UniRx;
-using UnityEngine;
 using Zenject;
 
 public interface ISupplyController : IInitializable, IDisposable
 {
-    IObservable<Unit> WhenSuppliedFirstTime { get; }
-
     IObservable<Unit> Supply();
 }
 
 public class SupplyController : ISupplyController
 {
-    private readonly Subject<Unit> supply =  new Subject<Unit>();
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private readonly IClashingController clashingController;
     private readonly ISea sea;
     private readonly IAudioManager audioManager;
+    private readonly IGameStatus gameStatus;
 
     private SupplyController(
         IClashingController clashingController,
         ISea sea,
-        IAudioManager audioManager
+        IAudioManager audioManager,
+        IGameStatus gameStatus
         )
     {
         this.clashingController = clashingController;
         this.sea = sea;
         this.audioManager = audioManager;
+        this.gameStatus = gameStatus;
     }
-
-    public IObservable<Unit> WhenSuppliedFirstTime => supply.First();
 
     public void Initialize()
     {
@@ -54,12 +51,11 @@ public class SupplyController : ISupplyController
     public IObservable<Unit> Supply()
     {
         return sea.Supply()
-            .DoOnCompleted(() => supply.OnNext(Unit.Default));
+            .DoOnCompleted(() => gameStatus.DidSupplyOnce = true);
     }
 
     public void Dispose()
     {
-        supply.Dispose();
         disposables.Dispose();
     }
 }

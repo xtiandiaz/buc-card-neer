@@ -15,22 +15,34 @@ public class CardForwarder : ICardForwarder
     private readonly Subject<Unit> forwarding = new Subject<Unit>();
     private readonly IShip ship;
     private readonly IAudioManager audioManager;
+    private readonly IGameStatus gameStatus;
 
     private CardForwarder(
         IShip ship, 
-        IAudioManager audioManager
+        IAudioManager audioManager,
+        IGameStatus gameStatus
         )
     {
         this.ship = ship;
         this.audioManager = audioManager;
+        this.gameStatus = gameStatus;
     }
 
     public IObservable<Unit> WhenForwarded => forwarding;
     
     public bool CanForward(ICard card, ISlot fromUserDestination)
     {
-        return card.IsResource && 
-               !card.IsBoarded && 
+        if (!card.IsResource)
+            return false;
+        
+        if (card.IsItem && !gameStatus.PlayerDidStoreItem)
+            return false;
+        
+        if (card.IsTool && !gameStatus.PlayerDidStoreTool)
+            return false;
+        
+        return !card.IsBoarded &&
+               !card.IsStored &&
                (fromUserDestination.Type & SlotType.Boarding) != 0;
     }
 
