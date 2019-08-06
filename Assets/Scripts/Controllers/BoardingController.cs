@@ -4,13 +4,13 @@ using Zenject;
 
 public interface IBoardingController : IInitializable, IDisposable
 {
-    IObservable<Unit> WhenBoarded { get; }
 }
 
 public class BoardingController : IBoardingController
 {
     private readonly ICardHost cardHost;
-    private readonly Subject<Unit> boarding = new Subject<Unit>();
+    private readonly Subject<CardType> boarding = new Subject<CardType>();
+    private readonly Subject<Unit> unlockingAndHandling = new Subject<Unit>();
     private readonly CompositeDisposable disposables = new CompositeDisposable();
     
     private readonly IShip ship;
@@ -24,16 +24,17 @@ public class BoardingController : IBoardingController
         ISea sea,
         IAudioManager audioManager,
         IGameStatus gameStatus
-        )
+    )
     {
         this.cardHost = cardHost;
         this.ship = ship;
         this.sea = sea;
         this.audioManager = audioManager;
-        this.gameStatus = gameStatus;
-    }
 
-    public IObservable<Unit> WhenBoarded => boarding;
+        this.gameStatus = gameStatus;
+        this.gameStatus.WhenPlayerBoardedCard = boarding;
+        this.gameStatus.WhenPlayerUnlockedAndHandledCard = unlockingAndHandling;
+    }
 
     public void Initialize()
     {
@@ -44,18 +45,18 @@ public class BoardingController : IBoardingController
                 sea.Lock();
                 
                 card.IsBoarded = true;
-                
+
                 if (card.IsMonster)
                     audioManager.Play(AudioEventKey.CardBoardMonster);
                 else
                     audioManager.Play(AudioEventSwitchKey.CardBoard, card.Type);
             })
-            .SelectMany(card => card.IsLocked ? Observable.ReturnUnit() : Handle(card))
-            .Do(_ =>
-            {
-                sea.Unlock();
-                boarding.OnNext(_);
-            })
+            .SelectMany(card => (card.IsLocked ? Observable.ReturnUnit() : Handle(card))
+                .Do(_ =>
+                {
+                    sea.Unlock();
+                    boarding.OnNext(card.IsMonster ? CardType.Monster : card.Type);
+                }))
             .Subscribe());
 
         disposables.Add(ship.Plank.WhenLodged
@@ -64,7 +65,7 @@ public class BoardingController : IBoardingController
                 .ContinueWith(_ => card.Drop())
                 .Delay(TimeSpan.FromSeconds(0.25))
                 .ContinueWith(_ => Handle(card))
-                .Do(boarding.OnNext))
+                .Do(unlockingAndHandling.OnNext))
             .Subscribe());
     }
 
@@ -99,7 +100,7 @@ public class BoardingController : IBoardingController
 
                 gameStatus.PlayerDidStoreItem |= card.IsItem;
                 gameStatus.PlayerDidStoreTool |= card.IsTool;
-                
+
                 audioManager.Play(AudioEventSwitchKey.CardStash, card.Type);
             });
     }

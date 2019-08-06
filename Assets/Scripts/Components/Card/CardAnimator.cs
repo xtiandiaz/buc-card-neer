@@ -28,7 +28,7 @@ public class CardAnimator : MonoBehaviour
 
     private Tween rotationTween, depthTween;
     private Sequence flipSequence;
-    private CardFace currentFace;
+    private CardFace currentFace = CardFace.Back;
     private IBoardModel boardModel;
 
     [Inject]
@@ -81,7 +81,6 @@ public class CardAnimator : MonoBehaviour
         
         flipSequence.Append(
             covers.DORotate(Vector3.up * 90f, halfTweenDuration)
-                .OnComplete(() => ToggleFace(toFace))
                 .SetEase(Ease.InQuart));
 
         flipSequence.Join(TweenDepth(-2f, halfTweenDuration).SetEase(Ease.InQuart));
@@ -90,6 +89,9 @@ public class CardAnimator : MonoBehaviour
             covers.DORotate(destEulerAngles, halfTweenDuration).SetEase(Ease.OutQuart));
         
         flipSequence.Join(TweenDepth(0, halfTweenDuration).SetEase(Ease.OutQuart));
+
+        flipSequence.OnStart(() => ToggleFaces(true));
+        flipSequence.OnComplete(() => ToggleFace(toFace));
 
         return flipSequence;
     }
@@ -123,12 +125,18 @@ public class CardAnimator : MonoBehaviour
     public void OnTimelineAnimationFinished(CardTimelineAnimationKey withKey)
     {
         timelineAnimationCompletion.OnNext(withKey);
+        
+        if (withKey == CardTimelineAnimationKey.RangeShot)
+            ToggleFace(currentFace);
     }
 
     private IObservable<Unit> PlayTimelineAnimation(string withName, CardTimelineAnimationKey andKey)
     {
         return Observable.Create<Unit>(observer =>
         {
+            if (andKey == CardTimelineAnimationKey.RangeShot)
+                ToggleFaces(true);
+            
             animator.Play(withName);
             
             return timelineAnimationCompletion
@@ -149,10 +157,10 @@ public class CardAnimator : MonoBehaviour
         backFace.ToggleVisibility(toValue == CardFace.Back);
     }
 
-    private void ToggleFaces(bool on)
+    private void ToggleFaces(bool toValue)
     {
-        frontFace.ToggleVisibility(on);
-        backFace.ToggleVisibility(on);
+        frontFace.ToggleVisibility(toValue);
+        backFace.ToggleVisibility(toValue);
     }
 
     private void OnDestroy()

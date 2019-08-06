@@ -11,6 +11,12 @@ public interface IGameStatus
     IObservable<int> UndealtCardCount { get; }
     IObservable<Unit> WhenLost { get; }
     IObservable<int> WhenWon { get; }
+    
+    IObservable<Unit> WhenPlayerShot { get; set; }
+    IObservable<CardType> WhenPlayerBoardedCard { get; set; }
+    IObservable<Unit> WhenPlayerUnlockedAndHandledCard { get; set; }
+    IObservable<Unit> WhenPlayerAttackedOnBoard { get; set; }
+    IObservable<Unit> WhenPlayerConfronted { get; set; }
 
     void Reset();
 }
@@ -37,6 +43,12 @@ public class GameStatusController : IGameStatusController
     public IObservable<int> UndealtCardCount => deck.CardCount;
     public IObservable<Unit> WhenLost => losing;
     public IObservable<int> WhenWon => winning;
+
+    public IObservable<Unit> WhenPlayerShot { get; set; }
+    public IObservable<CardType> WhenPlayerBoardedCard { get; set; }
+    public IObservable<Unit> WhenPlayerUnlockedAndHandledCard { get; set; }
+    public IObservable<Unit> WhenPlayerAttackedOnBoard { get; set; }
+    public IObservable<Unit> WhenPlayerConfronted { get; set; }
 
     private GameStatusController(
         IAppController appController,

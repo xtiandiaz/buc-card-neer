@@ -10,6 +10,12 @@ public class SceneInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
+        #region Controllers
+
+        Container.BindInterfacesTo<GameStatusController>().AsSingle().NonLazy();
+
+        #endregion
+        
         #region Viewport
         
         Container.BindInterfacesTo<GameCamera>().FromComponentInNewPrefab(cameraPrefab).AsSingle().NonLazy();

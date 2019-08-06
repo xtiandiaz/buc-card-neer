@@ -36,9 +36,8 @@ public class GameInstaller : SceneInstaller
         Container.BindInterfacesTo<CardHost>().AsSingle().NonLazy();
         Container.BindInterfacesTo<CardClasher>().AsSingle().NonLazy();
         Container.BindInterfacesTo<CardShooter>().AsSingle().NonLazy();
-        
+
         Container.BindInterfacesTo<GameController>().AsSingle().NonLazy();
-        Container.BindInterfacesTo<GameStatusController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<BoardingController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<ClashingController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<SupplyController>().AsSingle().NonLazy();

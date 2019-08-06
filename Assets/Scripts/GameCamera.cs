@@ -1,17 +1,25 @@
-﻿using UnityEngine;
+﻿using System;
+using DG.Tweening;
+using UnityEngine;
 using Zenject;
 
 public interface IGameCamera : IViewportProvider, IWorldPointProvider
 {
     Camera Camera { get; }
+
+    void Shake(float withIntensity, TimeSpan duration, int andVibrato = 10);
 }
 
 public class GameCamera : MonoBehaviour, IGameCamera
 {
+    private Tween shaking;
+    
     public Camera Camera { get; private set; }
 
     [Inject]
-    private void Initialize(IBoardModel fromModel)
+    private void Initialize(
+        IBoardModel fromModel
+    )
     {
         Camera = GetComponent<Camera>();
 
@@ -39,5 +47,13 @@ public class GameCamera : MonoBehaviour, IGameCamera
     {
         return Camera.ScreenToWorldPoint(
             new Vector3(fromScreenPoint.x, fromScreenPoint.y, -Camera.transform.localPosition.z));
+    }
+
+    public void Shake(float withIntensity, TimeSpan duration, int andVibrato = 10)
+    {
+        shaking?.Kill();
+        
+        shaking = transform.DOShakePosition((float) duration.TotalSeconds, withIntensity, andVibrato)
+            .SetEase(Ease.OutQuart);
     }
 }

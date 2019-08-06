@@ -32,7 +32,7 @@ public class CardForwarder : ICardForwarder
     
     public bool CanForward(ICard card, ISlot fromUserDestination)
     {
-        if (!card.IsResource)
+        if (!card.IsResource || card.IsLocked)
             return false;
         
         if (card.IsItem && !gameStatus.PlayerDidStoreItem)

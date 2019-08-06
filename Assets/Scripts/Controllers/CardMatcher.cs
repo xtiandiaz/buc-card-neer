@@ -14,16 +14,22 @@ public class CardMatcher : ICardMatcher
     private const int CreditMultiplierForMatchingSuit = 2;
     
     private readonly Subject<Unit> matching = new Subject<Unit>();
+    private readonly Subject<Unit> attacking = new Subject<Unit>();
+    private readonly Subject<Unit> confronting = new Subject<Unit>();
     private readonly IPlayerCard player;
     private readonly IAudioManager audioManager;
 
     private CardMatcher(
         IPlayerCard player,
-        IAudioManager audioManager
+        IAudioManager audioManager,
+        IGameStatus gameStatus
         )
     {
         this.player = player;
         this.audioManager = audioManager;
+
+        gameStatus.WhenPlayerAttackedOnBoard = attacking;
+        gameStatus.WhenPlayerConfronted = confronting;
     }
 
     public IObservable<Unit> WhenMatched => matching;
@@ -56,7 +62,9 @@ public class CardMatcher : ICardMatcher
 
     public void Dispose()
     {
-        matching?.Dispose();
+        matching.Dispose();
+        attacking.Dispose();
+        confronting.Dispose();
     }
     
     private bool CanMatch(ICard source, ICard withDestination)
@@ -120,7 +128,11 @@ public class CardMatcher : ICardMatcher
                             var pirateHealth = source.Value;
 
                             return source.Hit(Math.Min(player.Value, pirateHealth))
-                                .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardConfrontPirate))
+                                .DoOnSubscribe(() =>
+                                {
+                                    audioManager.Play(AudioEventKey.CardConfrontPirate);
+                                    confronting.OnNext(Unit.Default);
+                                })
                                 .Merge(player.Hit(pirateHealth)
                                     .Do(_ =>
                                     {
@@ -152,7 +164,11 @@ public class CardMatcher : ICardMatcher
                             source.Hack(Math.Min(player.Value, lockValue));
 
                             return player.Hit(lockValue)
-                                .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardConfrontMonster))
+                                .DoOnSubscribe(() =>
+                                {
+                                    audioManager.Play(AudioEventKey.CardConfrontMonster);
+                                    confronting.OnNext(Unit.Default);
+                                })
                                 .IgnoreElements()
                                 .Subscribe(observer);
                         
@@ -169,7 +185,11 @@ public class CardMatcher : ICardMatcher
                 case CardType.Pirate:
                     
                     return withDestination.Hit(source.Value)
-                        .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardToolMeleeUse))
+                        .DoOnSubscribe(() =>
+                        {
+                            attacking.OnNext(Unit.Default);
+                            audioManager.Play(AudioEventKey.CardToolMeleeUse);
+                        })
                         .Do(_ =>
                         {
                             if (withDestination.Value > 0) 
@@ -212,7 +232,11 @@ public class CardMatcher : ICardMatcher
                     withDestination.Hack(source.Value);
 
                     var result = source.Hit(source.Value)
-                        .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardToolMeleeUse))
+                        .DoOnSubscribe(() =>
+                        {
+                            attacking.OnNext(Unit.Default);
+                            audioManager.Play(AudioEventKey.CardToolMeleeUse);
+                        })
                         .DoOnCompleted(() =>
                         {
                             if (withDestination.LockValue <= 0)
