@@ -1,6 +1,12 @@
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+public enum CardArrangementMode
+{
+    Normal,
+    Fast
+}
+
 public struct CardArrangement
 {
     public readonly int index;
@@ -8,14 +14,23 @@ public struct CardArrangement
     public readonly float rotationZ;
     public readonly float fogIntensity;
     public readonly Color fogColor;
+    public readonly CardArrangementMode mode;
 
-    public CardArrangement(int index, Vector3 localPosition, float rotationZ, float fogIntensity, Color fogColor)
+    public CardArrangement(
+        int index, 
+        Vector3 localPosition, 
+        float rotationZ, 
+        float fogIntensity, 
+        Color fogColor, 
+        CardArrangementMode mode
+        )
     {
         this.index = index;
         this.localPosition = localPosition;
         this.rotationZ = rotationZ;
         this.fogIntensity = fogIntensity;
         this.fogColor = fogColor;
+        this.mode = mode;
     }
 }
 
@@ -34,13 +49,14 @@ public class CardArrangementModel : ScriptableObject
     public Vector3 Offset => offset;
     public bool ShouldUseReverseIndices => shouldUseReverseIndices;
 
-    public CardArrangement GetArrangementForIndex(int index, int outOfCount)
+    public CardArrangement GetArrangementForIndex(int index, int outOfCount, SlotLodgingMode forLodgingMode)
     {
         return new CardArrangement(
             index, 
             index * offset, 
             index == 0 ? 0 : Random.Range(-1f, 1f) * maxRotationAngle,
             shouldFog ? fogIntensity * index / outOfCount : 0,
-            fogColor);
+            fogColor,
+            forLodgingMode == SlotLodgingMode.Systematic ? CardArrangementMode.Normal : CardArrangementMode.Fast);
     }
 }

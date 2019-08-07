@@ -60,7 +60,7 @@ public class GameMenu : WorldSpaceMenu, IGameMenuView
                     $"You won!\n<size=10>Earned <color=FFFFFF>{score}</color> coins.</size>",
                     Color.yellow);
                 
-                audioManager.Play(AudioEventKey.GameLose);
+                audioManager.Play(AudioEventKey.GameWin);
             })
             .AddTo(this);
 

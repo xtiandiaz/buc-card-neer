@@ -183,7 +183,7 @@ public class CardRouter : ICardRouter
 
             if (host.CanLodge(fromSource, intoDestination))
             {
-                return host.Lodge(fromSource, intoDestination)
+                return host.Lodge(fromSource, intoDestination, SlotLodgingMode.Voluntary)
                     .Subscribe(observer);
             }
 

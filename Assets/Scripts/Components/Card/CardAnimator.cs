@@ -29,31 +29,28 @@ public class CardAnimator : MonoBehaviour
     private Tween rotationTween, depthTween;
     private Sequence flipSequence;
     private CardFace currentFace = CardFace.Back;
-    private IBoardModel boardModel;
+    private float halfCardExtent;
 
     [Inject]
     private void Initialize(IBoardModel boardModel)
     {
-        this.boardModel = boardModel;
+        halfCardExtent = boardModel.CardExtent * 0.5f;
     }
 
-    public Tween TweenDepth(float toValue, float duringSeconds, bool shouldDoInLocalSpace = true)
-    {
-        depthTween?.Kill();
-
-        depthTween = (shouldDoInLocalSpace
-            ? tweenWrapper.DOLocalMoveZ(toValue, duringSeconds)
-            : tweenWrapper.DOMoveZ(toValue, duringSeconds));
-
-        return depthTween;
-    }
-    
-    public Sequence Arrange(Vector3 atLocalPosition, float withRotationAngle)
+    public Sequence Arrange(Vector3 atLocalPosition, float withRotationAngle, CardArrangementMode andMode)
     {
         var sequence = DOTween.Sequence();
-        var duration = /*Vector3.Distance(atLocalPosition, transform.localPosition) < boardModel.CardExtent * 0.5f
-            ? 0.25f
-            : */0.5f;
+        var duration = 0.5f;
+
+        if (andMode == CardArrangementMode.Fast)
+        {
+            var placementMargin = Mathf.Clamp(
+                                      Vector2.Distance(atLocalPosition, transform.localPosition),
+                                      0,
+                                      halfCardExtent) / halfCardExtent;
+
+            duration = Mathf.Clamp(duration * placementMargin, 0, duration * 0.5f);
+        }
 
         sequence.Append(transform.DOLocalMove(atLocalPosition, duration)
             .SetEase(Ease.OutQuart));
@@ -128,6 +125,17 @@ public class CardAnimator : MonoBehaviour
         
         if (withKey == CardTimelineAnimationKey.RangeShot)
             ToggleFace(currentFace);
+    }
+    
+    private Tween TweenDepth(float toValue, float duringSeconds, bool shouldDoInLocalSpace = true)
+    {
+        depthTween?.Kill();
+
+        depthTween = (shouldDoInLocalSpace
+            ? tweenWrapper.DOLocalMoveZ(toValue, duringSeconds)
+            : tweenWrapper.DOMoveZ(toValue, duringSeconds));
+
+        return depthTween;
     }
 
     private IObservable<Unit> PlayTimelineAnimation(string withName, CardTimelineAnimationKey andKey)

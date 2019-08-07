@@ -3,6 +3,12 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
+public enum SlotLodgingMode
+{
+    Systematic,
+    Voluntary
+}
+
 public interface ICardBond
 {
     Transform Transform { get; }
@@ -31,8 +37,8 @@ public interface ISlot : ICardBond, IDisposable
 
     ICard Peek();
     ICard Pop();
-    IObservable<Unit> Lodge(ICard card);
-    IObservable<Unit> Arrange();
+    IObservable<Unit> Lodge(ICard card, SlotLodgingMode withMode = SlotLodgingMode.Systematic);
+    IObservable<Unit> Arrange(SlotLodgingMode withLodgingMode = SlotLodgingMode.Systematic);
     IObservable<Unit> ConditionallyArrange();
     void Lock();
     void Unlock();
@@ -115,7 +121,7 @@ public class Slot : ISlot
         return poppedCard;
     }
     
-    public IObservable<Unit> Lodge(ICard card)
+    public IObservable<Unit> Lodge(ICard card, SlotLodgingMode withMode = SlotLodgingMode.Systematic)
     {
         return Observable.Create<Unit>(observer =>
             {
@@ -130,17 +136,17 @@ public class Slot : ISlot
 
                 IsMessy = true;
 
-                return Arrange()
+                return Arrange(withMode)
                     .Subscribe(observer);
             })
             .Do(_ => lodging.OnNext(card))
             .DoOnError(Debug.LogException);
     }
 
-    public IObservable<Unit> Arrange()
+    public IObservable<Unit> Arrange(SlotLodgingMode withLodgingMode = SlotLodgingMode.Systematic)
     {
         return pile.Map((card, index) => card.Arrange(
-                arrangementModel.GetArrangementForIndex(index, pile.Extent)))
+                arrangementModel.GetArrangementForIndex(index, pile.Extent, withLodgingMode)))
             .Merge()
             .AsSingleUnitObservable()
             .DoOnCompleted(() => IsMessy = false);

@@ -205,7 +205,10 @@ public class CardView : MonoBehaviour, ICardView
             //TODO animate fog
             shader.Fog(withArrangement.fogColor, withArrangement.fogIntensity);
             
-            var arrangementSequence = animator.Arrange(withArrangement.localPosition, withArrangement.rotationZ)
+            var arrangementSequence = animator.Arrange(
+                    withArrangement.localPosition, 
+                    withArrangement.rotationZ,
+                    withArrangement.mode)
                 .OnComplete(() => 
                 {
                     if (shouldSortLazily)

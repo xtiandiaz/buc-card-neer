@@ -75,7 +75,7 @@ public class GameStatusController : IGameStatusController
         disposables.Add(cardDealer.ActiveCardCount
             .Where(count => DidSupplyOnce && count < boardModel.MaxCardsInSupply && cardDealer.IsThereDeadlock())
             .Take(1)
-            .Subscribe(winning));
+            .Subscribe(_ => winning.OnNext(player.Coins)));
     }
 
     public void Reset()

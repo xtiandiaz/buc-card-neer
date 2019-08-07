@@ -6,7 +6,7 @@ public interface ICardHost
 {
     bool CanLodge(ISlot fromSource, ISlot intoDestination);
     IObservable<Unit> Lodge(ICard card, ISlot intoDestination);
-    IObservable<Unit> Lodge(ISlot fromSource, ISlot intoDestination);
+    IObservable<Unit> Lodge(ISlot fromSource, ISlot intoDestination, SlotLodgingMode withMode = SlotLodgingMode.Systematic);
 }
 
 public class CardHost : ICardHost
@@ -57,7 +57,7 @@ public class CardHost : ICardHost
         }).DoOnError(Debug.LogException);
     }
 
-    public IObservable<Unit> Lodge(ISlot fromSource, ISlot intoDestination)
+    public IObservable<Unit> Lodge(ISlot fromSource, ISlot intoDestination, SlotLodgingMode withMode = SlotLodgingMode.Systematic)
     {
         return Observable.Create<Unit>(observer =>
         {
@@ -68,7 +68,7 @@ public class CardHost : ICardHost
                 return Disposable.Empty;
             }
 
-            return intoDestination.Lodge(fromSource.Pop())
+            return intoDestination.Lodge(fromSource.Pop(), withMode)
                 .Merge(fromSource.ConditionallyArrange())
                 .AsSingleUnitObservable()
                 .Subscribe(observer);
