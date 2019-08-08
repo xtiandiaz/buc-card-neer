@@ -7,6 +7,10 @@ public class SceneInstaller : MonoInstaller
     [Header("Viewport")]
     [SerializeField] private GameCamera cameraPrefab = default;
     [SerializeField] private EventSystem eventSystemPrefab = default;
+    
+    [Header("Audio")] 
+    [SerializeField] private AudioRepository audioRepository = default;
+    [SerializeField] private AudioSource audioSourcePrefab = default;
 
     public override void InstallBindings()
     {
@@ -29,6 +33,21 @@ public class SceneInstaller : MonoInstaller
         #region Menus
 
         Container.BindInterfacesTo<MenuFactory>().AsSingle();
+
+        #endregion
+        
+        #region Audio
+
+        Container.BindInterfacesTo<AudioRepository>().FromInstance(audioRepository).AsSingle().NonLazy();
+        Container.BindInterfacesTo<AudioManager>().AsSingle();
+        
+        Container.BindExecutionOrder<AudioController>(100);
+        Container.BindInterfacesAndSelfTo<AudioController>().AsSingle();
+        
+        Container.BindMemoryPool<AudioSource, AudioSourcePool>()
+            .WithMaxSize(16)
+            .FromComponentInNewPrefab(audioSourcePrefab)
+            .AsSingle();
 
         #endregion
     }

@@ -2,9 +2,11 @@ using System;
 using UniRx;
 using UnityEngine;
 
-public interface ICardForwarder
+public interface ICardForwarder : IDisposable
 {
     IObservable<Unit> WhenForwarded { get; }
+    IObservable<CardType> WhenCardStashed { get; }
+    IObservable<CardType> WhenCardRevealed { get; }
     
     bool CanForward(ICard card, ISlot fromUserDestination);
     IObservable<Unit> Forward(ICard card, ISlot fromUserDestination);
@@ -13,22 +15,23 @@ public interface ICardForwarder
 public class CardForwarder : ICardForwarder
 {
     private readonly Subject<Unit> forwarding = new Subject<Unit>();
+    private readonly Subject<CardType> revealing = new Subject<CardType>();
+    private readonly Subject<CardType> stashing = new Subject<CardType>();
     private readonly IShip ship;
-    private readonly IAudioManager audioManager;
     private readonly IGameStatus gameStatus;
 
     private CardForwarder(
-        IShip ship, 
-        IAudioManager audioManager,
+        IShip ship,
         IGameStatus gameStatus
         )
     {
         this.ship = ship;
-        this.audioManager = audioManager;
         this.gameStatus = gameStatus;
     }
 
     public IObservable<Unit> WhenForwarded => forwarding;
+    public IObservable<CardType> WhenCardStashed => stashing;
+    public IObservable<CardType> WhenCardRevealed => revealing;
     
     public bool CanForward(ICard card, ISlot fromUserDestination)
     {
@@ -64,30 +67,48 @@ public class CardForwarder : ICardForwarder
             
         }).DoOnError(Debug.LogException);
     }
+    
+    public void Dispose()
+    {
+        forwarding.Dispose();
+        revealing.Dispose();
+        stashing.Dispose();
+    }
 
     private IObservable<Unit> Forward(ICard card)
     {
-        if (card.IsResource)
-        {
-            var forwarding = card.Reveal()
-                .DoOnSubscribe(() =>
+        return Observable.Create<Unit>(observer =>
+            {
+                if (!card.IsResource)
                 {
-                    card.IsBoarded = true;
-                    card.IsStored = true;
+                    observer.OnError(new Exception("Tried to forward a non-resource card."));
                     
-                    if (card.IsMonster)
-                        audioManager.Play(AudioEventKey.CardRevealMonster);
-                    else
-                        audioManager.Play(AudioEventSwitchKey.CardReveal, card.Type);
-                });
-            
-            if (card.IsItem)
-                return forwarding.Merge(ship.Storage.Lodge(card));
+                    return Disposable.Empty;
+                }
+                
+                var forwarding = card.Reveal()
+                    .DoOnSubscribe(() =>
+                    {
+                        card.IsBoarded = true;
+                        card.IsStored = true;
+                        
+                        revealing.OnNext(card.IsMonster ? CardType.Monster : card.Type);
+                    });
 
-            if (card.IsTool)
-                return forwarding.Merge(ship.Mount.Lodge(card));
-        }
+                if (card.IsItem)
+                    return forwarding.Merge(ship.Storage.Lodge(card)
+                            .Do(_ => stashing.OnNext(card.Type)))
+                        .Subscribe(observer);
 
-        throw new NotImplementedException();
+                if (card.IsTool)
+                    return forwarding.Merge(ship.Mount.Lodge(card)
+                            .Do(_ => stashing.OnNext(card.Type)))
+                        .Subscribe(observer);
+                
+                observer.OnError(new Exception($"There was no match to forward resource '{card.Type}'."));
+                
+                return Disposable.Empty;
+            })
+            .AsSingleUnitObservable();
     }
 }

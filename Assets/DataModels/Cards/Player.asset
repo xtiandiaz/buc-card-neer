@@ -25,4 +25,4 @@ MonoBehaviour:
   viewPrefab: {fileID: 3745072886839764397, guid: 6009221ca385c4a5da4f240eb613b67e,
     type: 3}
   maxHealthPoints: 14
-  initialCoins: 7
+  initialCoins: 0

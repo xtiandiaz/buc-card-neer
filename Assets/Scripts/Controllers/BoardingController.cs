@@ -4,37 +4,43 @@ using Zenject;
 
 public interface IBoardingController : IInitializable, IDisposable
 {
+    IObservable<CardType> WhenCardStashed { get; }
+    IObservable<CardType> WhenCardRevealed { get; }
 }
 
 public class BoardingController : IBoardingController
 {
     private readonly ICardHost cardHost;
     private readonly Subject<CardType> boarding = new Subject<CardType>();
+    private readonly Subject<CardType> boardingAndHandling = new Subject<CardType>();
+    private readonly Subject<CardType> revealing = new Subject<CardType>();
+    private readonly Subject<CardType> stashing = new Subject<CardType>();
     private readonly Subject<Unit> unlockingAndHandling = new Subject<Unit>();
     private readonly CompositeDisposable disposables = new CompositeDisposable();
     
     private readonly IShip ship;
     private readonly ISea sea;
-    private readonly IAudioManager audioManager;
     private readonly IGameStatus gameStatus;
 
     private BoardingController(
         ICardHost cardHost,
         IShip ship,
         ISea sea,
-        IAudioManager audioManager,
         IGameStatus gameStatus
-    )
+        )
     {
         this.cardHost = cardHost;
         this.ship = ship;
         this.sea = sea;
-        this.audioManager = audioManager;
 
         this.gameStatus = gameStatus;
         this.gameStatus.WhenPlayerBoardedCard = boarding;
+        this.gameStatus.WhenPlayerBoardedAndHandledCard = boardingAndHandling;
         this.gameStatus.WhenPlayerUnlockedAndHandledCard = unlockingAndHandling;
     }
+
+    public IObservable<CardType> WhenCardStashed => stashing;
+    public IObservable<CardType> WhenCardRevealed => revealing;
 
     public void Initialize()
     {
@@ -45,24 +51,17 @@ public class BoardingController : IBoardingController
                 sea.Lock();
                 
                 card.IsBoarded = true;
-
-                if (card.IsMonster)
-                    audioManager.Play(AudioEventKey.CardBoardMonster);
-                else
-                    audioManager.Play(AudioEventSwitchKey.CardBoard, card.Type);
+                
+                boarding.OnNext(card.IsMonster ? CardType.Monster : card.Type);
             })
             .SelectMany(card => (card.IsLocked ? Observable.ReturnUnit() : Handle(card))
-                .Do(_ =>
-                {
-                    sea.Unlock();
-                    boarding.OnNext(card.IsMonster ? CardType.Monster : card.Type);
-                }))
+                .Do(_ => boardingAndHandling.OnNext(card.IsMonster ? CardType.Monster : card.Type)))
             .Subscribe());
 
         disposables.Add(ship.Plank.WhenLodged
             .Where(card => card.IsLocked)
             .SelectMany(card => card.WhenUnlocked
-                .ContinueWith(_ => card.Drop())
+                .ContinueWith(_ => card.DropAsObservable())
                 .Delay(TimeSpan.FromSeconds(0.25))
                 .ContinueWith(_ => Handle(card))
                 .Do(unlockingAndHandling.OnNext))
@@ -72,19 +71,17 @@ public class BoardingController : IBoardingController
     public void Dispose()
     {
         boarding.Dispose();
+        boardingAndHandling.Dispose();
+        unlockingAndHandling.Dispose();
+        revealing.Dispose();
+        stashing.Dispose();
         disposables.Dispose();
     }
 
     private IObservable<Unit> Handle(ICard card)
     {
         return card.Reveal()
-            .DoOnSubscribe(() =>
-            {
-                if (card.IsMonster)
-                    audioManager.Play(AudioEventKey.CardRevealMonster);
-                else
-                    audioManager.Play(AudioEventSwitchKey.CardReveal, card.Type);
-            })
+            .DoOnSubscribe(() => revealing.OnNext(card.IsMonster ? CardType.Monster : card.Type))
             .ContinueWith(_ => card.IsResource
                 ? Observable.Timer(TimeSpan.FromSeconds(0.25)).ContinueWith(Store(card))
                 : Observable.Empty<Unit>())
@@ -101,7 +98,7 @@ public class BoardingController : IBoardingController
                 gameStatus.PlayerDidStoreItem |= card.IsItem;
                 gameStatus.PlayerDidStoreTool |= card.IsTool;
 
-                audioManager.Play(AudioEventSwitchKey.CardStash, card.Type);
+                stashing.OnNext(card.Type);
             });
     }
 }

@@ -47,6 +47,9 @@ MonoBehaviour:
     type: 3}
   eventSystemPrefab: {fileID: 4932929182406742490, guid: c3e9f776da964434395a8779c6545ee3,
     type: 3}
+  audioRepository: {fileID: 11400000, guid: 7a05be8b1021f4edd88c559cb93dbbeb, type: 2}
+  audioSourcePrefab: {fileID: 5710264892906250546, guid: cf1d97fdab1294fbebd55eedc9468732,
+    type: 3}
   deck: {fileID: 11400000, guid: 21c0d3a12db394182b1bc2861f9571c9, type: 2}
   player: {fileID: 11400000, guid: 155e51e0940104ebaab177e4c174ea4d, type: 2}
   supplySlots:

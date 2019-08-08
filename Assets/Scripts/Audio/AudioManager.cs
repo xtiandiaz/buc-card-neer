@@ -1,6 +1,7 @@
 using System;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
 public interface IAudioManager : IDisposable
 {
@@ -18,11 +19,11 @@ public class AudioManager : IAudioManager
     private AudioManager(
         IAudioRepository repository,
         AudioSourcePool sourcePool
-        )
+    )
     {
         this.repository = repository;
         this.sourcePool = sourcePool;
-        
+
         this.repository.Index();
     }
 

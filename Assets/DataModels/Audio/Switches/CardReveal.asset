@@ -16,5 +16,7 @@ MonoBehaviour:
   alternatives:
   - cardType: 2032
     audioEvent: {fileID: 11400000, guid: c6554afc37dc5fc4b8ebbec7c7200250, type: 2}
-  - cardType: 14
+  - cardType: 6
     audioEvent: {fileID: 11400000, guid: 6c01327a0fddcaa43876fe8944e8bade, type: 2}
+  - cardType: 8
+    audioEvent: {fileID: 11400000, guid: 6fc28d810f10a8741813538105dc396d, type: 2}

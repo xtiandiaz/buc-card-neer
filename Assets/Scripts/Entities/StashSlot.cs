@@ -14,7 +14,10 @@ public class StashSlot : Slot
         { 
             pile.InsertReverse(pile.Pop());
             
+            Lock();
+            
             return Arrange()
+                .DoOnCompleted(Unlock)
                 .Subscribe(observer);
         });
 

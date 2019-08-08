@@ -28,6 +28,7 @@ public interface ICardView
 
     void Pick();
     void Drag(Vector3 byDeltaPosition);
+    void Arrange(CardArrangement withArrangement);
     void SetParent(Transform toTransform);
     void ToggleValueVisibility(bool toValue);
     void ToggleLockVisibility(bool toValue);
@@ -37,7 +38,7 @@ public interface ICardView
     IObservable<Unit> OnClashed();
     IObservable<Unit> OnShot();
     IObservable<Unit> Reveal();
-    IObservable<Unit> Arrange(CardArrangement withArrangement, bool shouldSortLazily);
+    IObservable<Unit> ArrangeAsObservable(CardArrangement withArrangement, bool shouldSortLazily);
     IObservable<Unit> Fade(float toAlphaValue, TimeSpan withDuration);
 }
 
@@ -71,6 +72,10 @@ public class CardView : MonoBehaviour, ICardView
     private Vector3 lastLodgingPosition;
     private int sortingIndex;
     private CardFace face;
+    
+    
+    private Tween picking;
+    private Sequence arrangement;
 
     public virtual int Value
     {
@@ -181,7 +186,10 @@ public class CardView : MonoBehaviour, ICardView
     {
         SortingOrder = 100;
 
-        transform.DOMoveZ(-0.5f, 0.2f)
+        arrangement?.Kill();
+        picking?.Kill();
+        
+        picking = transform.DOMoveZ(-0.5f, 0.2f)
             .SetEase(Ease.OutQuart);
     }
 
@@ -189,36 +197,39 @@ public class CardView : MonoBehaviour, ICardView
     {
         LocalPosition += byDeltaPosition;
     }
+
+    public void Arrange(CardArrangement withArrangement)
+    {
+        //TODO animate fog
+        shader.Fog(withArrangement.fogColor, withArrangement.fogIntensity);
+        
+        arrangement?.Kill();
+        arrangement = animator.Arrange(
+                withArrangement.localPosition, 
+                withArrangement.rotationZ,
+                withArrangement.mode)
+            .OnComplete(() => Sort(withArrangement.index));
+    }
     
-    public IObservable<Unit> Arrange(CardArrangement withArrangement, bool shouldSortLazily)
+    public IObservable<Unit> ArrangeAsObservable(CardArrangement withArrangement, bool shouldSortLazily)
     {
         return Observable.Create<Unit>(observer =>
         {
-            void Sort()
-            {
-                SortingOrder = -withArrangement.index;
-            }
-
             if (!shouldSortLazily)
-                Sort();
+                Sort(withArrangement.index);
             
-            //TODO animate fog
-            shader.Fog(withArrangement.fogColor, withArrangement.fogIntensity);
-            
-            var arrangementSequence = animator.Arrange(
-                    withArrangement.localPosition, 
-                    withArrangement.rotationZ,
-                    withArrangement.mode)
-                .OnComplete(() => 
-                {
-                    if (shouldSortLazily)
-                        Sort();
-                    
-                    observer.OnNext(Unit.Default);
-                    observer.OnCompleted();
-                });
+            Arrange(withArrangement);
 
-            return Disposable.Create(() => arrangementSequence.Kill());
+            arrangement.OnComplete(() =>
+            {
+                observer.OnNext(Unit.Default);
+                observer.OnCompleted();
+
+                if (shouldSortLazily)
+                    Sort(withArrangement.index);
+            });
+
+            return Disposable.Create(() => arrangement.Kill());
         });
     }
 
@@ -292,5 +303,10 @@ public class CardView : MonoBehaviour, ICardView
     public void Destroy()
     {
         Destroy(gameObject);
+    }
+    
+    private void Sort(int withRawIndex)
+    {
+        SortingOrder = -withRawIndex;
     }
 }

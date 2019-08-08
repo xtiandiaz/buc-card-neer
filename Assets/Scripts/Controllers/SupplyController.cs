@@ -45,6 +45,7 @@ public class SupplyController : ISupplyController
                     
                     return sea.Resupply();
                 }))
+            .Do(_ => sea.Unlock())
             .Subscribe());
     }
 

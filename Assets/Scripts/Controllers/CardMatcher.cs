@@ -79,7 +79,7 @@ public class CardMatcher : ICardMatcher
         {
             case CardType.Player:
 
-                return (source.Type & (CardType.Pirate | CardType.Inspector)) != 0 ||
+                return (source.Type & (CardType.Pirate)) != 0 ||
                        source.IsResource && 
                        (source.IsLocked || source.IsMedicine);
 
@@ -90,11 +90,7 @@ public class CardMatcher : ICardMatcher
             case CardType.Merchant:
 
                 return source.IsResource && source.IsStored;
-                
-            case CardType.Inspector:
-                
-                return source.IsItem;
-            
+
             case CardType.Food:
             case CardType.Artifact:
             case CardType.Gem:
@@ -141,17 +137,7 @@ public class CardMatcher : ICardMatcher
                                     }))
                                 .LastOrDefault()
                                 .Subscribe(observer);
-                        
-                        case CardType.Inspector:
 
-                            var inspectorBribe = source.Value;
-
-                            return source.Hit(Math.Min(player.Coins, inspectorBribe))
-                                .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardConfrontMarshal))
-                                .Merge(player.Debit(inspectorBribe))
-                                .LastOrDefault()
-                                .Subscribe(observer);
-                        
                         case CardType.Food:
                         case CardType.Artifact:
                         case CardType.Gem:
@@ -201,20 +187,7 @@ public class CardMatcher : ICardMatcher
                         .Merge(source.Destroy())
                         .LastOrDefault()
                         .Subscribe(observer);
-                    
-                case CardType.Inspector:
 
-                    return withDestination.Hit(source.Value)
-                        .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardItemBribe))
-                        .Do(_ =>
-                        {
-                            if (withDestination.Value <= 0)
-                                audioManager.Play(AudioEventKey.CardDefeatMarshal);
-                        })
-                        .Merge(source.Destroy())
-                        .LastOrDefault()
-                        .Subscribe(observer);
-                
                 case CardType.Merchant:
                     
                     player.Credit(source.Value * 

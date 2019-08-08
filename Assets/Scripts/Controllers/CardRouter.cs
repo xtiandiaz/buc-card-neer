@@ -7,11 +7,14 @@ using Zenject;
 
 public interface ICardRouter : IDisposable, IInitializable
 {
+    IObservable<Unit> WhenCardPicked { get; }
+    IObservable<Unit> WhenCardDropped { get; }
 }
 
 public class CardRouter : ICardRouter
 {
     private readonly Subject<(ICard, ISlot)> picking = new Subject<(ICard, ISlot)>();
+    private readonly Subject<Unit> dropping = new Subject<Unit>();
     private readonly Subject<(ICard, ISlot, Vector3)> routing = new Subject<(ICard, ISlot, Vector3)>();
     private readonly List<ISlot> slots = new List<ISlot>();
     private readonly CompositeDisposable disposables = new CompositeDisposable();
@@ -23,7 +26,6 @@ public class CardRouter : ICardRouter
     private readonly ICardDismisser dismisser;
     private readonly ICardMatcher matcher;
     private readonly ICardHost host;
-    private readonly IAudioManager audioManager;
 
     private CardRouter(
         IShip ship,
@@ -32,9 +34,8 @@ public class CardRouter : ICardRouter
         ICardDeferrer deferrer,
         ICardDismisser dismisser,
         ICardMatcher matcher,
-        ICardHost host,
-        IAudioManager audioManager
-        )
+        ICardHost host
+    )
     {
         this.ship = ship;
         this.sea = sea;
@@ -43,8 +44,10 @@ public class CardRouter : ICardRouter
         this.dismisser = dismisser;
         this.matcher = matcher;
         this.host = host;
-        this.audioManager = audioManager;
     }
+
+    public IObservable<Unit> WhenCardPicked => picking.AsUnitObservable();
+    public IObservable<Unit> WhenCardDropped => dropping;
 
     public void Initialize()
     {
@@ -57,7 +60,6 @@ public class CardRouter : ICardRouter
         Register(ship.Storage);
 
         disposables.Add(picking
-            .Do(_ => audioManager.Play(AudioEventKey.UIDragGrab))
             .Subscribe(cardFromSlot =>
             {
                 var (card, fromSlot) = cardFromSlot;
@@ -80,20 +82,24 @@ public class CardRouter : ICardRouter
                 {
                     Card = card,
                     SourceSlot = fromSlot,
-                    DestinationSlot = slots.FirstOrDefault(slot => slot != fromSlot && slot.DoesContain(dropPos))
+                    DestinationSlot = slots.FirstOrDefault(slot => slot.DoesContain(dropPos))
                 };
             })
             .SelectMany(route =>
             {
-                if (route.DestinationSlot != null) 
-                    return Route(route.Card, route.SourceSlot, route.DestinationSlot);
+                if (route.DestinationSlot != route.SourceSlot)
+                {
+                    if (dismisser.CanDismiss(route.SourceSlot))
+                        return dismisser.Dismiss(route.SourceSlot);
+                    
+                    if (route.DestinationSlot != null)
+                        return Route(route.Card, route.SourceSlot, route.DestinationSlot);
+                }
 
-                if (dismisser.CanDismiss(route.SourceSlot))
-                    return dismisser.Dismiss(route.SourceSlot)
-                        .DoOnSubscribe(() => audioManager.Play(AudioEventKey.CardBridgeDismiss));
+                route.Card.Drop();
+                dropping.OnNext(Unit.Default);
 
-                return route.Card.Drop()
-                    .DoOnSubscribe(() => audioManager.Play(AudioEventKey.UIDragCancel));
+                return Observable.ReturnUnit();
             })
             .Subscribe());
     }
@@ -101,9 +107,10 @@ public class CardRouter : ICardRouter
     public void Dispose()
     {
         picking.Dispose();
+        dropping.Dispose();
         routing.Dispose();
-        
-        disposables?.Dispose();
+
+        disposables.Dispose();
     }
     
     private void Register(ISlot slot)
@@ -122,30 +129,26 @@ public class CardRouter : ICardRouter
                 picking.OnNext((card, slot));
             })
             .ContinueWith(pickedCard => slot.WhenReleased
-                .TakeUntil(slot.WhenDraggingStarted)
                 .Take(1)
-                .Do(_ => ToggleSlotHighlights(false))
-                .ContinueWith(pickedCard.Drop()
-                    .DoOnSubscribe(() => audioManager.Play(AudioEventKey.UIDragCancel)))
                 .Merge(slot.WhenDraggingStarted
                     .Take(1)
                     .ContinueWith(slot.WhenDragged
                         .TakeUntil(slot.WhenDraggingStopped)
                         .Do(pickedCard.Drag)
-                        .AsSingleUnitObservable()
-                        .Do(_ =>
-                        {
-                            ToggleSlotHighlights(false);
-                            
-                            var slotWorldPos = slot.Position;
+                        .AsSingleUnitObservable()))
+                .Do(_ => 
+                {
+                    ToggleSlotHighlights(false);
+                        
+                    var slotWorldPos = slot.Position;
 
-                            routing.OnNext((
-                                pickedCard, 
-                                slot, 
-                                new Vector3(
-                                    slotWorldPos.x + pickedCard.LocalPosition.x,
-                                    slotWorldPos.y + pickedCard.LocalPosition.y)));
-                        })))
+                    routing.OnNext((
+                        pickedCard, 
+                        slot, 
+                        new Vector3(
+                            slotWorldPos.x + pickedCard.LocalPosition.x,
+                            slotWorldPos.y + pickedCard.LocalPosition.y)));
+                })
                 .First()
                 .Do(_ => slot.Unlock()))
             .RepeatSafe()
@@ -187,8 +190,8 @@ public class CardRouter : ICardRouter
                     .Subscribe(observer);
             }
 
-            return card.Drop()
-                .DoOnSubscribe(() => audioManager.Play(AudioEventKey.UIDragCancel))
+            return card.DropAsObservable()
+                .DoOnSubscribe(() => dropping.OnNext(Unit.Default))
                 .Subscribe(observer);
         });
     }

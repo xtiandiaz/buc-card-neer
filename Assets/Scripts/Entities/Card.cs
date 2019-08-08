@@ -30,16 +30,17 @@ public interface ICard : IDisposable
     bool WasLocked { get; }
 
     Vector3 LocalPosition { get; }
-
+    
     IObservable<Unit> WhenUnlocked { get; }
     IObservable<Unit> WhenDestroyed { get; }
 
     void Bind(ICardBond toBond);
     void Pick();
     void Drag(Vector3 byDeltaPosition);
+    void Drop();
     void Hack(int withValue);
     
-    IObservable<Unit> Drop();
+    IObservable<Unit> DropAsObservable();
     IObservable<Unit> Reveal();
     IObservable<Unit> Hit(int withValue);
     IObservable<Unit> Clash(ICard withOther, Direction toward);
@@ -130,9 +131,14 @@ public class Card : ICard
         view.Drag(byDeltaPosition);
     }
 
-    public IObservable<Unit> Drop()
+    public void Drop()
     {
-        return view.Arrange(arrangement, true);
+        view.Arrange(arrangement);
+    }
+
+    public IObservable<Unit> DropAsObservable()
+    {
+        return view.ArrangeAsObservable(arrangement, true);
     }
 
     public IObservable<Unit> Hit(int withValue)
@@ -163,7 +169,7 @@ public class Card : ICard
 
     public IObservable<Unit> Arrange(CardArrangement withArrangement)
     {
-        return view.Arrange(withArrangement, false)
+        return view.ArrangeAsObservable(withArrangement, false)
             .DoOnSubscribe(() => arrangement = withArrangement);
     }
 

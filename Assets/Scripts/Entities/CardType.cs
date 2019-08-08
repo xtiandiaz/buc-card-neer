@@ -7,7 +7,6 @@ public enum CardType
     Pirate             = 1 << 1,
     Merchant           = 1 << 2,
     
-    Inspector          = 1 << 3,
     Monster            = 1 << 3,
     
     Food               = 1 << 4,
@@ -21,5 +20,5 @@ public enum CardType
     Item               = Food | Gem | Artifact,
     Tool               = WeaponMelee | WeaponRanged | Medicine | Trap,
     Resource           = Item | Tool,
-    Agent              = Pirate | Merchant | Inspector
+    Agent              = Pirate | Merchant
 }

@@ -63,7 +63,7 @@ public class GameController : IGameController
             status.WhenPlayerShot
                 .Subscribe(_ => camera.Shake(0.75f, TimeSpan.FromSeconds(0.5))));
         
-        disposables.Add(status.WhenPlayerBoardedCard
+        disposables.Add(status.WhenPlayerBoardedAndHandledCard
             .Where(type => (type & CardType.Monster) != 0)
             .Subscribe(_ => camera.Shake(0.25f, TimeSpan.FromSeconds(1), 4)));
         

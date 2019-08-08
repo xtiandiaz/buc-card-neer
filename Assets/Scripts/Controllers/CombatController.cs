@@ -39,11 +39,7 @@ public class CombatController : ICombatController
             })
             .Delay(TimeSpan.FromSeconds(0.5))
             .SelectMany(_ => shooter.Shoot(ship.Plank, sea.Slots))
-            .Do(_ =>
-            {
-                ship.Unlock();
-                sea.Unlock();
-            })
+            .Do(_ => ship.Unlock())
             .Subscribe());
     }
 

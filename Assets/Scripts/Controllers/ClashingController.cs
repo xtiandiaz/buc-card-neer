@@ -37,19 +37,15 @@ public class ClashingController : IClashingController
     
     public void Initialize()
     {
-        disposables.Add(gameStatus.WhenPlayerBoardedCard.AsUnitObservable()
+        disposables.Add(gameStatus.WhenPlayerBoardedAndHandledCard.AsUnitObservable()
             .Merge(
                 gameStatus.WhenPlayerUnlockedAndHandledCard,
                 matcher.WhenMatched, 
                 shooter.WhenHit, 
                 forwarder.WhenForwarded)
             .Delay(TimeSpan.FromSeconds(0.25))
-            .SelectMany(sea.Clash())
-            .Do(_ =>
-            {
-                seaClashing.OnNext(_);
-                sea.Unlock();
-            })
+            .SelectMany(sea.Clash()
+                .DoOnCompleted(() => seaClashing.OnNext(Unit.Default)))
             .Subscribe());
     }
 

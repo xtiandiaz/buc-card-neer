@@ -14,6 +14,7 @@ public interface IGameStatus
     
     IObservable<Unit> WhenPlayerShot { get; set; }
     IObservable<CardType> WhenPlayerBoardedCard { get; set; }
+    IObservable<CardType> WhenPlayerBoardedAndHandledCard { get; set; }
     IObservable<Unit> WhenPlayerUnlockedAndHandledCard { get; set; }
     IObservable<Unit> WhenPlayerAttackedOnBoard { get; set; }
     IObservable<Unit> WhenPlayerConfronted { get; set; }
@@ -35,6 +36,9 @@ public class GameStatusController : IGameStatusController
     private readonly Subject<Unit> losing = new Subject<Unit>();
     private readonly Subject<int> winning = new Subject<int>();
     private readonly CompositeDisposable disposables = new CompositeDisposable();
+
+    private IObservable<CardType> whenCardRevealed;
+    private IObservable<CardType> whenCardStashed;
     
     public bool PlayerDidStoreItem { get; set; }
     public bool PlayerDidStoreTool { get; set; }
@@ -46,6 +50,7 @@ public class GameStatusController : IGameStatusController
 
     public IObservable<Unit> WhenPlayerShot { get; set; }
     public IObservable<CardType> WhenPlayerBoardedCard { get; set; }
+    public IObservable<CardType> WhenPlayerBoardedAndHandledCard { get; set; }
     public IObservable<Unit> WhenPlayerUnlockedAndHandledCard { get; set; }
     public IObservable<Unit> WhenPlayerAttackedOnBoard { get; set; }
     public IObservable<Unit> WhenPlayerConfronted { get; set; }
