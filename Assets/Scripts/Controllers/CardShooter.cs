@@ -4,30 +4,32 @@ using UniRx;
 
 public interface ICardShooter : IDisposable
 {
+    IObservable<Unit> WhenShot { get; }
     IObservable<Unit> WhenHit { get; }
-    
+    IObservable<Unit> WhenRestored { get; }
+
     bool CanShoot(ISlot fromSource, ISlot intoDestination);
+    
     IObservable<Unit> Shoot(ISlot fromSource, ISlot intoDestination);
     IObservable<Unit> Shoot(ISlot fromSource, ISlot[] intoDestinations);
 }
 
 public class CardShooter : ICardShooter
 {
-    private readonly IAudioManager audioManager;
     private readonly Subject<Unit> shooting = new Subject<Unit>();
     private readonly Subject<Unit> hitting = new Subject<Unit>();
+    private readonly Subject<Unit> restoring = new Subject<Unit>();
 
     private CardShooter(
-        IAudioManager audioManager,
         IGameStatus gameStatus
-    )
+        ) 
     {
-        this.audioManager = audioManager;
-
         gameStatus.WhenPlayerShot = shooting;
     }
     
+    public IObservable<Unit> WhenShot => shooting;
     public IObservable<Unit> WhenHit => hitting;
+    public IObservable<Unit> WhenRestored => restoring;
     
     public bool CanShoot(ISlot fromSource, ISlot intoDestination)
     { 
@@ -49,16 +51,14 @@ public class CardShooter : ICardShooter
             
             var targets = intoDestinations.Select(slot => slot.Peek()).ToArray();
 
-            audioManager.Play(AudioEventKey.CardToolRangedUseCannon);
-
             shooting.OnNext(Unit.Default);
 
             return Observable.Timer(TimeSpan.FromSeconds(0.25))
-                .Do(_ => audioManager.Play(AudioEventKey.CardToolRangedHitCannon))
                 .ContinueWith(Shoot(weapon, targets)
+                    .DoOnSubscribe(() => hitting.OnNext(Unit.Default))
                     .Merge(weapon.Destroy()))
                 .LastOrDefault()
-                .Do(hitting.OnNext)
+                .Do(restoring.OnNext)
                 .Subscribe(observer);
         });
     }
@@ -106,6 +106,7 @@ public class CardShooter : ICardShooter
 
     public void Dispose()
     {
-        shooting?.Dispose();
+        hitting.Dispose();
+        shooting.Dispose();
     }
 }

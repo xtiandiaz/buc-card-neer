@@ -4,12 +4,12 @@ using Zenject;
 
 public interface IClashingController : IInitializable, IDisposable
 {
-    IObservable<Unit> WhenSeaClashed { get; }
+    IObservable<Unit> WhenRoundCompleted { get; }
 }
 
 public class ClashingController : IClashingController
 {
-    private readonly Subject<Unit> seaClashing = new Subject<Unit>();
+    private readonly Subject<Unit> roundCompletion = new Subject<Unit>();
     private readonly CompositeDisposable disposables = new CompositeDisposable();
     
     private readonly ICardMatcher matcher;
@@ -33,7 +33,7 @@ public class ClashingController : IClashingController
         this.gameStatus = gameStatus;
     }
 
-    public IObservable<Unit> WhenSeaClashed => seaClashing;
+    public IObservable<Unit> WhenRoundCompleted => roundCompletion;
     
     public void Initialize()
     {
@@ -41,11 +41,12 @@ public class ClashingController : IClashingController
             .Merge(
                 gameStatus.WhenPlayerUnlockedAndHandledCard,
                 matcher.WhenMatched, 
-                shooter.WhenHit, 
+                shooter.WhenRestored, 
                 forwarder.WhenForwarded)
             .Delay(TimeSpan.FromSeconds(0.25))
             .SelectMany(sea.Clash()
-                .DoOnCompleted(() => seaClashing.OnNext(Unit.Default)))
+                .LastOrDefault()
+                .Do(roundCompletion.OnNext))
             .Subscribe());
     }
 

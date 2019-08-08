@@ -38,10 +38,12 @@ public class GameInstaller : SceneInstaller
         Container.BindInterfacesTo<CardShooter>().AsSingle().NonLazy();
 
         Container.BindInterfacesTo<GameController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<BoardController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<BoardingController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<ClashingController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<SupplyController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<CombatController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<VisualEffectsController>().AsSingle().NonLazy();
 
         #endregion
         

@@ -4,6 +4,7 @@ using Zenject;
 
 public interface IBoardingController : IInitializable, IDisposable
 {
+    IObservable<CardType> WhenCardBoarded { get; }
     IObservable<CardType> WhenCardStashed { get; }
     IObservable<CardType> WhenCardRevealed { get; }
 }
@@ -39,6 +40,7 @@ public class BoardingController : IBoardingController
         this.gameStatus.WhenPlayerUnlockedAndHandledCard = unlockingAndHandling;
     }
 
+    public IObservable<CardType> WhenCardBoarded => boarding;
     public IObservable<CardType> WhenCardStashed => stashing;
     public IObservable<CardType> WhenCardRevealed => revealing;
 
@@ -48,8 +50,6 @@ public class BoardingController : IBoardingController
             .Where(card => !card.IsBoarded)
             .Do(card =>
             {
-                sea.Lock();
-                
                 card.IsBoarded = true;
                 
                 boarding.OnNext(card.IsMonster ? CardType.Monster : card.Type);

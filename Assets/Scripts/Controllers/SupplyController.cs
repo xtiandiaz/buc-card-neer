@@ -4,17 +4,19 @@ using Zenject;
 
 public interface ISupplyController : IInitializable, IDisposable
 {
+    IObservable<Unit> WhenRoundCompleted { get; }
+
     IObservable<Unit> Supply();
 }
 
 public class SupplyController : ISupplyController
 {
-    private readonly CompositeDisposable disposables = new CompositeDisposable();
-
     private readonly IClashingController clashingController;
     private readonly ISea sea;
     private readonly IAudioManager audioManager;
     private readonly IGameStatus gameStatus;
+    private readonly Subject<Unit> roundCompletion = new Subject<Unit>();
+    private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private SupplyController(
         IClashingController clashingController,
@@ -29,23 +31,24 @@ public class SupplyController : ISupplyController
         this.gameStatus = gameStatus;
     }
 
+    public IObservable<Unit> WhenRoundCompleted => roundCompletion;
+
     public void Initialize()
     {
-        disposables.Add(clashingController.WhenSeaClashed
+        disposables.Add(clashingController.WhenRoundCompleted
             .SelectMany(_ => sea.Arrange()
                 .DoOnSubscribe(() =>
                 {
-                    if (sea.IsMessy && !sea.ShouldResupply)
+                    if (sea.ShouldArrange)
                         audioManager.Play(AudioEventKey.CardSupplyCascade);
                 })
-                .ContinueWith(__ =>
-                {
-                    if (sea.ShouldResupply)
-                        audioManager.Play(AudioEventKey.CardSupplyRedeal);
-                    
-                    return sea.Resupply();
-                }))
-            .Do(_ => sea.Unlock())
+                .Concat(sea.Resupply()
+                    .DoOnSubscribe(() =>
+                    {
+                        if (sea.ShouldResupply)
+                            audioManager.Play(AudioEventKey.CardSupplyRedeal);
+                    }))
+                .DoOnCompleted(() => roundCompletion.OnNext(Unit.Default)))
             .Subscribe());
     }
 

@@ -52,19 +52,19 @@ public class CardDealer : ICardDealer
     public IObservable<Unit> Deal(int count, ISlot intoSlot)
     {
         return deck.Provide(count)
-            .ToObservable()
-            .SelectMany((card, index) =>
+            .Select((card, index) => 
             {
                 OnCardDealt(card.IsMonster ? CardType.Monster : card.Type);
                 
                 disposables.Add((card.IsMonster 
-                    ? card.WhenUnlocked.Select(_ => CardType.Monster)
-                    : card.WhenDestroyed.Select(_ => card.Type))
+                        ? card.WhenUnlocked.Select(_ => CardType.Monster)
+                        : card.WhenDestroyed.Select(_ => card.Type))
                     .Subscribe(OnCardDestroyedOrUnlocked));
-                
+
                 return intoSlot.Lodge(card)
                     .DelaySubscription(TimeSpan.FromSeconds(0.1 * index));
             })
+            .Merge()
             .DoOnError(Debug.LogException)
             .AsSingleUnitObservable();
     }

@@ -17,7 +17,6 @@ public class GameController : IGameController
     private readonly IShip ship;
     private readonly IPlayerCard player;
     private readonly IAudioManager audioManager;
-    private readonly IGameCamera camera;
     private readonly ISea sea;
 
     public GameController(
@@ -27,8 +26,7 @@ public class GameController : IGameController
         ICardHost cardHost,
         IShip ship,
         IPlayerCard player,
-        IAudioManager audioManager,
-        IGameCamera camera
+        IAudioManager audioManager
     )
     {
         this.status = status;
@@ -38,7 +36,6 @@ public class GameController : IGameController
         this.ship = ship;
         this.player = player;
         this.audioManager = audioManager;
-        this.camera = camera;
     }
 
     public void Initialize()
@@ -58,18 +55,6 @@ public class GameController : IGameController
         
         disposables.Add(status.WhenWon
             .Subscribe(_ => OnGameEnded()));
-        
-        disposables.Add(
-            status.WhenPlayerShot
-                .Subscribe(_ => camera.Shake(0.75f, TimeSpan.FromSeconds(0.5))));
-        
-        disposables.Add(status.WhenPlayerBoardedAndHandledCard
-            .Where(type => (type & CardType.Monster) != 0)
-            .Subscribe(_ => camera.Shake(0.25f, TimeSpan.FromSeconds(1), 4)));
-        
-        disposables.Add(status.WhenPlayerAttackedOnBoard
-            .Merge(status.WhenPlayerConfronted)
-            .Subscribe(_ => camera.Shake(0.15f, TimeSpan.FromSeconds(0.5), 2)));
     }
 
     public void Dispose()

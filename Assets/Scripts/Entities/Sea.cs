@@ -8,7 +8,7 @@ public interface ISea
 {
     ISlot[] Slots { get; }
     
-    bool IsMessy { get; }
+    bool ShouldArrange { get; }
     bool ShouldResupply { get; }
 
     void Lock();
@@ -49,7 +49,7 @@ public class Sea : ISea
 
     public ISlot[] Slots => slots;
 
-    public bool IsMessy => slots.FirstOrDefault(slot => slot.IsMessy) != null;
+    public bool ShouldArrange => slots.FirstOrDefault(slot => slot.IsMessy && !slot.IsEmpty) != null;
     public bool ShouldResupply => slots.FirstOrDefault(slot => dealer.CanDeal(slot) && slot.IsEmpty) != null;
     
     public IObservable<Unit> Supply()
@@ -83,7 +83,7 @@ public class Sea : ISea
     {
         return slots.Select(slot => slot.Arrange())
             .Merge()
-            .AsUnitObservable();
+            .AsSingleUnitObservable();
     }
     
     public void Lock()

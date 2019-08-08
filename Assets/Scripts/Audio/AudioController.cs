@@ -2,13 +2,19 @@ using System;
 using UniRx;
 using Zenject;
 
-public class AudioController : IInitializable, IDisposable
+public interface IAudioController : IInitializable, IDisposable
+{
+}
+
+public class AudioController : IAudioController
 {
     private readonly IAudioManager audioManager;
     private readonly ICardRouter cardRouter;
     private readonly ICardDismisser cardDismisser;
     private readonly IBoardingController boardingController;
     private readonly ICardForwarder cardForwarder;
+    private readonly ICardShooter cardShooter;
+    private readonly IShip ship;
     private readonly IGameStatus gameStatus;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
@@ -18,6 +24,8 @@ public class AudioController : IInitializable, IDisposable
         ICardDismisser cardDismisser,
         IBoardingController boardingController,
         ICardForwarder cardForwarder,
+        ICardShooter cardShooter,
+        IShip ship,
         IGameStatus gameStatus
         )
     {
@@ -26,6 +34,8 @@ public class AudioController : IInitializable, IDisposable
         this.cardDismisser = cardDismisser;
         this.boardingController = boardingController;
         this.cardForwarder = cardForwarder;
+        this.cardShooter = cardShooter;
+        this.ship = ship;
         this.gameStatus = gameStatus;
     }
     
@@ -50,6 +60,19 @@ public class AudioController : IInitializable, IDisposable
         disposables.Add(boardingController.WhenCardStashed
             .Merge(cardForwarder.WhenCardStashed)
             .Subscribe(cardType => audioManager.Play(AudioEventSwitchKey.CardStash, cardType)));
+
+        #region Ranged Combat
+
+        disposables.Add(ship.WhenArmed
+            .Subscribe(_ => audioManager.Play(AudioEventKey.CardToolRangedArm)));
+        
+        disposables.Add(cardShooter.WhenShot
+            .Subscribe(_ => audioManager.Play(AudioEventKey.CardToolRangedUseCannon)));
+        
+        disposables.Add(cardShooter.WhenHit
+            .Subscribe(_ => audioManager.Play(AudioEventKey.CardToolRangedHitCannon)));
+
+        #endregion
     }
 
     public void Dispose()

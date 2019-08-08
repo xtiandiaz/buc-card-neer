@@ -123,7 +123,6 @@ public class CardRouter : ICardRouter
             .Take(1)
             .Do(card =>
             {
-                slot.Lock();
                 card.Pick();
                 
                 picking.OnNext((card, slot));
@@ -149,9 +148,8 @@ public class CardRouter : ICardRouter
                             slotWorldPos.x + pickedCard.LocalPosition.x,
                             slotWorldPos.y + pickedCard.LocalPosition.y)));
                 })
-                .First()
-                .Do(_ => slot.Unlock()))
-            .RepeatSafe()
+                .First())
+                .RepeatSafe()
             .Subscribe());
     }
 
