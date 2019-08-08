@@ -5,8 +5,6 @@ public interface IBoardModel : IDisposable
 {
     Vector2 Padding { get; }
     
-    Vector2 CardSize { get; }
-    float CardExtent { get; }
     int SupplySlotCount { get; }
     float SlotSpacing { get; }
     
@@ -30,7 +28,6 @@ public class BoardModel : ScriptableObject, IBoardModel
     [SerializeField] private Vector2 tallestAspectRatio = default;
     
     [Space]
-    [SerializeField] private Vector2 cardSize = default;
     [SerializeField] private int supplySlotCount = default;
     [SerializeField] private float minSlotSpacing = default;
     [SerializeField] private float flexibleSlotSpacing = default;
@@ -57,21 +54,6 @@ public class BoardModel : ScriptableObject, IBoardModel
             padding = minPadding + Tx * flexiblePadding.x * Vector2.right + Ty * flexiblePadding.y * Vector2.up;
 
             return padding.Value;
-        }
-    }
-
-    public Vector2 CardSize => cardSize;
-    
-    public float CardExtent
-    {
-        get
-        {
-            if (cardExtent.HasValue)
-                return cardExtent.Value;
-            
-            cardExtent = Mathf.Sqrt(Vector2.SqrMagnitude(cardSize));
-
-            return cardExtent.Value;
         }
     }
 

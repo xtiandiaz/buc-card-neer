@@ -25,22 +25,23 @@ public class Sea : ISea
     public class Factory : PlaceholderFactory<IEnumerable<ISlot>, ISeaView, Sea>
     {
     }
-    
-    private const int CardCountPerSlot = 3;
 
     private readonly ISlot[] slots;
     private readonly ISeaView view;
     private readonly ICardDealer dealer;
     private readonly ICardClasher clasher;
+    private readonly int cardCountPerSlot;
 
     private Sea(
         IEnumerable<ISlot> supplySlots,
         ISeaView view,
         ICardDealer dealer,
-        ICardClasher clasher
+        ICardClasher clasher,
+        IBoardModel boardModel
         )
     {
         slots = supplySlots.ToArray();
+        cardCountPerSlot = boardModel.CardCountPerSupplySlot;
 
         this.view = view;
         this.dealer = dealer;
@@ -55,7 +56,7 @@ public class Sea : ISea
     public IObservable<Unit> Supply()
     {
         return Enumerable.Range(0, slots.Length)
-            .Select(i => dealer.Deal(CardCountPerSlot, slots[i])
+            .Select(i => dealer.Deal(cardCountPerSlot, slots[i])
                 .DelaySubscription(TimeSpan.FromSeconds(i * 0.2f)))
             .Merge()
             .AsSingleUnitObservable();
@@ -66,7 +67,7 @@ public class Sea : ISea
         return Enumerable.Range(0, slots.Length)
             .Select(i => slots[i])
             .Where(slot => slot.IsEmpty)
-            .Select(slot => dealer.Deal(CardCountPerSlot, slot))
+            .Select(slot => dealer.Deal(cardCountPerSlot, slot))
             .Concat()
             .AsSingleUnitObservable();
     }

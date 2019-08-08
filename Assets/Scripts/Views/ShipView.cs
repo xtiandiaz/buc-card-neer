@@ -34,11 +34,11 @@ public class ShipView : MonoBehaviour, IShipView
         )
     {
         var storagePos = storage.position;
-        storagePos.x = -boardModel.CardSize.x - boardModel.SlotSpacing;
+        storagePos.x = -GameStatics.CardWidth - boardModel.SlotSpacing;
         storage.position = storagePos;
         
         var mountPos = mount.position;
-        mountPos.x = boardModel.CardSize.x + boardModel.SlotSpacing;
+        mountPos.x = GameStatics.CardWidth + boardModel.SlotSpacing;
         mount.position = mountPos;
     }
 }

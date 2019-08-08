@@ -13,14 +13,12 @@ public class CardFactory : ICardFactory
     private readonly Card.Factory cardFactory;
     private readonly PlayerCard.Factory playerFactory;
     private readonly Viewport viewport;
-    private readonly IBoardModel boardModel;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private CardFactory(
         DiContainer container,
         Card.Factory cardFactory,
-        PlayerCard.Factory playerFactory, 
-        IBoardModel boardModel,
+        PlayerCard.Factory playerFactory,
         Viewport viewport
     )
     {
@@ -28,7 +26,6 @@ public class CardFactory : ICardFactory
         this.cardFactory = cardFactory;
         this.playerFactory = playerFactory;
         this.viewport = viewport;
-        this.boardModel = boardModel;
     }
 
     public ICard Create(ICardModel fromModel)
@@ -65,7 +62,7 @@ public class CardFactory : ICardFactory
         
         view.ToggleValueVisibility(fromModel.ShouldDisplayValue);
 
-        view.Position = (viewport.Size.y + boardModel.CardSize.y) * 0.5f *
+        view.Position = (viewport.Size.y + GameStatics.CardHeight) * 0.5f *
                         ((fromModel.Type & CardType.Player) != 0 ? Vector3.down : Vector3.up) +
                         5f * Vector3.back;
 

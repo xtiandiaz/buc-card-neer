@@ -47,7 +47,7 @@ public class SeaView : MonoBehaviour, ISeaView
         {
             var slotPos = slot.Transform.localPosition;
 
-            slotPos.x = positioner * (boardModel.CardSize.x + boardModel.SlotSpacing);
+            slotPos.x = positioner * (GameStatics.CardWidth + boardModel.SlotSpacing);
             
             slot.Transform.localPosition = slotPos;
             

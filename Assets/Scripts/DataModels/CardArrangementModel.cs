@@ -1,4 +1,5 @@
 using UnityEngine;
+using Zenject;
 using Random = UnityEngine.Random;
 
 public enum CardArrangementMode
@@ -14,7 +15,9 @@ public struct CardArrangement
     public readonly float rotationZ;
     public readonly float fogIntensity;
     public readonly Color fogColor;
-    public readonly CardArrangementMode mode;
+    
+    private readonly CardArrangementMode mode;
+    private readonly float normalDuration;
 
     public CardArrangement(
         int index, 
@@ -22,7 +25,8 @@ public struct CardArrangement
         float rotationZ, 
         float fogIntensity, 
         Color fogColor, 
-        CardArrangementMode mode
+        CardArrangementMode mode,
+        float normalDuration
         )
     {
         this.index = index;
@@ -31,6 +35,20 @@ public struct CardArrangement
         this.fogIntensity = fogIntensity;
         this.fogColor = fogColor;
         this.mode = mode;
+        this.normalDuration = normalDuration;
+    }
+    
+    public float GetDuration(Vector3 fromReferenceLocalPosition)
+    {
+        if (mode == CardArrangementMode.Normal)
+            return normalDuration;
+        
+        var placementMargin = Mathf.Clamp(
+                                  Vector2.Distance(localPosition, fromReferenceLocalPosition),
+                                  0,
+                                  GameStatics.HalfCardExtent) / GameStatics.HalfCardExtent;
+
+        return Mathf.Clamp(normalDuration * placementMargin, 0, normalDuration * 0.5f);
     }
 }
 
@@ -38,16 +56,13 @@ public struct CardArrangement
 public class CardArrangementModel : ScriptableObject
 {
     [SerializeField] private Vector3 offset = default;
+    [SerializeField] private float duration = 0.5f;
     [SerializeField] private float maxRotationAngle = default;
-    [SerializeField] private bool shouldUseReverseIndices = default;
 
     [Header("Fog")] 
     [SerializeField] private bool shouldFog = default;
     [SerializeField] private Color fogColor = Color.white;
     [SerializeField] [Range(0, 1f)] private float fogIntensity = 0.5f;
-
-    public Vector3 Offset => offset;
-    public bool ShouldUseReverseIndices => shouldUseReverseIndices;
 
     public CardArrangement GetArrangementForIndex(int index, int outOfCount, SlotLodgingMode forLodgingMode)
     {
@@ -57,6 +72,7 @@ public class CardArrangementModel : ScriptableObject
             index == 0 ? 0 : Random.Range(-1f, 1f) * maxRotationAngle,
             shouldFog ? fogIntensity * index / outOfCount : 0,
             fogColor,
-            forLodgingMode == SlotLodgingMode.Systematic ? CardArrangementMode.Normal : CardArrangementMode.Fast);
+            forLodgingMode == SlotLodgingMode.Systematic ? CardArrangementMode.Normal : CardArrangementMode.Fast,
+            duration);
     }
 }

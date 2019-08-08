@@ -29,41 +29,6 @@ public class CardAnimator : MonoBehaviour
     private Tween rotationTween, depthTween;
     private Sequence flipSequence;
     private CardFace currentFace = CardFace.Back;
-    private float halfCardExtent;
-
-    [Inject]
-    private void Initialize(IBoardModel boardModel)
-    {
-        halfCardExtent = boardModel.CardExtent * 0.5f;
-    }
-
-    public Sequence Arrange(Vector3 atLocalPosition, float withRotationAngle, CardArrangementMode andMode)
-    {
-        var sequence = DOTween.Sequence();
-        var duration = 0.5f;
-
-        if (andMode == CardArrangementMode.Fast)
-        {
-            var placementMargin = Mathf.Clamp(
-                                      Vector2.Distance(atLocalPosition, transform.localPosition),
-                                      0,
-                                      halfCardExtent) / halfCardExtent;
-
-            duration = Mathf.Clamp(duration * placementMargin, 0, duration * 0.5f);
-        }
-
-        sequence.Append(transform.DOLocalMove(atLocalPosition, duration)
-            .SetEase(Ease.OutQuart));
-
-        //sequence.Join(TweenDepth(0, duration).SetEase(Ease.OutQuart));
-
-        var eulerAngles = tweenWrapper.eulerAngles;
-        eulerAngles.z = withRotationAngle;
-
-        sequence.Join(Rotate(eulerAngles));
-
-        return sequence;
-    }
 
     public Sequence Flip(CardFace toFace)
     {

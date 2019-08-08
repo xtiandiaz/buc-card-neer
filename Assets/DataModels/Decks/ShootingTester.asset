@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e44d7704b0741448c2d8e9fcc91ce33, type: 3}
   m_Name: ShootingTester
   m_EditorClassIdentifier: 
-  shouldShuffleOnInit: 1
+  shouldShuffleOnInit: 0
   pirates:
   - {fileID: 11400000, guid: 432e7ab893c904edeb44ed0d8f684246, type: 2}
   - {fileID: 11400000, guid: 5ad33bdf79a244985912cdc265586bb2, type: 2}

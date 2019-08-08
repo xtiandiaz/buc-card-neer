@@ -24,7 +24,7 @@ public class GameCamera : MonoBehaviour, IGameCamera
         Camera = GetComponent<Camera>();
 
         var slotSpacing = fromModel.SlotSpacing;
-        var desiredViewWidth = (fromModel.CardSize.x + slotSpacing) 
+        var desiredViewWidth = (GameStatics.CardWidth + slotSpacing) 
                                * fromModel.SupplySlotCount
                                - slotSpacing
                                + fromModel.Padding.x * 2f;

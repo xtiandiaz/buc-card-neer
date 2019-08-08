@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Zenject;
 
 public enum CardFace
 {
@@ -74,7 +75,7 @@ public class CardView : MonoBehaviour, ICardView
     private CardFace face;
     
     
-    private Tween picking;
+    private Tween picking, rotation;
     private Sequence arrangement;
 
     public virtual int Value
@@ -202,13 +203,21 @@ public class CardView : MonoBehaviour, ICardView
     {
         //TODO animate fog
         shader.Fog(withArrangement.fogColor, withArrangement.fogIntensity);
-        
+
         arrangement?.Kill();
-        arrangement = animator.Arrange(
-                withArrangement.localPosition, 
-                withArrangement.rotationZ,
-                withArrangement.mode)
-            .OnComplete(() => Sort(withArrangement.index));
+        arrangement = DOTween.Sequence();
+
+        var duration = withArrangement.GetDuration(transform.localPosition);
+
+        arrangement.Append(transform.DOLocalMove(withArrangement.localPosition, duration)
+            .SetEase(Ease.OutQuart));
+
+        var eulerAngles = tweenWrapper.eulerAngles;
+        eulerAngles.z = withArrangement.rotationZ;
+
+        arrangement.Join(Rotate(eulerAngles, duration));
+
+        arrangement.OnComplete(() => Sort(withArrangement.index));
     }
     
     public IObservable<Unit> ArrangeAsObservable(CardArrangement withArrangement, bool shouldSortLazily)
@@ -284,11 +293,6 @@ public class CardView : MonoBehaviour, ICardView
         transform.SetParent(toTransform, true);
     }
 
-    public void Parent(Transform child)
-    {
-        child.SetParent(transform, false);
-    }
-
     public void ToggleValueVisibility(bool toValue)
     {
         cardValue.ToggleVisibility(toValue);
@@ -308,5 +312,15 @@ public class CardView : MonoBehaviour, ICardView
     private void Sort(int withRawIndex)
     {
         SortingOrder = -withRawIndex;
+    }
+    
+    private Tween Rotate(Vector3 toEulerAngles, float withDuration)
+    {
+        rotation?.Kill();
+
+        rotation = tweenWrapper.DORotate(toEulerAngles, withDuration)
+            .SetEase(Ease.OutQuart);
+
+        return rotation;
     }
 }
