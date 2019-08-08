@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class CardValue : MonoBehaviour
 {
-    [SerializeField] private List<TextMesh> textRenderers = default;
+    [SerializeField] private List<TextMeshPro> textRenderers = default;
 
     public Color Color
     {

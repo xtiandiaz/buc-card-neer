@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
+using TMPro;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
- public interface ICardShader
+public interface ICardShader
 {
     float Alpha { set; }
 
@@ -14,12 +16,12 @@ using UnityEngine;
 
 public class CardShader : MonoBehaviour, ICardShader
 {
-    private static readonly int FogColorPropertyId = UnityEngine.Shader.PropertyToID("_FogColor");
-    private static readonly int FogIntensityPropertyId = UnityEngine.Shader.PropertyToID("_FogIntensity");
+    private static readonly int FogColorPropertyId = Shader.PropertyToID("_FogColor");
+    private static readonly int FogIntensityPropertyId = Shader.PropertyToID("_FogIntensity");
 
     private readonly List<ShadingEntry> shadingEntries = new List<ShadingEntry>();
 
-    [SerializeField] private TextMesh[] targetTextRenderers = default;
+    [SerializeField] private TextMeshPro[] targetTextRenderers = default;
     [SerializeField] private SpriteRenderer[] targetSpriteRenderers = default;
 
     public float Alpha
@@ -84,7 +86,7 @@ public class CardShader : MonoBehaviour, ICardShader
             color => forSpriteRenderer.color = color);
     }
 
-    private static ShadingEntry ProduceEntry(TextMesh forTextRenderer)
+    private static ShadingEntry ProduceEntry(Graphic forTextRenderer)
     {
         return new ShadingEntry(
             forTextRenderer.GetComponent<Renderer>(),
