@@ -16,6 +16,7 @@ public class ClashingController : IClashingController
     private readonly ICardShooter shooter;
     private readonly ICardForwarder forwarder;
     private readonly ISea sea;
+    private readonly IShip ship;
     private readonly IGameStatus gameStatus;
 
     private ClashingController(
@@ -23,6 +24,7 @@ public class ClashingController : IClashingController
         ICardShooter shooter,
         ICardForwarder forwarder,
         ISea sea,
+        IShip ship,
         IGameStatus gameStatus
         )
     {
@@ -30,6 +32,7 @@ public class ClashingController : IClashingController
         this.shooter = shooter;
         this.forwarder = forwarder;
         this.sea = sea;
+        this.ship = ship;
         this.gameStatus = gameStatus;
     }
 
@@ -37,10 +40,8 @@ public class ClashingController : IClashingController
     
     public void Initialize()
     {
-        disposables.Add(gameStatus.WhenPlayerBoardedAndHandledCard.AsUnitObservable()
-            .Merge(
-                gameStatus.WhenPlayerUnlockedAndHandledCard,
-                matcher.WhenMatched, 
+        disposables.Add(ship.WhenCardHandled.AsUnitObservable()
+            .Merge(matcher.WhenMatched, 
                 shooter.WhenRestored, 
                 forwarder.WhenForwarded)
             .Delay(TimeSpan.FromSeconds(0.25))

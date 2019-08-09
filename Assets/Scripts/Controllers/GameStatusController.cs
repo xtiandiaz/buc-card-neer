@@ -4,8 +4,8 @@ using Zenject;
 
 public interface IGameStatus
 {
-    bool PlayerDidStoreItem { get; set; }
-    bool PlayerDidStoreTool { get; set; }
+    bool PlayerDidStashItem { get; set; }
+    bool PlayerDidStashTool { get; set; }
     bool DidSupplyOnce { get; set; }
     
     IObservable<int> UndealtCardCount { get; }
@@ -13,8 +13,6 @@ public interface IGameStatus
     IObservable<int> WhenWon { get; }
     
     IObservable<Unit> WhenPlayerShot { get; set; }
-    IObservable<CardType> WhenPlayerBoardedCard { get; set; }
-    IObservable<CardType> WhenPlayerBoardedAndHandledCard { get; set; }
     IObservable<Unit> WhenPlayerUnlockedAndHandledCard { get; set; }
     IObservable<Unit> WhenPlayerAttackedOnBoard { get; set; }
     IObservable<Unit> WhenPlayerConfronted { get; set; }
@@ -40,8 +38,8 @@ public class GameStatusController : IGameStatusController
     private IObservable<CardType> whenCardRevealed;
     private IObservable<CardType> whenCardStashed;
     
-    public bool PlayerDidStoreItem { get; set; }
-    public bool PlayerDidStoreTool { get; set; }
+    public bool PlayerDidStashItem { get; set; }
+    public bool PlayerDidStashTool { get; set; }
     public bool DidSupplyOnce { get; set; }
 
     public IObservable<int> UndealtCardCount => deck.CardCount;

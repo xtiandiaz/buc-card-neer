@@ -89,7 +89,7 @@ public class CardMatcher : ICardMatcher
                 
             case CardType.Merchant:
 
-                return source.IsResource && source.IsStored;
+                return source.IsResource && source.IsStashed;
 
             case CardType.Food:
             case CardType.Artifact:

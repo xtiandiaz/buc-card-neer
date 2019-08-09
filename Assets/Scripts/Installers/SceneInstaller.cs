@@ -14,12 +14,6 @@ public class SceneInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
-        #region Controllers
-
-        Container.BindInterfacesTo<GameStatusController>().AsSingle().NonLazy();
-
-        #endregion
-        
         #region Viewport
         
         Container.BindInterfacesTo<GameCamera>().FromComponentInNewPrefab(cameraPrefab).AsSingle().NonLazy();
@@ -40,10 +34,7 @@ public class SceneInstaller : MonoInstaller
 
         Container.BindInterfacesTo<AudioRepository>().FromInstance(audioRepository).AsSingle().NonLazy();
         Container.BindInterfacesTo<AudioManager>().AsSingle();
-        
-        Container.BindExecutionOrder<AudioController>(100);
-        Container.BindInterfacesAndSelfTo<AudioController>().AsSingle();
-        
+
         Container.BindMemoryPool<AudioSource, AudioSourcePool>()
             .WithMaxSize(16)
             .FromComponentInNewPrefab(audioSourcePrefab)

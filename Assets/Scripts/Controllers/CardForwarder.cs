@@ -38,14 +38,14 @@ public class CardForwarder : ICardForwarder
         if (!card.IsResource || card.IsLocked)
             return false;
         
-        if (card.IsItem && !gameStatus.PlayerDidStoreItem)
+        if (card.IsItem && !gameStatus.PlayerDidStashItem)
             return false;
         
-        if (card.IsTool && !gameStatus.PlayerDidStoreTool)
+        if (card.IsTool && !gameStatus.PlayerDidStashTool)
             return false;
         
         return !card.IsBoarded &&
-               !card.IsStored &&
+               !card.IsStashed &&
                (fromUserDestination.Type & SlotType.Boarding) != 0;
     }
 
@@ -77,34 +77,15 @@ public class CardForwarder : ICardForwarder
 
     private IObservable<Unit> Forward(ICard card)
     {
+        
         return Observable.Create<Unit>(observer =>
             {
-                if (!card.IsResource)
+                if (card.IsResource)
                 {
-                    observer.OnError(new Exception("Tried to forward a non-resource card."));
-                    
-                    return Disposable.Empty;
+                    return ship.ExpressBoard(card)
+                        .Subscribe(observer);
                 }
-                
-                var forwarding = card.Reveal()
-                    .DoOnSubscribe(() =>
-                    {
-                        card.IsBoarded = true;
-                        card.IsStored = true;
-                        
-                        revealing.OnNext(card.IsMonster ? CardType.Monster : card.Type);
-                    });
 
-                if (card.IsItem)
-                    return forwarding.Merge(ship.Storage.Lodge(card)
-                            .Do(_ => stashing.OnNext(card.Type)))
-                        .Subscribe(observer);
-
-                if (card.IsTool)
-                    return forwarding.Merge(ship.Mount.Lodge(card)
-                            .Do(_ => stashing.OnNext(card.Type)))
-                        .Subscribe(observer);
-                
                 observer.OnError(new Exception($"There was no match to forward resource '{card.Type}'."));
                 
                 return Disposable.Empty;

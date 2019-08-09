@@ -2,27 +2,25 @@ using System;
 using UniRx;
 using Zenject;
 
-public interface IAudioController : IInitializable, IDisposable
+public interface IGameAudioController : IInitializable, IDisposable
 {
 }
 
-public class AudioController : IAudioController
+public class GameAudioController : IGameAudioController
 {
     private readonly IAudioManager audioManager;
     private readonly ICardRouter cardRouter;
     private readonly ICardDismisser cardDismisser;
-    private readonly IBoardingController boardingController;
     private readonly ICardForwarder cardForwarder;
     private readonly ICardShooter cardShooter;
     private readonly IShip ship;
     private readonly IGameStatus gameStatus;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
-    private AudioController(
+    private GameAudioController(
         IAudioManager audioManager,
         ICardRouter cardRouter,
         ICardDismisser cardDismisser,
-        IBoardingController boardingController,
         ICardForwarder cardForwarder,
         ICardShooter cardShooter,
         IShip ship,
@@ -32,7 +30,6 @@ public class AudioController : IAudioController
         this.audioManager = audioManager;
         this.cardRouter = cardRouter;
         this.cardDismisser = cardDismisser;
-        this.boardingController = boardingController;
         this.cardForwarder = cardForwarder;
         this.cardShooter = cardShooter;
         this.ship = ship;
@@ -50,14 +47,14 @@ public class AudioController : IAudioController
         disposables.Add(cardDismisser.WhenCardDismissed
             .Subscribe(_ => audioManager.Play(AudioEventKey.CardBridgeDismiss)));
         
-        disposables.Add(gameStatus.WhenPlayerBoardedCard
+        disposables.Add(ship.WhenCardBoarded
             .Subscribe(cardType => audioManager.Play(AudioEventSwitchKey.CardBoard, cardType)));
         
-        disposables.Add(boardingController.WhenCardRevealed
+        disposables.Add(ship.WhenCardRevealed
             .Merge(cardForwarder.WhenCardRevealed)
             .Subscribe(cardType => audioManager.Play(AudioEventSwitchKey.CardReveal, cardType)));
         
-        disposables.Add(boardingController.WhenCardStashed
+        disposables.Add(ship.WhenCardStashed
             .Merge(cardForwarder.WhenCardStashed)
             .Subscribe(cardType => audioManager.Play(AudioEventSwitchKey.CardStash, cardType)));
 

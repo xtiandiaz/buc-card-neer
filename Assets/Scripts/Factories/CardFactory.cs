@@ -45,7 +45,6 @@ public class CardFactory : ICardFactory
             case CardType.Player:
                 return playerFactory.Create((IPlayerCardModel) withModel, (IPlayerCardView) view);
             default:
-                Debug.Log(withModel.Type);
                 return cardFactory.Create(withModel, view);
         }
     }

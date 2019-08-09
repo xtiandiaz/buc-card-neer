@@ -10,15 +10,18 @@ public class VisualEffectsController : IVisualEffectsController
 {
     private readonly IGameCamera camera;
     private readonly IGameStatus gameStatus;
+    private readonly IShip ship;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private VisualEffectsController(
         IGameCamera camera,
-        IGameStatus gameStatus
-        )
+        IGameStatus gameStatus,
+        IShip ship
+    )
     {
         this.camera = camera;
         this.gameStatus = gameStatus;
+        this.ship = ship;
     }
 
     public void Initialize()
@@ -26,7 +29,7 @@ public class VisualEffectsController : IVisualEffectsController
         disposables.Add(gameStatus.WhenPlayerShot
                 .Subscribe(_ => camera.Shake(0.75f, TimeSpan.FromSeconds(0.5))));
         
-        disposables.Add(gameStatus.WhenPlayerBoardedAndHandledCard
+        disposables.Add(ship.WhenCardBoarded
             .Where(type => (type & CardType.Monster) != 0)
             .Subscribe(_ => camera.Shake(0.25f, TimeSpan.FromSeconds(1), 4)));
         

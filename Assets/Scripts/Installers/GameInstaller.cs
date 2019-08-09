@@ -38,8 +38,12 @@ public class GameInstaller : SceneInstaller
         Container.BindInterfacesTo<CardShooter>().AsSingle().NonLazy();
 
         Container.BindInterfacesTo<GameController>().AsSingle().NonLazy();
+        
+        Container.BindExecutionOrder<GameAudioController>(100);
+        Container.BindInterfacesAndSelfTo<GameAudioController>().AsSingle();
+        
+        Container.BindInterfacesTo<GameStatusController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<BoardController>().AsSingle().NonLazy();
-        Container.BindInterfacesTo<BoardingController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<ClashingController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<SupplyController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<CombatController>().AsSingle().NonLazy();
@@ -75,7 +79,7 @@ public class GameInstaller : SceneInstaller
         Container.Bind<ISlotModel>().FromInstance(plank).WhenInjectedInto<ShipFactory>();
         Container.Bind<ISlotModel>().FromInstance(storage).WhenInjectedInto<ShipFactory>();
         Container.Bind<ISlotModel>().FromInstance(mount).WhenInjectedInto<ShipFactory>();
-        Container.Bind<IShip>().FromFactory<ShipFactory>().AsSingle();
+        Container.BindInterfacesAndSelfTo<Ship>().FromIFactory<IShip>(x => x.To<ShipFactory>().AsCached()).AsSingle().NonLazy();
 
         #endregion
         

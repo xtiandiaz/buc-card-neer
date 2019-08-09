@@ -6,6 +6,7 @@ using Zenject;
 public interface ICard : IDisposable
 {
     CardType Type { get; }
+    CardType AbstractType { get; }
     CardType? Suit { get; }
     string Name { get; }
     int Index { get; set; }
@@ -25,7 +26,7 @@ public interface ICard : IDisposable
     bool IsMedicine { get; }
     bool IsRangeTarget { get; }
     bool IsBoarded { get; set; }
-    bool IsStored { get; set; }
+    bool IsStashed { get; set; }
     bool IsLocked { get; }
     bool WasLocked { get; }
 
@@ -82,6 +83,7 @@ public class Card : ICard
     }
 
     public CardType Type { get; }
+    public CardType AbstractType => IsMonster ? CardType.Monster : Type;
     public CardType? Suit { get; }
     public string Name { get; }
     public int Index { get; set; }
@@ -112,7 +114,7 @@ public class Card : ICard
     public bool IsRangeTarget => !IsBoarded && 
                                  ((Type & CardType.Pirate) != 0 || IsResource && IsLocked);
     public bool IsBoarded { get; set; }
-    public bool IsStored { get; set; }
+    public bool IsStashed { get; set; }
     public bool IsLocked => LockValue > 0;
     public bool WasLocked { get; }
 
