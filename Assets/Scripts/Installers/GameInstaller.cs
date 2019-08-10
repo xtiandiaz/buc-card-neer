@@ -44,9 +44,6 @@ public class GameInstaller : SceneInstaller
         
         Container.BindInterfacesTo<GameStatusController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<BoardController>().AsSingle().NonLazy();
-        Container.BindInterfacesTo<ClashingController>().AsSingle().NonLazy();
-        Container.BindInterfacesTo<SupplyController>().AsSingle().NonLazy();
-        Container.BindInterfacesTo<CombatController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<VisualEffectsController>().AsSingle().NonLazy();
 
         #endregion
@@ -67,7 +64,7 @@ public class GameInstaller : SceneInstaller
 
         Container.BindFactory<IEnumerable<ISlot>, ISeaView, Sea, Sea.Factory>().AsSingle();
         Container.Bind<List<SlotModel>>().FromInstance(supplySlots).WhenInjectedInto<SeaFactory>();
-        Container.Bind<ISea>().FromFactory<SeaFactory>().AsSingle();
+        Container.BindInterfacesTo<Sea>().FromIFactory<ISea>(x => x.To<SeaFactory>().AsCached()).AsSingle().NonLazy();
 
         #endregion
         
@@ -79,7 +76,7 @@ public class GameInstaller : SceneInstaller
         Container.Bind<ISlotModel>().FromInstance(plank).WhenInjectedInto<ShipFactory>();
         Container.Bind<ISlotModel>().FromInstance(storage).WhenInjectedInto<ShipFactory>();
         Container.Bind<ISlotModel>().FromInstance(mount).WhenInjectedInto<ShipFactory>();
-        Container.BindInterfacesAndSelfTo<Ship>().FromIFactory<IShip>(x => x.To<ShipFactory>().AsCached()).AsSingle().NonLazy();
+        Container.BindInterfacesTo<Ship>().FromIFactory<IShip>(x => x.To<ShipFactory>().AsCached()).AsSingle().NonLazy();
 
         #endregion
         

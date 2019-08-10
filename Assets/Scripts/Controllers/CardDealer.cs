@@ -44,19 +44,14 @@ public class CardDealer : ICardDealer
         return true;
     }
 
-    public int GetActiveCardCount(CardType ofType)
-    {
-        return activeCardTypes.Where(pair => (pair.Key & ofType) != 0).Sum(pair => pair.Value);
-    }
-
     public IObservable<Unit> Deal(int count, ISlot intoSlot)
     {
         return deck.Provide(count)
             .Select((card, index) => 
             {
-                OnCardDealt(card.IsMonster ? CardType.Monster : card.Type);
-                
-                disposables.Add((card.IsMonster 
+                OnCardDealt(card.AbstractType);
+
+                disposables.Add((card.IsMonster
                         ? card.WhenUnlocked.Select(_ => CardType.Monster)
                         : card.WhenDestroyed.Select(_ => card.Type))
                     .Subscribe(OnCardDestroyedOrUnlocked));
@@ -65,13 +60,17 @@ public class CardDealer : ICardDealer
                     .DelaySubscription(TimeSpan.FromSeconds(0.1 * index));
             })
             .Merge()
-            .DoOnError(Debug.LogException)
             .AsSingleUnitObservable();
     }
 
     public void Dispose()
     {
         disposables.Dispose();
+    }
+    
+    private int GetActiveCardCount(CardType ofType)
+    {
+        return activeCardTypes.Where(pair => (pair.Key & ofType) != 0).Sum(pair => pair.Value);
     }
 
     private void OnCardDealt(CardType ofType)

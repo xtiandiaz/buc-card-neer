@@ -11,12 +11,13 @@ public interface IPile
     
     IObservable<int> WhenCountChanged { get; }
     
-    bool Insert(ICard card);
+    int? Insert(ICard card);
     bool InsertReverse(ICard card);
     bool Remove(ICard card);
     ICard Peek();
     ICard Pop();
     IEnumerable<T> Map<T>(Func<ICard, int, T> byFunction);
+    void ForEach(Action<ICard, int> applyAction);
     bool DoesContain(ICard card);
 }
 
@@ -66,32 +67,30 @@ public class Pile : IPile
         var poppedItem = contents[0];
         
         contents.RemoveAt(0);
-        
-        Index();
 
         return poppedItem;
     }
 
-    public bool Insert(ICard card)
+    public int? Insert(ICard card)
     {
         if (card == null || DoesContain(card))
-            return false;
+            return default;
 
         switch (mode)
         {
             case Mode.Stack:
                 
                 contents.Insert(0, card);
-
-                break;
+                
+                return 0;
             case Mode.Queue:
                 
                 contents.Add(card);
-
-                break;
+                
+                return contents.Count - 1;
         }
 
-        return true;
+        return default;
     }
 
     public bool InsertReverse(ICard card)
@@ -126,17 +125,14 @@ public class Pile : IPile
         return contents.Select(byFunction);
     }
 
+    public void ForEach(Action<ICard, int> applyAction)
+    {
+        for (var i = 0; i < contents.Count; i++)
+            applyAction(contents[i], i);
+    }
+
     public bool DoesContain(ICard card)
     {
         return contents.Contains(card);
-    }
-    
-    private void Index()
-    {
-        var i = 0;
-        foreach (var item in contents)
-        {
-            item.Index = i++;
-        }
     }
 }

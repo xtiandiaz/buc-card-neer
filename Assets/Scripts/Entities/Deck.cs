@@ -11,7 +11,7 @@ public interface IDeck : IDisposable
     IObservable<int> CardCount { get; }
     
     ICard Provide();
-    IEnumerable<ICard> Provide(int count);
+    IList<ICard> Provide(int count);
     ICard Provide(CardType ofType);
     bool DoesContain(CardType type);
 }
@@ -39,7 +39,7 @@ public class Deck : IDeck
     public bool IsExhausted { get; private set; }
     public IObservable<int> CardCount => cardCount;
 
-    public IEnumerable<ICard> Provide(int count)
+    public IList<ICard> Provide(int count)
     {
         var cards = new List<ICard>();
 

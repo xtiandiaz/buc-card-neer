@@ -82,7 +82,7 @@ public class CardForwarder : ICardForwarder
             {
                 if (card.IsResource)
                 {
-                    return ship.ExpressBoard(card)
+                    return ship.ExpressHandle(card)
                         .Subscribe(observer);
                 }
 

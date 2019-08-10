@@ -19,7 +19,7 @@ public interface IShip : IInitializable, IDisposable
     void Lock();
     void Unlock();
     
-    IObservable<Unit> ExpressBoard(ICard card);
+    IObservable<Unit> ExpressHandle(ICard card);
 }
 
 public class Ship : IShip
@@ -80,34 +80,40 @@ public class Ship : IShip
             .Where(card => !card.IsBoarded)
             .Do(card =>
             {
-                card.IsBoarded = true;
-                
-                boarding.OnNext(card.AbstractType);
+                Lock();
+                Board(card);
             })
-            .SelectMany(card => card.IsLocked 
-                ? card.WhenUnlocked
-                    .Do(_ => hacking.OnNext(card.AbstractType))
-                    .ContinueWith(_ => card.DropAsObservable()
-                        .Delay(TimeSpan.FromSeconds(0.25))
-                        .Concat(Handle(card)))
-                : Handle(card))
+            .SelectMany(card =>
+            {
+                if (card.IsResource)
+                {
+                    return card.IsLocked 
+                        ? HandleLockedResource(card) 
+                        : HandleResource(card);
+                }
+
+                return card.IsAgent 
+                    ? HandleAgent(card) 
+                    : card.Reveal();
+            })
             .Subscribe());
     }
 
-    public IObservable<Unit> ExpressBoard(ICard card)
+    public IObservable<Unit> ExpressHandle(ICard card)
     {
         return Observable.Create<Unit>(observer =>
         {
             if (card.IsResource)
             {
-                card.IsBoarded = true;
-                
+                Board(card);
+
                 return Reveal(card)
                     .Merge(Stash(card))
+                    .DoOnCompleted(() => handling.OnNext(card.Type))
                     .Subscribe(observer);
             }
             
-            observer.OnError(new Exception($"Couldn't express-board '{card.Type}'"));
+            observer.OnError(new Exception($"Couldn't express-handle '{card.Type}'"));
 
             return Disposable.Empty;
         });
@@ -129,16 +135,88 @@ public class Ship : IShip
             slot.Unlock();
         }
     }
-
-    private IObservable<Unit> Handle(ICard card)
+    
+    public void Dispose()
     {
-        return Reveal(card)
-            .Delay(TimeSpan.FromSeconds(0.25))
-            .ContinueWith(_ => card.IsResource
-                ? Stash(card)
-                : Observable.Empty<Unit>())
-            .LastOrDefault()
-            .Do(_ => handling.OnNext(card.Type));
+        boarding.Dispose();
+        revealing.Dispose();
+        stashing.Dispose();
+        handling.Dispose();
+        hacking.Dispose();
+        
+        disposables.Dispose();
+    }
+
+    private void Board(ICard card)
+    {
+        card.IsBoarded = true;
+                
+        boarding.OnNext(card.AbstractType);
+    }
+
+    private IObservable<Unit> HandleAgent(ICard card)
+    {
+        return Observable.Create<Unit>(observer =>
+        {
+            if (!card.IsAgent)
+            {
+                observer.OnError(new Exception("Can't handle non-Agent card"));
+                return Disposable.Empty;
+            }
+
+            return card.Reveal()
+                .DoOnCompleted(Unlock)
+                .ContinueWith(card.WhenDestroyed)
+                .DoOnCompleted(() => handling.OnNext(card.Type))
+                .Subscribe(observer);
+        });
+    }
+
+    private IObservable<Unit> HandleLockedResource(ICard card)
+    {
+        return Observable.Create<Unit>(observer =>
+        {
+            if (!card.IsResource || !card.IsLocked)
+            {
+                observer.OnError(new Exception("Can't handle non-locked resource"));
+                return Disposable.Empty;
+            }
+            
+            Unlock();
+
+            return card.WhenUnlocked
+                .Do(_ =>
+                {
+                    Lock();
+                    hacking.OnNext(card.AbstractType);
+                })
+                .ContinueWith(_ => card.DropAsObservable()
+                    .Delay(TimeSpan.FromSeconds(0.25))
+                    .Concat(HandleResource(card)))
+                .Subscribe(observer);
+        });
+    }
+
+    private IObservable<Unit> HandleResource(ICard card)
+    {
+        return Observable.Create<Unit>(observer =>
+        {
+            if (!card.IsResource)
+            {
+                observer.OnError(new Exception("Can't handle non-Resource card."));
+                return Disposable.Empty;
+            }
+
+            return Reveal(card)
+                .Delay(TimeSpan.FromSeconds(0.25))
+                .ContinueWith(_ => Stash(card))
+                .DoOnCompleted(() =>
+                {
+                    Unlock();
+                    handling.OnNext(card.Type);
+                })
+                .Subscribe(observer);
+        });
     }
 
     private IObservable<Unit> Reveal(ICard card)
@@ -162,7 +240,7 @@ public class Ship : IShip
 
                 stashing.OnNext(card.Type);
 
-                return storage.Lodge(card)
+                return storage.Lodge(card, SlotLodgingMode.Systematic, true)
                     .Subscribe(observer);
             }
 
@@ -170,10 +248,5 @@ public class Ship : IShip
 
             return Disposable.Empty;
         });
-    }
-
-    public void Dispose()
-    {
-        disposables.Dispose();
     }
 }

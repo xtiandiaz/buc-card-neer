@@ -4,7 +4,6 @@ using JetBrains.Annotations;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
-using Zenject;
 
 public enum CardFace
 {
@@ -30,7 +29,6 @@ public interface ICardView
     void Pick();
     void Drag(Vector3 byDeltaPosition);
     void Arrange(CardArrangement withArrangement);
-    void SetParent(Transform toTransform);
     void ToggleValueVisibility(bool toValue);
     void ToggleLockVisibility(bool toValue);
     void Destroy();
@@ -39,7 +37,8 @@ public interface ICardView
     IObservable<Unit> OnClashed();
     IObservable<Unit> OnShot();
     IObservable<Unit> Reveal();
-    IObservable<Unit> ArrangeAsObservable(CardArrangement withArrangement, bool shouldSortLazily);
+    IObservable<Unit> Lodge(Transform inTransform, CardArrangement withArrangement, CardArrangementMode andMode);
+    IObservable<Unit> ArrangeAsObservable(CardArrangement withArrangement);
     IObservable<Unit> Fade(float toAlphaValue, TimeSpan withDuration);
 }
 
@@ -68,7 +67,6 @@ public class CardView : MonoBehaviour, ICardView
 
     private CardAnimator animator;
     private ICardShader shader;
-    private ISortingSet sortingSet;
     private SortingGroup sortingGroup;
     private Vector3 lastLodgingPosition;
     private int sortingIndex;
@@ -178,9 +176,10 @@ public class CardView : MonoBehaviour, ICardView
     private void Awake()
     {
         animator = GetComponent<CardAnimator>();
-        sortingSet = GetComponent<ISortingSet>();
         sortingGroup = GetComponent<SortingGroup>();
         shader = GetComponent<ICardShader>();
+        
+        animator.Initialize(shader);
     }
     
     public void Pick()
@@ -199,43 +198,44 @@ public class CardView : MonoBehaviour, ICardView
         LocalPosition += byDeltaPosition;
     }
 
-    public void Arrange(CardArrangement withArrangement)
-    {
-        //TODO animate fog
-        shader.Fog(withArrangement.fogColor, withArrangement.fogIntensity);
-
-        arrangement?.Kill();
-        arrangement = DOTween.Sequence();
-
-        var duration = withArrangement.GetDuration(transform.localPosition);
-
-        arrangement.Append(transform.DOLocalMove(withArrangement.localPosition, duration)
-            .SetEase(Ease.OutQuart));
-
-        var eulerAngles = tweenWrapper.eulerAngles;
-        eulerAngles.z = withArrangement.rotationZ;
-
-        arrangement.Join(Rotate(eulerAngles, duration));
-
-        arrangement.OnComplete(() => Sort(withArrangement.index));
-    }
-    
-    public IObservable<Unit> ArrangeAsObservable(CardArrangement withArrangement, bool shouldSortLazily)
+    public IObservable<Unit> Lodge(Transform inTransform, CardArrangement withArrangement, CardArrangementMode andMode)
     {
         return Observable.Create<Unit>(observer =>
         {
-            if (!shouldSortLazily)
-                Sort(withArrangement.index);
+            transform.SetParent(inTransform, true);
             
-            Arrange(withArrangement);
+            Sort(withArrangement.index);
 
-            arrangement.OnComplete(() =>
+            var sequence = animator.Arrange(withArrangement, andMode)
+                .OnComplete(() => 
+                {
+                    observer.OnNext(Unit.Default);
+                    observer.OnCompleted();
+                });
+            
+            return Disposable.Create(() => sequence.Kill());
+        });
+    }
+
+    public void Arrange(CardArrangement withArrangement)
+    {
+        arrangement?.Kill();
+        arrangement = animator.Arrange(withArrangement)
+            .OnComplete(() => Sort(withArrangement.index));
+    }
+    
+    public IObservable<Unit> ArrangeAsObservable(CardArrangement withArrangement)
+    {
+        return Observable.Create<Unit>(observer =>
+        {
+            Sort(withArrangement.index);
+            
+            var sequence = animator.Arrange(withArrangement);
+
+            sequence.OnComplete(() =>
             {
                 observer.OnNext(Unit.Default);
                 observer.OnCompleted();
-
-                if (shouldSortLazily)
-                    Sort(withArrangement.index);
             });
 
             return Disposable.Create(() => arrangement.Kill());
@@ -283,16 +283,6 @@ public class CardView : MonoBehaviour, ICardView
         return shader.Fade(toAlphaValue, withDuration);
     }
 
-    public void Fog(Color withColor, float byFactor)
-    {
-        shader.Fog(withColor, byFactor);
-    }
-
-    public void SetParent(Transform toTransform)
-    {
-        transform.SetParent(toTransform, true);
-    }
-
     public void ToggleValueVisibility(bool toValue)
     {
         cardValue.ToggleVisibility(toValue);
@@ -312,15 +302,5 @@ public class CardView : MonoBehaviour, ICardView
     private void Sort(int withRawIndex)
     {
         SortingOrder = -withRawIndex;
-    }
-    
-    private Tween Rotate(Vector3 toEulerAngles, float withDuration)
-    {
-        rotation?.Kill();
-
-        rotation = tweenWrapper.DORotate(toEulerAngles, withDuration)
-            .SetEase(Ease.OutQuart);
-
-        return rotation;
     }
 }

@@ -11,8 +11,7 @@ public class GameController : IGameController
     private readonly CompositeDisposable disposables = new CompositeDisposable();
     
     private readonly IGameStatus status;
-    private readonly ISupplyController supplyController;
-    private readonly IClashingController clashingController;
+    private readonly IBoardController boardController;
     private readonly ICardHost cardHost;
     private readonly IShip ship;
     private readonly IPlayerCard player;
@@ -21,19 +20,19 @@ public class GameController : IGameController
 
     public GameController(
         IGameStatus status,
-        ISupplyController supplyController,
-        IClashingController clashingController,
+        IBoardController boardController,
         ICardHost cardHost,
         IShip ship,
+        ISea sea,
         IPlayerCard player,
         IAudioManager audioManager
     )
     {
         this.status = status;
-        this.supplyController = supplyController;
-        this.clashingController = clashingController;
+        this.boardController = boardController;
         this.cardHost = cardHost;
         this.ship = ship;
+        this.sea = sea;
         this.player = player;
         this.audioManager = audioManager;
     }
@@ -41,8 +40,9 @@ public class GameController : IGameController
     public void Initialize()
     {
         disposables.Add(cardHost.Lodge(player, ship.Helm)
-            .SelectMany(_ => supplyController.Supply()
-                .DoOnSubscribe(() => audioManager.Play(AudioEventKey.GameAssemble)))
+            .SelectMany(_ => sea.Supply()
+                .DoOnSubscribe(() => audioManager.Play(AudioEventKey.GameAssemble))
+                .DoOnCompleted(() => status.DidSupplyOnce = true))
             .DelaySubscription(TimeSpan.FromSeconds(0.5f))
             .Subscribe());
         
@@ -64,7 +64,6 @@ public class GameController : IGameController
 
     private void OnGameEnded()
     {
-        clashingController.Dispose();
-        supplyController.Dispose();
+        boardController.Dispose();
     }
 }

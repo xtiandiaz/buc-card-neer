@@ -8,9 +8,7 @@ public interface ICard : IDisposable
     CardType Type { get; }
     CardType AbstractType { get; }
     CardType? Suit { get; }
-    string Name { get; }
-    int Index { get; set; }
-    
+
     int Value { get; }
     int LockValue { get; }
     int OriginalValue { get; }
@@ -19,6 +17,7 @@ public interface ICard : IDisposable
     bool IsItem { get; }
     bool IsTool { get; }
     bool IsMonster { get; }
+    bool IsAgent { get; }
     bool IsPirate { get; }
     bool IsMerchant { get; }
     bool IsMeleeWeapon { get; }
@@ -28,18 +27,17 @@ public interface ICard : IDisposable
     bool IsBoarded { get; set; }
     bool IsStashed { get; set; }
     bool IsLocked { get; }
-    bool WasLocked { get; }
 
     Vector3 LocalPosition { get; }
     
     IObservable<Unit> WhenUnlocked { get; }
     IObservable<Unit> WhenDestroyed { get; }
-
-    void Bind(ICardBond toBond);
+    
     void Pick();
     void Drag(Vector3 byDeltaPosition);
     void Drop();
     void Hack(int withValue);
+    void Arrange(CardArrangement withArrangement);
     
     IObservable<Unit> DropAsObservable();
     IObservable<Unit> Reveal();
@@ -47,7 +45,8 @@ public interface ICard : IDisposable
     IObservable<Unit> Clash(ICard withOther, Direction toward);
     IObservable<Unit> OnClashed(int withValue);
     IObservable<Unit> OnShot(int withValue);
-    IObservable<Unit> Arrange(CardArrangement withArrangement);
+    IObservable<Unit> Lodge(ICardBond withBond, CardArrangement arrangement, CardArrangementMode andMode);
+    IObservable<Unit> ArrangeAsObservable(CardArrangement withArrangement);
     IObservable<Unit> Destroy();
 }
 
@@ -64,7 +63,7 @@ public class Card : ICard
     private readonly ICardView view;
 
     private ICardBond bond;
-    private CardArrangement arrangement;
+    private CardArrangement currentArrangement;
 
     protected Card(ICardModel model, ICardView view)
     {
@@ -75,7 +74,6 @@ public class Card : ICard
 
         Type = model.Type;
         Suit = model.Suit?.Type;
-        Name = model.Name;
 
         Value = OriginalValue = model.Value;
         LockValue = model.LockValue;
@@ -85,8 +83,6 @@ public class Card : ICard
     public CardType Type { get; }
     public CardType AbstractType => IsMonster ? CardType.Monster : Type;
     public CardType? Suit { get; }
-    public string Name { get; }
-    public int Index { get; set; }
 
     public int Value
     {
@@ -106,6 +102,7 @@ public class Card : ICard
     public bool IsItem => (Type & CardType.Item) != 0;
     public bool IsTool => (Type & CardType.Tool) != 0;
     public bool IsMonster => IsResource && (IsLocked || WasLocked); // TODO provisional; remove
+    public bool IsAgent => (Type & CardType.Agent) != 0;
     public bool IsPirate => (Type & CardType.Pirate) != 0;
     public bool IsMerchant => (Type & CardType.Merchant) != 0;
     public bool IsMeleeWeapon => (Type & CardType.WeaponMelee) != 0;
@@ -116,12 +113,13 @@ public class Card : ICard
     public bool IsBoarded { get; set; }
     public bool IsStashed { get; set; }
     public bool IsLocked => LockValue > 0;
-    public bool WasLocked { get; }
 
     public Vector3 LocalPosition => view.LocalPosition;
 
     public IObservable<Unit> WhenUnlocked => lockValue.Where(value => value <= 0).Take(1).AsUnitObservable();
     public IObservable<Unit> WhenDestroyed => destruction;
+    
+    private bool WasLocked { get; }
 
     public void Pick()
     {       
@@ -135,12 +133,12 @@ public class Card : ICard
 
     public void Drop()
     {
-        view.Arrange(arrangement);
+        view.Arrange(currentArrangement);
     }
 
     public IObservable<Unit> DropAsObservable()
     {
-        return view.ArrangeAsObservable(arrangement, true);
+        return view.ArrangeAsObservable(currentArrangement);
     }
 
     public IObservable<Unit> Hit(int withValue)
@@ -169,10 +167,40 @@ public class Card : ICard
         return view.Reveal();
     }
 
-    public IObservable<Unit> Arrange(CardArrangement withArrangement)
+    public IObservable<Unit> Lodge(ICardBond withBond, CardArrangement arrangement, CardArrangementMode andMode)
     {
-        return view.ArrangeAsObservable(withArrangement, false)
-            .DoOnSubscribe(() => arrangement = withArrangement);
+        return Observable.Create<Unit>(observer =>
+        {
+            if (withBond == null)
+            {
+                observer.OnError(new Exception("Passed null Bond for Card lodging."));
+                return Disposable.Empty;
+            }
+            
+            if (withBond != bond)
+            {
+                bond?.Release(this);
+                bond = withBond;
+            }
+
+            currentArrangement = arrangement;
+
+            return view.Lodge(withBond.Transform, arrangement, andMode)
+                .Subscribe(observer);
+        });
+    }
+    
+    public void Arrange(CardArrangement withArrangement)
+    {
+        currentArrangement = withArrangement;
+        
+        view.Arrange(withArrangement);
+    }
+
+    public IObservable<Unit> ArrangeAsObservable(CardArrangement withArrangement)
+    {
+        return view.ArrangeAsObservable(withArrangement)
+            .DoOnSubscribe(() => currentArrangement = withArrangement);
     }
 
     public IObservable<Unit> Clash(ICard withOther, Direction toward)
@@ -204,29 +232,18 @@ public class Card : ICard
                 : Hit(withValue));
     }
 
-    public void Bind(ICardBond toBond)
-    {
-        if (toBond == null || toBond == bond)
-            return;
-
-        bond?.Release(this);
-        bond = toBond;
-        
-        view.SetParent(bond.Transform);
-    }
-
     public IObservable<Unit> Destroy()
     {
         return Observable.Create<Unit>(observer => 
         {
             bond?.Release(this);
 
-            destruction.OnNext(Unit.Default);
-            destruction.OnCompleted();
-            
             return view.Fade(0, TimeSpan.FromSeconds(0.3f))
                 .DoOnCompleted(() =>
                 {
+                    destruction.OnNext(Unit.Default);
+                    destruction.OnCompleted();
+                    
                     view.Destroy();
                     Dispose();
                 })

@@ -16,7 +16,7 @@ public class StashSlot : Slot
             
             Lock();
             
-            return Arrange()
+            return ArrangeAsObservable()
                 .DoOnCompleted(Unlock)
                 .Subscribe(observer);
         });

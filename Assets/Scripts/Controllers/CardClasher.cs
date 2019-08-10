@@ -39,7 +39,7 @@ public class CardClasher : ICardClasher
     
     private bool CanClash(ISlot fromSource, ISlot withDestination)
     {
-        if (fromSource == null || fromSource.IsMessy || withDestination == null || withDestination.IsMessy)
+        if (fromSource == null || withDestination == null)
             return false;
 
         return CanClash(fromSource.Peek(), withDestination.Peek());

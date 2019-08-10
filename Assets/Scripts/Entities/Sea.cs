@@ -4,13 +4,13 @@ using System.Linq;
 using UniRx;
 using Zenject;
 
-public interface ISea
+public interface ISea : IInitializable, IDisposable
 {
     ISlot[] Slots { get; }
-    
-    bool ShouldArrange { get; }
-    bool ShouldResupply { get; }
 
+    IObservable<Unit> WhenArranged { get; }
+    IObservable<Unit> WhenResupplied { get; }
+    
     void Lock();
     void Unlock();
     
@@ -26,11 +26,16 @@ public class Sea : ISea
     {
     }
 
-    private readonly ISlot[] slots;
+    private readonly Subject<Unit> arranging = new Subject<Unit>();
+    private readonly Subject<Unit> resupplying = new Subject<Unit>();
+    private readonly CompositeDisposable disposables = new CompositeDisposable();
+    
     private readonly ISeaView view;
     private readonly ICardDealer dealer;
     private readonly ICardClasher clasher;
     private readonly int cardCountPerSlot;
+
+    private int clashExclusionMask;
 
     private Sea(
         IEnumerable<ISlot> supplySlots,
@@ -40,7 +45,7 @@ public class Sea : ISea
         IBoardModel boardModel
         )
     {
-        slots = supplySlots.ToArray();
+        Slots = supplySlots.ToArray();
         cardCountPerSlot = boardModel.CardCountPerSupplySlot;
 
         this.view = view;
@@ -48,15 +53,24 @@ public class Sea : ISea
         this.clasher = clasher;
     }
 
-    public ISlot[] Slots => slots;
+    public ISlot[] Slots { get; }
 
-    public bool ShouldArrange => slots.FirstOrDefault(slot => slot.IsMessy && !slot.IsEmpty) != null;
-    public bool ShouldResupply => slots.FirstOrDefault(slot => dealer.CanDeal(slot) && slot.IsEmpty) != null;
+    public IObservable<Unit> WhenArranged => arranging;
+    public IObservable<Unit> WhenResupplied => resupplying;
+
+    public void Initialize()
+    {
+        disposables.Add(Slots
+            .Select((slot, i) => slot.WhenReleased
+                .Do(_ => clashExclusionMask |= 1 << i))
+            .Merge()
+            .Subscribe());
+    }
     
     public IObservable<Unit> Supply()
     {
-        return Enumerable.Range(0, slots.Length)
-            .Select(i => dealer.Deal(cardCountPerSlot, slots[i])
+        return Enumerable.Range(0, Slots.Length)
+            .Select(i => dealer.Deal(cardCountPerSlot, Slots[i])
                 .DelaySubscription(TimeSpan.FromSeconds(i * 0.2f)))
             .Merge()
             .AsSingleUnitObservable();
@@ -64,47 +78,74 @@ public class Sea : ISea
     
     public IObservable<Unit> Resupply()
     {
-        return Enumerable.Range(0, slots.Length)
-            .Select(i => slots[i])
-            .Where(slot => slot.IsEmpty)
-            .Select(slot => dealer.Deal(cardCountPerSlot, slot))
-            .Concat()
-            .AsSingleUnitObservable();
+        return Observable.Create<Unit>(observer =>
+        {
+            if (Slots.FirstOrDefault(slot => dealer.CanDeal(slot) && slot.IsEmpty) != null)
+                resupplying.OnNext(Unit.Default);
+            
+            return Enumerable.Range(0, Slots.Length)
+                .Select(i => Slots[i])
+                .Where(slot => slot.IsEmpty)
+                .Select(slot => dealer.Deal(cardCountPerSlot, slot))
+                .Merge()
+                .AsSingleUnitObservable()
+                .Subscribe(observer);
+        });
+    }
+    
+    public IObservable<Unit> Arrange()
+    {
+        return Observable.Create<Unit>(observer =>
+        {
+            if (Slots.FirstOrDefault(slot => slot.IsMessy && !slot.IsEmpty) != null)
+                arranging.OnNext(Unit.Default);
+
+            return Slots.Select(slot => slot.ArrangeAsObservable())
+                .Merge()
+                .AsSingleUnitObservable()
+                .Subscribe(observer);
+        });
     }
 
     public IObservable<Unit> Clash()
     {
-        return Enumerable.Range(0, slots.Length)
+        return Enumerable.Range(0, Slots.Length)
             .Select(Clash)
             .Concat()
-            .AsSingleUnitObservable();
+            .AsSingleUnitObservable()
+            .DoOnCompleted(() => clashExclusionMask = 0);
     }
 
-    public IObservable<Unit> Arrange()
-    {
-        return slots.Select(slot => slot.Arrange())
-            .Merge()
-            .AsSingleUnitObservable();
-    }
-    
     public void Lock()
     {
-        foreach (var slot in slots)
+        foreach (var slot in Slots)
             slot.Lock();
     }
 
     public void Unlock()
     {
-        foreach (var slot in slots)
+        foreach (var slot in Slots)
             slot.Unlock();
+    }
+    
+    public void Dispose()
+    {
+        arranging.Dispose();
+        resupplying.Dispose();
+        
+        disposables.Dispose();
     }
 
     private IObservable<Unit> Clash(int slotAtIndex)
     {
         return Observable.Create<Unit>(observer =>
         {
-            var slotToClash = slots[slotAtIndex];
-            var (previousSlot, nextSlot) = GetNeighboringSlots(slotAtIndex);
+            if ((1 << slotAtIndex & clashExclusionMask) != 0)
+                return Observable.Empty<Unit>()
+                    .Subscribe(observer);
+            
+            var slotToClash = Slots[slotAtIndex];
+            var (previousSlot, nextSlot) = GetClashingSlots(slotAtIndex);
 
             return clasher.Clash(previousSlot, slotToClash, Direction.Right)
                 .Concat(clasher.Clash(nextSlot, slotToClash, Direction.Left))
@@ -112,8 +153,13 @@ public class Sea : ISea
         });
     }
 
-    private (ISlot, ISlot) GetNeighboringSlots(int atIndex)
+    private (ISlot, ISlot) GetClashingSlots(int forIndex)
     {
-        return (atIndex - 1 >= 0 ? slots[atIndex - 1] : null, atIndex + 1 < slots.Length ? slots[atIndex + 1] : null);
+        var prevIndex = forIndex - 1;
+        var nextIndex = forIndex + 1;
+
+        return (
+            prevIndex >= 0 && (1 << prevIndex & clashExclusionMask) == 0 ? Slots[prevIndex] : null, 
+            nextIndex < Slots.Length && (1 << nextIndex & clashExclusionMask) == 0 ? Slots[nextIndex] : null);
     }
 }

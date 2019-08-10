@@ -127,7 +127,7 @@ public class CardRouter : ICardRouter
                 
                 picking.OnNext((card, slot));
             })
-            .ContinueWith(pickedCard => slot.WhenReleased
+            .ContinueWith(pickedCard => slot.WhenUnpressed
                 .Take(1)
                 .Merge(slot.WhenDraggingStarted
                     .Take(1)
@@ -184,7 +184,7 @@ public class CardRouter : ICardRouter
 
             if (host.CanLodge(fromSource, intoDestination))
             {
-                return host.Lodge(fromSource, intoDestination, SlotLodgingMode.Voluntary)
+                return host.Lodge(fromSource, intoDestination)
                     .Subscribe(observer);
             }
 

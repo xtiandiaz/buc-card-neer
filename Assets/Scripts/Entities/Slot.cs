@@ -28,17 +28,23 @@ public interface ISlot : ICardBond, IDisposable
     Vector3 Position { get; }
 
     IObservable<Unit> WhenPressed { get; }
-    IObservable<Unit> WhenReleased { get; }
+    IObservable<Unit> WhenUnpressed { get; }
     IObservable<Unit> WhenDraggingStarted { get; }
     IObservable<Vector3> WhenDragged { get; }
     IObservable<Vector3> WhenDraggingStopped { get; } 
 
     IObservable<ICard> WhenLodged { get; }
+    IObservable<ICard> WhenReleased { get; }
 
     ICard Peek();
     ICard Pop();
-    IObservable<Unit> Lodge(ICard card, SlotLodgingMode withMode = SlotLodgingMode.Systematic);
-    IObservable<Unit> Arrange(SlotLodgingMode withLodgingMode = SlotLodgingMode.Systematic);
+
+    IObservable<Unit> Lodge(
+        ICard card,
+        SlotLodgingMode withMode = SlotLodgingMode.Systematic,
+        bool andShouldRearrangeOthers = false);
+    
+    IObservable<Unit> ArrangeAsObservable();
     IObservable<Unit> ConditionallyArrange();
     void Lock();
     void Unlock();
@@ -56,12 +62,14 @@ public class Slot : ISlot
     
     protected readonly IPile pile;
     
-    private readonly Subject<ICard> lodging = new Subject<ICard>();
-    private readonly ReactiveProperty<bool> isLocked = new ReactiveProperty<bool>(false);
-    private readonly CompositeDisposable disposables = new CompositeDisposable();
     private readonly ISlotView view;
     private readonly CardArrangementModel arrangementModel;
     private readonly bool shouldSelfArrange;
+    
+    private readonly Subject<ICard> lodging = new Subject<ICard>();
+    private readonly Subject<ICard> releasing = new Subject<ICard>();
+    private readonly ReactiveProperty<bool> isLocked = new ReactiveProperty<bool>(false);
+    private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     protected Slot(ISlotModel model, ISlotView view)
     {
@@ -83,6 +91,8 @@ public class Slot : ISlot
     void ICardBond.Release(ICard card)
     {
         IsMessy |= pile.Remove(card);
+        
+        releasing.OnNext(card);
     }
 
     public SlotType Type { get; }
@@ -96,16 +106,16 @@ public class Slot : ISlot
     public bool IsMessy { get; private set; }
     public bool IsEmpty => pile.Count <= 0;
     public bool HasRoom => pile.HasRoom;
-
     public Vector3 Position => view.Transform.position;
 
     public IObservable<Unit> WhenPressed => view.WhenPressed;
-    public IObservable<Unit> WhenReleased => view.WhenReleased;
+    public IObservable<Unit> WhenUnpressed => view.WhenReleased;
     public IObservable<Unit> WhenDraggingStarted => view.WhenDraggingStarted;
     public IObservable<Vector3> WhenDragged => view.WhenDragged;
     public IObservable<Vector3> WhenDraggingStopped => view.WhenDraggingStopped;
     
     public IObservable<ICard> WhenLodged => lodging;
+    public IObservable<ICard> WhenReleased => releasing.DistinctUntilChanged();
 
     public ICard Peek()
     {
@@ -118,35 +128,51 @@ public class Slot : ISlot
 
         IsMessy |= poppedCard != null;
         
+        releasing.OnNext(poppedCard);
+        
         return poppedCard;
     }
     
-    public IObservable<Unit> Lodge(ICard card, SlotLodgingMode withMode = SlotLodgingMode.Systematic)
+    public IObservable<Unit> Lodge(
+        ICard card, 
+        SlotLodgingMode withMode = SlotLodgingMode.Systematic, 
+        bool andShouldRearrangeOthers = false)
     {
         return Observable.Create<Unit>(observer =>
             {
-                if (!pile.Insert(card))
+                var newIndex = pile.Insert(card);
+                if (!newIndex.HasValue)
                 {
                     observer.OnError(new Exception($"[Slot] Couldn't insert {card} in Pile."));
                     
                     return Disposable.Empty;
                 }
 
-                card.Bind(this);
+                IsMessy = !andShouldRearrangeOthers;
+                
+                if (andShouldRearrangeOthers)
+                {
+                    pile.ForEach((otherCard, index) =>
+                    {
+                        if (index != newIndex.Value)
+                            otherCard.Arrange(arrangementModel.GetArrangementForIndex(index, pile.Extent));
+                    });
+                }
 
-                IsMessy = true;
-
-                return Arrange(withMode)
+                return card.Lodge(
+                        this,
+                        arrangementModel.GetArrangementForIndex(newIndex.Value, pile.Extent),
+                        withMode == SlotLodgingMode.Systematic ? CardArrangementMode.Normal : CardArrangementMode.Fast)
                     .Subscribe(observer);
             })
             .Do(_ => lodging.OnNext(card))
             .DoOnError(Debug.LogException);
     }
 
-    public IObservable<Unit> Arrange(SlotLodgingMode withLodgingMode = SlotLodgingMode.Systematic)
+    public IObservable<Unit> ArrangeAsObservable()
     {
-        return pile.Map((card, index) => card.Arrange(
-                arrangementModel.GetArrangementForIndex(index, pile.Extent, withLodgingMode)))
+        return pile.Map((card, index) => 
+                card.ArrangeAsObservable(arrangementModel.GetArrangementForIndex(index, pile.Extent)))
             .Merge()
             .AsSingleUnitObservable()
             .DoOnCompleted(() => IsMessy = false);
@@ -155,7 +181,7 @@ public class Slot : ISlot
     public IObservable<Unit> ConditionallyArrange()
     {
         return shouldSelfArrange
-            ? Arrange()
+            ? ArrangeAsObservable()
             : Observable.Empty<Unit>();
     }
 
@@ -186,8 +212,10 @@ public class Slot : ISlot
 
     public void Dispose()
     {
-        lodging?.Dispose();
-        isLocked?.Dispose();
-        disposables?.Dispose();
+        lodging.Dispose();
+        releasing.Dispose();
+        isLocked.Dispose();
+        
+        disposables.Dispose();
     }
 }

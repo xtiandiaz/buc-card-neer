@@ -14,7 +14,7 @@ public class GameAudioController : IGameAudioController
     private readonly ICardForwarder cardForwarder;
     private readonly ICardShooter cardShooter;
     private readonly IShip ship;
-    private readonly IGameStatus gameStatus;
+    private readonly ISea sea;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private GameAudioController(
@@ -24,8 +24,8 @@ public class GameAudioController : IGameAudioController
         ICardForwarder cardForwarder,
         ICardShooter cardShooter,
         IShip ship,
-        IGameStatus gameStatus
-        )
+        ISea sea
+    )
     {
         this.audioManager = audioManager;
         this.cardRouter = cardRouter;
@@ -33,11 +33,13 @@ public class GameAudioController : IGameAudioController
         this.cardForwarder = cardForwarder;
         this.cardShooter = cardShooter;
         this.ship = ship;
-        this.gameStatus = gameStatus;
+        this.sea = sea;
     }
     
     public void Initialize()
     {
+        #region Card interactions
+
         disposables.Add(cardRouter.WhenCardDropped
             .Subscribe(_ => audioManager.Play(AudioEventKey.UIDragCancel)));
         
@@ -47,6 +49,10 @@ public class GameAudioController : IGameAudioController
         disposables.Add(cardDismisser.WhenCardDismissed
             .Subscribe(_ => audioManager.Play(AudioEventKey.CardBridgeDismiss)));
         
+        #endregion
+
+        #region Ship
+
         disposables.Add(ship.WhenCardBoarded
             .Subscribe(cardType => audioManager.Play(AudioEventSwitchKey.CardBoard, cardType)));
         
@@ -57,6 +63,18 @@ public class GameAudioController : IGameAudioController
         disposables.Add(ship.WhenCardStashed
             .Merge(cardForwarder.WhenCardStashed)
             .Subscribe(cardType => audioManager.Play(AudioEventSwitchKey.CardStash, cardType)));
+        
+        #endregion
+
+        #region Sea
+
+        disposables.Add(sea.WhenArranged
+            .Subscribe(_ => audioManager.Play(AudioEventKey.CardSupplyCascade)));
+        
+        disposables.Add(sea.WhenResupplied
+            .Subscribe(_ => audioManager.Play(AudioEventKey.CardSupplyRedeal)));
+
+        #endregion
 
         #region Ranged Combat
 

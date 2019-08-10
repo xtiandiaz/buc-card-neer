@@ -16,7 +16,6 @@ public struct CardArrangement
     public readonly float fogIntensity;
     public readonly Color fogColor;
     
-    private readonly CardArrangementMode mode;
     private readonly float normalDuration;
 
     public CardArrangement(
@@ -24,8 +23,7 @@ public struct CardArrangement
         Vector3 localPosition, 
         float rotationZ, 
         float fogIntensity, 
-        Color fogColor, 
-        CardArrangementMode mode,
+        Color fogColor,
         float normalDuration
         )
     {
@@ -34,13 +32,12 @@ public struct CardArrangement
         this.rotationZ = rotationZ;
         this.fogIntensity = fogIntensity;
         this.fogColor = fogColor;
-        this.mode = mode;
         this.normalDuration = normalDuration;
     }
     
-    public float GetDuration(Vector3 fromReferenceLocalPosition)
+    public float GetDuration(Vector3 fromReferenceLocalPosition, CardArrangementMode forMode)
     {
-        if (mode == CardArrangementMode.Normal)
+        if (forMode == CardArrangementMode.Normal)
             return normalDuration;
         
         var placementMargin = Mathf.Clamp(
@@ -64,7 +61,7 @@ public class CardArrangementModel : ScriptableObject
     [SerializeField] private Color fogColor = Color.white;
     [SerializeField] [Range(0, 1f)] private float fogIntensity = 0.5f;
 
-    public CardArrangement GetArrangementForIndex(int index, int outOfCount, SlotLodgingMode forLodgingMode)
+    public CardArrangement GetArrangementForIndex(int index, int outOfCount)
     {
         return new CardArrangement(
             index, 
@@ -72,7 +69,6 @@ public class CardArrangementModel : ScriptableObject
             index == 0 ? 0 : Random.Range(-1f, 1f) * maxRotationAngle,
             shouldFog ? fogIntensity * index / outOfCount : 0,
             fogColor,
-            forLodgingMode == SlotLodgingMode.Systematic ? CardArrangementMode.Normal : CardArrangementMode.Fast,
             duration);
     }
 }
