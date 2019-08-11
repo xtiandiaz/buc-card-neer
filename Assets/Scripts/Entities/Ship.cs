@@ -150,8 +150,9 @@ public class Ship : IShip
     private void Board(ICard card)
     {
         card.IsBoarded = true;
-                
-        boarding.OnNext(card.AbstractType);
+        
+        // The following check for whether the monster is locked or not is necessary for express-handling:
+        boarding.OnNext(card.IsMonster && card.IsLocked ? CardType.Monster : card.Type);
     }
 
     private IObservable<Unit> HandleAgent(ICard card)

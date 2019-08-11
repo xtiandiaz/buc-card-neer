@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   suit: {fileID: 0}
-  value: 14
+  value: 13
   shouldDisplayValue: 1
   dealingFace: 0
   lockValue: 0
@@ -24,5 +24,5 @@ MonoBehaviour:
   backMotif: {fileID: 0}
   viewPrefab: {fileID: 3745072886839764397, guid: 6009221ca385c4a5da4f240eb613b67e,
     type: 3}
-  maxHealthPoints: 14
+  maxHealthPoints: 13
   initialCoins: 0

@@ -37,10 +37,22 @@ public class BoardController : IBoardController
             .RepeatSafe()
             .Subscribe());
         
-        disposables.Add(ship.WhenArmed
+        disposables.Add(ship.WhenArmed.Take(1)
+            .Do(_ =>
+            {
+                sea.Lock();
+                ship.Lock();
+            })
             .Delay(TimeSpan.FromSeconds(0.5))
-            .SelectMany(_ => cardShooter.Shoot(ship.Plank, sea.Slots))
-            .Do(_ => ship.Unlock())
+            .ContinueWith(_ => cardShooter.Shoot(ship.Plank, sea.Slots))
+            .ContinueWith(_ => sea.Arrange())
+            .ContinueWith(sea.Resupply())
+            .DoOnCompleted(() =>
+            {
+                sea.Unlock();
+                ship.Unlock();
+            })
+            .RepeatSafe()
             .Subscribe());
     }
 
