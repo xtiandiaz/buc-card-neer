@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
-using UnityEngine;
+using Zenject;
 
-public interface ICardDealer : IDisposable
+public interface ICardDealer : IInitializable, IDisposable
 {
     IObservable<int> ActiveCardCount { get; }
     
@@ -16,18 +16,30 @@ public interface ICardDealer : IDisposable
 
 public class CardDealer : ICardDealer
 {
-    private readonly IDeck deck;
+    private readonly Subject<ICard> dealing = new Subject<ICard>();
     private readonly ReactiveProperty<int> activeCardCount = new ReactiveProperty<int>();
     private readonly Dictionary<CardType, int> activeCardTypes = new Dictionary<CardType, int>();
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
-    public IObservable<int> ActiveCardCount => activeCardCount;
+    private readonly IDeck deck;
 
     private CardDealer(IDeck deck)
     {
         this.deck = deck;
     }
+    
+    public IObservable<int> ActiveCardCount => activeCardCount;
 
+    public void Initialize()
+    {
+        disposables.Add(dealing
+            .Do(card => OnCardDealt(card.AbstractType))
+            .SelectMany(card => card.IsMonster 
+                ? card.WhenUnlocked.Select(_ => CardType.Monster)
+                : card.WhenDestroyed.Select(_ => card.Type))
+            .Subscribe(OnCardDestroyedOrUnlocked));
+    }
+    
     public bool CanDeal(ISlot intoSlot)
     {
         return !deck.IsExhausted && intoSlot.HasRoom;
@@ -48,13 +60,8 @@ public class CardDealer : ICardDealer
     {
         return deck.Provide(count)
             .Select((card, index) => 
-            {
-                OnCardDealt(card.AbstractType);
-
-                disposables.Add((card.IsMonster
-                        ? card.WhenUnlocked.Select(_ => CardType.Monster)
-                        : card.WhenDestroyed.Select(_ => card.Type))
-                    .Subscribe(OnCardDestroyedOrUnlocked));
+            { 
+                dealing.OnNext(card);
 
                 return intoSlot.Lodge(card)
                     .DelaySubscription(TimeSpan.FromSeconds(0.1 * index));
@@ -65,6 +72,8 @@ public class CardDealer : ICardDealer
 
     public void Dispose()
     {
+        dealing.Dispose();
+        
         disposables.Dispose();
     }
     
@@ -86,7 +95,7 @@ public class CardDealer : ICardDealer
     private void OnCardDestroyedOrUnlocked(CardType ofType)
     {
         activeCardTypes[ofType]--;
-        
+
         activeCardCount.Value--;
     }
 }

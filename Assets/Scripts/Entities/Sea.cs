@@ -36,6 +36,8 @@ public class Sea : ISea
     private readonly int cardCountPerSlot;
 
     private int clashExclusionMask;
+    private bool willSupplyCascade;
+    private bool willResupply;
 
     private Sea(
         IEnumerable<ISlot> supplySlots,
@@ -62,7 +64,12 @@ public class Sea : ISea
     {
         disposables.Add(Slots
             .Select((slot, i) => slot.WhenReleased
-                .Do(_ => clashExclusionMask |= 1 << i))
+                .Do(_ =>
+                {
+                    clashExclusionMask |= 1 << i;
+                    willSupplyCascade |= !slot.IsEmpty;
+                    willResupply |= slot.IsEmpty && dealer.CanDeal(slot);
+                }))
             .Merge()
             .Subscribe());
     }
@@ -80,8 +87,10 @@ public class Sea : ISea
     {
         return Observable.Create<Unit>(observer =>
         {
-            if (Slots.FirstOrDefault(slot => dealer.CanDeal(slot) && slot.IsEmpty) != null)
+            if (willResupply)
                 resupplying.OnNext(Unit.Default);
+
+            willResupply = false;
             
             return Enumerable.Range(0, Slots.Length)
                 .Select(i => Slots[i])
@@ -97,10 +106,13 @@ public class Sea : ISea
     {
         return Observable.Create<Unit>(observer =>
         {
-            if (Slots.FirstOrDefault(slot => slot.IsMessy && !slot.IsEmpty) != null)
+            if (willSupplyCascade)
                 arranging.OnNext(Unit.Default);
 
-            return Slots.Select(slot => slot.ArrangeAsObservable())
+            willSupplyCascade = false;
+
+            return Slots.Where(slot => slot.IsMessy)
+                .Select(slot => slot.ArrangeAsObservable())
                 .Merge()
                 .AsSingleUnitObservable()
                 .Subscribe(observer);
