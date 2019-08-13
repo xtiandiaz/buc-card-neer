@@ -23,8 +23,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b3b1400a481324b6a8d2433a4b93dd58, type: 2}
   - {fileID: 11400000, guid: 60d182fd993fa43ccb8430775dcebdd7, type: 2}
   tools:
-  - {fileID: 11400000, guid: 7f984c89b8ac24275ace764476aed2bd, type: 2}
-  - {fileID: 11400000, guid: 1bda311f81b5e470ebc25274a2424ddd, type: 2}
-  - {fileID: 11400000, guid: 8c198c2b68a284cf4a9596d615b8044d, type: 2}
+  - {fileID: 11400000, guid: 31d8cd05c1a79491d8e04149824d1d72, type: 2}
+  - {fileID: 11400000, guid: 2176889688f2945a4b1b4abfbb44e32e, type: 2}
+  - {fileID: 11400000, guid: 3b42725e1b2764c7fb6ddadb4ee3b2d8, type: 2}
   monsters:
   - {fileID: 11400000, guid: 56d6f8f8a93e748ee8bcee42f33fe820, type: 2}

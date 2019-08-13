@@ -111,7 +111,7 @@ public class Sea : ISea
 
             willSupplyCascade = false;
 
-            return Slots.Where(slot => slot.IsMessy)
+            return Slots.Where(slot => slot.IsMessy && !slot.IsEmpty)
                 .Select(slot => slot.ArrangeAsObservable())
                 .Merge()
                 .AsSingleUnitObservable()

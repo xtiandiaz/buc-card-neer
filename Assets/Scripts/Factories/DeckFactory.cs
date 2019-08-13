@@ -26,6 +26,14 @@ public class DeckFactory : IDeckFactory
     {
         var cardData = new List<ICardModel>();
         
+        /*cardData.AddRange(fromModel.Items);
+        cardData.AddRange(fromModel.Tools);
+        cardData.AddRange(fromModel.Merchants);
+        cardData.AddRange(fromModel.Pirates);
+        cardData.AddRange(fromModel.Monsters);
+        cardData.Shuffle();*/
+        
+        
         // TODO Optimize and move to a separate class Shuffling Strategy
         
         var suits = new List<CardType> {CardType.Food, CardType.Artifact, CardType.Gem};
@@ -74,11 +82,6 @@ public class DeckFactory : IDeckFactory
         tools.Shuffle();
         
         cardData = cardData.Apportion(tools);
-        
-        /*var inspectors = fromModel.Inspectors.ToList();
-        inspectors.Shuffle();
-        
-        cardData = cardData.Apportion(inspectors);*/
 
         var deck = deckFactory.Create(cardData);
         

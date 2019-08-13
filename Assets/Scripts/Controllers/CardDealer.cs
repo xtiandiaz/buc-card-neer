@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
+using UnityEngine;
 using Zenject;
 
 public interface ICardDealer : IInitializable, IDisposable
@@ -34,10 +35,10 @@ public class CardDealer : ICardDealer
     {
         disposables.Add(dealing
             .Do(card => OnCardDealt(card.AbstractType))
-            .SelectMany(card => card.IsMonster 
-                ? card.WhenUnlocked.Select(_ => CardType.Monster)
-                : card.WhenDestroyed.Select(_ => card.Type))
-            .Subscribe(OnCardDestroyedOrUnlocked));
+            .SelectMany(card => (card.IsLocked 
+                ? card.WhenUnlocked.Do(_ => OnCardUnlocked(card)).ContinueWith(card.WhenDestroyed)
+                : card.WhenDestroyed).Select(_ => card))
+            .Subscribe(card => OnCardDestroyed(card.Type)));
     }
     
     public bool CanDeal(ISlot intoSlot)
@@ -49,7 +50,7 @@ public class CardDealer : ICardDealer
     {
         if (GetActiveCardCount(CardType.Pirate | CardType.Monster) > 0)
             return false;
-        
+
         if (GetActiveCardCount(CardType.Resource) > 0 && GetActiveCardCount(CardType.Merchant) > 0)
             return false;
         
@@ -92,9 +93,16 @@ public class CardDealer : ICardDealer
         activeCardCount.Value++;
     }
 
-    private void OnCardDestroyedOrUnlocked(CardType ofType)
+    private void OnCardUnlocked(ICard card)
     {
-        activeCardTypes[ofType]--;
+        OnCardDestroyed(card.AbstractType);
+        
+        OnCardDealt(card.Type);
+    }
+
+    private void OnCardDestroyed(CardType withType)
+    {
+        activeCardTypes[withType]--;
 
         activeCardCount.Value--;
     }

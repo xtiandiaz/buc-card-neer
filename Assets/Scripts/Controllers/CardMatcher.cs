@@ -11,7 +11,7 @@ public interface ICardMatcher : IDisposable
 
 public class CardMatcher : ICardMatcher
 {
-    private const int CreditMultiplierForMatchingSuit = 2;
+    private const int CreditMultiplierForMatchingSuit = 3;
     
     private readonly Subject<Unit> matching = new Subject<Unit>();
     private readonly Subject<Unit> attacking = new Subject<Unit>();

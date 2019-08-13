@@ -22,15 +22,22 @@ public class Deck : IDeck
     {
     }
 
-    private readonly ICardFactory cardFactory;
-    private readonly Stack<ICardModel> modelStack;
     private readonly Subject<ICard> provision = new Subject<ICard>();
     private readonly ReactiveProperty<int> cardCount;
+    
+    private readonly ICardFactory cardFactory;
+    private readonly IBoardModel boardModel;
+    private readonly Stack<ICardModel> modelStack;
 
-    private Deck(List<ICardModel> cardModels, ICardFactory cardFactory)
+    private Deck(
+        List<ICardModel> cardModels, 
+        ICardFactory cardFactory,
+        IBoardModel boardModel
+        )
     {
         this.cardFactory = cardFactory;
-        
+        this.boardModel = boardModel;
+
         modelStack = new Stack<ICardModel>(cardModels);
         
         cardCount = new ReactiveProperty<int>(cardModels.Count);
@@ -52,8 +59,12 @@ public class Deck : IDeck
             cards.Add(card);
         }
 
-        if (cardCount.Value < 12)
-            cards = cards.OrderByDescending(c => c.IsResource && !c.IsLocked && !c.IsMerchant).ToList();
+        if (cardCount.Value <= boardModel.MaxCardsInSupply) 
+            cards = cards
+                .OrderByDescending(c => c.IsResource)
+                .ThenByDescending(c => !c.IsLocked)
+                .ThenByDescending(c => !c.IsMerchant)
+                .ToList();
 
         return cards;
     }
