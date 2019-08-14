@@ -19,6 +19,8 @@ public class CardRouter : ICardRouter
     private readonly List<ISlot> slots = new List<ISlot>();
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
+    private readonly IWorldPointProvider worldPointProvider;
+    private readonly IBoardModel boardModel;
     private readonly IShip ship;
     private readonly ISea sea;
     private readonly ICardForwarder forwarder;
@@ -28,6 +30,8 @@ public class CardRouter : ICardRouter
     private readonly ICardHost host;
 
     private CardRouter(
+        IWorldPointProvider worldPointProvider,
+        IBoardModel boardModel,
         IShip ship,
         ISea sea,
         ICardForwarder forwarder,
@@ -37,6 +41,8 @@ public class CardRouter : ICardRouter
         ICardHost host
     )
     {
+        this.worldPointProvider = worldPointProvider;
+        this.boardModel = boardModel;
         this.ship = ship;
         this.sea = sea;
         this.forwarder = forwarder;
@@ -118,14 +124,16 @@ public class CardRouter : ICardRouter
         slots.Add(slot);
 
         disposables.Add(slot.WhenPressed
-            .Select(_ => slot.Peek())
-            .Where(card => card != null && !slot.IsLocked)
+            .Where(_ => slot.Peek() != null && !slot.IsLocked)
             .Take(1)
-            .Do(card =>
+            .Select(pickingScreenPos => 
             {
-                card.Pick();
+                var card = slot.Peek();
                 
+                card.Pick(worldPointProvider.GetWorldPoint(pickingScreenPos, boardModel.FloatingCardDepth));
                 picking.OnNext((card, slot));
+                
+                return card;
             })
             .ContinueWith(pickedCard => slot.WhenUnpressed
                 .Take(1)
@@ -133,7 +141,8 @@ public class CardRouter : ICardRouter
                     .Take(1)
                     .ContinueWith(slot.WhenDragged
                         .TakeUntil(slot.WhenDraggingStopped)
-                        .Do(pickedCard.Drag)
+                        .Do(draggingScreenPos => 
+                            pickedCard.Drag(worldPointProvider.GetWorldPoint(draggingScreenPos, boardModel.FloatingCardDepth)))
                         .AsSingleUnitObservable()))
                 .Do(_ => 
                 {

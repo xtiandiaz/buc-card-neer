@@ -35,8 +35,8 @@ public interface ICard : IDisposable
     IObservable<Unit> WhenDestroyed { get; }
     IObservable<int> WhenHitOrHacked { get; }
     
-    void Pick();
-    void Drag(Vector3 byDeltaPosition);
+    void Pick(Vector3 atPosition);
+    void Drag(Vector3 toPosition);
     void Drop();
     void Hack(int withValue);
     void Arrange(CardArrangement withArrangement);
@@ -126,14 +126,14 @@ public class Card : ICard
     
     private bool WasLocked { get; }
 
-    public void Pick()
-    {       
-        view.Pick();
+    public void Pick(Vector3 atPosition)
+    {
+        view.Pick(atPosition);
     }
 
-    public void Drag(Vector3 byDeltaPosition)
+    public void Drag(Vector3 toPosition)
     {
-        view.Drag(byDeltaPosition);
+        view.Drag(toPosition);
     }
 
     public void Drop()

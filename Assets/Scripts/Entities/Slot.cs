@@ -27,10 +27,10 @@ public interface ISlot : ICardBond, IDisposable
 
     Vector3 Position { get; }
 
-    IObservable<Unit> WhenPressed { get; }
+    IObservable<Vector2> WhenPressed { get; }
     IObservable<Unit> WhenUnpressed { get; }
     IObservable<Unit> WhenDraggingStarted { get; }
-    IObservable<Vector3> WhenDragged { get; }
+    IObservable<Vector2> WhenDragged { get; }
     IObservable<Vector3> WhenDraggingStopped { get; } 
 
     IObservable<ICard> WhenLodged { get; }
@@ -108,10 +108,10 @@ public class Slot : ISlot
     public bool HasRoom => pile.HasRoom;
     public Vector3 Position => view.Transform.position;
 
-    public IObservable<Unit> WhenPressed => view.WhenPressed;
+    public IObservable<Vector2> WhenPressed => view.WhenPressed;
     public IObservable<Unit> WhenUnpressed => view.WhenReleased;
     public IObservable<Unit> WhenDraggingStarted => view.WhenDraggingStarted;
-    public IObservable<Vector3> WhenDragged => view.WhenDragged;
+    public IObservable<Vector2> WhenDragged => view.WhenDragged;
     public IObservable<Vector3> WhenDraggingStopped => view.WhenDraggingStopped;
     
     public IObservable<ICard> WhenLodged => lodging;

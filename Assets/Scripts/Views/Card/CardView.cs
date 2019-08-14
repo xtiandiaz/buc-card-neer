@@ -26,8 +26,8 @@ public interface ICardView
     Vector3 Position { get; set; }
     Vector3 LocalPosition { get; }
 
-    void Pick();
-    void Drag(Vector3 byDeltaPosition);
+    void Pick(Vector3 atPosition);
+    void Drag(Vector3 toPosition);
     void Arrange(CardArrangement withArrangement);
     void ToggleValueVisibility(bool toValue);
     void ToggleLockVisibility(bool toValue);
@@ -73,7 +73,7 @@ public class CardView : MonoBehaviour, ICardView
     private CardFace face;
     
     
-    private Tween picking, rotation;
+    private Tween rotation, dragging;
     private Sequence arrangement;
 
     public virtual int Value
@@ -183,28 +183,30 @@ public class CardView : MonoBehaviour, ICardView
         animator.Initialize(shader);
     }
     
-    public void Pick()
+    public void Pick(Vector3 atPosition)
     {
         SortingOrder = 100;
 
         arrangement?.Kill();
-        picking?.Kill();
-        
-        picking = transform.DOMoveZ(-0.5f, 0.2f)
-            .SetEase(Ease.OutQuart);
+
+        Drag(atPosition);
     }
 
-    public void Drag(Vector3 byDeltaPosition)
+    public void Drag(Vector3 toPosition)
     {
-        LocalPosition += byDeltaPosition;
+        dragging?.Kill();
+        dragging = transform.DOMove(toPosition, 0.25f)
+            .SetEase(Ease.OutQuart);
     }
 
     public IObservable<Unit> Lodge(Transform inTransform, CardArrangement withArrangement, CardArrangementMode andMode)
     {
         return Observable.Create<Unit>(observer =>
         {
-            transform.SetParent(inTransform, true);
+            dragging?.Kill();
             
+            transform.SetParent(inTransform, true);
+
             Sort(withArrangement.index);
 
             var sequence = animator.Arrange(withArrangement, andMode)
@@ -220,7 +222,9 @@ public class CardView : MonoBehaviour, ICardView
 
     public void Arrange(CardArrangement withArrangement)
     {
+        dragging?.Kill();
         arrangement?.Kill();
+        
         arrangement = animator.Arrange(withArrangement)
             .OnComplete(() => Sort(withArrangement.index));
     }
@@ -229,6 +233,8 @@ public class CardView : MonoBehaviour, ICardView
     {
         return Observable.Create<Unit>(observer =>
         {
+            dragging?.Kill();
+            
             Sort(withArrangement.index);
             
             var sequence = animator.Arrange(withArrangement);

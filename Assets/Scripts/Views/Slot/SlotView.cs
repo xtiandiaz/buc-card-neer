@@ -9,12 +9,11 @@ public interface ISlotView
     Transform Transform { get; }
     Bounds Bounds { get; }
     
-    IObservable<Unit> WhenPressed { get; }
+    IObservable<Vector2> WhenPressed { get; }
     IObservable<Unit> WhenReleased { get; }
     IObservable<Unit> WhenDraggingStarted { get; }
-    IObservable<Vector3> WhenDragged { get; }
+    IObservable<Vector2> WhenDragged { get; }
     IObservable<Vector3> WhenDraggingStopped { get; }
-    IObservable<Direction> WhenSwiped { get; }
 
     void ToggleHighlight(bool on);
     void ToggleVisibility(bool on);
@@ -34,12 +33,11 @@ public class SlotView : MonoBehaviour, ISlotView
     public Transform Transform => transform;
     public Bounds Bounds => faceRenderer.bounds;
 
-    public IObservable<Unit> WhenPressed => gestureListener.WhenPressed;
+    public IObservable<Vector2> WhenPressed => gestureListener.WhenPressed;
     public IObservable<Unit> WhenReleased => gestureListener.WhenReleased;
     public IObservable<Unit> WhenDraggingStarted => gestureListener.WhenDraggingStarted;
-    public IObservable<Vector3> WhenDragged => gestureListener.WhenDragged;
+    public IObservable<Vector2> WhenDragged => gestureListener.WhenDragged;
     public IObservable<Vector3> WhenDraggingStopped => gestureListener.WhenDraggingEnded;
-    public IObservable<Direction> WhenSwiped => gestureListener.WhenSwiped;
 
     [Inject]
     private void Initialize(

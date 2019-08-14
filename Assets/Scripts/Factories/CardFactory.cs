@@ -53,8 +53,6 @@ public class CardFactory : ICardFactory
     {
         var view = container.InstantiatePrefabForComponent<ICardView>(fromModel.ViewPrefab);
 
-        view.Value = fromModel.Value;
-        
         view.FrontCover = fromModel.FrontCover;
         view.BackCover = fromModel.BackCover;
         view.FrontMotif = fromModel.FrontMotif;

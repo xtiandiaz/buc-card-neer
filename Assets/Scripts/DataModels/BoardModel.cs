@@ -16,6 +16,7 @@ public interface IBoardModel : IDisposable
     string SlotSortingLayerName { get; }
     string CardSortingLayerName { get; }
     int FloatingCardSortingOrder { get; }
+    float FloatingCardDepth { get; }
 }
 
 [CreateAssetMenu(menuName = "Model/Board")]
@@ -34,11 +35,12 @@ public class BoardModel : ScriptableObject, IBoardModel
     
     [Space]
     [SerializeField] private int cardCountPerSupplySlot = default;
-    
+
     [Space]
     [SerializeField] private string slotSortingLayerName = default;
     [SerializeField] private string cardSortingLayerName = default;
     [SerializeField] private int floatingCardSortingOrder = default;
+    [SerializeField] private float floatingCardDepth = default;
 
     private Vector2? padding;
     private float? tx, ty;
@@ -66,6 +68,7 @@ public class BoardModel : ScriptableObject, IBoardModel
     public string SlotSortingLayerName => slotSortingLayerName;
     public string CardSortingLayerName => cardSortingLayerName;
     public int FloatingCardSortingOrder => floatingCardSortingOrder;
+    public float FloatingCardDepth => floatingCardDepth;
     
     public float Tx
     {

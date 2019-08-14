@@ -3,25 +3,13 @@ using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 
-public interface IGestureListener
-{
-    IObservable<Unit> WhenPressed { get; }
-    IObservable<Unit> WhenReleased { get; }
-    IObservable<Unit> WhenDraggingStarted { get; }
-    IObservable<Vector3> WhenDragged { get; }
-    IObservable<Vector3> WhenDraggingEnded { get; }
-    IObservable<Direction> WhenSwiped { get; }
-
-    void Initialize(IWorldPointProvider worldPointProvider);
-}
-
 [RequireComponent(typeof(Collider2D))]
-public class GestureListener : MonoBehaviour, IGestureListener
+public class GestureListener : MonoBehaviour
 {
-    private readonly Subject<Unit> pressing = new Subject<Unit>();
+    private readonly Subject<Vector2> pressing = new Subject<Vector2>();
     private readonly Subject<Unit> releasing = new Subject<Unit>();
     private readonly Subject<Unit> draggingStart = new Subject<Unit>();
-    private readonly Subject<Vector3> dragging = new Subject<Vector3>();
+    private readonly Subject<Vector2> dragging = new Subject<Vector2>();
     private readonly Subject<Vector3> draggingEnd = new Subject<Vector3>();
     private readonly Subject<Direction> swiping = new Subject<Direction>();
 
@@ -31,10 +19,10 @@ public class GestureListener : MonoBehaviour, IGestureListener
     private Vector2 startPosition;
     private DateTime startTime;
 
-    public IObservable<Unit> WhenPressed => pressing;
+    public IObservable<Vector2> WhenPressed => pressing;
     public IObservable<Unit> WhenReleased => releasing;
     public IObservable<Unit> WhenDraggingStarted => draggingStart;
-    public IObservable<Vector3> WhenDragged => dragging;
+    public IObservable<Vector2> WhenDragged => dragging;
     public IObservable<Vector3> WhenDraggingEnded => draggingEnd;
     public IObservable<Direction> WhenSwiped => swiping;
 
@@ -47,8 +35,7 @@ public class GestureListener : MonoBehaviour, IGestureListener
         eventTrigger
             .OnPointerDownAsObservable()
             .TakeUntilDisable(this)
-            .AsUnitObservable()
-            .Subscribe(pressing.OnNext)
+            .Subscribe(eventData => pressing.OnNext(eventData.position))
             .AddTo(this);
         
         eventTrigger
@@ -74,15 +61,7 @@ public class GestureListener : MonoBehaviour, IGestureListener
         eventTrigger
             .OnDragAsObservable()
             .TakeUntilDisable(this)
-            .Select(eventData =>
-            {
-                var newWorldPos = worldPointProvider.GetWorldPoint(eventData.position);
-                var deltaPos = newWorldPos - lastWorldPos;
-
-                lastWorldPos = newWorldPos;
-
-                return deltaPos;
-            })
+            .Select(eventData => eventData.position)
             .Subscribe(dragging)
             .AddTo(this);
 
@@ -93,7 +72,7 @@ public class GestureListener : MonoBehaviour, IGestureListener
             .Share();
 
         dragEndObservable
-            .Select(worldPointProvider.GetWorldPoint)
+            .Select(screenPos => worldPointProvider.GetWorldPoint(screenPos, 0))
             .Subscribe(draggingEnd)
             .AddTo(this);
 

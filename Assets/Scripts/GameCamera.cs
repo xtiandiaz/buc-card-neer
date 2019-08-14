@@ -43,10 +43,10 @@ public class GameCamera : MonoBehaviour, IGameCamera
         return new Viewport(frustumHeight * Camera.aspect, frustumHeight);
     }
 
-    public Vector3 GetWorldPoint(Vector2 fromScreenPoint)
+    public Vector3 GetWorldPoint(Vector2 fromScreenPoint, float atDepth = 0)
     {
         return Camera.ScreenToWorldPoint(
-            new Vector3(fromScreenPoint.x, fromScreenPoint.y, -Camera.transform.localPosition.z));
+            new Vector3(fromScreenPoint.x, fromScreenPoint.y, -Camera.transform.localPosition.z + atDepth));
     }
 
     public void Shake(float withIntensity, TimeSpan duration, int andVibrato = 10)
