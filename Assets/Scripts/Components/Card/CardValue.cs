@@ -31,7 +31,7 @@ public class CardValue : MonoBehaviour
         textRenderers.ForEach(r => r.GetComponent<MeshRenderer>().enabled = toValue);
     }
     
-    private void SetValue(string to)
+    public void SetValue(string to)
     {
         textRenderers.ForEach(r => r.text = to);
 

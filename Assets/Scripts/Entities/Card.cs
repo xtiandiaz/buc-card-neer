@@ -253,7 +253,7 @@ public class Card : ICard
         {
             bond?.Release(this);
 
-            return view.Fade(0, TimeSpan.FromSeconds(0.3f))
+            return view.Fade(0, TimeSpan.FromSeconds(0.5f))
                 .DoOnCompleted(() =>
                 {
                     destruction.OnNext(Unit.Default);

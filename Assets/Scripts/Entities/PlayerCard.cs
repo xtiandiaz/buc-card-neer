@@ -21,10 +21,6 @@ public interface IPlayerCard : ICard
 
 public class PlayerCard : Card, IPlayerCard
 {
-    public new class Factory : PlaceholderFactory<IPlayerCardModel, IPlayerCardView, PlayerCard>
-    {
-    }
-
     private readonly Subject<int> healing = new Subject<int>();
     private readonly Subject<int> crediting = new Subject<int>();
     private readonly Subject<int> debiting = new Subject<int>();
@@ -36,12 +32,14 @@ public class PlayerCard : Card, IPlayerCard
     private PlayerCard(IPlayerCardModel model, IPlayerCardView view)
         : base(model, view)
     {
-        IsBoarded = true;
+        view.MaxHealth = model.MaxHealthPoints;
+        view.Coins = model.InitialCoins;
+        this.view = view;
+        
         HealthPoints = maxHealthPoints = model.MaxHealthPoints;
         coins = new ReactiveProperty<int>(model.InitialCoins);
 
-        view.Coins = model.InitialCoins;
-        this.view = view;
+        IsBoarded = true;
     }
 
     public int Coins
@@ -92,5 +90,9 @@ public class PlayerCard : Card, IPlayerCard
         healing.Dispose();
         crediting.Dispose();
         debiting.Dispose();
+    }
+    
+    public new class Factory : PlaceholderFactory<IPlayerCardModel, IPlayerCardView, PlayerCard>
+    {
     }
 }

@@ -74,7 +74,7 @@ public class BoardController : IBoardController
                         player.Position)
                     .Show(
                         byAmount > 0 ? FloatingBanner.DisplayMode.FadeInUpward : FloatingBanner.DisplayMode.FadeInDownward, 
-                        1.25f, 
+                        1f, 
                         true)));
 
         /*disposables.Add(player.WhenCredited
@@ -87,7 +87,7 @@ public class BoardController : IBoardController
             .SelectMany(card => card.WhenHitOrHacked
                 .TakeUntil(card.WhenDestroyed)
                 .Do(byAmount => bannerFactory.Create(FloatingBannerType.Health, $"-{byAmount}", card.Position)
-                    .Show(FloatingBanner.DisplayMode.FadeInDownward, 1.25f, true)))
+                    .Show(FloatingBanner.DisplayMode.FadeInDownward, 1f, true)))
             .Subscribe());
     }
 

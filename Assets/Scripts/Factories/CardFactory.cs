@@ -12,6 +12,7 @@ public class CardFactory : ICardFactory
     private readonly DiContainer container;
     private readonly Card.Factory cardFactory;
     private readonly PlayerCard.Factory playerFactory;
+    private readonly MerchantCard.Factory merchantFactory;
     private readonly Viewport viewport;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
@@ -19,12 +20,14 @@ public class CardFactory : ICardFactory
         DiContainer container,
         Card.Factory cardFactory,
         PlayerCard.Factory playerFactory,
+        MerchantCard.Factory merchantFactory,
         Viewport viewport
     )
     {
         this.container = container;
         this.cardFactory = cardFactory;
         this.playerFactory = playerFactory;
+        this.merchantFactory = merchantFactory;
         this.viewport = viewport;
     }
 
@@ -44,6 +47,8 @@ public class CardFactory : ICardFactory
         {
             case CardType.Player:
                 return playerFactory.Create((IPlayerCardModel) withModel, (IPlayerCardView) view);
+            case CardType.Merchant:
+                return merchantFactory.Create(withModel, (IMerchantCardView) view);
             default:
                 return cardFactory.Create(withModel, view);
         }

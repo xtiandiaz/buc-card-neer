@@ -150,12 +150,12 @@ public class CardMatcher : ICardMatcher
                             source.Hack(Math.Min(player.Value, lockValue));
 
                             return player.Hit(lockValue)
+                                .IgnoreElements()
                                 .DoOnSubscribe(() =>
                                 {
                                     audioManager.Play(AudioEventKey.CardConfrontMonster);
                                     confronting.OnNext(Unit.Default);
                                 })
-                                .IgnoreElements()
                                 .Subscribe(observer);
                         
                         case CardType.Medicine:
@@ -191,7 +191,9 @@ public class CardMatcher : ICardMatcher
                 case CardType.Merchant:
                     
                     player.Credit(source.Value * 
-                                  ((source.Suit & withDestination.Suit) != 0 ? CreditMultiplierForMatchingSuit : 1));
+                                  ((source.Suit & withDestination.Suit) != 0 
+                                      ? MerchantCard.CreditMultiplierForMatchingSuit 
+                                      : 1));
                     
                     audioManager.Play(AudioEventKey.CardItemTradeSell);
 

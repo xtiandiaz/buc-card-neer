@@ -111,6 +111,7 @@ public class GameInstaller : SceneInstaller
         
         Container.BindFactory<ICardModel, ICardView, Card, Card.Factory>().AsSingle();
         Container.BindFactory<IPlayerCardModel, IPlayerCardView, PlayerCard, PlayerCard.Factory>().AsSingle();
+        Container.BindFactory<ICardModel, IMerchantCardView, MerchantCard, MerchantCard.Factory>().AsSingle();
         Container.BindInterfacesTo<CardFactory>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<IPlayerCard>()
