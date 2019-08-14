@@ -129,17 +129,18 @@ public class CardAnimator : MonoBehaviour
     private IObservable<Unit> PlayTimelineAnimation(string withName, CardTimelineAnimationKey andKey)
     {
         return Observable.Create<Unit>(observer =>
-        {
-            if (andKey == CardTimelineAnimationKey.RangeShot)
-                ToggleFaces(true);
-            
-            animator.Play(withName);
-            
-            return timelineAnimationCompletion
-                .First(anim => anim == andKey)
-                .AsUnitObservable()
-                .Subscribe(observer);
-        });
+            {
+                if (andKey == CardTimelineAnimationKey.RangeShot)
+                    ToggleFaces(true);
+
+                animator.Play(withName);
+
+                return timelineAnimationCompletion
+                    .First(anim => anim == andKey)
+                    .AsUnitObservable()
+                    .Subscribe(observer);
+            })
+            .TakeUntilDestroy(this);
     }
     
     private Tween Rotate(Vector3 toEulerAngles, float withDuration)

@@ -18,8 +18,12 @@ public class GameInstaller : SceneInstaller
     [Header("Views")] 
     [SerializeField] private BoardView boardViewPrefab = default;
 
-    [Header("Menus")]
+    [Header("UI")]
     [SerializeField] private GameMenu gameMenuPrefab = default;
+    [SerializeField] private BoardMenu boardMenuPrefab = default;
+    [Space] 
+    [SerializeField] private FloatingBannerModelCatalog floatingBannerCatalog = default;
+    [SerializeField] private FloatingBanner floatingBannerPrefab = default;
 
     public override void InstallBindings()
     {
@@ -51,6 +55,12 @@ public class GameInstaller : SceneInstaller
         #region UI
         
         Container.BindInterfacesTo<GameMenu>().FromComponentInNewPrefab(gameMenuPrefab).AsSingle().NonLazy();
+        Container.BindInterfacesTo<BoardMenu>().FromComponentInNewPrefab(boardMenuPrefab).AsSingle().NonLazy();
+
+        Container.BindFactory<FloatingBanner, FloatingBanner.Factory>().FromComponentInNewPrefab(floatingBannerPrefab);
+        Container.BindInterfacesAndSelfTo<FloatingBannerModelCatalog>().FromInstance(floatingBannerCatalog)
+            .WhenInjectedInto<FloatingBannerFactory>();
+        Container.BindInterfacesTo<FloatingBannerFactory>().AsSingle();
 
         #endregion
         

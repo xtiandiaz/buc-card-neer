@@ -28,10 +28,12 @@ public interface ICard : IDisposable
     bool IsStashed { get; set; }
     bool IsLocked { get; }
 
+    Vector3 Position { get; }
     Vector3 LocalPosition { get; }
     
     IObservable<Unit> WhenUnlocked { get; }
     IObservable<Unit> WhenDestroyed { get; }
+    IObservable<int> WhenHitOrHacked { get; }
     
     void Pick();
     void Drag(Vector3 byDeltaPosition);
@@ -56,9 +58,10 @@ public class Card : ICard
     {
     }
     
+    private readonly Subject<int> hittingOrHacking = new Subject<int>();
+    private readonly Subject<Unit> destruction = new Subject<Unit>();
     private readonly ReactiveProperty<int> value = new ReactiveProperty<int>();
     private readonly ReactiveProperty<int> lockValue = new ReactiveProperty<int>();
-    private readonly Subject<Unit> destruction = new Subject<Unit>();
     
     private readonly ICardView view;
 
@@ -114,10 +117,12 @@ public class Card : ICard
     public bool IsStashed { get; set; }
     public bool IsLocked => LockValue > 0;
 
+    public Vector3 Position => view.Position;
     public Vector3 LocalPosition => view.LocalPosition;
 
     public IObservable<Unit> WhenUnlocked => lockValue.Where(value => value <= 0).Take(1).AsUnitObservable();
     public IObservable<Unit> WhenDestroyed => destruction;
+    public IObservable<int> WhenHitOrHacked => hittingOrHacking;
     
     private bool WasLocked { get; }
 
@@ -148,7 +153,10 @@ public class Card : ICard
             Value -= withValue;
 
             if (Value <= 0)
-                return Destroy().Subscribe(observer);
+                return Destroy()
+                    .Subscribe(observer);
+            
+            hittingOrHacking.OnNext(withValue);
             
             observer.OnNext(Unit.Default);
             observer.OnCompleted();
@@ -160,6 +168,9 @@ public class Card : ICard
     public void Hack(int withValue)
     {
         LockValue -= withValue;
+        
+        if (LockValue > 0)
+            hittingOrHacking.OnNext(withValue);
     }
 
     public IObservable<Unit> Reveal()
@@ -212,16 +223,20 @@ public class Card : ICard
     
     public IObservable<Unit> OnClashed(int withValue)
     {
-        return view.OnClashed()
-            .ContinueWith(_ =>
+        return Observable.Zip(
+            view.OnClashed(),
+            Observable.Create<Unit>(observer =>
             {
-                if (!IsMonster) 
-                    return Hit(withValue);
-                
+                if (!IsMonster)
+                    return Hit(withValue)
+                        .Subscribe(observer);
+
                 Hack(withValue);
 
-                return LockValue <= 0 ? Destroy() : Observable.ReturnUnit();
-            });
+                return (LockValue <= 0 ? Destroy() : Observable.ReturnUnit())
+                    .Subscribe(observer);
+            }))
+            .AsSingleUnitObservable();
     }
 
     public IObservable<Unit> OnShot(int withValue)
@@ -251,8 +266,11 @@ public class Card : ICard
         });
     }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
+        value.Dispose();
+        lockValue.Dispose();
+        
         destruction?.Dispose();
     }
 }

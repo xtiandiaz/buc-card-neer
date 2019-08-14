@@ -9,6 +9,8 @@ public interface ICardDealer : IInitializable, IDisposable
 {
     IObservable<int> ActiveCardCount { get; }
     
+    IObservable<ICard> WhenDealt { get; }
+    
     bool CanDeal(ISlot intoSlot);
     bool IsThereDeadlock();
     
@@ -30,6 +32,8 @@ public class CardDealer : ICardDealer
     }
     
     public IObservable<int> ActiveCardCount => activeCardCount;
+
+    public IObservable<ICard> WhenDealt => dealing;
 
     public void Initialize()
     {

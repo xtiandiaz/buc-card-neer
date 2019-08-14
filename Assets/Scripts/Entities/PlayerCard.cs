@@ -8,12 +8,15 @@ public interface IPlayerCard : ICard
     int HealthPoints { get; }
     int Coins { get; }
     
-    IObservable<Unit> WhenBankrupt { get; }
+    Vector3 HeartPosition { get; }
+    Vector3 PouchPosition { get; }
+    
+    IObservable<int> WhenHealed { get; }
+    IObservable<int> WhenDebited { get; }
+    IObservable<int> WhenCredited { get; }
 
     void Heal(int byAmount);
     void Credit(int amount);
-    
-    IObservable<Unit> Debit(int amount);
 }
 
 public class PlayerCard : Card, IPlayerCard
@@ -22,8 +25,12 @@ public class PlayerCard : Card, IPlayerCard
     {
     }
 
-    private readonly int maxHealthPoints;
+    private readonly Subject<int> healing = new Subject<int>();
+    private readonly Subject<int> crediting = new Subject<int>();
+    private readonly Subject<int> debiting = new Subject<int>();
     private readonly ReactiveProperty<int> coins;
+    
+    private readonly int maxHealthPoints;
     private readonly IPlayerCardView view;
 
     private PlayerCard(IPlayerCardModel model, IPlayerCardView view)
@@ -49,31 +56,41 @@ public class PlayerCard : Card, IPlayerCard
         private set => Value = Math.Min(value, maxHealthPoints);
     }
 
-    public IObservable<Unit> WhenBankrupt => coins.Where(value => value <= 0).AsSingleUnitObservable();
+    public Vector3 HeartPosition => view.HeartPosition;
+    public Vector3 PouchPosition => view.PouchPosition;
+
+    public IObservable<int> WhenHealed => healing;
+    public IObservable<int> WhenCredited => crediting;
+    public IObservable<int> WhenDebited => debiting;
 
     public void Heal(int byAmount)
     {
         HealthPoints += byAmount;
+        
+        healing.OnNext(byAmount);
     }
 
-    public IObservable<Unit> Debit(int amount)
+    public void Debit(int amount)
     {
-        return Observable.Create<Unit>(observer =>
-        {
-            Coins -= amount;
-            
-            if (Coins <= 0)
-                return Destroy().Subscribe(observer);
-            
-            observer.OnNext(Unit.Default);
-            observer.OnCompleted();
-            
-            return Disposable.Empty;
-        });
+        Coins -= amount;
+        
+        debiting.OnNext(amount);
     }
 
     public void Credit(int amount)
     {
         Coins += amount;
+        
+        crediting.OnNext(amount);
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        
+        coins.Dispose();
+        healing.Dispose();
+        crediting.Dispose();
+        debiting.Dispose();
     }
 }

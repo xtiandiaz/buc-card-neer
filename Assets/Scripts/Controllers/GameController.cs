@@ -1,5 +1,7 @@
 using System;
 using UniRx;
+using UnityEngine;
+using DG.Tweening;
 using Zenject;
 
 public interface IGameController : IInitializable, IDisposable
@@ -16,6 +18,7 @@ public class GameController : IGameController
     private readonly IShip ship;
     private readonly IPlayerCard player;
     private readonly IAudioManager audioManager;
+    private readonly IFloatingBannerFactory bannerFactory;
     private readonly ISea sea;
 
     public GameController(

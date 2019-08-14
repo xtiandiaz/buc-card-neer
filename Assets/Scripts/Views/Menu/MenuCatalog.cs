@@ -8,7 +8,7 @@ public interface IMenuCatalog
     Menu GetPrefab<T>() where T : IMenu;
 }
 
-[CreateAssetMenu(menuName = "Model/Menu Catalog")]
+[CreateAssetMenu(menuName = "Model/UI/Menu Catalog")]
 public class MenuCatalog : ScriptableObject, IMenuCatalog
 {
     private Dictionary<Type, Menu> prefabIndex = new Dictionary<Type, Menu>();

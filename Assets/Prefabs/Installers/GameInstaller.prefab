@@ -65,3 +65,9 @@ MonoBehaviour:
     type: 3}
   gameMenuPrefab: {fileID: 4355782393892057426, guid: fc7ed93a0b7304f789064332875a5c9f,
     type: 3}
+  boardMenuPrefab: {fileID: 5767459964740817090, guid: 1f1b2bf014cf74fd891a5768ab4c5df4,
+    type: 3}
+  floatingBannerCatalog: {fileID: 11400000, guid: d2ebf8bcc806f4c56a323b424a16de59,
+    type: 2}
+  floatingBannerPrefab: {fileID: 4423973475127567295, guid: 18626d7424f904ed9a3a465ccc182862,
+    type: 3}

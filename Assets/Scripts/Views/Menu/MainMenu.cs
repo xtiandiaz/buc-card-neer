@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-interface IMainMenu : IMenu
+interface IMainMenu : IWorldSpaceMenu
 {
 }
 

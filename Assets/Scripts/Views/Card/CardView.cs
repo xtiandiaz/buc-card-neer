@@ -23,7 +23,7 @@ public interface ICardView
     Sprite FrontMotif { set; }
     Sprite BackMotif { set; }
     
-    Vector3 Position { set; }
+    Vector3 Position { get; set; }
     Vector3 LocalPosition { get; }
 
     void Pick();
@@ -150,6 +150,7 @@ public class CardView : MonoBehaviour, ICardView
 
     public Vector3 Position
     {
+        get => transform.position;
         set => transform.position = value;
     }
     

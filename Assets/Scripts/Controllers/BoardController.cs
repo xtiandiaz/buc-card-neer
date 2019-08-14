@@ -1,5 +1,6 @@
 using System;
 using UniRx;
+using UnityEngine;
 using Zenject;
 
 public interface IBoardController : IInitializable, IDisposable
@@ -12,17 +13,26 @@ public class BoardController : IBoardController
     
     private readonly ISea sea;
     private readonly IShip ship;
+    private readonly IPlayerCard player;
     private readonly ICardShooter cardShooter;
+    private readonly ICardDealer cardDealer;
+    private readonly IFloatingBannerFactory bannerFactory;
 
     private BoardController(
         ISea sea,
         IShip ship,
-        ICardShooter cardShooter
+        IPlayerCard player,
+        ICardShooter cardShooter,
+        ICardDealer cardDealer,
+        IFloatingBannerFactory bannerFactory
     )
     {
         this.sea = sea;
         this.ship = ship;
+        this.player = player;
         this.cardShooter = cardShooter;
+        this.cardDealer = cardDealer;
+        this.bannerFactory = bannerFactory;
     }
 
     public void Initialize()
@@ -53,6 +63,31 @@ public class BoardController : IBoardController
                 ship.Unlock();
             })
             .RepeatSafe()
+            .Subscribe());
+        
+        disposables.Add(player.WhenHealed
+            .Merge(player.WhenHitOrHacked.Select(value => -value))
+            .Subscribe(byAmount => 
+                bannerFactory.Create(
+                        FloatingBannerType.Health, 
+                        byAmount > 0 ? $"+{byAmount}" : $"{byAmount}", 
+                        player.Position)
+                    .Show(
+                        byAmount > 0 ? FloatingBanner.DisplayMode.FadeInUpward : FloatingBanner.DisplayMode.FadeInDownward, 
+                        1.25f, 
+                        true)));
+
+        /*disposables.Add(player.WhenCredited
+              .Subscribe(byAmount => 
+                  bannerFactory.Create(FloatingBannerType.Coins, $"+{byAmount}", player.Position - Vector3.up * 0.25f)
+                      .Show(FloatingBanner.DisplayMode.FadeInDownward, 2f, true)));*/
+        
+        disposables.Add(cardDealer.WhenDealt
+            .Where(card => card.IsAgent || card.IsMonster)
+            .SelectMany(card => card.WhenHitOrHacked
+                .TakeUntil(card.WhenDestroyed)
+                .Do(byAmount => bannerFactory.Create(FloatingBannerType.Health, $"-{byAmount}", card.Position)
+                    .Show(FloatingBanner.DisplayMode.FadeInDownward, 1.25f, true)))
             .Subscribe());
     }
 
