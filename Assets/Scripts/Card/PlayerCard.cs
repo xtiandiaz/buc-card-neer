@@ -7,10 +7,7 @@ public interface IPlayerCard : ICard
 {
     int HealthPoints { get; }
     int Coins { get; }
-    
-    Vector3 HeartPosition { get; }
-    Vector3 PouchPosition { get; }
-    
+
     IObservable<int> WhenHealed { get; }
     IObservable<int> WhenDebited { get; }
     IObservable<int> WhenCredited { get; }
@@ -53,9 +50,6 @@ public class PlayerCard : Card, IPlayerCard
         get => Value;
         private set => Value = Math.Min(value, maxHealthPoints);
     }
-
-    public Vector3 HeartPosition => view.HeartPosition;
-    public Vector3 PouchPosition => view.PouchPosition;
 
     public IObservable<int> WhenHealed => healing;
     public IObservable<int> WhenCredited => crediting;

@@ -16,7 +16,7 @@ public class MerchantCardView : CardView, IMerchantCardView
         {
             base.Suit = value;
             
-            cardValue.Color = Color.white;
+            customizer.ValueColor = Color.white;
             multiplierLabel.color = value.Color;
         }
     }

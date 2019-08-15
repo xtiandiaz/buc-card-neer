@@ -1,151 +1,56 @@
 using System;
 using DG.Tweening;
-using JetBrains.Annotations;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Rendering;
-
-public enum CardFace
-{
-    Front,
-    Back
-}
-
-public interface ICardView
-{
-    int Value { set; }
-    int LockValue { set; }
-    CardFace Face { set; }
-    ISuitModel Suit { set; }
-    
-    Sprite FrontCover { set; }
-    Sprite BackCover { set; }
-    Sprite FrontMotif { set; }
-    Sprite BackMotif { set; }
-    
-    Vector3 Position { get; set; }
-    Vector3 LocalPosition { get; }
-
-    void Pick(Vector3 atPosition);
-    void Drag(Vector3 toPosition);
-    void Arrange(CardArrangement withArrangement);
-    void ToggleValueVisibility(bool toValue);
-    void ToggleLockVisibility(bool toValue);
-    void Destroy();
-    
-    IObservable<Unit> Clash(Direction toward);
-    IObservable<Unit> OnClashed();
-    IObservable<Unit> OnShot();
-    IObservable<Unit> Reveal();
-    IObservable<Unit> Lodge(Transform inTransform, CardArrangement withArrangement, CardArrangementMode andMode);
-    IObservable<Unit> ArrangeAsObservable(CardArrangement withArrangement);
-    IObservable<Unit> Fade(float toAlphaValue, TimeSpan withDuration);
-}
 
 public class CardView : MonoBehaviour, ICardView
 {
-    [SerializeField] protected CardValue cardValue = default;
-    [CanBeNull]
-    [SerializeField] protected CardValue lockValue = default;
-    
-    [Space]
-    [CanBeNull]
-    [SerializeField] protected Suit suit = default;
+    [SerializeField] protected CardCustomizer customizer = default;
+    [SerializeField] private CardAnimator animator = default;
+    [SerializeField] private CardSorter sorter = default;
+    [SerializeField] private CardShader shader = default;
 
-    [Space]
-    [SerializeField] protected CardCover frontCover = default;
-    [SerializeField] protected CardCover backCover = default;
-    
-    [CanBeNull]
-    [SerializeField] protected SpriteRenderer frontMotif = default;
-    [CanBeNull] 
-    [SerializeField] protected SpriteRenderer backMotif = default;
-    
-    [Space]
-    [SerializeField] private Transform tweenWrapper = default;
-    [SerializeField] private Transform covers = default;
-
-    private CardAnimator animator;
-    private ICardShader shader;
-    private SortingGroup sortingGroup;
-    private Vector3 lastLodgingPosition;
-    private int sortingIndex;
-    private CardFace face;
-    
-    
-    private Tween rotation, dragging;
+    private Tween dragging;
     private Sequence arrangement;
 
     public virtual int Value
     {
-        set
-        {
-            if (cardValue != null)
-                cardValue.SetValue(value);
-        }
+        set => customizer.Value = value;
     }
 
     public int LockValue
     {
-        set
-        {
-            if (lockValue == null)
-                return;
-            
-            lockValue.SetValue(value);
-        }
+        set => customizer.LockValue = value;
     }
 
     public virtual ISuitModel Suit
     {
-        set
-        {
-            if (suit != null && value != null) 
-                suit.Customize(value);
-        }
+        set => customizer.Suit = value;
     }
 
-    public CardFace Face
-    {
-        set
-        {
-            var eulerAngles = tweenWrapper.eulerAngles;
-            eulerAngles.y = value == CardFace.Front ? 0 : 180f;
-            
-            covers.eulerAngles = eulerAngles;
-            face = value;
-            
-            frontCover.ToggleVisibility(face == CardFace.Front);
-            backCover.ToggleVisibility(face == CardFace.Back);
-        }
-    }
-    
     public Sprite FrontCover
     {
-        set => frontCover.Cover = value;
+        set => customizer.FrontCover = value;
     }
 
     public Sprite BackCover
     {
-        set => backCover.Cover = value;
+        set => customizer.BackCover = value;
     }
     
     public Sprite FrontMotif
     {
-        set
-        {
-            if (frontMotif != null) 
-                frontMotif.sprite = value;
-        }
+        set => customizer.FrontMotif = value;
     }
 
     public Sprite BackMotif
     {
-        set
-        {
-            if (backMotif != null) 
-                backMotif.sprite = value;
-        }
+        set => customizer.BackMotif = value;
+    }
+    
+    public CardFace Face
+    {
+        set => customizer.Face = value;
     }
 
     public Vector3 Position
@@ -154,38 +59,11 @@ public class CardView : MonoBehaviour, ICardView
         set => transform.position = value;
     }
     
-    public Vector3 LocalPosition
-    {
-        get => transform.localPosition;
-        private set => transform.localPosition = value;
-    }
+    public Vector3 LocalPosition => transform.localPosition;
 
-    private int SortingOrder
-    {
-        get => sortingGroup.sortingOrder;
-        set
-        {
-            sortingGroup.sortingOrder = value;
-
-            var shouldToggleFaceContent = value >= -2;
-
-            frontCover.ToggleContent(shouldToggleFaceContent);
-            backCover.ToggleContent(shouldToggleFaceContent);
-        }
-    }
-
-    private void Awake()
-    {
-        animator = GetComponent<CardAnimator>();
-        sortingGroup = GetComponent<SortingGroup>();
-        shader = GetComponent<ICardShader>();
-        
-        animator.Initialize(shader);
-    }
-    
     public void Pick(Vector3 atPosition)
     {
-        SortingOrder = 100;
+        sorter.Order = 100;
 
         arrangement?.Kill();
 
@@ -257,9 +135,7 @@ public class CardView : MonoBehaviour, ICardView
                 .OnComplete(() =>
                 {
                     Face = CardFace.Front;
-                    
-                    backCover.ToggleVisibility(false);
-                    
+
                     observer.OnNext(Unit.Default);
                     observer.OnCompleted();
                 });
@@ -271,8 +147,8 @@ public class CardView : MonoBehaviour, ICardView
     public IObservable<Unit> Clash(Direction toward)
     {
         return animator.Clash(toward)
-            .DoOnSubscribe(() => SortingOrder += 1)
-            .DoOnCompleted(() => SortingOrder -= 1);
+            .DoOnSubscribe(() => sorter.Order += 1)
+            .DoOnCompleted(() => sorter.Order -= 1);
     }
 
     public IObservable<Unit> OnClashed()
@@ -292,13 +168,12 @@ public class CardView : MonoBehaviour, ICardView
 
     public void ToggleValueVisibility(bool toValue)
     {
-        cardValue.ToggleVisibility(toValue);
+        customizer.ToggleValueVisibility(toValue);
     }
     
     public void ToggleLockVisibility(bool toValue)
     {
-        if (lockValue != null) 
-            lockValue.ToggleVisibility(toValue);
+        customizer.ToggleLockVisibility(toValue);
     }
 
     public void Destroy()
@@ -308,6 +183,6 @@ public class CardView : MonoBehaviour, ICardView
     
     private void Sort(int withRawIndex)
     {
-        SortingOrder = -withRawIndex;
+        sorter.Order = -withRawIndex;
     }
 }

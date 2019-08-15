@@ -4,9 +4,6 @@ public interface IPlayerCardView : ICardView
 {
     int MaxHealth { set; }
     int Coins { set; }
-    
-    Vector3 HeartPosition { get; }
-    Vector3 PouchPosition { get; }
 }
 
 public class PlayerCardView : CardView, IPlayerCardView
@@ -22,9 +19,6 @@ public class PlayerCardView : CardView, IPlayerCardView
 
     public override int Value
     {
-        set => cardValue.SetValue($"{value}<size=3.5> / {MaxHealth}</size>"); 
+        set => customizer.StringValue = $"{value}<size=3.5> / {MaxHealth}</size>"; 
     }
-
-    public Vector3 HeartPosition => cardValue.transform.position;
-    public Vector3 PouchPosition => coins.transform.position;
 }

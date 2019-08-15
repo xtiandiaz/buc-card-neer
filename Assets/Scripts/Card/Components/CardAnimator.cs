@@ -20,27 +20,20 @@ public class CardAnimator : MonoBehaviour
     
     [Space]
     [SerializeField] private Animator animator = default;
+    [SerializeField] private CardShader shader = default;
     
     [Space]
     [SerializeField] private Transform tweenWrapper = default;
     [SerializeField] private Transform covers = default;
-
-    private ICardShader shader;
-    private Tween rotation, depth;
-    private Sequence flip;
+    
     private CardFace currentFace = CardFace.Back;
 
-    public void Initialize(ICardShader shader)
-    {
-        this.shader = shader;
-    }
-    
     public Sequence Arrange(CardArrangement withArrangement, CardArrangementMode andMode = CardArrangementMode.Normal)
     {
         shader.Fog(withArrangement.fogColor, withArrangement.fogIntensity);  //TODO animate fog
         
-        var sequence = DOTween.Sequence();
         var duration = withArrangement.GetDuration(transform.localPosition, andMode);
+        var sequence = DOTween.Sequence();
 
         sequence.Append(transform.DOLocalMove(withArrangement.localPosition, duration)
             .SetEase(Ease.OutQuart));
@@ -48,37 +41,31 @@ public class CardAnimator : MonoBehaviour
         var eulerAngles = tweenWrapper.eulerAngles;
         eulerAngles.z = withArrangement.rotationZ;
 
-        sequence.Join(Rotate(eulerAngles, duration));
+        sequence.Join(tweenWrapper.DORotate(eulerAngles, duration)
+            .SetEase(Ease.OutQuart));
 
         return sequence;
     }
 
     public Sequence Flip(CardFace toFace)
     {
-        flip?.Kill();
-
         currentFace = toFace;
         
         var destEulerAngles = GetRotationEulerAnglesDestination(currentFace);
         var halfTweenDuration = 0.25f;
+        var sequence = DOTween.Sequence();
 
-        flip = DOTween.Sequence();
-        
-        flip.Append(
-            covers.DORotate(Vector3.up * 90f, halfTweenDuration)
-                .SetEase(Ease.InQuart));
+        sequence.Append(covers.DORotate(Vector3.up * 90f, halfTweenDuration)
+            .SetEase(Ease.InQuart));
 
-        flip.Join(TweenDepth(-2f, halfTweenDuration).SetEase(Ease.InQuart));
+        sequence.Join(covers.DOLocalMoveZ(-2f, halfTweenDuration).SetEase(Ease.InQuart));
+        sequence.Append(covers.DORotate(destEulerAngles, halfTweenDuration).SetEase(Ease.OutQuart));
+        sequence.Join(covers.DOLocalMoveZ(0, halfTweenDuration).SetEase(Ease.OutQuart));
 
-        flip.Append(
-            covers.DORotate(destEulerAngles, halfTweenDuration).SetEase(Ease.OutQuart));
-        
-        flip.Join(TweenDepth(0, halfTweenDuration).SetEase(Ease.OutQuart));
+        sequence.OnStart(() => ToggleFaces(true));
+        sequence.OnComplete(() => ToggleFace(toFace));
 
-        flip.OnStart(() => ToggleFaces(true));
-        flip.OnComplete(() => ToggleFace(toFace));
-
-        return flip;
+        return sequence;
     }
 
     public IObservable<Unit> Clash(Direction toward)
@@ -96,16 +83,6 @@ public class CardAnimator : MonoBehaviour
         return PlayTimelineAnimation("RangeShot", CardTimelineAnimationKey.RangeShot);
     }
 
-    public Tween Rotate(Vector3 toEulerAngles)
-    {
-        rotation?.Kill();
-
-        rotation = tweenWrapper.DORotate(toEulerAngles, 0.25f)
-            .SetEase(Ease.OutQuart);
-
-        return rotation;
-    }
-
     [UsedImplicitly]
     public void OnTimelineAnimationFinished(CardTimelineAnimationKey withKey)
     {
@@ -113,17 +90,6 @@ public class CardAnimator : MonoBehaviour
         
         if (withKey == CardTimelineAnimationKey.RangeShot)
             ToggleFace(currentFace);
-    }
-    
-    private Tween TweenDepth(float toValue, float duringSeconds, bool shouldDoInLocalSpace = true)
-    {
-        depth?.Kill();
-
-        depth = (shouldDoInLocalSpace
-            ? tweenWrapper.DOLocalMoveZ(toValue, duringSeconds)
-            : tweenWrapper.DOMoveZ(toValue, duringSeconds));
-
-        return depth;
     }
 
     private IObservable<Unit> PlayTimelineAnimation(string withName, CardTimelineAnimationKey andKey)
@@ -141,16 +107,6 @@ public class CardAnimator : MonoBehaviour
                     .Subscribe(observer);
             })
             .TakeUntilDestroy(this);
-    }
-    
-    private Tween Rotate(Vector3 toEulerAngles, float withDuration)
-    {
-        rotation?.Kill();
-
-        rotation = tweenWrapper.DORotate(toEulerAngles, withDuration)
-            .SetEase(Ease.OutQuart);
-
-        return rotation;
     }
 
     private Vector3 GetRotationEulerAnglesDestination(CardFace forFace)
