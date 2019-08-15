@@ -531,6 +531,7 @@ MonoBehaviour:
   animator: {fileID: 5074909376754311272}
   sorter: {fileID: 7468205934576597478}
   shader: {fileID: 9099243857038372407}
+  floatingWrapper: {fileID: 6101534049218447780}
   coins: {fileID: 2755808104395985536}
 --- !u!114 &5074909376754311272
 MonoBehaviour:

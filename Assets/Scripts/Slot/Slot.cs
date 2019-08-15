@@ -11,6 +11,7 @@ public enum SlotLodgingMode
 
 public interface ICardBond
 {
+    int Index { get; }
     Transform Transform { get; }
     
     void Release(ICard card);
@@ -65,6 +66,7 @@ public class Slot : ISlot
     private readonly ISlotView view;
     private readonly CardArrangementModel arrangementModel;
     private readonly bool shouldSelfArrange;
+    private readonly int index;
     
     private readonly Subject<ICard> lodging = new Subject<ICard>();
     private readonly Subject<ICard> releasing = new Subject<ICard>();
@@ -74,6 +76,7 @@ public class Slot : ISlot
     protected Slot(ISlotModel model, ISlotView view)
     {
         Type = model.Type;
+        index = model.Index;
         IsLocked = model.ShouldStartLocked;
         shouldSelfArrange = model.ShouldSelfArrange;
 
@@ -86,6 +89,7 @@ public class Slot : ISlot
         this.view = view;
     }
 
+    int ICardBond.Index => index;
     Transform ICardBond.Transform => view.Transform;
 
     void ICardBond.Release(ICard card)

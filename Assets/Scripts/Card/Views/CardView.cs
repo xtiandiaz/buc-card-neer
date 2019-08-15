@@ -3,13 +3,52 @@ using DG.Tweening;
 using UniRx;
 using UnityEngine;
 
+public interface ICardView
+{
+    int Value { set; }
+    int LockValue { set; }
+    CardFace Face { set; }
+    ISuitModel Suit { set; }
+    
+    bool IsBoarded { set; }
+    
+    Sprite FrontCover { set; }
+    Sprite BackCover { set; }
+    Sprite FrontMotif { set; }
+    Sprite BackMotif { set; }
+    
+    Vector3 Position { get; set; }
+    Vector3 LocalPosition { get; }
+
+    void Pick(Vector3 atPosition);
+    void Drag(Vector3 toPosition);
+    void Arrange(CardArrangement withArrangement);
+    void ToggleValueVisibility(bool toValue);
+    void ToggleLockVisibility(bool toValue);
+    void Destroy();
+    
+    IObservable<Unit> Clash(Direction toward);
+    IObservable<Unit> OnClashed();
+    IObservable<Unit> OnShot();
+    IObservable<Unit> Reveal();
+    IObservable<Unit> Lodge(Transform inTransform, int withIndex, CardArrangement arrangement, CardArrangementMode andMode);
+    IObservable<Unit> ArrangeAsObservable(CardArrangement withArrangement);
+    IObservable<Unit> Fade(float toAlphaValue, TimeSpan withDuration);
+}
+
 public class CardView : MonoBehaviour, ICardView
 {
+    private readonly ReactiveProperty<bool> isBoarded = new ReactiveProperty<bool>(); 
+        
     [SerializeField] protected CardCustomizer customizer = default;
     [SerializeField] private CardAnimator animator = default;
     [SerializeField] private CardSorter sorter = default;
     [SerializeField] private CardShader shader = default;
 
+    [SerializeField] private Transform floatingWrapper = default;
+
+    private bool isPicked;
+    private float floatingT;
     private Tween dragging;
     private Sequence arrangement;
 
@@ -26,6 +65,12 @@ public class CardView : MonoBehaviour, ICardView
     public virtual ISuitModel Suit
     {
         set => customizer.Suit = value;
+    }
+
+    public bool IsBoarded
+    {
+        private get => isBoarded.Value;
+        set => isBoarded.Value = value;
     }
 
     public Sprite FrontCover
@@ -61,9 +106,23 @@ public class CardView : MonoBehaviour, ICardView
     
     public Vector3 LocalPosition => transform.localPosition;
 
+    private void Start()
+    {
+        Observable.EveryGameObjectUpdate()
+            .TakeUntil(isBoarded.Where(value => value))
+            .Do(_ => floatingT -= Time.deltaTime * 2f)
+            .Where(_ => !isPicked)
+            .Subscribe(_ =>
+            {
+                floatingWrapper.localPosition = 0.05f * Mathf.Sin(floatingT) * Vector3.up;
+            })
+            .AddTo(this);
+    }
+
     public void Pick(Vector3 atPosition)
     {
         sorter.Order = 100;
+        isPicked = true;
 
         arrangement?.Kill();
 
@@ -77,7 +136,7 @@ public class CardView : MonoBehaviour, ICardView
             .SetEase(Ease.OutQuart);
     }
 
-    public IObservable<Unit> Lodge(Transform inTransform, CardArrangement withArrangement, CardArrangementMode andMode)
+    public IObservable<Unit> Lodge(Transform inTransform, int withIndex, CardArrangement arrangement, CardArrangementMode andMode)
     {
         return Observable.Create<Unit>(observer =>
         {
@@ -85,9 +144,14 @@ public class CardView : MonoBehaviour, ICardView
             
             transform.SetParent(inTransform, true);
 
-            Sort(withArrangement.index);
+            Sort(arrangement.index);
 
-            var sequence = animator.Arrange(withArrangement, andMode)
+            if (!IsBoarded)
+                floatingT = withIndex * Mathf.PI * 0.5f;
+            
+            isPicked = false;
+
+            var sequence = animator.Arrange(arrangement, andMode)
                 .OnComplete(() => 
                 {
                     observer.OnNext(Unit.Default);
@@ -102,9 +166,14 @@ public class CardView : MonoBehaviour, ICardView
     {
         dragging?.Kill();
         arrangement?.Kill();
+
+        isPicked = false;
         
         arrangement = animator.Arrange(withArrangement)
-            .OnComplete(() => Sort(withArrangement.index));
+            .OnComplete(() =>
+            {
+                Sort(withArrangement.index);
+            });
     }
     
     public IObservable<Unit> ArrangeAsObservable(CardArrangement withArrangement)
@@ -114,6 +183,8 @@ public class CardView : MonoBehaviour, ICardView
             dragging?.Kill();
             
             Sort(withArrangement.index);
+            
+            isPicked = false;
             
             var sequence = animator.Arrange(withArrangement);
 
@@ -185,4 +256,10 @@ public class CardView : MonoBehaviour, ICardView
     {
         sorter.Order = -withRawIndex;
     }
+
+    /*private void TryFloating()
+    {
+        if (!IsBoarded)
+            floating?.Play();
+    }*/
 }

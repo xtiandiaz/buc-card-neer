@@ -65,6 +65,7 @@ public class Card : ICard
     
     private readonly ICardView view;
 
+    private bool isBoarded;
     private ICardBond bond;
     private CardArrangement currentArrangement;
 
@@ -113,7 +114,13 @@ public class Card : ICard
     public bool IsMedicine => (Type & CardType.Medicine) != 0;
     public bool IsRangeTarget => !IsBoarded && 
                                  ((Type & CardType.Pirate) != 0 || IsResource && IsLocked);
-    public bool IsBoarded { get; set; }
+
+    public bool IsBoarded
+    {
+        get => isBoarded;
+        set => isBoarded = view.IsBoarded = value;
+    }
+    
     public bool IsStashed { get; set; }
     public bool IsLocked => LockValue > 0;
 
@@ -196,7 +203,7 @@ public class Card : ICard
 
             currentArrangement = arrangement;
 
-            return view.Lodge(withBond.Transform, arrangement, andMode)
+            return view.Lodge(withBond.Transform, withBond.Index, arrangement, andMode)
                 .Subscribe(observer);
         });
     }

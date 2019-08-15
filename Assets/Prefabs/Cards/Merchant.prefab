@@ -689,6 +689,7 @@ MonoBehaviour:
   animator: {fileID: 7925575345330841362}
   sorter: {fileID: 8630861728775111184}
   shader: {fileID: 8130335592096477142}
+  floatingWrapper: {fileID: 8064937440239108788}
   multiplierLabel: {fileID: 4540289614259934849}
 --- !u!114 &7925575345330841362
 MonoBehaviour:

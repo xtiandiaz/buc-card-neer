@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Supply3
   m_EditorClassIdentifier: 
   type: 1
+  index: 3
   capacity: 3
-  entryway: 1
   shouldStartLocked: 0
-  order: 3
+  shouldSelfArrange: 0
   highlightColor: {r: 0, g: 1, b: 0, a: 1}
   arrangement: {fileID: 11400000, guid: 8c652235ab686451bbe0cde2d23cc2a1, type: 2}

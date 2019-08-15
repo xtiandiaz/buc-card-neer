@@ -4,6 +4,7 @@ public interface ISlotModel
 {
     SlotType Type { get; }
     uint Capacity { get; }
+    int Index { get; }
     bool ShouldStartLocked { get; }
     bool ShouldSelfArrange { get; }
 
@@ -16,6 +17,7 @@ public interface ISlotModel
 public class SlotModel : ScriptableObject, ISlotModel
 {
     [SerializeField] private SlotType type = default;
+    [SerializeField] private int index = default;
     [SerializeField] private uint capacity = default;
     [SerializeField] private bool shouldStartLocked = default;
     [SerializeField] private bool shouldSelfArrange = default;
@@ -28,6 +30,7 @@ public class SlotModel : ScriptableObject, ISlotModel
 
     public SlotType Type => type;
     public uint Capacity => capacity;
+    public int Index => index;
     public bool ShouldStartLocked => shouldStartLocked;
     public bool ShouldSelfArrange => shouldSelfArrange;
 

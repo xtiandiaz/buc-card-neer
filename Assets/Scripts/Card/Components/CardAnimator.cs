@@ -28,6 +28,22 @@ public class CardAnimator : MonoBehaviour
     
     private CardFace currentFace = CardFace.Back;
 
+    public Sequence Float(float withExtent, float andDurationPerLoop)
+    {
+        var sequence = DOTween.Sequence();
+        
+        sequence.Append(tweenWrapper.DOLocalMoveY(withExtent, andDurationPerLoop * 0.25f)
+            .SetEase(Ease.OutSine));
+        sequence.Append(tweenWrapper.DOLocalMoveY(-withExtent, andDurationPerLoop * 0.5f)
+            .SetEase(Ease.InOutSine));
+        sequence.Append(tweenWrapper.DOLocalMoveY(0, andDurationPerLoop * 0.25f)
+            .SetEase(Ease.InSine));
+        
+        sequence.SetLoops(-1);
+
+        return sequence;
+    }
+
     public Sequence Arrange(CardArrangement withArrangement, CardArrangementMode andMode = CardArrangementMode.Normal)
     {
         shader.Fog(withArrangement.fogColor, withArrangement.fogIntensity);  //TODO animate fog

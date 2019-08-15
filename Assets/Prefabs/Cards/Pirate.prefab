@@ -499,6 +499,7 @@ MonoBehaviour:
   animator: {fileID: 6301019643690915779}
   sorter: {fileID: 7136832133998623836}
   shader: {fileID: 9099243857038372407}
+  floatingWrapper: {fileID: 2868352341865799980}
 --- !u!114 &6301019643690915779
 MonoBehaviour:
   m_ObjectHideFlags: 0
