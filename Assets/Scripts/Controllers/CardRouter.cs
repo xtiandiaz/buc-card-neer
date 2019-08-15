@@ -129,20 +129,23 @@ public class CardRouter : ICardRouter
             .Select(pickingScreenPos => 
             {
                 var card = slot.Peek();
+                var pickingPos = worldPointProvider.GetWorldPoint(pickingScreenPos, boardModel.FloatingCardDepth);
+                var pickingOffset = slot.Position - worldPointProvider.GetWorldPoint(pickingScreenPos, slot.Position.z);
                 
-                card.Pick(worldPointProvider.GetWorldPoint(pickingScreenPos, boardModel.FloatingCardDepth));
+                card.Pick(pickingPos + pickingOffset);
                 picking.OnNext((card, slot));
                 
-                return card;
+                return new {Card = card, PickingOffset = pickingOffset};
             })
-            .ContinueWith(pickedCard => slot.WhenUnpressed
+            .ContinueWith(pickedCardWithOffset => slot.WhenUnpressed
                 .Take(1)
                 .Merge(slot.WhenDraggingStarted
                     .Take(1)
                     .ContinueWith(slot.WhenDragged
                         .TakeUntil(slot.WhenDraggingStopped)
                         .Do(draggingScreenPos => 
-                            pickedCard.Drag(worldPointProvider.GetWorldPoint(draggingScreenPos, boardModel.FloatingCardDepth)))
+                            pickedCardWithOffset.Card.Drag(
+                                worldPointProvider.GetWorldPoint(draggingScreenPos, boardModel.FloatingCardDepth) + pickedCardWithOffset.PickingOffset))
                         .AsSingleUnitObservable()))
                 .Do(_ => 
                 {
@@ -151,11 +154,11 @@ public class CardRouter : ICardRouter
                     var slotWorldPos = slot.Position;
 
                     routing.OnNext((
-                        pickedCard, 
+                        pickedCardWithOffset.Card, 
                         slot, 
                         new Vector3(
-                            slotWorldPos.x + pickedCard.LocalPosition.x,
-                            slotWorldPos.y + pickedCard.LocalPosition.y)));
+                            slotWorldPos.x + pickedCardWithOffset.Card.LocalPosition.x,
+                            slotWorldPos.y + pickedCardWithOffset.Card.LocalPosition.y)));
                 })
                 .First())
                 .RepeatSafe()
