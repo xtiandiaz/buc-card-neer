@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public interface IPlayerCardView : ICardView
@@ -9,16 +10,15 @@ public interface IPlayerCardView : ICardView
 public class PlayerCardView : CardView, IPlayerCardView
 {
     [SerializeField] private CardValue coins = default;
+    [SerializeField] private TextMeshPro maxHealth = default;
 
-    public int MaxHealth { private get; set; }
+    public int MaxHealth
+    {
+        set => maxHealth.text = $"{value}";
+    }
     
     public int Coins
     {
         set => coins.SetValue(value);
-    }
-
-    public override int Value
-    {
-        set => customizer.StringValue = $"{value}<size=3.5> / {MaxHealth}</size>"; 
     }
 }
