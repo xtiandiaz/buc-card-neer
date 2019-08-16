@@ -68,17 +68,9 @@ public class GameInstaller : SceneInstaller
         
         Container.Bind<IBoardView>().FromComponentInNewPrefab(boardViewPrefab).AsSingle();
 
-        #endregion
-
-        #region Sea
-
         Container.BindFactory<IEnumerable<ISlot>, ISeaView, Sea, Sea.Factory>().AsSingle();
         Container.Bind<List<SlotModel>>().FromInstance(supplySlots).WhenInjectedInto<SeaFactory>();
         Container.BindInterfacesTo<Sea>().FromIFactory<ISea>(x => x.To<SeaFactory>().AsCached()).AsSingle().NonLazy();
-
-        #endregion
-        
-        #region Ship
 
         Container.BindFactory<ISlot, ISlot, ISlot, ISlot, IShipView, Ship, Ship.Factory>()
             .AsSingle();
@@ -90,7 +82,7 @@ public class GameInstaller : SceneInstaller
 
         #endregion
         
-        #region Deck & Card Providers
+        #region Deck
         
         Container.BindFactory<List<ICardModel>, Deck, Deck.Factory>().AsSingle();
         Container.Bind<IDeckFactory>().To<DeckFactory>().AsSingle();
@@ -112,10 +104,11 @@ public class GameInstaller : SceneInstaller
         Container.BindFactory<ICardModel, ICardView, Card, Card.Factory>().AsSingle();
         Container.BindFactory<IPlayerCardModel, IPlayerCardView, PlayerCard, PlayerCard.Factory>().AsSingle();
         Container.BindFactory<ICardModel, IMerchantCardView, MerchantCard, MerchantCard.Factory>().AsSingle();
+        Container.BindFactory<IDeviceCardModel, IDeviceCardView, DeviceCard, DeviceCard.Factory>().AsSingle();
         Container.BindInterfacesTo<CardFactory>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<IPlayerCard>()
-            .FromResolveGetter<ICardFactory, IPlayerCard>(x => (IPlayerCard) x.Create(player)).AsSingle();
+            .FromResolveGetter<ICardFactory, IPlayerCard>(cardFactory => (IPlayerCard) cardFactory.Create(player)).AsSingle();
 
         #endregion
     }

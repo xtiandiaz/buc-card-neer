@@ -4,7 +4,8 @@ public interface ICardModel
 {
     CardType Type { get; }
     SuitModel Suit { get; }
-    string Name { get; }
+    string Name { get; set; }
+    string DebugName { get; }
     int Value { get; }
     bool ShouldDisplayValue { get; }
     CardFace DealingFace { get; }
@@ -19,7 +20,7 @@ public interface ICardModel
     Sprite BackMotif { get; }
 }
 
-[CreateAssetMenu(menuName = "Model/Card")]
+[CreateAssetMenu(menuName = "Model/Card/Card")]
 public class CardModel : ScriptableObject, ICardModel
 {
     [SerializeField] private CardType type = default;
@@ -42,7 +43,8 @@ public class CardModel : ScriptableObject, ICardModel
 
     public virtual CardType Type => type;
     public SuitModel Suit => suit;
-    public string Name => name;
+    public string DebugName => name;
+    public string Name { get; set; }
     public int Value => value;
     public bool ShouldDisplayValue => shouldDisplayValue;
     public CardFace DealingFace => dealingFace;

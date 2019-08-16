@@ -4,7 +4,7 @@ public class MerchantCard : Card
 {
     public const int CreditMultiplierForMatchingSuit = 3;
     
-    protected MerchantCard(ICardModel model, IMerchantCardView view) 
+    private MerchantCard(ICardModel model, IMerchantCardView view) 
         : base(model, view)
     {
         view.Multiplier = CreditMultiplierForMatchingSuit;

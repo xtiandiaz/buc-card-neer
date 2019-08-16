@@ -6,6 +6,8 @@ public class CardCustomizer : MonoBehaviour
     [SerializeField] protected CardValue cardValue = default;
     [CanBeNull]
     [SerializeField] protected CardValue lockValue = default;
+    [CanBeNull]
+    [SerializeField] protected CardValue cardName = default;
     
     [CanBeNull]
     [SerializeField] protected Suit suit = default;
@@ -24,17 +26,24 @@ public class CardCustomizer : MonoBehaviour
     
     public int Value
     {
-        set => cardValue.SetValue(value);
-    }
-
-    public string StringValue
-    {
-        set => cardValue.SetValue(value);
+        set
+        {
+            if (cardValue == null)
+                return;
+            
+            cardValue.SetValue(value);
+        }
     }
 
     public Color ValueColor
     {
-        set => cardValue.Color = value;
+        set
+        {
+            if (cardValue == null)
+                return;
+            
+            cardValue.Color = value;
+        }
     }
 
     public int LockValue
@@ -47,7 +56,16 @@ public class CardCustomizer : MonoBehaviour
             lockValue.SetValue(value);
         }
     }
-    
+
+    public string CardName
+    {
+        set 
+        { 
+            if (cardName != null)
+                cardName.SetValue(value); 
+        }
+    }
+
     public ISuitModel Suit
     {
         set
@@ -60,6 +78,11 @@ public class CardCustomizer : MonoBehaviour
     public Sprite FrontCover
     {
         set => frontCover.Cover = value;
+    }
+    
+    public Color FrontCoverColor
+    {
+        set => frontCover.Color = value;
     }
 
     public Sprite BackCover
@@ -116,7 +139,8 @@ public class CardCustomizer : MonoBehaviour
     
     public void ToggleValueVisibility(bool toValue)
     {
-        cardValue.ToggleVisibility(toValue);
+        if (cardValue != null) 
+            cardValue.ToggleVisibility(toValue);
     }
     
     public void ToggleLockVisibility(bool toValue)

@@ -82,6 +82,8 @@ public class DeckFactory : IDeckFactory
         tools.Shuffle();
         
         cardData = cardData.Apportion(tools);
+        
+        cardData.AddRange(fromModel.Devices);
 
         var deck = deckFactory.Create(cardData);
         

@@ -26,6 +26,6 @@ public class CardDeferrer : ICardDeferrer
             return false;
 
         return !source.IsBoarded && 
-               (byDestination.Type & CardType.Trap) != 0;
+               (byDestination.Type & CardType.Device) != 0;
     }
 }

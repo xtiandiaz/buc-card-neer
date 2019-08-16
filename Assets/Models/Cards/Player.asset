@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c03779c634044deb6be915113402f71, type: 3}
   m_Name: Player
   m_EditorClassIdentifier: 
-  type: 1
+  type: 0
   suit: {fileID: 0}
   value: 13
   shouldDisplayValue: 1

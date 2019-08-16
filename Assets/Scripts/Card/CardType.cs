@@ -3,7 +3,7 @@ using System;
 [Flags]
 public enum CardType
 {
-    Player             = 1 << 0,
+    None               = 0,
     Pirate             = 1 << 1,
     Merchant           = 1 << 2,
     
@@ -15,10 +15,12 @@ public enum CardType
     WeaponMelee        = 1 << 7,
     WeaponRanged       = 1 << 8,
     Medicine           = 1 << 9,
-    Trap               = 1 << 10,
-                         
+    Device             = 1 << 10,
+    
+    Player             = 1 << 16,
+
     Item               = Food | Gem | Artifact,
-    Tool               = WeaponMelee | WeaponRanged | Medicine | Trap,
+    Tool               = WeaponMelee | WeaponRanged | Medicine | Device,
     Resource           = Item | Tool,
     Agent              = Pirate | Merchant
 }

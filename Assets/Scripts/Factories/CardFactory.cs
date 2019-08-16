@@ -13,7 +13,9 @@ public class CardFactory : ICardFactory
     private readonly Card.Factory cardFactory;
     private readonly PlayerCard.Factory playerFactory;
     private readonly MerchantCard.Factory merchantFactory;
+    private readonly DeviceCard.Factory deviceFactory;
     private readonly Viewport viewport;
+    private readonly ILocalizationProvider localizator;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private CardFactory(
@@ -21,18 +23,24 @@ public class CardFactory : ICardFactory
         Card.Factory cardFactory,
         PlayerCard.Factory playerFactory,
         MerchantCard.Factory merchantFactory,
-        Viewport viewport
+        DeviceCard.Factory deviceFactory,
+        Viewport viewport,
+        ILocalizationProvider localizator
     )
     {
         this.container = container;
         this.cardFactory = cardFactory;
         this.playerFactory = playerFactory;
         this.merchantFactory = merchantFactory;
+        this.deviceFactory = deviceFactory;
         this.viewport = viewport;
+        this.localizator = localizator;
     }
 
     public ICard Create(ICardModel fromModel)
     {
+        PrepareModel(fromModel);
+        
         var view = CreateView(fromModel);
         var card = CreateCard(fromModel, view);
 
@@ -49,6 +57,8 @@ public class CardFactory : ICardFactory
                 return playerFactory.Create((IPlayerCardModel) withModel, (IPlayerCardView) view);
             case CardType.Merchant:
                 return merchantFactory.Create(withModel, (IMerchantCardView) view);
+            case CardType.Device:
+                return deviceFactory.Create((IDeviceCardModel) withModel, (IDeviceCardView) view);
             default:
                 return cardFactory.Create(withModel, view);
         }
@@ -70,6 +80,14 @@ public class CardFactory : ICardFactory
                         5f * Vector3.back;
 
         return view;
+    }
+
+    private void PrepareModel(ICardModel model)
+    {
+        if (model is IDeviceCardModel deviceModel)
+        {
+            model.Name = localizator.GetName(deviceModel.DeviceType);
+        }
     }
 
     public void Dispose()

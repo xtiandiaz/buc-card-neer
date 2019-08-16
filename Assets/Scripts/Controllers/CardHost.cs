@@ -85,7 +85,7 @@ public class CardHost : ICardHost
                 if (!card.IsBoarded)
                     return (card.Type & (CardType.Resource | CardType.Agent)) != 0;
 
-                return intoDestination.IsEmpty && (card.Type & (CardType.WeaponRanged | CardType.Trap)) != 0;
+                return intoDestination.IsEmpty && (card.Type & (CardType.WeaponRanged | CardType.Device)) != 0;
 
             case SlotType.Player:
 

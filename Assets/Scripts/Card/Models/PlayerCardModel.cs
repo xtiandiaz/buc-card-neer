@@ -6,7 +6,7 @@ public interface IPlayerCardModel : ICardModel
     int InitialCoins { get; }
 }
 
-[CreateAssetMenu(menuName = "Model/PlayerCard")]
+[CreateAssetMenu(menuName = "Model/Card/Player")]
 public class PlayerCardModel : CardModel, IPlayerCardModel
 {
     [SerializeField] private int maxHealthPoints = 100;

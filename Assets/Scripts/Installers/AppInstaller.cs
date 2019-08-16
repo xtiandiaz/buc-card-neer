@@ -22,5 +22,11 @@ public class AppInstaller : MonoInstaller
         Container.BindInterfacesTo<BoardModel>().FromInstance(board).AsSingle();
 
         #endregion
+
+        #region Localization
+
+        Container.BindInterfacesTo<LocalizationProvider>().AsSingle();
+
+        #endregion
     }
 }
