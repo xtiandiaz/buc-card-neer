@@ -1,7 +1,7 @@
 using System;
 using UniRx;
 
-public interface ICardDismisser : IDisposable
+public interface IDismissalController : IDisposable
 {
     IObservable<Unit> WhenCardDismissed { get; }
     
@@ -10,7 +10,7 @@ public interface ICardDismisser : IDisposable
     IObservable<Unit> Dismiss(ISlot fromSource);
 }
 
-public class CardDismisser : ICardDismisser
+public class DismissalController : IDismissalController
 {
     private readonly Subject<Unit> dismissing = new Subject<Unit>();
 

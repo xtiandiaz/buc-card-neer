@@ -13,7 +13,6 @@ public interface IShip : IInitializable, IDisposable
     IObservable<CardType> WhenCardBoarded { get; }
     IObservable<CardType> WhenCardRevealed { get; }
     IObservable<CardType> WhenCardStashed { get; }
-    IObservable<CardType> WhenCardHacked { get; }
     IObservable<CardType> WhenCardHandled { get; }
 
     void Lock();
@@ -31,7 +30,6 @@ public class Ship : IShip
     private readonly Subject<CardType> boarding = new Subject<CardType>();
     private readonly Subject<CardType> revealing = new Subject<CardType>();
     private readonly Subject<CardType> stashing = new Subject<CardType>();
-    private readonly Subject<CardType> hacking = new Subject<CardType>();
     private readonly Subject<CardType> handling = new Subject<CardType>();
     private readonly CompositeDisposable disposables = new CompositeDisposable();
     
@@ -71,7 +69,6 @@ public class Ship : IShip
     public IObservable<CardType> WhenCardBoarded => boarding;
     public IObservable<CardType> WhenCardRevealed => revealing;
     public IObservable<CardType> WhenCardStashed => stashing;
-    public IObservable<CardType> WhenCardHacked => hacking;
     public IObservable<CardType> WhenCardHandled => handling;
 
     public void Initialize()
@@ -142,8 +139,7 @@ public class Ship : IShip
         revealing.Dispose();
         stashing.Dispose();
         handling.Dispose();
-        hacking.Dispose();
-        
+
         disposables.Dispose();
     }
 
@@ -186,14 +182,11 @@ public class Ship : IShip
             Unlock();
 
             return card.WhenUnlocked
-                .Do(_ =>
-                {
-                    Lock();
-                    hacking.OnNext(card.AbstractType);
-                })
+                .Do(_ => Lock())
                 .ContinueWith(_ => card.DropAsObservable()
                     .Delay(TimeSpan.FromSeconds(0.25))
                     .Concat(HandleResource(card)))
+                .TakeUntil(card.WhenDestroyed.Do(_ => handling.OnNext(card.Type))) // Due to e.g., a Device
                 .Subscribe(observer);
         });
     }

@@ -14,24 +14,24 @@ public class BoardController : IBoardController
     private readonly ISea sea;
     private readonly IShip ship;
     private readonly IPlayerCard player;
-    private readonly ICardShooter cardShooter;
-    private readonly ICardDealer cardDealer;
+    private readonly IShootingController shooter;
+    private readonly IDealingController dealer;
     private readonly IFloatingBannerFactory bannerFactory;
 
     private BoardController(
         ISea sea,
         IShip ship,
         IPlayerCard player,
-        ICardShooter cardShooter,
-        ICardDealer cardDealer,
+        IShootingController shooter,
+        IDealingController dealer,
         IFloatingBannerFactory bannerFactory
     )
     {
         this.sea = sea;
         this.ship = ship;
         this.player = player;
-        this.cardShooter = cardShooter;
-        this.cardDealer = cardDealer;
+        this.shooter = shooter;
+        this.dealer = dealer;
         this.bannerFactory = bannerFactory;
     }
 
@@ -54,7 +54,7 @@ public class BoardController : IBoardController
                 ship.Lock();
             })
             .Delay(TimeSpan.FromSeconds(0.5))
-            .ContinueWith(_ => cardShooter.Shoot(ship.Plank, sea.Slots))
+            .ContinueWith(_ => shooter.Shoot(ship.Plank, sea.Slots))
             .ContinueWith(_ => sea.Arrange())
             .ContinueWith(sea.Resupply())
             .DoOnCompleted(() =>
@@ -82,7 +82,7 @@ public class BoardController : IBoardController
                   bannerFactory.Create(FloatingBannerType.Coins, $"+{byAmount}", player.Position - Vector3.up * 0.25f)
                       .Show(FloatingBanner.DisplayMode.FadeInDownward, 2f, true)));*/
         
-        disposables.Add(cardDealer.WhenDealt
+        disposables.Add(dealer.WhenDealt
             .Where(card => card.IsAgent || card.IsMonster)
             .SelectMany(card => card.WhenHitOrHacked
                 .TakeUntil(card.WhenDestroyed)

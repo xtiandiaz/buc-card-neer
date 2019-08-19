@@ -2,7 +2,7 @@ using System;
 using UniRx;
 using UnityEngine;
 
-public interface ICardForwarder : IDisposable
+public interface IForwardingController : IDisposable
 {
     IObservable<Unit> WhenForwarded { get; }
     IObservable<CardType> WhenCardStashed { get; }
@@ -12,7 +12,7 @@ public interface ICardForwarder : IDisposable
     IObservable<Unit> Forward(ICard card, ISlot fromUserDestination);
 }
 
-public class CardForwarder : ICardForwarder
+public class ForwardingController : IForwardingController
 {
     private readonly Subject<Unit> forwarding = new Subject<Unit>();
     private readonly Subject<CardType> revealing = new Subject<CardType>();
@@ -20,7 +20,7 @@ public class CardForwarder : ICardForwarder
     private readonly IShip ship;
     private readonly IGameStatus gameStatus;
 
-    private CardForwarder(
+    private ForwardingController(
         IShip ship,
         IGameStatus gameStatus
         )
@@ -35,7 +35,7 @@ public class CardForwarder : ICardForwarder
     
     public bool CanForward(ICard card, ISlot fromUserDestination)
     {
-        if (!card.IsResource || card.IsLocked)
+        if (!card.IsResource || card.IsLocked || card.IsDevice)
             return false;
         
         if (card.IsItem && !gameStatus.PlayerDidStashItem)

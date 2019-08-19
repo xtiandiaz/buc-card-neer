@@ -13,13 +13,16 @@ public interface IDeckFactory : IFactory<IDeckModel, IDeck>, IDisposable
 public class DeckFactory : IDeckFactory
 {
     private readonly Deck.Factory deckFactory;
+    private readonly IBoardModel boardModel;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private DeckFactory(
-        Deck.Factory deckFactory
+        Deck.Factory deckFactory,
+        IBoardModel boardModel
         )
     {
         this.deckFactory = deckFactory;
+        this.boardModel = boardModel;
     }
     
     public IDeck Create(IDeckModel fromModel)
@@ -82,8 +85,11 @@ public class DeckFactory : IDeckFactory
         tools.Shuffle();
         
         cardData = cardData.Apportion(tools);
-        
-        cardData.AddRange(fromModel.Devices);
+
+        foreach (var device in fromModel.Devices)
+        {
+            cardData.Insert(Random.Range(cardData.Count / 2, (cardData.Count - 1)), device);
+        }
 
         var deck = deckFactory.Create(cardData);
         

@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using UniRx;
 
-public interface ICardShooter : IDisposable
+public interface IShootingController : IDisposable
 {
     IObservable<Unit> WhenShot { get; }
     IObservable<Unit> WhenHit { get; }
@@ -14,13 +14,13 @@ public interface ICardShooter : IDisposable
     IObservable<Unit> Shoot(ISlot fromSource, ISlot[] intoDestinations);
 }
 
-public class CardShooter : ICardShooter
+public class ShootingController : IShootingController
 {
     private readonly Subject<Unit> shooting = new Subject<Unit>();
     private readonly Subject<Unit> hitting = new Subject<Unit>();
     private readonly Subject<Unit> restoring = new Subject<Unit>();
 
-    private CardShooter(
+    private ShootingController(
         IGameStatus gameStatus
         ) 
     {

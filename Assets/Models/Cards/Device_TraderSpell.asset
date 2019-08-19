@@ -24,5 +24,5 @@ MonoBehaviour:
   backMotif: {fileID: 21300000, guid: 660a931e5ce194a7baa14d20c1452089, type: 3}
   viewPrefab: {fileID: 5144831359487477873, guid: b8d1715b2bada4ad2b998081d968f0ac,
     type: 3}
-  deviceType: 3
-  faceColor: {r: 0.15, g: 0.15, b: 0.15, a: 1}
+  deviceType: 8
+  faceColor: {r: 0.8509804, g: 0.5019608, b: 0.98039216, a: 1}

@@ -1,16 +1,16 @@
 using System;
 using UniRx;
 
-public interface ICardClasher
+public interface IClashingController
 {
     IObservable<Unit> Clash(ISlot source, ISlot withDestination, Direction toward);
 }
 
-public class CardClasher : ICardClasher
+public class ClashingController : IClashingController
 {
     private readonly IAudioManager audioManager;
 
-    private CardClasher(
+    private ClashingController(
         IAudioManager audioManager
         )
     {

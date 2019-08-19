@@ -7,7 +7,8 @@ public interface ICard : IDisposable
 {
     CardType Type { get; }
     CardType AbstractType { get; }
-    CardType? Suit { get; }
+    CardType? SuitType { get; }
+    ISuitModel Suit { get; }
 
     int Value { get; }
     int LockValue { get; }
@@ -16,6 +17,7 @@ public interface ICard : IDisposable
     bool IsResource { get; }
     bool IsItem { get; }
     bool IsTool { get; }
+    bool IsDevice { get; }
     bool IsMonster { get; }
     bool IsAgent { get; }
     bool IsPirate { get; }
@@ -67,17 +69,17 @@ public class Card : ICard
 
     private bool isBoarded;
     private ICardBond bond;
+    private ISuitModel suit;
     private CardArrangement currentArrangement;
 
     protected Card(ICardModel model, ICardView view)
     {
-        view.Suit = model.Suit;
         view.Face = model.DealingFace;
         view.ToggleLockVisibility(model.LockValue > 0);
         this.view = view;
 
         Type = model.Type;
-        Suit = model.Suit?.Type;
+        Suit = model.Suit;
 
         Value = OriginalValue = model.Value;
         LockValue = model.LockValue;
@@ -86,7 +88,13 @@ public class Card : ICard
 
     public CardType Type { get; }
     public CardType AbstractType => IsMonster ? CardType.Monster : Type;
-    public CardType? Suit { get; }
+    public CardType? SuitType => Suit?.Type;
+
+    public ISuitModel Suit
+    {
+        get => suit;
+        protected set => suit = view.Suit = value;
+    }
 
     public int Value
     {
@@ -105,7 +113,8 @@ public class Card : ICard
     public bool IsResource => (Type & CardType.Resource) != 0;
     public bool IsItem => (Type & CardType.Item) != 0;
     public bool IsTool => (Type & CardType.Tool) != 0;
-    public bool IsMonster => IsResource && (IsLocked || WasLocked); // TODO provisional; remove
+    public bool IsDevice => (Type & CardType.Device) != 0;
+    public bool IsMonster => IsResource && (IsLocked || WasLocked);
     public bool IsAgent => (Type & CardType.Agent) != 0;
     public bool IsPirate => (Type & CardType.Pirate) != 0;
     public bool IsMerchant => (Type & CardType.Merchant) != 0;

@@ -31,8 +31,8 @@ public class Sea : ISea
     private readonly CompositeDisposable disposables = new CompositeDisposable();
     
     private readonly ISeaView view;
-    private readonly ICardDealer dealer;
-    private readonly ICardClasher clasher;
+    private readonly IDealingController dealer;
+    private readonly IClashingController clasher;
     private readonly int cardCountPerSlot;
 
     private int clashExclusionMask;
@@ -42,8 +42,8 @@ public class Sea : ISea
     private Sea(
         IEnumerable<ISlot> supplySlots,
         ISeaView view,
-        ICardDealer dealer,
-        ICardClasher clasher,
+        IDealingController dealer,
+        IClashingController clasher,
         IBoardModel boardModel
         )
     {

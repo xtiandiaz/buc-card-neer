@@ -29,7 +29,7 @@ public class GameStatusController : IGameStatusController
     private readonly IAppController appController;
     private readonly IPlayerCard player;
     private readonly IDeck deck;
-    private readonly ICardDealer cardDealer;
+    private readonly IDealingController dealer;
     private readonly IBoardModel boardModel;
     private readonly Subject<Unit> losing = new Subject<Unit>();
     private readonly Subject<int> winning = new Subject<int>();
@@ -57,14 +57,14 @@ public class GameStatusController : IGameStatusController
         IAppController appController,
         IPlayerCard player, 
         IDeck deck,
-        ICardDealer cardDealer,
+        IDealingController dealer,
         IBoardModel boardModel
         )
     {
         this.appController = appController;
         this.player = player;
         this.deck = deck;
-        this.cardDealer = cardDealer;
+        this.dealer = dealer;
         this.boardModel = boardModel;
     }
 
@@ -75,8 +75,8 @@ public class GameStatusController : IGameStatusController
                 .Take(1)
                 .Subscribe(losing));
         
-        disposables.Add(cardDealer.ActiveCardCount
-            .Where(count => DidSupplyOnce && count < boardModel.MaxCardsInSupply && cardDealer.IsThereDeadlock())
+        disposables.Add(dealer.ActiveCardCount
+            .Where(count => DidSupplyOnce && count < boardModel.MaxCardsInSupply && dealer.IsThereDeadlock())
             .Take(1)
             .Subscribe(_ => winning.OnNext(player.Coins)));
     }

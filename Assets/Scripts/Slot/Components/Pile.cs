@@ -12,7 +12,7 @@ public interface IPile
     IObservable<int> WhenCountChanged { get; }
     
     int? Insert(ICard card);
-    bool InsertReverse(ICard card);
+    int? InsertReverse(ICard card);
     bool Remove(ICard card);
     ICard Peek();
     ICard Pop();
@@ -93,10 +93,10 @@ public class Pile : IPile
         return default;
     }
 
-    public bool InsertReverse(ICard card)
+    public int? InsertReverse(ICard card)
     {
         if (card == null || DoesContain(card))
-            return false;
+            return default;
 
         switch (mode)
         {
@@ -104,15 +104,16 @@ public class Pile : IPile
                 
                 contents.Insert(0, card);
 
-                break;
+                return 0;
+                
             case Mode.Stack:
                 
                 contents.Add(card);
 
-                break;
+                return contents.Count - 1;
         }
 
-        return true;
+        return default;
     }
     
     public bool Remove(ICard card)

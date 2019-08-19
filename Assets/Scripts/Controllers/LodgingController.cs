@@ -2,14 +2,14 @@ using System;
 using UniRx;
 using UnityEngine;
 
-public interface ICardHost
+public interface ILodgingController
 {
     bool CanLodge(ISlot fromSource, ISlot intoDestination);
     IObservable<Unit> Lodge(ICard card, ISlot intoDestination);
     IObservable<Unit> Lodge(ISlot fromSource, ISlot intoDestination);
 }
 
-public class CardHost : ICardHost
+public class LodgingController : ILodgingController
 {
     public bool CanLodge(ISlot fromSource, ISlot intoDestination)
     {
@@ -85,7 +85,13 @@ public class CardHost : ICardHost
                 if (!card.IsBoarded)
                     return (card.Type & (CardType.Resource | CardType.Agent)) != 0;
 
-                return intoDestination.IsEmpty && (card.Type & (CardType.WeaponRanged | CardType.Device)) != 0;
+                if (!intoDestination.IsEmpty)
+                    return false;
+
+                if (card.IsRangeWeapon)
+                    return true;
+
+                return card is IDeviceCard device && device.IsLodgeable;
 
             case SlotType.Player:
 

@@ -14,7 +14,7 @@ public class GameController : IGameController
     
     private readonly IGameStatus status;
     private readonly IBoardController boardController;
-    private readonly ICardHost cardHost;
+    private readonly ILodgingController lodger;
     private readonly IShip ship;
     private readonly IPlayerCard player;
     private readonly IAudioManager audioManager;
@@ -24,7 +24,7 @@ public class GameController : IGameController
     public GameController(
         IGameStatus status,
         IBoardController boardController,
-        ICardHost cardHost,
+        ILodgingController lodger,
         IShip ship,
         ISea sea,
         IPlayerCard player,
@@ -33,7 +33,7 @@ public class GameController : IGameController
     {
         this.status = status;
         this.boardController = boardController;
-        this.cardHost = cardHost;
+        this.lodger = lodger;
         this.ship = ship;
         this.sea = sea;
         this.player = player;
@@ -42,7 +42,7 @@ public class GameController : IGameController
 
     public void Initialize()
     {
-        disposables.Add(cardHost.Lodge(player, ship.Helm)
+        disposables.Add(lodger.Lodge(player, ship.Helm)
             .SelectMany(_ => sea.Supply()
                 .DoOnSubscribe(() => audioManager.Play(AudioEventKey.GameAssemble))
                 .DoOnCompleted(() => status.DidSupplyOnce = true))

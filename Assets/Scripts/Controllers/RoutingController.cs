@@ -5,13 +5,13 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-public interface ICardRouter : IDisposable, IInitializable
+public interface IRoutingController : IDisposable, IInitializable
 {
     IObservable<Unit> WhenCardPicked { get; }
     IObservable<Unit> WhenCardDropped { get; }
 }
 
-public class CardRouter : ICardRouter
+public class RoutingController : IRoutingController
 {
     private readonly Subject<(ICard, ISlot)> picking = new Subject<(ICard, ISlot)>();
     private readonly Subject<Unit> dropping = new Subject<Unit>();
@@ -23,22 +23,22 @@ public class CardRouter : ICardRouter
     private readonly IBoardModel boardModel;
     private readonly IShip ship;
     private readonly ISea sea;
-    private readonly ICardForwarder forwarder;
-    private readonly ICardDeferrer deferrer;
-    private readonly ICardDismisser dismisser;
-    private readonly ICardMatcher matcher;
-    private readonly ICardHost host;
+    private readonly IForwardingController forwarder;
+    private readonly IDefermentController deferrer;
+    private readonly IDismissalController dismisser;
+    private readonly IMatchingController matcher;
+    private readonly ILodgingController host;
 
-    private CardRouter(
+    private RoutingController(
         IWorldPointProvider worldPointProvider,
         IBoardModel boardModel,
         IShip ship,
         ISea sea,
-        ICardForwarder forwarder,
-        ICardDeferrer deferrer,
-        ICardDismisser dismisser,
-        ICardMatcher matcher,
-        ICardHost host
+        IForwardingController forwarder,
+        IDefermentController deferrer,
+        IDismissalController dismisser,
+        IMatchingController matcher,
+        ILodgingController host
     )
     {
         this.worldPointProvider = worldPointProvider;
@@ -176,15 +176,15 @@ public class CardRouter : ICardRouter
     {
         return Observable.Create<Unit>(observer =>
         {
-            if (forwarder.CanForward(card, intoDestination))
+            if (deferrer.CanDefer(fromSource, intoDestination))
             {
-                return forwarder.Forward(card, intoDestination)
+                return deferrer.Defer(fromSource, intoDestination)
                     .Subscribe(observer);
             }
             
-            if (deferrer.CanDefer(fromSource, intoDestination))
+            if (forwarder.CanForward(card, intoDestination))
             {
-                return deferrer.Defer(fromSource, fromSource)
+                return forwarder.Forward(card, intoDestination)
                     .Subscribe(observer);
             }
 

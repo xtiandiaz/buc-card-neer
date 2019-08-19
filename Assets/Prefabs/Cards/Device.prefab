@@ -546,7 +546,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1aef73f82fdb4f86893bc90e724a6085, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetTextRenderers: []
+  targetTextRenderers:
+  - {fileID: 556732763257196579}
   targetSpriteRenderers:
   - {fileID: 5304362483095993766}
   - {fileID: 5816174328690173628}

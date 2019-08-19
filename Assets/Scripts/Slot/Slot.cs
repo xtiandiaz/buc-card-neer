@@ -26,6 +26,8 @@ public interface ISlot : ICardBond, IDisposable
     bool IsEmpty { get; }
     bool HasRoom { get; }
 
+    int CardCount { get; }
+    
     Vector3 Position { get; }
 
     IObservable<Vector2> WhenPressed { get; }
@@ -110,6 +112,9 @@ public class Slot : ISlot
     public bool IsMessy { get; private set; }
     public bool IsEmpty => pile.Count <= 0;
     public bool HasRoom => pile.HasRoom;
+
+    public int CardCount => pile.Count;
+    
     public Vector3 Position => view.Transform.position;
 
     public IObservable<Vector2> WhenPressed => view.WhenPressed;

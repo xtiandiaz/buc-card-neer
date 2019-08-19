@@ -1,38 +1,45 @@
 using System;
 using UniRx;
 
-public interface ICardMatcher : IDisposable
+public interface IMatchingController : IDisposable
 {
     IObservable<Unit> WhenMatched { get; }
+    IObservable<DeviceType> WhenMatchedDevice { get; }
+    IObservable<DeviceType> WhenDeviceActed { get; }
     
     bool CanMatch(ISlot fromSource, ISlot intoDestination);
     IObservable<Unit> Match(ISlot fromSource, ISlot intoDestination);
 }
 
-public class CardMatcher : ICardMatcher
+public class MatchingController : IMatchingController
 {
-    private const int CreditMultiplierForMatchingSuit = 3;
-    
     private readonly Subject<Unit> matching = new Subject<Unit>();
     private readonly Subject<Unit> attacking = new Subject<Unit>();
     private readonly Subject<Unit> confronting = new Subject<Unit>();
+    private readonly Subject<DeviceType> deviceMatching = new Subject<DeviceType>();
+    private readonly Subject<DeviceType> deviceActing = new Subject<DeviceType>();
     private readonly IPlayerCard player;
     private readonly IAudioManager audioManager;
+    private readonly IShip ship;
 
-    private CardMatcher(
+    private MatchingController(
         IPlayerCard player,
         IAudioManager audioManager,
-        IGameStatus gameStatus
+        IGameStatus gameStatus,
+        IShip ship
         )
     {
         this.player = player;
         this.audioManager = audioManager;
+        this.ship = ship;
 
         gameStatus.WhenPlayerAttackedOnBoard = attacking;
         gameStatus.WhenPlayerConfronted = confronting;
     }
 
     public IObservable<Unit> WhenMatched => matching;
+    public IObservable<DeviceType> WhenDeviceActed => deviceActing;
+    public IObservable<DeviceType> WhenMatchedDevice => deviceMatching;
 
     public bool CanMatch(ISlot fromSource, ISlot intoDestination)
     {
@@ -52,11 +59,8 @@ public class CardMatcher : ICardMatcher
     {
         return Match(fromSource.Peek(), intoDestination.Peek())
             .Merge(
-                fromSource.ConditionallyArrange().IgnoreElements(),
-                intoDestination.ConditionallyArrange().IgnoreElements())
-            // Only bubble up matching elements by ignoring the arrangement ones
-            .Do(matching.OnNext)
-            // Order matters for some emissions are ignored within the matching stream
+                fromSource.ConditionallyArrange(),
+                intoDestination.ConditionallyArrange())
             .LastOrDefault();
     }
 
@@ -65,6 +69,8 @@ public class CardMatcher : ICardMatcher
         matching.Dispose();
         attacking.Dispose();
         confronting.Dispose();
+        deviceActing.Dispose();
+        deviceMatching.Dispose();;
     }
     
     private bool CanMatch(ICard source, ICard withDestination)
@@ -74,6 +80,9 @@ public class CardMatcher : ICardMatcher
 
         if (withDestination == null || !withDestination.IsBoarded)
             return false;
+
+        if (source.IsDevice)
+            return CanMatch((IDeviceCard) source, withDestination);
 
         switch (withDestination.Type)
         {
@@ -101,6 +110,19 @@ public class CardMatcher : ICardMatcher
                 return false;
         }
     }
+
+    private bool CanMatch(IDeviceCard source, ICard withDestination)
+    {
+        switch (source.DeviceType)
+        {
+            case DeviceType.MidasTouch:
+                return withDestination != player;
+            case DeviceType.TraderSpell:
+                return withDestination.IsMerchant;
+            default:
+                return false;
+        }
+    }
     
     private IObservable<Unit> Match(ICard source, ICard withDestination)
     {
@@ -111,6 +133,16 @@ public class CardMatcher : ICardMatcher
                 observer.OnCompleted();
                 
                 return Disposable.Empty;
+            }
+
+            if (source.IsDevice)
+            {
+                var device = (IDeviceCard) source;
+                
+                return Match(device, withDestination)
+                    .DoOnSubscribe(() => deviceMatching.OnNext(device.DeviceType))
+                    .DoOnCompleted(() => deviceActing.OnNext(device.DeviceType))
+                    .Subscribe(observer);
             }
             
             switch (withDestination.Type)
@@ -150,7 +182,6 @@ public class CardMatcher : ICardMatcher
                             source.Hack(Math.Min(player.Value, lockValue));
 
                             return player.Hit(lockValue)
-                                .IgnoreElements()
                                 .DoOnSubscribe(() =>
                                 {
                                     audioManager.Play(AudioEventKey.CardConfrontMonster);
@@ -191,7 +222,7 @@ public class CardMatcher : ICardMatcher
                 case CardType.Merchant:
                     
                     player.Credit(source.Value * 
-                                  ((source.Suit & withDestination.Suit) != 0 
+                                  ((source.SuitType & withDestination.SuitType) != 0 
                                       ? MerchantCard.CreditMultiplierForMatchingSuit 
                                       : 1));
                     
@@ -206,22 +237,18 @@ public class CardMatcher : ICardMatcher
 
                     withDestination.Hack(source.Value);
 
-                    var result = source.Hit(source.Value)
-                        .DoOnSubscribe(() =>
-                        {
-                            attacking.OnNext(Unit.Default);
-                            audioManager.Play(AudioEventKey.CardToolMeleeUse);
-                        })
-                        .DoOnCompleted(() =>
-                        {
-                            if (withDestination.LockValue <= 0)
-                                audioManager.Play(AudioEventKey.CardDefeatMonster);
-                        });
-
-                    if (withDestination.LockValue <= 0)
-                        result = result.IgnoreElements();
-                    
-                    return result.Subscribe(observer);
+                   return source.Hit(source.Value)
+                       .DoOnSubscribe(() => 
+                       {
+                           attacking.OnNext(Unit.Default);
+                           audioManager.Play(AudioEventKey.CardToolMeleeUse);
+                       })
+                       .DoOnCompleted(() =>
+                       {
+                           if (withDestination.LockValue <= 0)
+                               audioManager.Play(AudioEventKey.CardDefeatMonster);
+                       })
+                       .Subscribe(observer);
 
                 default:
 
@@ -232,6 +259,38 @@ public class CardMatcher : ICardMatcher
             }
             
             return Disposable.Empty;
+        });
+    }
+
+    private IObservable<Unit> Match(IDeviceCard source, ICard withDestination)
+    {
+        return Observable.Create<Unit>(observer =>
+        {
+            switch (source.DeviceType)
+            {
+                case DeviceType.MidasTouch:
+                    
+                    player.Credit(withDestination.Value + player.Value);
+
+                    return source.Destroy()
+                        .Merge(withDestination.Destroy())
+                        .Subscribe(observer);
+                
+                case DeviceType.TraderSpell:
+
+                    var desiredSuit = ship.Storage.Peek()?.Suit;
+
+                    return source.Destroy()
+                        .DoOnSubscribe(() => ((IMerchantCard) withDestination).Resuit(desiredSuit))
+                        .Subscribe(observer);
+                
+                default:
+
+                    observer.OnError(
+                        new Exception($"[MatchingController] Couldn't match with Device '{source.DeviceType}'"));
+                    
+                    return Disposable.Empty;
+            }
         });
     }
 }

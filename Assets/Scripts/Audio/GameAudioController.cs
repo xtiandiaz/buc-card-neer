@@ -9,46 +9,86 @@ public interface IGameAudioController : IInitializable, IDisposable
 public class GameAudioController : IGameAudioController
 {
     private readonly IAudioManager audioManager;
-    private readonly ICardRouter cardRouter;
-    private readonly ICardDismisser cardDismisser;
-    private readonly ICardForwarder cardForwarder;
-    private readonly ICardShooter cardShooter;
+    private readonly IRoutingController router;
+    private readonly IDismissalController dismisser;
+    private readonly IDefermentController deferrer;
+    private readonly IForwardingController forwarder;
+    private readonly IShootingController shooter;
+    private readonly IMatchingController matcher;
     private readonly IShip ship;
     private readonly ISea sea;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private GameAudioController(
         IAudioManager audioManager,
-        ICardRouter cardRouter,
-        ICardDismisser cardDismisser,
-        ICardForwarder cardForwarder,
-        ICardShooter cardShooter,
+        IRoutingController router,
+        IDismissalController dismisser,
+        IDefermentController deferrer,
+        IForwardingController forwarder,
+        IShootingController shooter,
+        IMatchingController matcher,
         IShip ship,
         ISea sea
     )
     {
         this.audioManager = audioManager;
-        this.cardRouter = cardRouter;
-        this.cardDismisser = cardDismisser;
-        this.cardForwarder = cardForwarder;
-        this.cardShooter = cardShooter;
+        this.router = router;
+        this.dismisser = dismisser;
+        this.deferrer = deferrer;
+        this.forwarder = forwarder;
+        this.shooter = shooter;
+        this.matcher = matcher;
         this.ship = ship;
         this.sea = sea;
     }
     
     public void Initialize()
     {
-        #region Card interactions
+        #region Card Handling
 
-        disposables.Add(cardRouter.WhenCardDropped
+        disposables.Add(router.WhenCardDropped
             .Subscribe(_ => audioManager.Play(AudioEventKey.UIDragCancel)));
         
-        disposables.Add(cardRouter.WhenCardPicked
+        disposables.Add(router.WhenCardPicked
             .Subscribe(_ => audioManager.Play(AudioEventKey.UIDragGrab)));
         
-        disposables.Add(cardDismisser.WhenCardDismissed
+        disposables.Add(dismisser.WhenCardDismissed
             .Subscribe(_ => audioManager.Play(AudioEventKey.CardBridgeDismiss)));
         
+        #endregion
+
+        #region Card Matching
+
+        disposables.Add(matcher.WhenMatchedDevice
+            .Merge(deferrer.WhenMatchedDevice)
+            .Subscribe(deviceType =>
+            {
+                switch (deviceType)
+                {
+                    case DeviceType.Catapult:
+                        audioManager.Play(AudioEventKey.CardToolRangedUseCatapult);
+                        break;
+                    case DeviceType.MidasTouch:
+                        audioManager.Play(AudioEventKey.CardItemTradeSell);
+                        break;
+                    case DeviceType.TraderSpell:
+                        audioManager.Play(AudioEventKey.CardItemTradeBuy);
+                        break;
+                }
+            }));
+
+        disposables.Add(matcher.WhenDeviceActed
+            .Merge(deferrer.WhenDeviceActed)
+            .Subscribe(deviceType =>
+            {
+                switch (deviceType)
+                {
+                    case DeviceType.Catapult:
+                        audioManager.Play(AudioEventKey.CardToolRangedHitCatapult);
+                        break;
+                }
+            }));
+
         #endregion
 
         #region Ship
@@ -57,11 +97,11 @@ public class GameAudioController : IGameAudioController
             .Subscribe(cardType => audioManager.Play(AudioEventSwitchKey.CardBoard, cardType)));
         
         disposables.Add(ship.WhenCardRevealed
-            .Merge(cardForwarder.WhenCardRevealed)
+            .Merge(forwarder.WhenCardRevealed)
             .Subscribe(cardType => audioManager.Play(AudioEventSwitchKey.CardReveal, cardType)));
         
         disposables.Add(ship.WhenCardStashed
-            .Merge(cardForwarder.WhenCardStashed)
+            .Merge(forwarder.WhenCardStashed)
             .Subscribe(cardType => audioManager.Play(AudioEventSwitchKey.CardStash, cardType)));
         
         #endregion
@@ -81,10 +121,10 @@ public class GameAudioController : IGameAudioController
         disposables.Add(ship.WhenArmed
             .Subscribe(_ => audioManager.Play(AudioEventKey.CardToolRangedArm)));
         
-        disposables.Add(cardShooter.WhenShot
+        disposables.Add(shooter.WhenShot
             .Subscribe(_ => audioManager.Play(AudioEventKey.CardToolRangedUseCannon)));
         
-        disposables.Add(cardShooter.WhenHit
+        disposables.Add(shooter.WhenHit
             .Subscribe(_ => audioManager.Play(AudioEventKey.CardToolRangedHitCannon)));
 
         #endregion

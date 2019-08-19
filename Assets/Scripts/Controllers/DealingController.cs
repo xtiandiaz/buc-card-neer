@@ -5,7 +5,7 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-public interface ICardDealer : IInitializable, IDisposable
+public interface IDealingController : IInitializable, IDisposable
 {
     IObservable<int> ActiveCardCount { get; }
     
@@ -17,7 +17,7 @@ public interface ICardDealer : IInitializable, IDisposable
     IObservable<Unit> Deal(int count, ISlot intoSlot);
 }
 
-public class CardDealer : ICardDealer
+public class DealingController : IDealingController
 {
     private readonly Subject<ICard> dealing = new Subject<ICard>();
     private readonly ReactiveProperty<int> activeCardCount = new ReactiveProperty<int>();
@@ -26,7 +26,7 @@ public class CardDealer : ICardDealer
 
     private readonly IDeck deck;
 
-    private CardDealer(IDeck deck)
+    private DealingController(IDeck deck)
     {
         this.deck = deck;
     }

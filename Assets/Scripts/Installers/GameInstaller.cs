@@ -31,15 +31,15 @@ public class GameInstaller : SceneInstaller
         
         #region Controllers
 
-        Container.BindInterfacesTo<CardRouter>().AsSingle().NonLazy();
-        Container.BindInterfacesTo<CardDealer>().AsSingle().NonLazy();
-        Container.BindInterfacesTo<CardDeferrer>().AsSingle().NonLazy();
-        Container.BindInterfacesTo<CardForwarder>().AsSingle().NonLazy();
-        Container.BindInterfacesTo<CardDismisser>().AsSingle().NonLazy();
-        Container.BindInterfacesTo<CardMatcher>().AsSingle().NonLazy();
-        Container.BindInterfacesTo<CardHost>().AsSingle().NonLazy();
-        Container.BindInterfacesTo<CardClasher>().AsSingle().NonLazy();
-        Container.BindInterfacesTo<CardShooter>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<RoutingController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<DealingController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<DefermentController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<ForwardingController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<DismissalController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<MatchingController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<LodgingController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<ClashingController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<ShootingController>().AsSingle().NonLazy();
 
         Container.BindInterfacesTo<GameController>().AsSingle().NonLazy();
         
