@@ -15,14 +15,17 @@ public class AudioManager : IAudioManager
     
     private readonly IAudioRepository repository;
     private readonly AudioSourcePool sourcePool;
+    private readonly IUserSettings userSettings;
 
     private AudioManager(
         IAudioRepository repository,
-        AudioSourcePool sourcePool
+        AudioSourcePool sourcePool,
+        IUserSettings userSettings
     )
     {
         this.repository = repository;
         this.sourcePool = sourcePool;
+        this.userSettings = userSettings;
 
         this.repository.Index();
     }
@@ -54,6 +57,9 @@ public class AudioManager : IAudioManager
 
     private void Play(IAudioEvent audioEvent)
     {
+        if (!userSettings.ShouldPlayAudio)
+            return;
+
         if (audioEvent == null)
         {
             Debug.LogError("[AudioManager] Attempted to play a null Audio Event.");

@@ -56,7 +56,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3306581448813684645}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -76,6 +76,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &3306581450115479625
 GameObject:
   m_ObjectHideFlags: 0
@@ -147,7 +148,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3306581450115479625}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1980459831, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_UiScaleMode: 0
@@ -169,14 +170,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 3306581450115479625}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1301386320, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_IgnoreReversedGraphics: 1
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 32
 --- !u!222 &3306581450115479626
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -197,9 +198,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c593f2a94aa342f893558d5748e409f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  closeButton: {fileID: 7733362162186124535}
   restartButton: {fileID: 1324323198363804207}
   quitButton: {fileID: 1097454314699360265}
-  closeButton: {fileID: 7733362162186124535}
 --- !u!1 &3778069253307700443
 GameObject:
   m_ObjectHideFlags: 0
@@ -247,7 +248,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3778069253307700443}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1297475563, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
@@ -274,6 +275,13 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: QuitButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 1531607990721596857, guid: 00d2bedf910a34bab8af4a4410733a0f,
+        type: 3}
+      propertyPath: m_Text
+      value: 'Quit
+
+'
       objectReference: {fileID: 0}
     - target: {fileID: 1531607991140952297, guid: 00d2bedf910a34bab8af4a4410733a0f,
         type: 3}
@@ -333,7 +341,7 @@ PrefabInstance:
     - target: {fileID: 1531607991140952297, guid: 00d2bedf910a34bab8af4a4410733a0f,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 57.249996
+      value: 56.543205
       objectReference: {fileID: 0}
     - target: {fileID: 1531607991140952297, guid: 00d2bedf910a34bab8af4a4410733a0f,
         type: 3}
@@ -380,21 +388,6 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1531607989839150642, guid: 00d2bedf910a34bab8af4a4410733a0f,
-        type: 3}
-      propertyPath: m_Color.r
-      value: 0.9411765
-      objectReference: {fileID: 0}
-    - target: {fileID: 1531607989839150642, guid: 00d2bedf910a34bab8af4a4410733a0f,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 0.34509805
-      objectReference: {fileID: 0}
-    - target: {fileID: 1531607989839150642, guid: 00d2bedf910a34bab8af4a4410733a0f,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 0.34509805
-      objectReference: {fileID: 0}
     - target: {fileID: 1531607990721596858, guid: 00d2bedf910a34bab8af4a4410733a0f,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -425,12 +418,20 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1531607990721596857, guid: 00d2bedf910a34bab8af4a4410733a0f,
+    - target: {fileID: 1531607989839150642, guid: 00d2bedf910a34bab8af4a4410733a0f,
         type: 3}
-      propertyPath: m_Text
-      value: 'Quit
-
-'
+      propertyPath: m_Color.r
+      value: 0.9411765
+      objectReference: {fileID: 0}
+    - target: {fileID: 1531607989839150642, guid: 00d2bedf910a34bab8af4a4410733a0f,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.34509805
+      objectReference: {fileID: 0}
+    - target: {fileID: 1531607989839150642, guid: 00d2bedf910a34bab8af4a4410733a0f,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0.34509805
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 00d2bedf910a34bab8af4a4410733a0f, type: 3}
@@ -464,6 +465,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: RestartButton
       objectReference: {fileID: 0}
+    - target: {fileID: 1531607990721596857, guid: 00d2bedf910a34bab8af4a4410733a0f,
+        type: 3}
+      propertyPath: m_Text
+      value: Restart
+      objectReference: {fileID: 0}
     - target: {fileID: 1531607991140952297, guid: 00d2bedf910a34bab8af4a4410733a0f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -522,7 +528,7 @@ PrefabInstance:
     - target: {fileID: 1531607991140952297, guid: 00d2bedf910a34bab8af4a4410733a0f,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 57.249996
+      value: 56.543205
       objectReference: {fileID: 0}
     - target: {fileID: 1531607991140952297, guid: 00d2bedf910a34bab8af4a4410733a0f,
         type: 3}
@@ -599,11 +605,6 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1531607990721596857, guid: 00d2bedf910a34bab8af4a4410733a0f,
-        type: 3}
-      propertyPath: m_Text
-      value: Restart
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 00d2bedf910a34bab8af4a4410733a0f, type: 3}
 --- !u!224 &3306581450745518286 stripped
@@ -636,6 +637,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: CloseButton
       objectReference: {fileID: 0}
+    - target: {fileID: 4056580862718218056, guid: d50600f1edea4489b9bead017023f05a,
+        type: 3}
+      propertyPath: m_TargetGraphic
+      value: 
+      objectReference: {fileID: 5215741261182746351}
     - target: {fileID: 4650351325335382164, guid: d50600f1edea4489b9bead017023f05a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -765,5 +771,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe60f2b598cc4dc581e0ba79a84272f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5215741261182746351 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1980383368547552592, guid: d50600f1edea4489b9bead017023f05a,
+    type: 3}
+  m_PrefabInstance: {fileID: 5988016348347462591}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

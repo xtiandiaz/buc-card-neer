@@ -14,15 +14,18 @@ public class DeckFactory : IDeckFactory
 {
     private readonly Deck.Factory deckFactory;
     private readonly IBoardModel boardModel;
+    private readonly IUserSettings userSettings;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private DeckFactory(
         Deck.Factory deckFactory,
-        IBoardModel boardModel
+        IBoardModel boardModel,
+        IUserSettings userSettings
         )
     {
         this.deckFactory = deckFactory;
         this.boardModel = boardModel;
+        this.userSettings = userSettings;
     }
     
     public IDeck Create(IDeckModel fromModel)
@@ -86,9 +89,10 @@ public class DeckFactory : IDeckFactory
         
         cardData = cardData.Apportion(tools);
 
-        foreach (var device in fromModel.Devices)
+        if (userSettings.ShouldDealDeviceCards)
         {
-            cardData.Insert(Random.Range(cardData.Count / 2, (cardData.Count - 1)), device);
+            foreach (var device in fromModel.Devices)
+                cardData.Insert(Random.Range(cardData.Count / 2, (cardData.Count - 1)), device);
         }
 
         var deck = deckFactory.Create(cardData);

@@ -15,7 +15,20 @@ public abstract class Menu : MonoBehaviour, IMenu
 {
     private readonly Subject<Unit> closing = new Subject<Unit>();
 
+    [SerializeField] private CustomButton closeButton = default;
+
     public IObservable<Unit> WhenClosed => closing;
+
+    protected virtual void Start()
+    {
+        if (closeButton != null)
+        {
+            closeButton.WhenClicked
+                .Take(1)
+                .Subscribe(_ => Close())
+                .AddTo(this);
+        }
+    }
 
     public void Close()
     {

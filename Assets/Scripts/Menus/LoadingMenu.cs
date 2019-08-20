@@ -1,13 +1,8 @@
-using System;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-public interface ILoadingMenu
-{
-}
-
-public class LoadingMenu : MonoBehaviour
+public class LoadingMenu : Menu
 {
     [SerializeField] private Image indicator = default;
 

@@ -14,10 +14,12 @@ public class MenuCatalog : ScriptableObject, IMenuCatalog
     private Dictionary<Type, Menu> prefabIndex = new Dictionary<Type, Menu>();
 
     [SerializeField] private PauseMenu pause = default;
+    [SerializeField] private SettingsMenu settings = default;
 
     public void Index()
     {
         prefabIndex[typeof(IPauseMenu)] = pause;
+        prefabIndex[typeof(ISettingsMenu)] = settings;
     }
 
     public Menu GetPrefab<T>() where T : IMenu

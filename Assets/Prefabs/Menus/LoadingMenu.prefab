@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 3328861480991728562}
   - component: {fileID: 3328861480991728563}
   - component: {fileID: 3328861480991728560}
-  - component: {fileID: 3328861480991728561}
   - component: {fileID: 3328861480991728566}
   - component: {fileID: 788627790662566086}
   m_Layer: 5
@@ -84,23 +83,6 @@ MonoBehaviour:
   m_FallbackScreenDPI: 64.3
   m_DefaultSpriteDPI: 1
   m_DynamicPixelsPerUnit: 1
---- !u!114 &3328861480991728561
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3328861480991728564}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
 --- !u!222 &3328861480991728566
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -121,6 +103,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b02e1f19edb4c199216b70aff451c48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  closeButton: {fileID: 0}
   indicator: {fileID: 3328861481989438094}
 --- !u!1 &3328861481073222179
 GameObject:
@@ -181,7 +164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9411765, g: 0.34509805, b: 0.34509805, a: 0.8509804}
+  m_Color: {r: 0.9411765, g: 0.34509805, b: 0.34509805, a: 0.9490196}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -257,7 +240,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []

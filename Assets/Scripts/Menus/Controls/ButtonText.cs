@@ -3,10 +3,10 @@ using UnityEngine.UI;
 
 public class ButtonText : CustomButton
 {
-    [SerializeField] private Text label = default;
+    [SerializeField] protected Text label = default;
 
-    public string Label
+    public void SetText(string text)
     {
-        set => label.text = value;
+        label.text = text;
     }
 }

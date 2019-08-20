@@ -138,7 +138,7 @@ public class CardView : MonoBehaviour, ICardView
     public void Drag(Vector3 toPosition)
     {
         dragging?.Kill();
-        dragging = transform.DOMove(toPosition, 0.25f)
+        dragging = transform.DOMove(toPosition, 0.1f)
             .SetEase(Ease.OutQuart);
     }
 

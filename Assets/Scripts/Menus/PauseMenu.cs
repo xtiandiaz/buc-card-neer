@@ -10,7 +10,6 @@ public class PauseMenu : WorldSpaceMenu, IPauseMenu
 {
     [SerializeField] private ButtonText restartButton = default;
     [SerializeField] private ButtonText quitButton = default;
-    [SerializeField] private ButtonIcon closeButton = default;
 
     private IGameStatus gameStatus;
     private IAppNavigator appNavigator;
@@ -25,12 +24,9 @@ public class PauseMenu : WorldSpaceMenu, IPauseMenu
         this.appNavigator = appNavigator;
     }
 
-    private void Start()
+    protected override void Start()
     {
-        closeButton.WhenClicked
-            .Take(1)
-            .Subscribe(_ => Close())
-            .AddTo(this);
+        base.Start();
         
         restartButton.WhenClicked
             .Take(1)

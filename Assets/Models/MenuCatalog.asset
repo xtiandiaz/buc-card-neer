@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: MenuCatalog
   m_EditorClassIdentifier: 
   pause: {fileID: 6147483526974023542, guid: 13e6ef81faf8e4150b17c92ea848c99f, type: 3}
+  settings: {fileID: 4880638210892694132, guid: de5f9b38396a8457cafeb722d51b09c7,
+    type: 3}

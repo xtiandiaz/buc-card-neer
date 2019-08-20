@@ -4,11 +4,11 @@ using UnityEngine.UI;
 using Zenject;
 using UniRx;
 
-public interface IGameMenuView : IMenu
+public interface IGameMenu : IMenu
 {
 }
 
-public class GameMenu : WorldSpaceMenu, IGameMenuView
+public class GameMenu : WorldSpaceMenu, IGameMenu
 {
     [SerializeField] private GameObject contentWrapper = default;
     [SerializeField] private Text heading = default;
@@ -40,8 +40,10 @@ public class GameMenu : WorldSpaceMenu, IGameMenuView
         contentWrapper.SetActive(false);
     }
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
+        
         gameStatus.WhenLost
             .Delay(TimeSpan.FromSeconds(0.5))
             .Subscribe(_ =>

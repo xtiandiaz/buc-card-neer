@@ -45,6 +45,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   board: {fileID: 11400000, guid: 63ef363e4f9df4c98a33ebc55bdc588a, type: 2}
   menuCatalog: {fileID: 11400000, guid: 8bcdab39ec711498393ce283db3ed8ed, type: 2}
-  audioRepository: {fileID: 11400000, guid: 7a05be8b1021f4edd88c559cb93dbbeb, type: 2}
-  audioSourcePrefab: {fileID: 5710264892906250546, guid: cf1d97fdab1294fbebd55eedc9468732,
-    type: 3}
+  userSettings: {fileID: 11400000, guid: 1bd0a8cf2177e496994e6121250b12c2, type: 2}
