@@ -15,7 +15,7 @@ public class CardFactory : ICardFactory
     private readonly MerchantCard.Factory merchantFactory;
     private readonly DeviceCard.Factory deviceFactory;
     private readonly Viewport viewport;
-    private readonly ILocalizationProvider localizator;
+    private readonly ILocalizator localizator;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private CardFactory(
@@ -25,7 +25,7 @@ public class CardFactory : ICardFactory
         MerchantCard.Factory merchantFactory,
         DeviceCard.Factory deviceFactory,
         Viewport viewport,
-        ILocalizationProvider localizator
+        ILocalizator localizator
     )
     {
         this.container = container;
@@ -86,7 +86,9 @@ public class CardFactory : ICardFactory
     {
         if (model is IDeviceCardModel deviceModel)
         {
-            model.Name = localizator.GetName(deviceModel.DeviceType);
+            var deviceName = deviceModel.DeviceType.ToString();
+            model.Name = localizator.GetText(
+                $"card.device.{deviceName.Substring(0, 1).ToLower() + deviceName.Substring(1)}");
         }
     }
 

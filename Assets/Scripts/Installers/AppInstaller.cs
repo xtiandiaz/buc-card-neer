@@ -3,9 +3,9 @@ using Zenject;
 
 public class AppInstaller : MonoInstaller
 {
-    [Header("Models")]
     [SerializeField] private BoardModel board = default;
     [SerializeField] private MenuCatalog menuCatalog = default;
+    [SerializeField] private LocalizationCatalog localizationCatalog = default;
     [SerializeField] private UserSettings userSettings = default;
 
     public override void InstallBindings()
@@ -28,6 +28,8 @@ public class AppInstaller : MonoInstaller
         #region Localization
 
         Container.BindInterfacesTo<LocalizationProvider>().AsSingle();
+        Container.BindInterfacesTo<LocalizationCatalog>().FromInstance(localizationCatalog).AsSingle();
+        Container.BindInterfacesTo<LocalizationManager>().AsSingle();
 
         #endregion
     }

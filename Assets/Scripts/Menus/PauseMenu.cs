@@ -13,20 +13,26 @@ public class PauseMenu : WorldSpaceMenu, IPauseMenu
 
     private IGameStatus gameStatus;
     private IAppNavigator appNavigator;
+    private ILocalizator localizator;
     
     [Inject]
     private void Initialize(
         IGameStatus gameStatus,
-        IAppNavigator appNavigator
+        IAppNavigator appNavigator,
+        ILocalizator localizator
         )
     {
         this.gameStatus = gameStatus;
         this.appNavigator = appNavigator;
+        this.localizator = localizator;
     }
 
     protected override void Start()
     {
         base.Start();
+        
+        localizator.Hook(restartButton, "ui.button.restart");
+        localizator.Hook(quitButton, "ui.button.quit");
         
         restartButton.WhenClicked
             .Take(1)

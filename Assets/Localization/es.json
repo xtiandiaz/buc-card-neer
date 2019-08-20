@@ -1,0 +1,52 @@
+{
+  "entries" : [
+    {
+      "key" : "ui.button.language",
+      "value" : "Idioma"
+    },
+
+    {
+      "key" : "ui.button.play",
+      "value" : "Jugar"
+    },
+    {
+      "key" : "ui.button.restart",
+      "value" : "Reiniciar"
+    },
+    {
+      "key" : "ui.button.quit",
+      "value" : "Salir"
+    },
+
+    {
+      "key" : "ui.toggle.audio",
+      "value" : "Audio"
+    },
+    {
+      "key" : "ui.toggle.deviceCards",
+      "value" : "Cartas de Dispositivos"
+    },
+
+    {
+      "key" : "ui.headline.gameOver",
+      "value" : "Juego terminado"
+    },
+    {
+      "key" : "ui.headline.gameFinished",
+      "value" : "Ganaste!\n<size=10>Obtuviste <color=FFFFFF>{0}</color> monedas.</size>"
+    },
+
+    {
+      "key" : "card.device.catapult",
+      "value" : "Catapulta"
+    },
+    {
+      "key" : "card.device.midasTouch",
+      "value" : "Toque de Midas"
+    },
+    {
+      "key" : "card.device.traderSpell",
+      "value" : "Hechizo del Mercader"
+    }
+  ]
+}

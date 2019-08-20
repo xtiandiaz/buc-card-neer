@@ -16,22 +16,27 @@ public class MainMenu : WorldSpaceMenu, IMainMenu
     private IAppNavigator appNavigator;
     private IMenuFactory menuFactory;
     private IAppInfo appInfo;
-    
+    private ILocalizator localizator;
+
     [Inject]
     private void Initialize(
         IAppNavigator appNavigator,
         IAppInfo appInfo,
-        IMenuFactory menuFactory
+        IMenuFactory menuFactory,
+        ILocalizator localizator
         )
     {
         this.appNavigator = appNavigator;
         this.appInfo = appInfo;
         this.menuFactory = menuFactory;
+        this.localizator = localizator;
     }
 
     protected override void Start()
     {
         base.Start();
+        
+        localizator.Hook(playButton, "ui.button.play");
         
         playButton.WhenClicked
             .Take(1)

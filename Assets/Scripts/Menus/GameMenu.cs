@@ -10,7 +10,6 @@ public interface IGameMenu : IMenu
 
 public class GameMenu : WorldSpaceMenu, IGameMenu
 {
-    [SerializeField] private GameObject contentWrapper = default;
     [SerializeField] private Text heading = default;
 
     [Header("Labels")] 
@@ -22,22 +21,25 @@ public class GameMenu : WorldSpaceMenu, IGameMenu
     private IGameStatus gameStatus;
     private IMenuFactory menuFactory;
     private IAudioManager audioManager;
+    private ILocalizator localizator;
 
     [Inject]
     private void Initialize(
         IGameStatus gameStatus,
         IMenuFactory menuFactory,
-        IAudioManager audioManager
+        IAudioManager audioManager,
+        ILocalizator localizator
         )
     {
         this.gameStatus = gameStatus;
         this.menuFactory = menuFactory;
         this.audioManager = audioManager;
+        this.localizator = localizator;
     }
 
     private void Awake()
     {
-        contentWrapper.SetActive(false);
+        contentWrapper.gameObject.SetActive(false);
     }
 
     protected override void Start()
@@ -48,7 +50,7 @@ public class GameMenu : WorldSpaceMenu, IGameMenu
             .Delay(TimeSpan.FromSeconds(0.5))
             .Subscribe(_ =>
             {
-                ShowHeadline("Game Over", Color.red);
+                ShowHeadline(localizator.GetText("ui.headline.gameOver"), Color.red);
                 
                 audioManager.Play(AudioEventKey.GameLose);
             })
@@ -59,7 +61,7 @@ public class GameMenu : WorldSpaceMenu, IGameMenu
             .Subscribe(score =>
             {
                 ShowHeadline(
-                    $"You won!\n<size=10>Earned <color=FFFFFF>{score}</color> coins.</size>",
+                    localizator.GetText("ui.headline.gameFinished", score),
                     Color.yellow);
                 
                 audioManager.Play(AudioEventKey.GameWin);
@@ -83,6 +85,6 @@ public class GameMenu : WorldSpaceMenu, IGameMenu
     {
         heading.text = withText;
         heading.color = andColor;
-        contentWrapper.SetActive(true);
+        contentWrapper.gameObject.SetActive(true);
     }
 }

@@ -11,15 +11,23 @@ public interface IMenuCatalog
 [CreateAssetMenu(menuName = "Model/UI/Menu Catalog")]
 public class MenuCatalog : ScriptableObject, IMenuCatalog
 {
-    private Dictionary<Type, Menu> prefabIndex = new Dictionary<Type, Menu>();
-
     [SerializeField] private PauseMenu pause = default;
     [SerializeField] private SettingsMenu settings = default;
+    [SerializeField] private LanguageSelectionMenu languageSelection = default;
+    
+    private Dictionary<Type, Menu> prefabIndex;
 
     public void Index()
     {
-        prefabIndex[typeof(IPauseMenu)] = pause;
-        prefabIndex[typeof(ISettingsMenu)] = settings;
+        if (prefabIndex != null)
+            return;
+
+        prefabIndex = new Dictionary<Type, Menu>
+        {
+            [typeof(IPauseMenu)] = pause, 
+            [typeof(ISettingsMenu)] = settings,
+            [typeof(ILanguageSelectionMenu)] = languageSelection
+        };
     }
 
     public Menu GetPrefab<T>() where T : IMenu

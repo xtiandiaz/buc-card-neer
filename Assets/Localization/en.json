@@ -1,0 +1,52 @@
+{
+  "entries" : [
+    {
+      "key" : "ui.button.language",
+      "value" : "Language" 
+    },
+    
+    {
+      "key" : "ui.button.play",
+      "value" : "Play"
+    },
+    {
+      "key" : "ui.button.restart",
+      "value" : "Restart"
+    },
+    {
+      "key" : "ui.button.quit",
+      "value" : "Quit"
+    },
+    
+    {
+      "key" : "ui.toggle.audio",
+      "value" : "Audio"
+    },
+    {
+      "key" : "ui.toggle.deviceCards",
+      "value" : "Device Cards"
+    },
+    
+    {
+      "key" : "ui.headline.gameOver",
+      "value" : "Game over"
+    },
+    {
+      "key" : "ui.headline.gameFinished",
+      "value" : "You won!\n<size=10>Earned <color=FFFFFF>{0}</color> coins.</size>"
+    },
+
+    {
+      "key" : "card.device.catapult",
+      "value" : "Catapult"
+    },
+    {
+      "key" : "card.device.midasTouch",
+      "value" : "Midas Touch"
+    },
+    {
+      "key" : "card.device.traderSpell",
+      "value" : "Trader’s Spell"
+    }
+  ]
+}
