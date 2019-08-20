@@ -255,6 +255,37 @@ Transform:
   m_Father: {fileID: 6217112578164284440}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!1 &1466997893827055087
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2624446774462049868}
+  m_Layer: 0
+  m_Name: FloatingWrapper
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2624446774462049868
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1466997893827055087}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 8064937440239108788}
+  m_Father: {fileID: 8007272462152954247}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2372626386883881936
 GameObject:
   m_ObjectHideFlags: 0
@@ -531,12 +562,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3884396014157022331}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8420024804149596198}
-  m_Father: {fileID: 8007272462152954247}
+  m_Father: {fileID: 2624446774462049868}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4028140536671139883
@@ -669,7 +700,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 8064937440239108788}
+  - {fileID: 2624446774462049868}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -689,7 +720,7 @@ MonoBehaviour:
   animator: {fileID: 7925575345330841362}
   sorter: {fileID: 8630861728775111184}
   shader: {fileID: 8130335592096477142}
-  floatingWrapper: {fileID: 8064937440239108788}
+  floatingWrapper: {fileID: 2624446774462049868}
   multiplierLabel: {fileID: 4540289614259934849}
 --- !u!114 &7925575345330841362
 MonoBehaviour:
@@ -742,6 +773,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardValue: {fileID: 6578800471251422608}
   lockValue: {fileID: 0}
+  cardName: {fileID: 0}
   suit: {fileID: 4209936952824596540}
   frontCover: {fileID: 8222015627637077736}
   backCover: {fileID: 6851289454263683994}

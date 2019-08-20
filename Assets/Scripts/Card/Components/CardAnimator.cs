@@ -28,37 +28,39 @@ public class CardAnimator : MonoBehaviour
     
     private CardFace currentFace = CardFace.Back;
 
-    public Sequence Float(float withExtent, float andDurationPerLoop)
+    public Sequence Fling(Vector3 toPosition, Ease withEase, float andDuration)
     {
         var sequence = DOTween.Sequence();
         
-        sequence.Append(tweenWrapper.DOLocalMoveY(withExtent, andDurationPerLoop * 0.25f)
-            .SetEase(Ease.OutSine));
-        sequence.Append(tweenWrapper.DOLocalMoveY(-withExtent, andDurationPerLoop * 0.5f)
-            .SetEase(Ease.InOutSine));
-        sequence.Append(tweenWrapper.DOLocalMoveY(0, andDurationPerLoop * 0.25f)
-            .SetEase(Ease.InSine));
-        
-        sequence.SetLoops(-1);
+        sequence.Append(transform.DOMove(toPosition, andDuration));
+        sequence.Append(transform.DORotate(Vector3.up * 720f, andDuration, RotateMode.FastBeyond360));
+
+        sequence.SetEase(withEase);
+        sequence.OnStart(() => ToggleFaces(true));
+        sequence.OnComplete(() => ToggleFace(currentFace));
 
         return sequence;
     }
 
-    public Sequence Arrange(CardArrangement withArrangement, CardArrangementMode andMode = CardArrangementMode.Normal)
+    public Sequence Arrange(ArrangementInfo withInfo)
     {
-        shader.Fog(withArrangement.fogColor, withArrangement.fogIntensity);  //TODO animate fog
-        
-        var duration = withArrangement.GetDuration(transform.localPosition, andMode);
+        var duration = withInfo.GetDuration(transform.localPosition);
         var sequence = DOTween.Sequence();
 
-        sequence.Append(transform.DOLocalMove(withArrangement.localPosition, duration)
-            .SetEase(Ease.OutQuart));
+        sequence.Append(transform.DOLocalMove(withInfo.LocalPosition, duration)
+            .SetEase(withInfo.Ease));
+        
+        if (withInfo.FogColor.HasValue)
+        {
+            sequence.Join(
+                shader.Fog(withInfo.FogColor.Value, withInfo.FogIntensity, withInfo.Ease, duration));
+        }
 
         var eulerAngles = tweenWrapper.eulerAngles;
-        eulerAngles.z = withArrangement.rotationZ;
+        eulerAngles.z = withInfo.RotationZ;
 
         sequence.Join(tweenWrapper.DORotate(eulerAngles, duration)
-            .SetEase(Ease.OutQuart));
+            .SetEase(withInfo.Ease));
 
         return sequence;
     }
@@ -106,6 +108,11 @@ public class CardAnimator : MonoBehaviour
         
         if (withKey == CardTimelineAnimationKey.RangeShot)
             ToggleFace(currentFace);
+    }
+
+    public void Bounce(Vector3 withVector, float andDuration)
+    {
+        tweenWrapper.DOPunchPosition(withVector, andDuration, 5);
     }
 
     private IObservable<Unit> PlayTimelineAnimation(string withName, CardTimelineAnimationKey andKey)

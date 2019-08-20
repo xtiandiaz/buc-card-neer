@@ -7,6 +7,7 @@ using Zenject;
 public interface ISea : IInitializable, IDisposable
 {
     ISlot[] Slots { get; }
+    float ZDepth { get; }
 
     IObservable<Unit> WhenArranged { get; }
     IObservable<Unit> WhenResupplied { get; }
@@ -56,6 +57,7 @@ public class Sea : ISea
     }
 
     public ISlot[] Slots { get; }
+    public float ZDepth => view.ZDepth;
 
     public IObservable<Unit> WhenArranged => arranging;
     public IObservable<Unit> WhenResupplied => resupplying;

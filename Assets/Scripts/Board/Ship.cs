@@ -234,7 +234,7 @@ public class Ship : IShip
 
                 stashing.OnNext(card.Type);
 
-                return storage.Lodge(card, SlotLodgingMode.Systematic, true)
+                return storage.Lodge(card, LodgingSettings.DefaultWithOthersArrangement)
                     .Subscribe(observer);
             }
 

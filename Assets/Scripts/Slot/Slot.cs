@@ -3,20 +3,6 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-public enum SlotLodgingMode
-{
-    Systematic,
-    Voluntary
-}
-
-public interface ICardBond
-{
-    int Index { get; }
-    Transform Transform { get; }
-    
-    void Release(ICard card);
-}
-
 public interface ISlot : ICardBond, IDisposable
 {
     SlotType Type { get; }
@@ -26,8 +12,6 @@ public interface ISlot : ICardBond, IDisposable
     bool IsEmpty { get; }
     bool HasRoom { get; }
 
-    int CardCount { get; }
-    
     Vector3 Position { get; }
 
     IObservable<Vector2> WhenPressed { get; }
@@ -42,19 +26,17 @@ public interface ISlot : ICardBond, IDisposable
     ICard Peek();
     ICard Pop();
 
-    IObservable<Unit> Lodge(
-        ICard card,
-        SlotLodgingMode withMode = SlotLodgingMode.Systematic,
-        bool andShouldRearrangeOthers = false);
-    
-    IObservable<Unit> ArrangeAsObservable();
-    IObservable<Unit> ConditionallyArrange();
     void Lock();
     void Unlock();
     void ToggleHighlight(bool on);
     
     bool DoesContain(ICard card);
     bool DoesContain(Vector3 position);
+
+    IObservable<Unit> Lodge(ICard card);
+    IObservable<Unit> Lodge(ICard card, LodgingSettings withSettings);
+    IObservable<Unit> ArrangeAsObservable();
+    IObservable<Unit> ConditionallyArrange();
 }
 
 public class Slot : ISlot
@@ -113,8 +95,6 @@ public class Slot : ISlot
     public bool IsEmpty => pile.Count <= 0;
     public bool HasRoom => pile.HasRoom;
 
-    public int CardCount => pile.Count;
-    
     public Vector3 Position => view.Transform.position;
 
     public IObservable<Vector2> WhenPressed => view.WhenPressed;
@@ -141,11 +121,13 @@ public class Slot : ISlot
         
         return poppedCard;
     }
+
+    public IObservable<Unit> Lodge(ICard card)
+    {
+        return Lodge(card, LodgingSettings.Default);
+    }
     
-    public IObservable<Unit> Lodge(
-        ICard card, 
-        SlotLodgingMode withMode = SlotLodgingMode.Systematic, 
-        bool andShouldRearrangeOthers = false)
+    public IObservable<Unit> Lodge(ICard card, LodgingSettings withSettings)
     {
         return Observable.Create<Unit>(observer =>
             {
@@ -153,25 +135,25 @@ public class Slot : ISlot
                 if (!newIndex.HasValue)
                 {
                     observer.OnError(new Exception($"[Slot] Couldn't insert {card} in Pile."));
-                    
+
                     return Disposable.Empty;
                 }
 
-                IsMessy = !andShouldRearrangeOthers;
-                
-                if (andShouldRearrangeOthers)
+                IsMessy = !withSettings.ShouldRearrangeOthers;
+
+                if (withSettings.ShouldRearrangeOthers)
                 {
-                    pile.ForEach((otherCard, index) =>
+                    pile.ForEach((otherCard, i) =>
                     {
-                        if (index != newIndex.Value)
-                            otherCard.Arrange(arrangementModel.GetArrangementForIndex(index, pile.Extent));
+                        if (i != newIndex.Value)
+                            otherCard.Arrange(
+                                ArrangementInfo.Create(arrangementModel, withSettings, i, pile.Extent));
                     });
                 }
 
-                return card.Lodge(
+                return card.Lodge(new LodgingInfo(
                         this,
-                        arrangementModel.GetArrangementForIndex(newIndex.Value, pile.Extent),
-                        withMode == SlotLodgingMode.Systematic ? CardArrangementMode.Normal : CardArrangementMode.Fast)
+                        ArrangementInfo.Create(arrangementModel, withSettings, newIndex.Value, pile.Extent)))
                     .Subscribe(observer);
             })
             .Do(_ => lodging.OnNext(card))
@@ -180,8 +162,11 @@ public class Slot : ISlot
 
     public IObservable<Unit> ArrangeAsObservable()
     {
-        return pile.Map((card, index) => 
-                card.ArrangeAsObservable(arrangementModel.GetArrangementForIndex(index, pile.Extent)))
+        return pile.Map((card, i) => card.ArrangeAsObservable(
+                ArrangementInfo.Create(arrangementModel, 
+                    LodgingSettings.Default, 
+                    i, 
+                    pile.Extent)))
             .Merge()
             .AsSingleUnitObservable()
             .DoOnCompleted(() => IsMessy = false);

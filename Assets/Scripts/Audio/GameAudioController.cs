@@ -112,6 +112,7 @@ public class GameAudioController : IGameAudioController
             .Subscribe(_ => audioManager.Play(AudioEventKey.CardSupplyCascade)));
         
         disposables.Add(sea.WhenResupplied
+            .Merge(deferrer.WhenResupplied)
             .Subscribe(_ => audioManager.Play(AudioEventKey.CardSupplyRedeal)));
 
         #endregion

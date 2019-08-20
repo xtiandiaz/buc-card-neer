@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using DG.Tweening;
 using Zenject;
@@ -6,7 +5,7 @@ using Zenject;
 public interface ISeaView
 {
     float Height { get; }
-    float Depth { get; }
+    float ZDepth { get; }
     Vector3 LocalPosition { get; set; }
     
     ISlotView[] Slots { get; }
@@ -24,7 +23,7 @@ public class SeaView : MonoBehaviour, ISeaView
     private Sequence projectionSequence;
 
     public float Height => waterSurfaceTransform.localScale.y * Mathf.Sin(SurfaceSlope);
-    public float Depth => waterSurfaceTransform.localScale.y * Mathf.Cos(SurfaceSlope);
+    public float ZDepth => waterSurfaceTransform.localScale.y * Mathf.Cos(SurfaceSlope);
 
     private float SurfaceSlope => (90f - waterTransform.rotation.eulerAngles.x) * Mathf.Deg2Rad;
     

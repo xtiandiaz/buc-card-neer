@@ -94,7 +94,7 @@ Shader "Sprites/OneSided"
             fixed4 SpriteFrag(v2f IN) : SV_Target
             {
                 fixed4 baseColor = tex2D(_MainTex, IN.texcoord) * IN.color;
-                fixed4 c = lerp(baseColor, _FogColorPDS, _FogIntensityPDS);
+                fixed3 c = lerp(baseColor, _FogColorPDS, _FogIntensityPDS);
                 return fixed4(c.r, c.g, c.b, 1.0) * baseColor.a;
             }               
             

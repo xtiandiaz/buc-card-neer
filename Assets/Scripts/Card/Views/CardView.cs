@@ -23,18 +23,21 @@ public interface ICardView
 
     void Pick(Vector3 atPosition);
     void Drag(Vector3 toPosition);
-    void Arrange(CardArrangement withArrangement);
+    void Sort(int withRawIndex);
     void ToggleValueVisibility(bool toValue);
     void ToggleLockVisibility(bool toValue);
     void Destroy();
     
+    Sequence Arrange(ArrangementInfo withInfo);
+    Sequence Reveal();
+    Sequence Lodge(LodgingInfo withInfo);
+    Sequence Fling(Vector3 toPosition, Ease withEase, float andDuration);
+    Tween Fade(float toAlphaValue, float withDuration);
+    void Bounce(Vector3 withVector);    
+    
     IObservable<Unit> Clash(Direction toward);
     IObservable<Unit> OnClashed();
     IObservable<Unit> OnShot();
-    IObservable<Unit> Reveal();
-    IObservable<Unit> Lodge(Transform inTransform, int withIndex, CardArrangement arrangement, CardArrangementMode andMode);
-    IObservable<Unit> ArrangeAsObservable(CardArrangement withArrangement);
-    IObservable<Unit> Fade(float toAlphaValue, TimeSpan withDuration);
 }
 
 public class CardView : MonoBehaviour, ICardView
@@ -50,8 +53,9 @@ public class CardView : MonoBehaviour, ICardView
 
     private bool isPicked;
     private float floatingT;
+    private int? lastParentIndex;
     private Tween dragging;
-    private Sequence arrangement;
+    private Sequence arranging;
 
     public virtual int Value
     {
@@ -130,7 +134,7 @@ public class CardView : MonoBehaviour, ICardView
         sorter.Order = 100;
         isPicked = true;
 
-        arrangement?.Kill();
+        arranging?.Kill();
 
         Drag(atPosition);
     }
@@ -142,83 +146,39 @@ public class CardView : MonoBehaviour, ICardView
             .SetEase(Ease.OutQuart);
     }
 
-    public IObservable<Unit> Lodge(Transform inTransform, int withIndex, CardArrangement arrangement, CardArrangementMode andMode)
-    {
-        return Observable.Create<Unit>(observer =>
-        {
-            dragging?.Kill();
-            
-            transform.SetParent(inTransform, true);
-
-            Sort(arrangement.index);
-
-            if (!IsBoarded)
-                floatingT = withIndex * Mathf.PI * 0.5f;
-            
-            isPicked = false;
-
-            var sequence = animator.Arrange(arrangement, andMode)
-                .OnComplete(() => 
-                {
-                    observer.OnNext(Unit.Default);
-                    observer.OnCompleted();
-                });
-            
-            return Disposable.Create(() => sequence.Kill());
-        });
-    }
-
-    public void Arrange(CardArrangement withArrangement)
+    public Sequence Lodge(LodgingInfo withInfo)
     {
         dragging?.Kill();
-        arrangement?.Kill();
+            
+        transform.SetParent(withInfo.Bond.Transform, true);
+
+        Sort(withInfo.ArrangementInfo.Index);
+
+        if (!IsBoarded && lastParentIndex != withInfo.Bond.Index)
+        {
+            lastParentIndex = withInfo.Bond.Index;
+            floatingT = lastParentIndex.Value * Mathf.PI * 0.5f;
+        }
+            
+        isPicked = false;
+
+        return animator.Arrange(withInfo.ArrangementInfo);
+    }
+
+    public Sequence Arrange(ArrangementInfo withInfo)
+    {
+        dragging?.Kill();
+        arranging?.Kill();
 
         isPicked = false;
-        
-        arrangement = animator.Arrange(withArrangement)
-            .OnComplete(() =>
-            {
-                Sort(withArrangement.index);
-            });
-    }
-    
-    public IObservable<Unit> ArrangeAsObservable(CardArrangement withArrangement)
-    {
-        return Observable.Create<Unit>(observer =>
-        {
-            dragging?.Kill();
-            
-            Sort(withArrangement.index);
-            
-            isPicked = false;
-            
-            var sequence = animator.Arrange(withArrangement);
+        arranging = animator.Arrange(withInfo);
 
-            sequence.OnComplete(() =>
-            {
-                observer.OnNext(Unit.Default);
-                observer.OnCompleted();
-            });
-
-            return Disposable.Create(() => arrangement.Kill());
-        });
+        return arranging;
     }
 
-    public IObservable<Unit> Reveal()
+    public Sequence Reveal()
     {
-        return Observable.Create<Unit>(observer =>
-        {
-            var sequence = animator.Flip(CardFace.Front)
-                .OnComplete(() =>
-                {
-                    Face = CardFace.Front;
-
-                    observer.OnNext(Unit.Default);
-                    observer.OnCompleted();
-                });
-            
-            return Disposable.Create(() => sequence.Kill());
-        }); 
+        return animator.Flip(CardFace.Front);
     }
 
     public IObservable<Unit> Clash(Direction toward)
@@ -236,9 +196,19 @@ public class CardView : MonoBehaviour, ICardView
     public IObservable<Unit> OnShot()
     {
         return animator.OnShot();
-    } 
+    }
 
-    public IObservable<Unit> Fade(float toAlphaValue, TimeSpan withDuration)
+    public Sequence Fling(Vector3 toPosition, Ease withEase, float andDuration)
+    {
+        return animator.Fling(toPosition, withEase, andDuration);
+    }
+
+    public void Bounce(Vector3 withVector)
+    {
+        animator.Bounce(withVector, 0.5f);
+    }
+
+    public Tween Fade(float toAlphaValue, float withDuration)
     {
         return shader.Fade(toAlphaValue, withDuration);
     }
@@ -253,19 +223,13 @@ public class CardView : MonoBehaviour, ICardView
         customizer.ToggleLockVisibility(toValue);
     }
 
+    public void Sort(int withRawIndex)
+    {
+        sorter.Order = -withRawIndex;
+    }
+    
     public void Destroy()
     {
         Destroy(gameObject);
     }
-    
-    private void Sort(int withRawIndex)
-    {
-        sorter.Order = -withRawIndex;
-    }
-
-    /*private void TryFloating()
-    {
-        if (!IsBoarded)
-            floating?.Play();
-    }*/
 }

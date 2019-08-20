@@ -32,7 +32,7 @@ public class BoardView : MonoBehaviour, IBoardView
         )
     {
         var seaHeight = sea.Height;
-        var seaDepth = sea.Depth;
+        var seaDepth = sea.ZDepth;
         
         var nearViewport = viewportProvider.GetViewport(0);
         var farViewport = viewportProvider.GetViewport(seaDepth);
@@ -46,7 +46,7 @@ public class BoardView : MonoBehaviour, IBoardView
         skyScale.y = farViewport.Size.y - sea.LocalPosition.y - seaHeight;
         sky.LocalScale = skyScale;
         
-        sky.LocalPosition = sea.LocalPosition + Vector3.up * seaHeight + Vector3.forward * sea.Depth;
+        sky.LocalPosition = sea.LocalPosition + Vector3.up * seaHeight + Vector3.forward * sea.ZDepth;
         
         WorldPosition = Vector3.down * (nearViewportCenter.y);
     }

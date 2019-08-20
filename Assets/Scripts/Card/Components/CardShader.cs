@@ -2,19 +2,10 @@ using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-public interface ICardShader
-{
-    float Alpha { set; }
-
-    IObservable<Unit> Fade(float toAlphaValue, TimeSpan withDuration);
-    void Fog(Color withColor, float byFactor);
-}
-
-public class CardShader : MonoBehaviour, ICardShader
+public class CardShader : MonoBehaviour
 {
     private static readonly int FogColorPropertyId = Shader.PropertyToID("_FogColor");
     private static readonly int FogIntensityPropertyId = Shader.PropertyToID("_FogIntensity");
@@ -23,6 +14,9 @@ public class CardShader : MonoBehaviour, ICardShader
 
     [SerializeField] private TextMeshPro[] targetTextRenderers = default;
     [SerializeField] private SpriteRenderer[] targetSpriteRenderers = default;
+
+    private Color fogColor = Color.black;
+    private float fogIntensity;
 
     public float Alpha
     {
@@ -38,30 +32,21 @@ public class CardShader : MonoBehaviour, ICardShader
             shadingEntries.Add(ProduceEntry(textRenderer));
     }
 
-    public IObservable<Unit> Fade(float toAlphaValue, TimeSpan withDuration)
+    public Tween Fade(float toAlphaValue, float withDuration)
     {
-        return Observable.Create<Unit>(observer =>
-        {
-            TryNotifyingErrors(observer);
+        if (shadingEntries.Count <= 0) 
+            throw new Exception("[CardShader] No Entries provided for shading.");
 
-            var alpha = shadingEntries[0].colorGetter().a;
-            var tween = DOTween.To(
-                    () => alpha,
-                    a =>
-                    {
-                        Alpha = a;
-                        alpha = a;
-                    },
-                    toAlphaValue,
-                    (float) withDuration.TotalSeconds)
-                .OnComplete(() =>
-                {
-                    observer.OnNext(Unit.Default);
-                    observer.OnCompleted();
-                });
-
-            return Disposable.Create(() => tween.Kill());
-        });
+        var alpha = shadingEntries[0].colorGetter().a;
+        return DOTween.To(
+            () => alpha,
+            a =>
+            {
+                Alpha = a;
+                alpha = a;
+            },
+            toAlphaValue,
+            withDuration);
     }
 
     public void Tint(Color withColor, float byFactor)
@@ -69,13 +54,33 @@ public class CardShader : MonoBehaviour, ICardShader
         Apply((colorSetter, startColor) => colorSetter(startColor.Tint(withColor, byFactor)));
     }
 
-    public void Fog(Color withColor, float byFactor)
+    public Sequence Fog(Color withColor, float byFactor, Ease withEase, float andDuration)
     {
-        Apply((propertyBlock, startColor) =>
-        {
-            propertyBlock.SetColor(FogColorPropertyId, withColor);
-            propertyBlock.SetFloat(FogIntensityPropertyId, byFactor);
-        });
+        var sequence = DOTween.Sequence();
+
+        sequence.Append(DOTween.To(
+            () => fogColor,
+            color =>
+            {
+                Apply((propertyBlock, startColor) => propertyBlock.SetColor(FogColorPropertyId, color));
+                fogColor = color;
+            },
+            withColor,
+            andDuration));
+
+        sequence.Join(DOTween.To(
+            () => fogIntensity,
+            intensity =>
+            {
+                Apply((propertyBlock, startColor) => propertyBlock.SetFloat(FogIntensityPropertyId, intensity));
+                fogIntensity = intensity;
+            },
+            byFactor,
+            andDuration));
+
+        sequence.SetEase(withEase);
+
+        return sequence;
     }
 
     private static ShadingEntry ProduceEntry(SpriteRenderer forSpriteRenderer)
@@ -106,12 +111,6 @@ public class CardShader : MonoBehaviour, ICardShader
             entry.Apply(colorTransform);
     }
 
-    private void TryNotifyingErrors(IObserver<Unit> observer)
-    {
-        if (shadingEntries.Count <= 0)
-            observer.OnError(new Exception("[CardShader] No Entries provided for shading."));
-    }
-    
     private struct ShadingEntry
     {
         public readonly Func<Color> colorGetter;

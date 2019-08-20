@@ -1,4 +1,5 @@
 using System;
+using DG.Tweening;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -41,7 +42,8 @@ public interface ICard : IDisposable
     void Drag(Vector3 toPosition);
     void Drop();
     void Hack(int withValue);
-    void Arrange(CardArrangement withArrangement);
+    void Arrange(ArrangementInfo withInfo);
+    void Sort(int withRawIndex);
     
     IObservable<Unit> DropAsObservable();
     IObservable<Unit> Reveal();
@@ -49,9 +51,12 @@ public interface ICard : IDisposable
     IObservable<Unit> Clash(ICard withOther, Direction toward);
     IObservable<Unit> OnClashed(int withValue);
     IObservable<Unit> OnShot(int withValue);
-    IObservable<Unit> Lodge(ICardBond withBond, CardArrangement arrangement, CardArrangementMode andMode);
-    IObservable<Unit> ArrangeAsObservable(CardArrangement withArrangement);
+    IObservable<Unit> Lodge(LodgingInfo withInfo);
+    IObservable<Unit> ArrangeAsObservable(ArrangementInfo withInfo);
     IObservable<Unit> Destroy();
+    
+    IObservable<Unit> Fling(Vector3 toPosition, Ease withEase, float andDuration);
+    void Bounce(Vector3 withVector);
 }
 
 public class Card : ICard
@@ -70,7 +75,7 @@ public class Card : ICard
     private bool isBoarded;
     private ICardBond bond;
     private ISuitModel suit;
-    private CardArrangement currentArrangement;
+    private ArrangementInfo lastArrangementInfo;
 
     protected Card(ICardModel model, ICardView view)
     {
@@ -154,12 +159,12 @@ public class Card : ICard
 
     public void Drop()
     {
-        view.Arrange(currentArrangement);
+        view.Arrange(lastArrangementInfo);
     }
 
     public IObservable<Unit> DropAsObservable()
     {
-        return view.ArrangeAsObservable(currentArrangement);
+        return ArrangeAsObservable(lastArrangementInfo);
     }
 
     public IObservable<Unit> Hit(int withValue)
@@ -191,43 +196,77 @@ public class Card : ICard
 
     public IObservable<Unit> Reveal()
     {
-        return view.Reveal();
-    }
-
-    public IObservable<Unit> Lodge(ICardBond withBond, CardArrangement arrangement, CardArrangementMode andMode)
-    {
         return Observable.Create<Unit>(observer =>
         {
-            if (withBond == null)
-            {
-                observer.OnError(new Exception("Passed null Bond for Card lodging."));
-                return Disposable.Empty;
-            }
+            var sequence = view.Reveal()
+                .OnComplete(() =>
+                {
+                    view.Face = CardFace.Front;
+
+                    observer.OnNext(Unit.Default);
+                    observer.OnCompleted();
+                });
             
-            if (withBond != bond)
-            {
-                bond?.Release(this);
-                bond = withBond;
-            }
-
-            currentArrangement = arrangement;
-
-            return view.Lodge(withBond.Transform, withBond.Index, arrangement, andMode)
-                .Subscribe(observer);
+            return Disposable.Create(() => sequence.Kill());
         });
     }
     
-    public void Arrange(CardArrangement withArrangement)
+    public IObservable<Unit> Lodge(LodgingInfo withInfo)
     {
-        currentArrangement = withArrangement;
-        
-        view.Arrange(withArrangement);
+        return Observable.Create<Unit>(observer =>
+        {
+            if (withInfo.Bond != bond)
+            {
+                bond?.Release(this);
+                bond = withInfo.Bond;
+            }
+
+            lastArrangementInfo = withInfo.ArrangementInfo;
+
+            var sequence = view.Lodge(withInfo)
+                .OnComplete(() =>
+                {
+                    observer.OnNext(Unit.Default);
+                    observer.OnCompleted();
+                });
+            
+            return Disposable.Create(() => sequence.Kill());
+        });
     }
 
-    public IObservable<Unit> ArrangeAsObservable(CardArrangement withArrangement)
+    public void Arrange(ArrangementInfo withInfo)
     {
-        return view.ArrangeAsObservable(withArrangement)
-            .DoOnSubscribe(() => currentArrangement = withArrangement);
+        lastArrangementInfo = withInfo;
+        
+        view.Arrange(withInfo)
+            .OnComplete(() => 
+            { 
+                view.Sort(withInfo.Index);
+            });
+    }
+
+    public void Sort(int withRawIndex)
+    {
+        view.Sort(withRawIndex);
+    }
+
+    public IObservable<Unit> ArrangeAsObservable(ArrangementInfo withInfo)
+    {
+        return Observable.Create<Unit>(observer =>
+        {
+            lastArrangementInfo = withInfo;
+            
+            view.Sort(withInfo.Index);
+            
+            var sequence = view.Arrange(lastArrangementInfo)
+                .OnComplete(() => 
+                {
+                    observer.OnNext(Unit.Default);
+                    observer.OnCompleted();
+                });
+
+            return Disposable.Create(() => sequence.Kill());
+        });
     }
 
     public IObservable<Unit> Clash(ICard withOther, Direction toward)
@@ -263,22 +302,46 @@ public class Card : ICard
                 : Hit(withValue));
     }
 
+    public IObservable<Unit> Fling(Vector3 toPosition, Ease withEase, float andDuration)
+    {
+        return Observable.Create<Unit>(observer =>
+        {
+            var sequence = view.Fling(toPosition, withEase, andDuration)
+                .OnComplete(() =>
+                {
+                    observer.OnNext(Unit.Default);
+                    observer.OnCompleted();
+                });
+            
+            return Disposable.Create(() => sequence.Kill());
+        });
+    }
+
+    public void Bounce(Vector3 withVector)
+    {
+        view.Bounce(withVector);
+    }
+
     public IObservable<Unit> Destroy()
     {
         return Observable.Create<Unit>(observer => 
         {
             bond?.Release(this);
 
-            return view.Fade(0, TimeSpan.FromSeconds(0.5f))
-                .DoOnCompleted(() =>
+            var tween = view.Fade(0, 0.5f)
+                .OnComplete(() =>
                 {
                     destruction.OnNext(Unit.Default);
                     destruction.OnCompleted();
                     
                     view.Destroy();
                     Dispose();
-                })
-                .Subscribe(observer);
+
+                    observer.OnNext(Unit.Default);
+                    observer.OnCompleted();
+                });
+            
+            return Disposable.Create(() => tween.Kill());
         });
     }
 
@@ -286,7 +349,7 @@ public class Card : ICard
     {
         value.Dispose();
         lockValue.Dispose();
-        
-        destruction?.Dispose();
+        hittingOrHacking.Dispose();
+        destruction.Dispose();
     }
 }

@@ -25,8 +25,7 @@ public class AppInstaller : MonoInstaller
         #endregion
 
         #region Localization
-
-        Container.BindInterfacesTo<LocalizationProvider>().AsSingle();
+        
         Container.BindInterfacesTo<LocalizationCatalog>().FromInstance(localizationCatalog).AsSingle();
         Container.BindInterfacesTo<LocalizationManager>().AsSingle();
 

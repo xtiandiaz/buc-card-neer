@@ -68,7 +68,7 @@ public class LodgingController : ILodgingController
                 return Disposable.Empty;
             }
 
-            return intoDestination.Lodge(fromSource.Pop(), SlotLodgingMode.Voluntary, true)
+            return intoDestination.Lodge(fromSource.Pop(), LodgingSettings.Manual)
                 .Merge(fromSource.ConditionallyArrange())
                 .AsSingleUnitObservable()
                 .Subscribe(observer);

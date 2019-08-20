@@ -479,6 +479,37 @@ Transform:
   m_Father: {fileID: 8778606942855900467}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2685399025722165210
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1542750461267352128}
+  m_Layer: 0
+  m_Name: FloatingWrapper
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1542750461267352128
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2685399025722165210}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 6101534049218447780}
+  m_Father: {fileID: 8007272462152954247}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3052685046290274502
 GameObject:
   m_ObjectHideFlags: 0
@@ -814,7 +845,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 6101534049218447780}
+  - {fileID: 1542750461267352128}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -834,7 +865,7 @@ MonoBehaviour:
   animator: {fileID: 5074909376754311272}
   sorter: {fileID: 7468205934576597478}
   shader: {fileID: 9099243857038372407}
-  floatingWrapper: {fileID: 6101534049218447780}
+  floatingWrapper: {fileID: 1542750461267352128}
   coins: {fileID: 2755808104395985536}
   maxHealth: {fileID: 7471785505411157522}
 --- !u!114 &5074909376754311272
@@ -887,6 +918,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardValue: {fileID: 8149784327790513302}
   lockValue: {fileID: 0}
+  cardName: {fileID: 0}
   suit: {fileID: 0}
   frontCover: {fileID: 2394089882030168721}
   backCover: {fileID: 1036552923604472217}
@@ -996,7 +1028,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4196249751627446869}
-  m_Father: {fileID: 8007272462152954247}
+  m_Father: {fileID: 1542750461267352128}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6016101693786946334
