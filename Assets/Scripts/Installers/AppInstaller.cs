@@ -6,12 +6,11 @@ public class AppInstaller : MonoInstaller
     [SerializeField] private BoardModel board = default;
     [SerializeField] private MenuCatalog menuCatalog = default;
     [SerializeField] private LocalizationCatalog localizationCatalog = default;
-    [SerializeField] private UserSettings userSettings = default;
 
     public override void InstallBindings()
     {
         Container.BindInterfacesTo<AppController>().AsSingle();
-        Container.BindInterfacesTo<UserSettings>().FromInstance(userSettings).AsSingle();
+        Container.BindInterfacesTo<UserSettings>().AsSingle().NonLazy();
 
         #region Menus
 

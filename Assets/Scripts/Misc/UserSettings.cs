@@ -1,50 +1,91 @@
 using System;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
-public interface IUserSettings
+public interface IUserSettings : IInitializable, IDisposable
 {
     Language Language { get; set; }
-    IObservable<Language> WhenLanguageChanged { get; }
-    
     bool ShouldPlayAudio { get; set; }
-    
     bool ShouldDealDeviceCards { get; set; }
+    
+    IObservable<Language> WhenLanguageChanged { get; }
 }
 
-[CreateAssetMenu(menuName = "Model/Misc/User Settings")]
-public class UserSettings : ScriptableObject, IUserSettings
+public class UserSettings : IUserSettings
 {
-    private readonly ReactiveProperty<Language> language = new ReactiveProperty<Language>(Language.English);
+    private const string LanguagePrefKey = "Language";
+    private const string AudioPrefKey = "ShouldPlayAudio";
+    private const string DeviceCardsPrefKey = "ShouldDealDeviceCards";
+
+    private readonly BehaviorSubject<Language> languageSelection;
+    private readonly CompositeDisposable disposables = new CompositeDisposable();
     
-    [Header("General")]
-    [SerializeField] private bool shouldPlayAudio = true;
-
-    [Header("Game")] 
-    [SerializeField] private bool shouldDealDeviceCards = false;
-
+    private UserSettings()
+    {
+        languageSelection = new BehaviorSubject<Language>(Language);
+    }
+    
     public Language Language
     {
-        get => language.Value;
-        set => language.Value = value;
+        get => GetEnum(LanguagePrefKey, Language.English);
+        set
+        {
+            SetEnum(LanguagePrefKey, value);
+            languageSelection.OnNext(value);
+        }
     }
 
-    public IObservable<Language> WhenLanguageChanged => language.DistinctUntilChanged();
-    
     public bool ShouldPlayAudio
     {
-        get => shouldPlayAudio;
-        set => shouldPlayAudio = value;
+        get => GetBool(AudioPrefKey, true);
+        set => SetBool(AudioPrefKey, value);
     }
 
     public bool ShouldDealDeviceCards
     {
-        get => shouldDealDeviceCards;
-        set => shouldDealDeviceCards = value;
+        get => GetBool(DeviceCardsPrefKey);
+        set => SetBool(DeviceCardsPrefKey, value);
+    }
+    
+    public IObservable<Language> WhenLanguageChanged => languageSelection.DistinctUntilChanged();
+
+    public void Initialize()
+    {
+        disposables.Add(Observable.EveryApplicationPause()
+            .Where(wasPaused => wasPaused)
+            .Subscribe(_ => PlayerPrefs.Save()));
+    }
+    
+    public void Dispose()
+    {
+        languageSelection.Dispose();
+        
+        disposables.Dispose();
     }
 
-    private void OnDestroy()
+    private static T GetEnum<T>(string withKey, T andDefaultValue) where T : struct, IConvertible
     {
-        language.Dispose();
+        return (T)(object)PlayerPrefs.GetInt(withKey,Convert.ToInt32(andDefaultValue));
+    }
+
+    private static T GetEnum<T>(string withKey) where T : struct, IConvertible
+    {
+        return (T)(object)PlayerPrefs.GetInt(withKey);
+    }
+
+    private static void SetEnum<T>(string withKey, T andValue) where T : struct, IConvertible
+    {
+        PlayerPrefs.SetInt(withKey, Convert.ToInt32(andValue));
+    }
+
+    private static bool GetBool(string withKey, bool andDefaultValue = false)
+    {
+        return PlayerPrefs.GetInt(withKey, andDefaultValue ? 1 : 0) == 1;
+    }
+
+    private static void SetBool(string withKey, bool andValue)
+    {
+        PlayerPrefs.SetInt(withKey, andValue ? 1 : 0);
     }
 }
