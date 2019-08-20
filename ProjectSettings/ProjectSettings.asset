@@ -165,7 +165,7 @@ PlayerSettings:
     Android: com.tilkistudios.slytides
     iPhone: co.pintxo.royahoy
   buildNumber:
-    iPhone: 7
+    iPhone: 8
   AndroidBundleVersionCode: 7
   AndroidMinSdkVersion: 16
   AndroidTargetSdkVersion: 0

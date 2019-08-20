@@ -26,7 +26,7 @@ public class AppController : IAppController, IAppNavigator, IAppInfo
     private readonly IMenuFactory menuFactory;
     private IDisposable sceneLoading;
 
-    public int BuildNumber => 7;
+    public int BuildNumber => 8;
 
     public void Initialize()
     {

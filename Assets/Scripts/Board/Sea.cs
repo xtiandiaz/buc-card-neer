@@ -38,7 +38,6 @@ public class Sea : ISea
 
     private int clashExclusionMask;
     private bool willSupplyCascade;
-    private bool willResupply;
 
     private Sea(
         IEnumerable<ISlot> supplySlots,
@@ -70,7 +69,6 @@ public class Sea : ISea
                 {
                     clashExclusionMask |= 1 << i;
                     willSupplyCascade |= !slot.IsEmpty;
-                    willResupply |= slot.IsEmpty && dealer.CanDeal(slot);
                 }))
             .Merge()
             .Subscribe());
@@ -89,11 +87,9 @@ public class Sea : ISea
     {
         return Observable.Create<Unit>(observer =>
         {
-            if (willResupply)
+            if (Slots.FirstOrDefault(slot => slot.IsEmpty && dealer.CanDeal(slot)) != null) 
                 resupplying.OnNext(Unit.Default);
 
-            willResupply = false;
-            
             return Enumerable.Range(0, Slots.Length)
                 .Select(i => Slots[i])
                 .Where(slot => slot.IsEmpty)
