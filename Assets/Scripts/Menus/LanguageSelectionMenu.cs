@@ -13,7 +13,7 @@ public class LanguageSelectionMenu : WorldSpaceMenu, ILanguageSelectionMenu
     
     [Inject]
     private void Initialize(
-        IUserSettings userSettings,
+        IPlayerSettings playerSettings,
         ILocalizationManager localizationManager
         )
     {
@@ -22,13 +22,13 @@ public class LanguageSelectionMenu : WorldSpaceMenu, ILanguageSelectionMenu
             var toggle = Instantiate(sampleToggle, controlsWrapper, false);
             
             toggle.SetText(language.Name);
-            toggle.SetState(userSettings.Language == language.Key);
+            toggle.SetState(playerSettings.Language == language.Key);
 
             toggle.WhenClicked
                 .Select(_ => language.Key)
                 .Subscribe(lang =>
                 {
-                    userSettings.Language = lang;
+                    playerSettings.Language = lang;
                     Close();
                 })
                 .AddTo(this);

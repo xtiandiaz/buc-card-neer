@@ -3,7 +3,7 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-public interface IUserSettings : IInitializable, IDisposable
+public interface IPlayerSettings : IInitializable, IDisposable
 {
     Language Language { get; set; }
     bool ShouldPlayAudio { get; set; }
@@ -12,7 +12,7 @@ public interface IUserSettings : IInitializable, IDisposable
     IObservable<Language> WhenLanguageChanged { get; }
 }
 
-public class UserSettings : IUserSettings
+public class PlayerSettings : IPlayerSettings
 {
     private const string LanguagePrefKey = "Language";
     private const string AudioPrefKey = "ShouldPlayAudio";
@@ -21,7 +21,7 @@ public class UserSettings : IUserSettings
     private readonly BehaviorSubject<Language> languageSelection;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
     
-    private UserSettings()
+    private PlayerSettings()
     {
         languageSelection = new BehaviorSubject<Language>(Language);
     }

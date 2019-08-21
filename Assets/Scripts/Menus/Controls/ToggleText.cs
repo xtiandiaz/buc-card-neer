@@ -16,6 +16,9 @@ public class ToggleText : ButtonText
     protected override void Start()
     {
         base.Start();
+        
+        if (!Application.isPlaying)
+            return;
 
         WhenClicked
             .Subscribe(_ => state.Value = !state.Value)

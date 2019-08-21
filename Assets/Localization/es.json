@@ -10,6 +10,14 @@
       "value" : "Jugar"
     },
     {
+      "key" : "ui.button.store",
+      "value" : "Almacén"
+    },
+    {
+      "key" : "ui.button.logbook",
+      "value" : "Diario de navegación"
+    },
+    {
       "key" : "ui.button.restart",
       "value" : "Reiniciar"
     },
@@ -34,6 +42,15 @@
     {
       "key" : "ui.headline.gameFinished",
       "value" : "Ganaste!\n<size=10>Obtuviste <color=FFFFFF>{0}</color> monedas.</size>"
+    },
+
+    {
+      "key" : "ui.info.aboutStore",
+      "value" : "Compra nuevos Dispositivos y explora tu colección."
+    },
+    {
+      "key" : "ui.info.aboutLogbook",
+      "value" : "Ve tus estadísticas de juego y puntajes de otros jugadores."
     },
 
     {

@@ -12,22 +12,19 @@ public class SettingsMenu : WorldSpaceMenu, ISettingsMenu
     [SerializeField] private ToggleText deviceCardToggle = default;
     [SerializeField] private ButtonText languageButton = default;
 
-    private IUserSettings userSettings;
-    private ILocalizator localizator;
+    private IPlayerSettings playerSettings;
     private IMenuFactory menuFactory;
 
     [Inject]
     private void Initialize(
-        IUserSettings userSettings,
-        ILocalizator localizator,
+        IPlayerSettings playerSettings,
         IMenuFactory menuFactory
         )
     {
-        audioToggle.SetState(userSettings.ShouldPlayAudio);
-        deviceCardToggle.SetState(userSettings.ShouldDealDeviceCards);
+        audioToggle.SetState(playerSettings.ShouldPlayAudio);
+        deviceCardToggle.SetState(playerSettings.ShouldDealDeviceCards);
 
-        this.userSettings = userSettings;
-        this.localizator = localizator;
+        this.playerSettings = playerSettings;
         this.menuFactory = menuFactory;
     }
 
@@ -41,11 +38,11 @@ public class SettingsMenu : WorldSpaceMenu, ISettingsMenu
         localizator.Hook(languageButton, "ui.button.language");
 
         audioToggle.WhenStateChanged
-            .Subscribe(value => userSettings.ShouldPlayAudio = value)
+            .Subscribe(value => playerSettings.ShouldPlayAudio = value)
             .AddTo(this);
         
         deviceCardToggle.WhenStateChanged
-            .Subscribe(value => userSettings.ShouldDealDeviceCards = value)
+            .Subscribe(value => playerSettings.ShouldDealDeviceCards = value)
             .AddTo(this);
 
         languageButton.WhenClicked

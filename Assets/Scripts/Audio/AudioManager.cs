@@ -15,17 +15,17 @@ public class AudioManager : IAudioManager
     
     private readonly IAudioRepository repository;
     private readonly AudioSourcePool sourcePool;
-    private readonly IUserSettings userSettings;
+    private readonly IPlayerSettings playerSettings;
 
     private AudioManager(
         IAudioRepository repository,
         AudioSourcePool sourcePool,
-        IUserSettings userSettings
+        IPlayerSettings playerSettings
     )
     {
         this.repository = repository;
         this.sourcePool = sourcePool;
-        this.userSettings = userSettings;
+        this.playerSettings = playerSettings;
 
         this.repository.Index();
     }
@@ -57,7 +57,7 @@ public class AudioManager : IAudioManager
 
     private void Play(IAudioEvent audioEvent)
     {
-        if (!userSettings.ShouldPlayAudio)
+        if (!playerSettings.ShouldPlayAudio)
             return;
 
         if (audioEvent == null)

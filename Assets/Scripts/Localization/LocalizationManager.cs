@@ -26,22 +26,22 @@ public class LocalizationManager : ILocalizationManager, ILocalizator
     private readonly CompositeDisposable disposables = new CompositeDisposable();
     
     private readonly ILocalizationCatalog catalog;
-    private readonly IUserSettings userSettings;
+    private readonly IPlayerSettings playerSettings;
 
     private LocalizationManager(
         ILocalizationCatalog catalog,
-        IUserSettings userSettings
+        IPlayerSettings playerSettings
         )
     {
         this.catalog = catalog;
-        this.userSettings = userSettings;
+        this.playerSettings = playerSettings;
 
         this.catalog.Index();
     }
 
     public void Initialize()
     {
-        disposables.Add(userSettings.WhenLanguageChanged
+        disposables.Add(playerSettings.WhenLanguageChanged
             .Subscribe(SetLanguage));
     }
 

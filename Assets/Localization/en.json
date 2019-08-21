@@ -10,6 +10,14 @@
       "value" : "Play"
     },
     {
+      "key" : "ui.button.store",
+      "value" : "Store"
+    },
+    {
+      "key" : "ui.button.logbook",
+      "value" : "Logbook"
+    },
+    {
       "key" : "ui.button.restart",
       "value" : "Restart"
     },
@@ -34,6 +42,15 @@
     {
       "key" : "ui.headline.gameFinished",
       "value" : "You won!\n<size=10>Earned <color=FFFFFF>{0}</color> coins.</size>"
+    },
+
+    {
+      "key" : "ui.info.aboutStore",
+      "value" : "Buy new Devices and browse your collection."
+    },
+    {
+      "key" : "ui.info.aboutLogbook",
+      "value" : "See game stats and leaderboards."
     },
 
     {

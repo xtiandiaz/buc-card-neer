@@ -21,20 +21,17 @@ public class GameMenu : WorldSpaceMenu, IGameMenu
     private IGameStatus gameStatus;
     private IMenuFactory menuFactory;
     private IAudioManager audioManager;
-    private ILocalizator localizator;
 
     [Inject]
     private void Initialize(
         IGameStatus gameStatus,
         IMenuFactory menuFactory,
-        IAudioManager audioManager,
-        ILocalizator localizator
-        )
+        IAudioManager audioManager
+    )
     {
         this.gameStatus = gameStatus;
         this.menuFactory = menuFactory;
         this.audioManager = audioManager;
-        this.localizator = localizator;
     }
 
     private void Awake()

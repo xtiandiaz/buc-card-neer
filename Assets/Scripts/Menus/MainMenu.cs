@@ -10,26 +10,25 @@ interface IMainMenu : IWorldSpaceMenu
 public class MainMenu : WorldSpaceMenu, IMainMenu
 {
     [SerializeField] private ButtonText playButton = default;
+    [SerializeField] private ButtonText storeButton = default;
+    [SerializeField] private ButtonText logbookButton = default;
     [SerializeField] private ButtonIcon settingsButton = default;
     [SerializeField] private Text buildLabel = default;
 
     private IAppNavigator appNavigator;
     private IMenuFactory menuFactory;
     private IAppInfo appInfo;
-    private ILocalizator localizator;
 
     [Inject]
     private void Initialize(
         IAppNavigator appNavigator,
         IAppInfo appInfo,
-        IMenuFactory menuFactory,
-        ILocalizator localizator
-        )
+        IMenuFactory menuFactory
+    )
     {
         this.appNavigator = appNavigator;
         this.appInfo = appInfo;
         this.menuFactory = menuFactory;
-        this.localizator = localizator;
     }
 
     protected override void Start()
@@ -37,17 +36,26 @@ public class MainMenu : WorldSpaceMenu, IMainMenu
         base.Start();
         
         localizator.Hook(playButton, "ui.button.play");
+        localizator.Hook(storeButton, "ui.button.store");
+        localizator.Hook(logbookButton, "ui.button.logbook");
         
         playButton.WhenClicked
             .Take(1)
             .Subscribe(_ => appNavigator.GoToGame())
             .AddTo(this);
+        
+        storeButton.WhenClicked
+            .SelectMany(_ => menuFactory.Create<IStoreMenu>().WhenClosed)
+            .Subscribe()
+            .AddTo(this);
+        
+        logbookButton.WhenClicked
+            .SelectMany(_ => menuFactory.Create<ILogbookMenu>().WhenClosed)
+            .Subscribe()
+            .AddTo(this);
 
         settingsButton.WhenClicked
-            .Do(_ => settingsButton.gameObject.SetActive(false))
-            .Select(_ => menuFactory.Create<ISettingsMenu>())
-            .SelectMany(menu => menu.WhenClosed)
-            .Do(_ => settingsButton.gameObject.SetActive(true))
+            .SelectMany(_ => menuFactory.Create<ISettingsMenu>().WhenClosed)
             .Subscribe()
             .AddTo(this);
 

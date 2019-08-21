@@ -14,6 +14,8 @@ public class MenuCatalog : ScriptableObject, IMenuCatalog
     [SerializeField] private PauseMenu pause = default;
     [SerializeField] private SettingsMenu settings = default;
     [SerializeField] private LanguageSelectionMenu languageSelection = default;
+    [SerializeField] private StoreMenu store = default;
+    [SerializeField] private LogbookMenu logbook = default;
     
     private Dictionary<Type, Menu> prefabIndex;
 
@@ -26,7 +28,9 @@ public class MenuCatalog : ScriptableObject, IMenuCatalog
         {
             [typeof(IPauseMenu)] = pause, 
             [typeof(ISettingsMenu)] = settings,
-            [typeof(ILanguageSelectionMenu)] = languageSelection
+            [typeof(ILanguageSelectionMenu)] = languageSelection,
+            [typeof(IStoreMenu)] = store,
+            [typeof(ILogbookMenu)] = logbook
         };
     }
 

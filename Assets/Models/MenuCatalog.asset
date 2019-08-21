@@ -17,3 +17,5 @@ MonoBehaviour:
     type: 3}
   languageSelection: {fileID: 4293035880967009164, guid: e2c6b97405f8840d6ab3d1a2ebee6afd,
     type: 3}
+  store: {fileID: 5824728458869383735, guid: de77d198b68164da9962031bb306a13d, type: 3}
+  logbook: {fileID: 1687685265645104529, guid: 436f108226bcb4410b6b5aa1299d4e94, type: 3}
