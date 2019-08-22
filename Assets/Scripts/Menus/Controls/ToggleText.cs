@@ -1,9 +1,11 @@
 using System;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ToggleText : ButtonText
 {
+    [SerializeField] private Image checkMark = default;
     [SerializeField] private BoolReactiveProperty state = new BoolReactiveProperty();
 
     public IObservable<bool> WhenStateChanged => state.DistinctUntilChanged();
@@ -28,6 +30,7 @@ public class ToggleText : ButtonText
             .Subscribe(value =>
             {
                 Color = value ? AppColors.ToggleOn : AppColors.ToggleOff;
+                checkMark.enabled = value;
             })
             .AddTo(this);
     }

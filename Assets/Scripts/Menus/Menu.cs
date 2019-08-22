@@ -16,21 +16,11 @@ public abstract class Menu : MonoBehaviour, IMenu
 {
     private readonly Subject<Unit> closing = new Subject<Unit>();
 
-    protected ILocalizator localizator;
-    
     [SerializeField] protected Transform contentWrapper = default;
     [SerializeField] private CustomButton closeButton = default;
 
     public IObservable<Unit> WhenClosed => closing;
 
-    [Inject]
-    private void Initialize(
-        ILocalizator localizator
-    )
-    {
-        this.localizator = localizator;
-    }
-    
     protected virtual void Start()
     {
         if (closeButton != null)

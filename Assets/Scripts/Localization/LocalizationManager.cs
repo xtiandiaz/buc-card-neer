@@ -17,8 +17,38 @@ public interface ILocalizator
     string GetText(string forKey, params object[] andTidbits);
     
     void Hook(Text textField, string withKey, params object[] andTidbits);
-    void Hook(TextMeshProUGUI textField, string withKey, params object[] andTidbits);
+    void Hook(TMP_Text textField, string withKey, params object[] andTidbits);
     void Hook(ButtonText button, string withKey, params object[] andTidbits);
+}
+
+public class Localizator
+{
+    private Localizator(ILocalizator instance)
+    {
+        Instance = instance;
+    }
+    
+    private static ILocalizator Instance { get; set; }
+    
+    public static string GetText(string forKey, params object[] andTidbits)
+    {
+        return Instance.GetText(forKey, andTidbits);
+    }
+
+    public static void Hook(Text textField, string withKey, params object[] andTidbits)
+    {
+        Instance.Hook(textField, withKey, andTidbits);
+    }
+
+    public static void Hook(TMP_Text textField, string withKey, params object[] andTidbits)
+    {
+        Instance.Hook(textField, withKey, andTidbits);
+    }
+
+    public static void Hook(ButtonText button, string withKey, params object[] andTidbits)
+    {
+        Instance.Hook(button, withKey, andTidbits);
+    }
 }
 
 public class LocalizationManager : ILocalizationManager, ILocalizator
@@ -66,7 +96,7 @@ public class LocalizationManager : ILocalizationManager, ILocalizator
             : string.Format(localizedText[forKey], andTidbits);
     }
 
-    public void Hook(TextMeshProUGUI textField, string withKey, params object[] andTidbits)
+    public void Hook(TMP_Text textField, string withKey, params object[] andTidbits)
     {
         GetObservableEntry(withKey)
             .TakeUntilDestroy(textField)

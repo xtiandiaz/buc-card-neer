@@ -34,11 +34,7 @@ public class MainMenu : WorldSpaceMenu, IMainMenu
     protected override void Start()
     {
         base.Start();
-        
-        localizator.Hook(playButton, "ui.button.play");
-        localizator.Hook(storeButton, "ui.button.store");
-        localizator.Hook(logbookButton, "ui.button.logbook");
-        
+
         playButton.WhenClicked
             .Take(1)
             .Subscribe(_ => appNavigator.GoToGame())

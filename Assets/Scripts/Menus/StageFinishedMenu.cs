@@ -3,7 +3,6 @@ using DG.Tweening;
 using TMPro;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 using Zenject;
 
 public interface IStageFinishedMenu : IMenu
@@ -15,16 +14,11 @@ public class StageFinishedMenu : WorldSpaceMenu, IStageFinishedMenu
 {
     [SerializeField] private ButtonText replayButton = default;
     [SerializeField] private ButtonText quitButton = default;
-    [SerializeField] private TextMeshProUGUI heading = default;
 
     [SerializeField] private TextMeshProUGUI scoreField = default;
     [SerializeField] private TextMeshProUGUI highScoreField = default;
     [SerializeField] private TextMeshProUGUI balanceField = default;
-    
-    [SerializeField] private Text scoreLabel = default;
-    [SerializeField] private Text highScoreLabel = default;
-    [SerializeField] private Text balanceLabel = default;
-    
+
     private IGameStatus gameStatus;
     private IAppNavigator appNavigator;
     private IPlayerStats playerStats;
@@ -46,6 +40,7 @@ public class StageFinishedMenu : WorldSpaceMenu, IStageFinishedMenu
         currentHighScore = playerStats.HighScore;
         currentBalance = playerStats.Balance;
 
+        scoreField.text = "0";
         highScoreField.text = $"{currentHighScore}";
         balanceField.text = $"{currentBalance}";
     }
@@ -53,14 +48,6 @@ public class StageFinishedMenu : WorldSpaceMenu, IStageFinishedMenu
     protected override void Start()
     {
         base.Start();
-
-        localizator.Hook(replayButton, "ui.button.replay");
-        localizator.Hook(quitButton, "ui.button.quit");
-        localizator.Hook(heading, "ui.headline.stageFinished");
-        
-        localizator.Hook(scoreLabel, "ui.label.score");
-        localizator.Hook(highScoreLabel, "ui.label.highScore");
-        localizator.Hook(balanceLabel, "ui.label.balance");
 
         replayButton.WhenClicked
             .Take(1)

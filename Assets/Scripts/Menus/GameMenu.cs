@@ -9,8 +9,6 @@ public interface IGameMenu : IMenu
 
 public class GameMenu : WorldSpaceMenu, IGameMenu
 {
-    [SerializeField] private Text heading = default;
-
     [Header("Labels")] 
     [SerializeField] private Text undealtCount = default;
     

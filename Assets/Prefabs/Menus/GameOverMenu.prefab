@@ -250,6 +250,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6045826803341519835}
   - component: {fileID: 325941325891836010}
+  - component: {fileID: 746431805305501809}
   - component: {fileID: 6399850314267559681}
   m_Layer: 5
   m_Name: Heading
@@ -285,6 +286,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7286090037713732774}
   m_CullTransparentMesh: 0
+--- !u!114 &746431805305501809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7286090037713732774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4288281bf00438d95c32e6ccb695b1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  localizedTextKey: ui.headline.gameOver
 --- !u!114 &6399850314267559681
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -555,6 +569,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1436851666389214067, guid: 00d2bedf910a34bab8af4a4410733a0f,
+        type: 3}
+      propertyPath: localizedTextKey
+      value: ui.button.replay
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 00d2bedf910a34bab8af4a4410733a0f, type: 3}
 --- !u!224 &2360667712336954008 stripped
@@ -746,6 +765,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1436851666389214067, guid: 00d2bedf910a34bab8af4a4410733a0f,
+        type: 3}
+      propertyPath: localizedTextKey
+      value: ui.button.quit
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 00d2bedf910a34bab8af4a4410733a0f, type: 3}

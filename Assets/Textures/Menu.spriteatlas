@@ -31,12 +31,13 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 805062767c2bb48f5855fe3127bc7172, type: 3}
-    totalSpriteSurfaceArea: 587000
+    totalSpriteSurfaceArea: 637000
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 01111930247824c78889b47c9f290c00, type: 3}
   - {fileID: 21300000, guid: e317ee22d8d2d4024b2ffa3d62d4ab63, type: 3}
+  - {fileID: 21300000, guid: 99bf783303fbf41ffb576243334ed369, type: 3}
   - {fileID: 21300000, guid: dd2c3474a4fed4660a2c97d063683d2d, type: 3}
   - {fileID: 21300000, guid: 534fddb5ed3904dfe83d897f8ad43795, type: 3}
   - {fileID: 21300000, guid: 375ac60647130443c886bfffe06b8ce4, type: 3}
@@ -46,10 +47,12 @@ SpriteAtlas:
   - {fileID: 21300000, guid: d947b5990826b4aeaa6221d31d0c27ff, type: 3}
   - {fileID: 21300000, guid: 25f8410cb974945d5a8d391efbb668cc, type: 3}
   - {fileID: 21300000, guid: d417537cf402443c89477a83300293a6, type: 3}
+  - {fileID: 21300000, guid: fe11cfbc2c8bb49719358f2b8070cf93, type: 3}
   - {fileID: 21300000, guid: 0a1f32cd183d54a4194a798f9d547e96, type: 3}
   m_PackedSpriteNamesToIndex:
   - Rounded10
   - Loading
+  - Coin
   - Basic
   - Pause
   - Cards
@@ -59,6 +62,7 @@ SpriteAtlas:
   - Rounded50
   - Restart
   - Close
+  - CheckMark
   - Sort
   m_Tag: Menu
   m_IsVariant: 0

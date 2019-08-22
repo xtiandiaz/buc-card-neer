@@ -515,6 +515,11 @@ PrefabInstance:
       propertyPath: m_Text
       value: Play
       objectReference: {fileID: 0}
+    - target: {fileID: 4721454079800767980, guid: 72d8a2936a6ab4ca0b66f271ac318e29,
+        type: 3}
+      propertyPath: localizedTextKey
+      value: ui.button.play
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 72d8a2936a6ab4ca0b66f271ac318e29, type: 3}
 --- !u!224 &3527700012517399655 stripped
@@ -872,6 +877,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1436851666389214067, guid: 00d2bedf910a34bab8af4a4410733a0f,
+        type: 3}
+      propertyPath: localizedTextKey
+      value: ui.button.store
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 00d2bedf910a34bab8af4a4410733a0f, type: 3}
 --- !u!224 &9143691134667917725 stripped
@@ -1068,6 +1078,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1436851666389214067, guid: 00d2bedf910a34bab8af4a4410733a0f,
+        type: 3}
+      propertyPath: localizedTextKey
+      value: ui.button.logbook
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 00d2bedf910a34bab8af4a4410733a0f, type: 3}

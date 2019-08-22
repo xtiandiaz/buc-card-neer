@@ -34,10 +34,6 @@ public class PauseMenu : WorldSpaceMenu, IPauseMenu
     {
         base.Start();
         
-        localizator.Hook(restartButton, "ui.button.restart");
-        localizator.Hook(quitButton, "ui.button.quit");
-        localizator.Hook(audioToggle, "ui.toggle.audio");
-        
         restartButton.WhenClicked
             .Take(1)
             .Subscribe(_ => gameStatus.Reset())

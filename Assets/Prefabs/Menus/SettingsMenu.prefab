@@ -29,7 +29,6 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 1409882598240066347}
   - {fileID: 7868592491653354438}
   - {fileID: 8346751012599409553}
   m_Father: {fileID: 3306581450115479623}
@@ -111,6 +110,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 3306581448813684640}
+  - {fileID: 1409882598240066347}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -238,7 +238,7 @@ RectTransform:
   - {fileID: 6363850766414263913}
   - {fileID: 6638485630008645602}
   m_Father: {fileID: 3306581448813684640}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -420,12 +420,12 @@ PrefabInstance:
     - target: {fileID: 1531607991140952297, guid: 00d2bedf910a34bab8af4a4410733a0f,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 56.543205
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1531607991140952297, guid: 00d2bedf910a34bab8af4a4410733a0f,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -126.040886
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1531607991140952297, guid: 00d2bedf910a34bab8af4a4410733a0f,
         type: 3}
@@ -445,7 +445,7 @@ PrefabInstance:
     - target: {fileID: 1531607991140952297, guid: 00d2bedf910a34bab8af4a4410733a0f,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1531607991140952297, guid: 00d2bedf910a34bab8af4a4410733a0f,
         type: 3}
@@ -455,7 +455,7 @@ PrefabInstance:
     - target: {fileID: 1531607991140952297, guid: 00d2bedf910a34bab8af4a4410733a0f,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1531607991140952297, guid: 00d2bedf910a34bab8af4a4410733a0f,
         type: 3}
@@ -497,6 +497,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1436851666389214067, guid: 00d2bedf910a34bab8af4a4410733a0f,
+        type: 3}
+      propertyPath: localizedTextKey
+      value: ui.button.language
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 00d2bedf910a34bab8af4a4410733a0f, type: 3}
 --- !u!114 &7179587882228575491 stripped
@@ -522,7 +527,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 3306581448813684640}
+    m_TransformParent: {fileID: 3306581450115479623}
     m_Modifications:
     - target: {fileID: 2705969926690298462, guid: d50600f1edea4489b9bead017023f05a,
         type: 3}
@@ -578,7 +583,7 @@ PrefabInstance:
     - target: {fileID: 4650351325335382164, guid: d50600f1edea4489b9bead017023f05a,
         type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4650351325335382164, guid: d50600f1edea4489b9bead017023f05a,
         type: 3}
@@ -757,12 +762,12 @@ PrefabInstance:
     - target: {fileID: 1531607991140952297, guid: 9ada63bd0c55d4a24afac7216d212cfa,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 56.543205
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1531607991140952297, guid: 9ada63bd0c55d4a24afac7216d212cfa,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -75.040886
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1531607991140952297, guid: 9ada63bd0c55d4a24afac7216d212cfa,
         type: 3}
@@ -782,7 +787,7 @@ PrefabInstance:
     - target: {fileID: 1531607991140952297, guid: 9ada63bd0c55d4a24afac7216d212cfa,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1531607991140952297, guid: 9ada63bd0c55d4a24afac7216d212cfa,
         type: 3}
@@ -792,7 +797,7 @@ PrefabInstance:
     - target: {fileID: 1531607991140952297, guid: 9ada63bd0c55d4a24afac7216d212cfa,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1531607991140952297, guid: 9ada63bd0c55d4a24afac7216d212cfa,
         type: 3}
@@ -849,14 +854,13 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7969019415606487807, guid: 9ada63bd0c55d4a24afac7216d212cfa,
+        type: 3}
+      propertyPath: localizedTextKey
+      value: ui.toggle.audio
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ada63bd0c55d4a24afac7216d212cfa, type: 3}
---- !u!224 &5110220747659128437 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 1531607991140952297, guid: 9ada63bd0c55d4a24afac7216d212cfa,
-    type: 3}
-  m_PrefabInstance: {fileID: 6028767302635652764}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &635875749241023318 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6591420976173247946, guid: 9ada63bd0c55d4a24afac7216d212cfa,
@@ -869,6 +873,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d53b832212ae44f480e5b857ca8b64f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &5110220747659128437 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1531607991140952297, guid: 9ada63bd0c55d4a24afac7216d212cfa,
+    type: 3}
+  m_PrefabInstance: {fileID: 6028767302635652764}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7185342546492325266
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -944,12 +954,12 @@ PrefabInstance:
     - target: {fileID: 1531607991140952297, guid: 9ada63bd0c55d4a24afac7216d212cfa,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 56.543205
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1531607991140952297, guid: 9ada63bd0c55d4a24afac7216d212cfa,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -97.540886
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1531607991140952297, guid: 9ada63bd0c55d4a24afac7216d212cfa,
         type: 3}
@@ -969,7 +979,7 @@ PrefabInstance:
     - target: {fileID: 1531607991140952297, guid: 9ada63bd0c55d4a24afac7216d212cfa,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1531607991140952297, guid: 9ada63bd0c55d4a24afac7216d212cfa,
         type: 3}
@@ -979,7 +989,7 @@ PrefabInstance:
     - target: {fileID: 1531607991140952297, guid: 9ada63bd0c55d4a24afac7216d212cfa,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1531607991140952297, guid: 9ada63bd0c55d4a24afac7216d212cfa,
         type: 3}
@@ -1020,6 +1030,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7969019415606487807, guid: 9ada63bd0c55d4a24afac7216d212cfa,
+        type: 3}
+      propertyPath: localizedTextKey
+      value: ui.toggle.deviceCards
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ada63bd0c55d4a24afac7216d212cfa, type: 3}
@@ -1111,7 +1126,7 @@ PrefabInstance:
     - target: {fileID: 1531607991140952297, guid: 00d2bedf910a34bab8af4a4410733a0f,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1531607991140952297, guid: 00d2bedf910a34bab8af4a4410733a0f,
         type: 3}
@@ -1207,6 +1222,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1436851666389214067, guid: 00d2bedf910a34bab8af4a4410733a0f,
+        type: 3}
+      propertyPath: localizedTextKey
+      value: ui.button.clearPlayerStats
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 00d2bedf910a34bab8af4a4410733a0f, type: 3}

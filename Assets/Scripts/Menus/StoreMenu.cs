@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 public interface IStoreMenu : IMenu
 {
@@ -7,12 +8,13 @@ public interface IStoreMenu : IMenu
 
 public class StoreMenu : WorldSpaceMenu, IStoreMenu
 {
-    [SerializeField] private Text aboutInfo = default;
+    [SerializeField] private Text balanceField = default;
 
-    protected override void Start()
+    [Inject]
+    private void Initialize(
+        IPlayerStats playerStats
+        )
     {
-        base.Start();
-        
-        localizator.Hook(aboutInfo, "ui.info.aboutStore");
+        balanceField.text = $"{playerStats.Balance}";
     }
 }

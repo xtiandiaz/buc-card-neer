@@ -1,4 +1,3 @@
-using TMPro;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -11,8 +10,7 @@ public class GameOverMenu : WorldSpaceMenu, IGameOverMenu
 {
     [SerializeField] private ButtonText replayButton = default;
     [SerializeField] private ButtonText quitButton = default;
-    [SerializeField] private TextMeshProUGUI heading = default;
-    
+
     private IGameStatus gameStatus;
     private IAppNavigator appNavigator;
 
@@ -29,10 +27,6 @@ public class GameOverMenu : WorldSpaceMenu, IGameOverMenu
     protected override void Start()
     {
         base.Start();
-
-        localizator.Hook(replayButton, "ui.button.replay");
-        localizator.Hook(quitButton, "ui.button.quit");
-        localizator.Hook(heading, "ui.headline.gameOver");
 
         replayButton.WhenClicked
             .Take(1)

@@ -35,12 +35,6 @@ public class SettingsMenu : WorldSpaceMenu, ISettingsMenu
     protected override void Start()
     {
         base.Start();
-        
-        localizator.Hook(audioToggle, "ui.toggle.audio");
-        localizator.Hook(deviceCardToggle, "ui.toggle.deviceCards");
-        
-        localizator.Hook(languageButton, "ui.button.language");
-        localizator.Hook(clearStatsButton, "ui.button.clearPlayerStats");
 
         audioToggle.WhenStateChanged
             .Subscribe(value => playerSettings.ShouldPlayAudio = value)
