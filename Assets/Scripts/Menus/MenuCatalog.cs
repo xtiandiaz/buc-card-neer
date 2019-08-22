@@ -16,26 +16,30 @@ public class MenuCatalog : ScriptableObject, IMenuCatalog
     [SerializeField] private LanguageSelectionMenu languageSelection = default;
     [SerializeField] private StoreMenu store = default;
     [SerializeField] private LogbookMenu logbook = default;
+    [SerializeField] private GameOverMenu gameOver = default;
+    [SerializeField] private StageFinishedMenu stageFinished = default;
     
-    private Dictionary<Type, Menu> prefabIndex;
+    private Dictionary<Type, Menu> index;
 
     public void Index()
     {
-        if (prefabIndex != null)
+        if (index != null)
             return;
 
-        prefabIndex = new Dictionary<Type, Menu>
+        index = new Dictionary<Type, Menu>
         {
             [typeof(IPauseMenu)] = pause, 
             [typeof(ISettingsMenu)] = settings,
             [typeof(ILanguageSelectionMenu)] = languageSelection,
             [typeof(IStoreMenu)] = store,
-            [typeof(ILogbookMenu)] = logbook
+            [typeof(ILogbookMenu)] = logbook,
+            [typeof(IGameOverMenu)] = gameOver,
+            [typeof(IStageFinishedMenu)] = stageFinished,
         };
     }
 
     public Menu GetPrefab<T>() where T : IMenu
     {
-        return prefabIndex[typeof(T)];
+        return index[typeof(T)];
     }
 }

@@ -33,19 +33,19 @@ public class LocalizationCatalog : ScriptableObject, ILocalizationCatalog
 {
     [SerializeField] private LanguageInfo[] languages = default;
 
-    private Dictionary<Language, LanguageInfo> dataIndex;
+    private Dictionary<Language, LanguageInfo> index;
     
-    public LanguageInfo this[Language key] => dataIndex[key];
+    public LanguageInfo this[Language key] => index[key];
 
     public void Index()
     {
-        if (dataIndex != null)
+        if (index != null)
             return;
         
-        dataIndex = new Dictionary<Language, LanguageInfo>();
+        index = new Dictionary<Language, LanguageInfo>();
 
         foreach (var language in languages)
-            dataIndex[language.Key] = language;
+            index[language.Key] = language;
     }
 
     public IEnumerable<LanguageInfo> GetAll()

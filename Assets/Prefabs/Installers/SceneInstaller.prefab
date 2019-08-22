@@ -50,3 +50,4 @@ MonoBehaviour:
   audioRepository: {fileID: 11400000, guid: 7a05be8b1021f4edd88c559cb93dbbeb, type: 2}
   audioSourcePrefab: {fileID: 5710264892906250546, guid: cf1d97fdab1294fbebd55eedc9468732,
     type: 3}
+  deviceCatalog: {fileID: 11400000, guid: 25a2ee02b48ea45c69b6afb133e07752, type: 2}

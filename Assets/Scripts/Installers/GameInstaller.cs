@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class GameInstaller : SceneInstaller
 {
-    [Header("Data Models")]
+    [Header("Models")]
     [SerializeField] private DeckModel deck = default;
     [Space] 
     [SerializeField] private PlayerCardModel player = default;
@@ -14,7 +14,7 @@ public class GameInstaller : SceneInstaller
     [SerializeField] private SlotModel helm = default;
     [SerializeField] private SlotModel storage = default;
     [SerializeField] private SlotModel mount = default;
-    
+
     [Header("Views")] 
     [SerializeField] private BoardView boardViewPrefab = default;
 
@@ -100,12 +100,6 @@ public class GameInstaller : SceneInstaller
         #endregion
         
         #region Cards
-        
-        Container.BindFactory<ICardModel, ICardView, Card, Card.Factory>().AsSingle();
-        Container.BindFactory<IPlayerCardModel, IPlayerCardView, PlayerCard, PlayerCard.Factory>().AsSingle();
-        Container.BindFactory<ICardModel, IMerchantCardView, MerchantCard, MerchantCard.Factory>().AsSingle();
-        Container.BindFactory<IDeviceCardModel, IDeviceCardView, DeviceCard, DeviceCard.Factory>().AsSingle();
-        Container.BindInterfacesTo<CardFactory>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<IPlayerCard>()
             .FromResolveGetter<ICardFactory, IPlayerCard>(cardFactory => (IPlayerCard) cardFactory.Create(player)).AsSingle();

@@ -141,7 +141,7 @@ public class Slot : ISlot
 
                 IsMessy = !withSettings.ShouldRearrangeOthers;
 
-                if (withSettings.ShouldRearrangeOthers)
+                if (withSettings.ShouldRearrangeOthers || shouldSelfArrange)
                 {
                     pile.ForEach((otherCard, i) =>
                     {

@@ -15,6 +15,7 @@ public class GameAudioController : IGameAudioController
     private readonly IForwardingController forwarder;
     private readonly IShootingController shooter;
     private readonly IMatchingController matcher;
+    private readonly IGameStatus gameStatus;
     private readonly IShip ship;
     private readonly ISea sea;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
@@ -27,6 +28,7 @@ public class GameAudioController : IGameAudioController
         IForwardingController forwarder,
         IShootingController shooter,
         IMatchingController matcher,
+        IGameStatus gameStatus,
         IShip ship,
         ISea sea
     )
@@ -38,22 +40,33 @@ public class GameAudioController : IGameAudioController
         this.forwarder = forwarder;
         this.shooter = shooter;
         this.matcher = matcher;
+        this.gameStatus = gameStatus;
         this.ship = ship;
         this.sea = sea;
     }
     
     public void Initialize()
     {
+        #region Player
+
+        disposables.Add(gameStatus.WhenLost
+            .Subscribe(_ => Play(AudioEventKey.CardAvatarDeath)));
+        
+        disposables.Add(gameStatus.WhenWon
+            .Subscribe(_ => Play(AudioEventKey.GameWin)));
+
+        #endregion
+        
         #region Card Handling
 
         disposables.Add(router.WhenCardDropped
-            .Subscribe(_ => audioManager.Play(AudioEventKey.UIDragCancel)));
+            .Subscribe(_ => Play(AudioEventKey.UIDragCancel)));
         
         disposables.Add(router.WhenCardPicked
-            .Subscribe(_ => audioManager.Play(AudioEventKey.UIDragGrab)));
+            .Subscribe(_ => Play(AudioEventKey.UIDragGrab)));
         
         disposables.Add(dismisser.WhenCardDismissed
-            .Subscribe(_ => audioManager.Play(AudioEventKey.CardBridgeDismiss)));
+            .Subscribe(_ => Play(AudioEventKey.CardBridgeDismiss)));
         
         #endregion
 
@@ -66,13 +79,13 @@ public class GameAudioController : IGameAudioController
                 switch (deviceType)
                 {
                     case DeviceType.Catapult:
-                        audioManager.Play(AudioEventKey.CardToolRangedUseCatapult);
+                        Play(AudioEventKey.CardToolRangedUseCatapult);
                         break;
                     case DeviceType.MidasTouch:
-                        audioManager.Play(AudioEventKey.CardItemTradeSell);
+                        Play(AudioEventKey.CardItemTradeSell);
                         break;
                     case DeviceType.TraderSpell:
-                        audioManager.Play(AudioEventKey.CardItemTradeBuy);
+                        Play(AudioEventKey.CardItemTradeBuy);
                         break;
                 }
             }));
@@ -84,7 +97,7 @@ public class GameAudioController : IGameAudioController
                 switch (deviceType)
                 {
                     case DeviceType.Catapult:
-                        audioManager.Play(AudioEventKey.CardToolRangedHitCatapult);
+                        Play(AudioEventKey.CardToolRangedHitCatapult);
                         break;
                 }
             }));
@@ -109,11 +122,11 @@ public class GameAudioController : IGameAudioController
         #region Sea
 
         disposables.Add(sea.WhenArranged
-            .Subscribe(_ => audioManager.Play(AudioEventKey.CardSupplyCascade)));
+            .Subscribe(_ => Play(AudioEventKey.CardSupplyCascade)));
         
         disposables.Add(sea.WhenResupplied
             .Merge(deferrer.WhenResupplied)
-            .Subscribe(_ => audioManager.Play(AudioEventKey.CardSupplyRedeal)));
+            .Subscribe(_ => Play(AudioEventKey.CardSupplyRedeal)));
 
         #endregion
 
@@ -134,5 +147,10 @@ public class GameAudioController : IGameAudioController
     public void Dispose()
     {
         disposables.Dispose();
+    }
+
+    private void Play(AudioEventKey withKey)
+    {
+        audioManager.Play(withKey);
     }
 }

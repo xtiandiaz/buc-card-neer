@@ -5,6 +5,7 @@ using UnityEngine;
 
 public interface ICardFactory : IFactory<ICardModel, ICard>, IDisposable
 {
+    IDeviceCard Create(DeviceType withType);
 }
 
 public class CardFactory : ICardFactory
@@ -15,6 +16,7 @@ public class CardFactory : ICardFactory
     private readonly MerchantCard.Factory merchantFactory;
     private readonly DeviceCard.Factory deviceFactory;
     private readonly Viewport viewport;
+    private readonly IDeviceCatalog deviceCatalog;
     private readonly ILocalizator localizator;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
@@ -25,6 +27,7 @@ public class CardFactory : ICardFactory
         MerchantCard.Factory merchantFactory,
         DeviceCard.Factory deviceFactory,
         Viewport viewport,
+        IDeviceCatalog deviceCatalog,
         ILocalizator localizator
     )
     {
@@ -34,7 +37,10 @@ public class CardFactory : ICardFactory
         this.merchantFactory = merchantFactory;
         this.deviceFactory = deviceFactory;
         this.viewport = viewport;
+        this.deviceCatalog = deviceCatalog;
         this.localizator = localizator;
+        
+        this.deviceCatalog.Index();
     }
 
     public ICard Create(ICardModel fromModel)
@@ -47,6 +53,11 @@ public class CardFactory : ICardFactory
         disposables.Add(card);
 
         return card;
+    }
+
+    public IDeviceCard Create(DeviceType withType)
+    {
+        return (IDeviceCard) Create(deviceCatalog[withType]);
     }
 
     private ICard CreateCard(ICardModel withModel, ICardView view)
@@ -76,7 +87,7 @@ public class CardFactory : ICardFactory
         view.ToggleValueVisibility(fromModel.ShouldDisplayValue);
 
         view.Position = (viewport.Size.y + GameStatics.CardHeight) * 0.5f *
-                        ((fromModel.Type & CardType.Player) != 0 ? Vector3.down : Vector3.up) +
+                        ((fromModel.Type & (CardType.Player | CardType.Device)) != 0 ? Vector3.down : Vector3.up) +
                         5f * Vector3.back;
 
         return view;

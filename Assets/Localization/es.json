@@ -4,7 +4,10 @@
       "key" : "ui.button.language",
       "value" : "Idioma"
     },
-
+    {
+      "key" : "ui.button.clearPlayerStats",
+      "value" : "Borrar estadísticas de juego"
+    },
     {
       "key" : "ui.button.play",
       "value" : "Jugar"
@@ -22,6 +25,10 @@
       "value" : "Reiniciar"
     },
     {
+      "key" : "ui.button.replay",
+      "value" : "Volver a jugar"
+    },
+    {
       "key" : "ui.button.quit",
       "value" : "Salir"
     },
@@ -36,12 +43,25 @@
     },
 
     {
-      "key" : "ui.headline.gameOver",
-      "value" : "Juego terminado"
+      "key" : "ui.label.score",
+      "value" : "Puntaje"
     },
     {
-      "key" : "ui.headline.gameFinished",
-      "value" : "Ganaste!\n<size=10>Obtuviste <color=FFFFFF>{0}</color> monedas.</size>"
+      "key" : "ui.label.highScore",
+      "value" : "Mejor puntaje"
+    },
+    {
+      "key" : "ui.label.balance",
+      "value" : "Balance"
+    },
+
+    {
+      "key" : "ui.headline.gameOver",
+      "value" : "Moriste"
+    },
+    {
+      "key" : "ui.headline.stageFinished",
+      "value" : "Ganaste!"
     },
 
     {

@@ -1,9 +1,8 @@
 using System;
 using UniRx;
-using UnityEngine;
 using Zenject;
 
-public interface IPlayerSettings : IInitializable, IDisposable
+public interface IPlayerSettings : IPlayerData, IInitializable, IDisposable
 {
     Language Language { get; set; }
     bool ShouldPlayAudio { get; set; }
@@ -12,7 +11,7 @@ public interface IPlayerSettings : IInitializable, IDisposable
     IObservable<Language> WhenLanguageChanged { get; }
 }
 
-public class PlayerSettings : IPlayerSettings
+public class PlayerSettings : PlayerData, IPlayerSettings
 {
     private const string LanguagePrefKey = "Language";
     private const string AudioPrefKey = "ShouldPlayAudio";
@@ -54,7 +53,7 @@ public class PlayerSettings : IPlayerSettings
     {
         disposables.Add(Observable.EveryApplicationPause()
             .Where(wasPaused => wasPaused)
-            .Subscribe(_ => PlayerPrefs.Save()));
+            .Subscribe(_ => Save()));
     }
     
     public void Dispose()
@@ -64,28 +63,10 @@ public class PlayerSettings : IPlayerSettings
         disposables.Dispose();
     }
 
-    private static T GetEnum<T>(string withKey, T andDefaultValue) where T : struct, IConvertible
+    public override void Clear()
     {
-        return (T)(object)PlayerPrefs.GetInt(withKey,Convert.ToInt32(andDefaultValue));
-    }
-
-    private static T GetEnum<T>(string withKey) where T : struct, IConvertible
-    {
-        return (T)(object)PlayerPrefs.GetInt(withKey);
-    }
-
-    private static void SetEnum<T>(string withKey, T andValue) where T : struct, IConvertible
-    {
-        PlayerPrefs.SetInt(withKey, Convert.ToInt32(andValue));
-    }
-
-    private static bool GetBool(string withKey, bool andDefaultValue = false)
-    {
-        return PlayerPrefs.GetInt(withKey, andDefaultValue ? 1 : 0) == 1;
-    }
-
-    private static void SetBool(string withKey, bool andValue)
-    {
-        PlayerPrefs.SetInt(withKey, andValue ? 1 : 0);
+        Delete(LanguagePrefKey);
+        Delete(AudioPrefKey);
+        Delete(DeviceCardsPrefKey);
     }
 }

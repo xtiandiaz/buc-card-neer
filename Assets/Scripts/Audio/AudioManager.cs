@@ -1,7 +1,6 @@
 using System;
 using UniRx;
 using UnityEngine;
-using Zenject;
 
 public interface IAudioManager : IDisposable
 {

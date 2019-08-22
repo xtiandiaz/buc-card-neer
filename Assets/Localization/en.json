@@ -4,7 +4,10 @@
       "key" : "ui.button.language",
       "value" : "Language" 
     },
-    
+    {
+      "key" : "ui.button.clearPlayerStats",
+      "value" : "Clear Player Stats"
+    },
     {
       "key" : "ui.button.play",
       "value" : "Play"
@@ -22,6 +25,10 @@
       "value" : "Restart"
     },
     {
+      "key" : "ui.button.replay",
+      "value" : "Replay"
+    },
+    {
       "key" : "ui.button.quit",
       "value" : "Quit"
     },
@@ -34,14 +41,27 @@
       "key" : "ui.toggle.deviceCards",
       "value" : "Device Cards"
     },
+
+    {
+      "key" : "ui.label.score",
+      "value" : "Score"
+    },
+    {
+      "key" : "ui.label.highScore",
+      "value" : "Highscore"
+    },
+    {
+      "key" : "ui.label.balance",
+      "value" : "Balance"
+    },
     
     {
       "key" : "ui.headline.gameOver",
-      "value" : "Game over"
+      "value" : "You died"
     },
     {
-      "key" : "ui.headline.gameFinished",
-      "value" : "You won!\n<size=10>Earned <color=FFFFFF>{0}</color> coins.</size>"
+      "key" : "ui.headline.stageFinished",
+      "value" : "You won!"
     },
 
     {

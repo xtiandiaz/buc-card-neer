@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +16,8 @@ public interface ILocalizator
 {
     string GetText(string forKey, params object[] andTidbits);
     
-    void Hook(Text text, string withKey, params object[] andTidbits);
+    void Hook(Text textField, string withKey, params object[] andTidbits);
+    void Hook(TextMeshProUGUI textField, string withKey, params object[] andTidbits);
     void Hook(ButtonText button, string withKey, params object[] andTidbits);
 }
 
@@ -64,12 +66,20 @@ public class LocalizationManager : ILocalizationManager, ILocalizator
             : string.Format(localizedText[forKey], andTidbits);
     }
 
-    public void Hook(Text text, string withKey, params object[] andTidbits)
+    public void Hook(TextMeshProUGUI textField, string withKey, params object[] andTidbits)
     {
         GetObservableEntry(withKey)
-            .TakeUntilDestroy(text)
-            .SubscribeToText(text)
-            .AddTo(text);
+            .TakeUntilDestroy(textField)
+            .Subscribe(textField.SetText)
+            .AddTo(textField);
+    }
+
+    public void Hook(Text textField, string withKey, params object[] andTidbits)
+    {
+        GetObservableEntry(withKey)
+            .TakeUntilDestroy(textField)
+            .SubscribeToText(textField)
+            .AddTo(textField);
     }
     
     public void Hook(ButtonText button, string withKey, params object[] andTidbits)

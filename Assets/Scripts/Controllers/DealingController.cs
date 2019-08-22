@@ -14,7 +14,8 @@ public interface IDealingController : IInitializable, IDisposable
     bool CanDeal(ISlot intoSlot);
     bool IsThereDeadlock();
     
-    IObservable<Unit> Deal(int count, ISlot intoSlot);
+    IObservable<Unit> Deal(int count, ISlot intoSlot, double atIntervalsOfDuration = 0.1);
+    IObservable<Unit> Deal(IEnumerable<DeviceType> devices, ISlot intoSlot, double atIntervalsOfDuration = 0.1);
 }
 
 public class DealingController : IDealingController
@@ -25,14 +26,19 @@ public class DealingController : IDealingController
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private readonly IDeck deck;
+    private readonly ICardFactory cardFactory;
 
-    private DealingController(IDeck deck)
+    private DealingController(
+        IDeck deck,
+        ICardFactory cardFactory
+        )
     {
         this.deck = deck;
+        this.cardFactory = cardFactory;
     }
     
     public IObservable<int> ActiveCardCount => activeCardCount;
-
+    
     public IObservable<ICard> WhenDealt => dealing;
 
     public void Initialize()
@@ -57,22 +63,18 @@ public class DealingController : IDealingController
 
         if (GetActiveCardCount(CardType.Resource) > 0 && GetActiveCardCount(CardType.Merchant) > 0)
             return false;
-        
+
         return true;
     }
 
-    public IObservable<Unit> Deal(int count, ISlot intoSlot)
+    public IObservable<Unit> Deal(int count, ISlot intoSlot, double atIntervalsOfDuration = 0.1)
     {
-        return deck.Provide(count)
-            .Select((card, index) => 
-            { 
-                dealing.OnNext(card);
-
-                return intoSlot.Lodge(card)
-                    .DelaySubscription(TimeSpan.FromSeconds(0.1 * index));
-            })
-            .Merge()
-            .AsSingleUnitObservable();
+        return Deal(deck.Provide(count), intoSlot, atIntervalsOfDuration);
+    }
+    
+    public IObservable<Unit> Deal(IEnumerable<DeviceType> devices, ISlot intoSlot, double atIntervalsOfDuration = 0.1)
+    {
+        return Deal(devices.Select(cardFactory.Create), intoSlot, atIntervalsOfDuration);
     }
 
     public void Dispose()
@@ -80,6 +82,20 @@ public class DealingController : IDealingController
         dealing.Dispose();
         
         disposables.Dispose();
+    }
+
+    private IObservable<Unit> Deal(IEnumerable<ICard> cards, ISlot intoSlot, double atIntervalsOfDuration)
+    {
+        return cards
+            .Select((card, index) => 
+            { 
+                dealing.OnNext(card);
+
+                return intoSlot.Lodge(card)
+                    .DelaySubscription(TimeSpan.FromSeconds(atIntervalsOfDuration * index));
+            })
+            .Merge()
+            .AsSingleUnitObservable();
     }
     
     private int GetActiveCardCount(CardType ofType)

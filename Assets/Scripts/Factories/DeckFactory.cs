@@ -89,12 +89,6 @@ public class DeckFactory : IDeckFactory
         
         cardData = cardData.Apportion(tools);
 
-        if (playerSettings.ShouldDealDeviceCards)
-        {
-            foreach (var device in fromModel.Devices)
-                cardData.Insert(Random.Range(cardData.Count / 2, (cardData.Count - 1)), device);
-        }
-
         var deck = deckFactory.Create(cardData);
         
         disposables.Add(deck);

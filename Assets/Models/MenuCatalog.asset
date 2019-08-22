@@ -19,3 +19,7 @@ MonoBehaviour:
     type: 3}
   store: {fileID: 5824728458869383735, guid: de77d198b68164da9962031bb306a13d, type: 3}
   logbook: {fileID: 1687685265645104529, guid: 436f108226bcb4410b6b5aa1299d4e94, type: 3}
+  gameOver: {fileID: 8702186103936518247, guid: 8173ab137fbba4587a0db532718fb42f,
+    type: 3}
+  stageFinished: {fileID: 8585525073890514242, guid: f64b3b5d37f6b48279ac4900c843c237,
+    type: 3}

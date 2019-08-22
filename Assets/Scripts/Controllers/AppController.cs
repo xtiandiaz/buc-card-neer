@@ -26,7 +26,7 @@ public class AppController : IAppController, IAppNavigator, IAppInfo
     private readonly IMenuFactory menuFactory;
     private IDisposable sceneLoading;
 
-    public int BuildNumber => 8;
+    public int BuildNumber => 9;
 
     public void Initialize()
     {
@@ -56,7 +56,7 @@ public class AppController : IAppController, IAppNavigator, IAppInfo
     private void GoToScene(string name)
     {
         sceneLoading?.Dispose();
-        sceneLoading = Observable.FromCoroutine(() => LoadScene("Loading", LoadSceneMode.Additive))
+        sceneLoading = Observable.FromCoroutine(() => LoadScene("Loading", LoadSceneMode.Single))
             .ContinueWith(Observable.FromCoroutine(
                 () => LoadScene(name, TimeSpan.FromSeconds(0.5), LoadSceneMode.Single)))
             .Subscribe();

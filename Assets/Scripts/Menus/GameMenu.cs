@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -20,18 +19,15 @@ public class GameMenu : WorldSpaceMenu, IGameMenu
 
     private IGameStatus gameStatus;
     private IMenuFactory menuFactory;
-    private IAudioManager audioManager;
 
     [Inject]
     private void Initialize(
         IGameStatus gameStatus,
-        IMenuFactory menuFactory,
-        IAudioManager audioManager
+        IMenuFactory menuFactory
     )
     {
         this.gameStatus = gameStatus;
         this.menuFactory = menuFactory;
-        this.audioManager = audioManager;
     }
 
     private void Awake()
@@ -42,46 +38,15 @@ public class GameMenu : WorldSpaceMenu, IGameMenu
     protected override void Start()
     {
         base.Start();
-        
-        gameStatus.WhenLost
-            .Delay(TimeSpan.FromSeconds(0.5))
-            .Subscribe(_ =>
-            {
-                ShowHeadline(localizator.GetText("ui.headline.gameOver"), Color.red);
-                
-                audioManager.Play(AudioEventKey.GameLose);
-            })
-            .AddTo(this);
-
-        gameStatus.WhenWon
-            .Delay(TimeSpan.FromSeconds(0.5))
-            .Subscribe(score =>
-            {
-                ShowHeadline(
-                    localizator.GetText("ui.headline.gameFinished", score),
-                    Color.yellow);
-                
-                audioManager.Play(AudioEventKey.GameWin);
-            })
-            .AddTo(this);
 
         gameStatus.UndealtCardCount
             .SubscribeToText(undealtCount)
             .AddTo(this);
 
         pauseButton.WhenClicked
-            .Do(_ => pauseButton.gameObject.SetActive(false))
             .Select(_ => menuFactory.Create<IPauseMenu>())
             .SelectMany(pauseMenu => pauseMenu.WhenClosed)
-            .Do(_ => pauseButton.gameObject.SetActive(true))
             .Subscribe()
             .AddTo(this);
-    }
-
-    private void ShowHeadline(string withText, Color andColor)
-    {
-        heading.text = withText;
-        heading.color = andColor;
-        contentWrapper.gameObject.SetActive(true);
     }
 }

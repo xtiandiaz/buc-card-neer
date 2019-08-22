@@ -10,7 +10,13 @@ public class AppInstaller : MonoInstaller
     public override void InstallBindings()
     {
         Container.BindInterfacesTo<AppController>().AsSingle();
+
+        #region Player
+        
         Container.BindInterfacesTo<PlayerSettings>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<PlayerStats>().AsSingle().NonLazy();
+
+        #endregion
 
         #region Menus
 

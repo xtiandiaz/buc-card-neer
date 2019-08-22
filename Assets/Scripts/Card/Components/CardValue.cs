@@ -46,7 +46,7 @@ public class CardValue : MonoBehaviour
 
         foreach (var renderer in textRenderers)
         {
-            pulsation.Join(renderer.transform.DOPunchScale(Vector3.one * 1.05f, 0.5f, 3));
+            pulsation.Join(renderer.transform.DOPunchScale(Vector3.one, 0.5f, 3));
         }
     }
 }
