@@ -15,12 +15,12 @@ public enum CardType
     WeaponMelee        = 1 << 7,
     WeaponRanged       = 1 << 8,
     Medicine           = 1 << 9,
-    Device             = 1 << 10,
+    Artifice           = 1 << 10,
     
     Player             = 1 << 16,
 
     Item               = Food | Gem | Artifact,
-    Tool               = WeaponMelee | WeaponRanged | Medicine | Device,
+    Tool               = WeaponMelee | WeaponRanged | Medicine | Artifice,
     Resource           = Item | Tool,
     Agent              = Pirate | Merchant
 }

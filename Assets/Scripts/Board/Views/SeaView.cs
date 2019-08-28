@@ -9,6 +9,8 @@ public interface ISeaView
     Vector3 LocalPosition { get; set; }
     
     ISlotView[] Slots { get; }
+
+    void ParentSupplySlot(Transform slotTransform);
 }
 
 public class SeaView : MonoBehaviour, ISeaView
@@ -52,5 +54,10 @@ public class SeaView : MonoBehaviour, ISeaView
             
             positioner += 1f;
         }
+    }
+
+    public void ParentSupplySlot(Transform slotTransform)
+    {
+        slotTransform.SetParent(transform);
     }
 }

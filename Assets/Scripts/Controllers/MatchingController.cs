@@ -4,8 +4,8 @@ using UniRx;
 public interface IMatchingController : IDisposable
 {
     IObservable<Unit> WhenMatched { get; }
-    IObservable<DeviceType> WhenMatchedDevice { get; }
-    IObservable<DeviceType> WhenDeviceActed { get; }
+    IObservable<ArtificeType> WhenMatchedDevice { get; }
+    IObservable<ArtificeType> WhenDeviceActed { get; }
     
     bool CanMatch(ISlot fromSource, ISlot intoDestination);
     IObservable<Unit> Match(ISlot fromSource, ISlot intoDestination);
@@ -16,30 +16,30 @@ public class MatchingController : IMatchingController
     private readonly Subject<Unit> matching = new Subject<Unit>();
     private readonly Subject<Unit> attacking = new Subject<Unit>();
     private readonly Subject<Unit> confronting = new Subject<Unit>();
-    private readonly Subject<DeviceType> deviceMatching = new Subject<DeviceType>();
-    private readonly Subject<DeviceType> deviceActing = new Subject<DeviceType>();
+    private readonly Subject<ArtificeType> deviceMatching = new Subject<ArtificeType>();
+    private readonly Subject<ArtificeType> deviceActing = new Subject<ArtificeType>();
     private readonly IPlayerCard player;
     private readonly IAudioManager audioManager;
-    private readonly IShip ship;
+    private readonly IBoard board;
 
     private MatchingController(
         IPlayerCard player,
         IAudioManager audioManager,
         IGameStatus gameStatus,
-        IShip ship
+        IBoard board
         )
     {
         this.player = player;
         this.audioManager = audioManager;
-        this.ship = ship;
+        this.board = board;
 
         gameStatus.WhenPlayerAttackedOnBoard = attacking;
         gameStatus.WhenPlayerConfronted = confronting;
     }
 
     public IObservable<Unit> WhenMatched => matching;
-    public IObservable<DeviceType> WhenDeviceActed => deviceActing;
-    public IObservable<DeviceType> WhenMatchedDevice => deviceMatching;
+    public IObservable<ArtificeType> WhenDeviceActed => deviceActing;
+    public IObservable<ArtificeType> WhenMatchedDevice => deviceMatching;
 
     public bool CanMatch(ISlot fromSource, ISlot intoDestination)
     {
@@ -82,7 +82,7 @@ public class MatchingController : IMatchingController
             return false;
 
         if (source.IsDevice)
-            return CanMatch((IDeviceCard) source, withDestination);
+            return CanMatch((IArtificeCard) source, withDestination);
 
         switch (withDestination.Type)
         {
@@ -111,13 +111,13 @@ public class MatchingController : IMatchingController
         }
     }
 
-    private bool CanMatch(IDeviceCard source, ICard withDestination)
+    private bool CanMatch(IArtificeCard source, ICard withDestination)
     {
-        switch (source.DeviceType)
+        switch (source.ArtificeType)
         {
-            case DeviceType.MidasTouch:
+            case ArtificeType.MidasTouch:
                 return withDestination != player;
-            case DeviceType.TraderSpell:
+            case ArtificeType.TraderSpell:
                 return withDestination.IsMerchant;
             default:
                 return false;
@@ -137,11 +137,11 @@ public class MatchingController : IMatchingController
 
             if (source.IsDevice)
             {
-                var device = (IDeviceCard) source;
+                var device = (IArtificeCard) source;
                 
                 return Match(device, withDestination)
-                    .DoOnSubscribe(() => deviceMatching.OnNext(device.DeviceType))
-                    .DoOnCompleted(() => deviceActing.OnNext(device.DeviceType))
+                    .DoOnSubscribe(() => deviceMatching.OnNext(device.ArtificeType))
+                    .DoOnCompleted(() => deviceActing.OnNext(device.ArtificeType))
                     .Subscribe(observer);
             }
             
@@ -262,13 +262,13 @@ public class MatchingController : IMatchingController
         });
     }
 
-    private IObservable<Unit> Match(IDeviceCard source, ICard withDestination)
+    private IObservable<Unit> Match(IArtificeCard source, ICard withDestination)
     {
         return Observable.Create<Unit>(observer =>
         {
-            switch (source.DeviceType)
+            switch (source.ArtificeType)
             {
-                case DeviceType.MidasTouch:
+                case ArtificeType.MidasTouch:
                     
                     player.Credit(withDestination.Value + player.Value);
 
@@ -276,9 +276,9 @@ public class MatchingController : IMatchingController
                         .Merge(withDestination.Destroy())
                         .Subscribe(observer);
                 
-                case DeviceType.TraderSpell:
+                case ArtificeType.TraderSpell:
 
-                    var desiredSuit = ship.Storage.Peek()?.Suit;
+                    var desiredSuit = board.Ship.Storage.Peek()?.Suit;
 
                     return source.Destroy()
                         .DoOnSubscribe(() => ((IMerchantCard) withDestination).Resuit(desiredSuit))
@@ -287,7 +287,7 @@ public class MatchingController : IMatchingController
                 default:
 
                     observer.OnError(
-                        new Exception($"[MatchingController] Couldn't match with Device '{source.DeviceType}'"));
+                        new Exception($"[MatchingController] Couldn't match with Device '{source.ArtificeType}'"));
                     
                     return Disposable.Empty;
             }

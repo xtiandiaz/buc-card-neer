@@ -17,15 +17,15 @@ public class ForwardingController : IForwardingController
     private readonly Subject<Unit> forwarding = new Subject<Unit>();
     private readonly Subject<CardType> revealing = new Subject<CardType>();
     private readonly Subject<CardType> stashing = new Subject<CardType>();
-    private readonly IShip ship;
+    private readonly IBoard board;
     private readonly IGameStatus gameStatus;
 
     private ForwardingController(
-        IShip ship,
+        IBoard board,
         IGameStatus gameStatus
         )
     {
-        this.ship = ship;
+        this.board = board;
         this.gameStatus = gameStatus;
     }
 
@@ -82,7 +82,7 @@ public class ForwardingController : IForwardingController
             {
                 if (card.IsResource)
                 {
-                    return ship.ExpressHandle(card)
+                    return board.Ship.ExpressHandle(card)
                         .Subscribe(observer);
                 }
 

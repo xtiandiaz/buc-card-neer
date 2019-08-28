@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   board: {fileID: 11400000, guid: 63ef363e4f9df4c98a33ebc55bdc588a, type: 2}
+  defaultStage: {fileID: 11400000, guid: 8b28c89f360a2412fb9c149d71a3ec0a, type: 2}
   menuCatalog: {fileID: 11400000, guid: 8bcdab39ec711498393ce283db3ed8ed, type: 2}
   localizationCatalog: {fileID: 11400000, guid: 49916baef6a3a4a28b8184fa1e969c01,
     type: 2}
-  userSettings: {fileID: 11400000, guid: 1bd0a8cf2177e496994e6121250b12c2, type: 2}

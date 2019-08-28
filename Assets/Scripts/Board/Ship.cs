@@ -23,10 +23,6 @@ public interface IShip : IInitializable, IDisposable
 
 public class Ship : IShip
 {
-    public class Factory : PlaceholderFactory<ISlot, ISlot, ISlot, ISlot, IShipView, Ship>
-    {
-    }
-
     private readonly Subject<CardType> boarding = new Subject<CardType>();
     private readonly Subject<CardType> revealing = new Subject<CardType>();
     private readonly Subject<CardType> stashing = new Subject<CardType>();
@@ -42,8 +38,7 @@ public class Ship : IShip
         ISlot plank, 
         ISlot storage,
         ISlot mount,
-        IShipView view,
-        IGameStatus gameStatus
+        IShipView view
     )
     {
         slots = new[] {plank, helm, storage, mount};
@@ -54,7 +49,6 @@ public class Ship : IShip
         Mount = mount;
 
         this.view = view;
-        this.gameStatus = gameStatus;
     }
     
     public ISlot Helm { get; }
@@ -229,9 +223,6 @@ public class Ship : IShip
             {
                 card.IsStashed = true;
                 
-                gameStatus.PlayerDidStashItem |= card.IsItem;
-                gameStatus.PlayerDidStashTool |= card.IsTool;
-
                 stashing.OnNext(card.Type);
 
                 return storage.Lodge(card, LodgingSettings.DefaultWithOthersArrangement)
@@ -242,5 +233,9 @@ public class Ship : IShip
 
             return Disposable.Empty;
         });
+    }
+    
+    public class Factory : PlaceholderFactory<ISlot, ISlot, ISlot, ISlot, IShipView, Ship>
+    {
     }
 }

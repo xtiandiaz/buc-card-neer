@@ -50,7 +50,7 @@ MonoBehaviour:
   audioRepository: {fileID: 11400000, guid: 7a05be8b1021f4edd88c559cb93dbbeb, type: 2}
   audioSourcePrefab: {fileID: 5710264892906250546, guid: cf1d97fdab1294fbebd55eedc9468732,
     type: 3}
-  deviceCatalog: {fileID: 11400000, guid: 25a2ee02b48ea45c69b6afb133e07752, type: 2}
+  artificeCatalog: {fileID: 11400000, guid: 25a2ee02b48ea45c69b6afb133e07752, type: 2}
   deck: {fileID: 11400000, guid: 21c0d3a12db394182b1bc2861f9571c9, type: 2}
   player: {fileID: 11400000, guid: 155e51e0940104ebaab177e4c174ea4d, type: 2}
   supplySlots:
@@ -58,10 +58,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b875738b0f4ab42dbaff3883f9076da9, type: 2}
   - {fileID: 11400000, guid: 3c96764cba3324d0d92e3f09a42916b2, type: 2}
   - {fileID: 11400000, guid: f2c15ea92bae5485bb61b423725d0f46, type: 2}
+  supplySlot: {fileID: 11400000, guid: 88bd3c670b148473db73b4264025510f, type: 2}
   plank: {fileID: 11400000, guid: 2e985bd20dd2c4ad1a8529543955e970, type: 2}
   helm: {fileID: 11400000, guid: 345c81e59ca2c4c62b26a16b19f91c7e, type: 2}
   storage: {fileID: 11400000, guid: fdf1f7e2624034272ba6b6d43c3b2dcb, type: 2}
   mount: {fileID: 11400000, guid: 80ef92dace5844a5cb2d8473db4cf268, type: 2}
+  stage: {fileID: 11400000, guid: 8b28c89f360a2412fb9c149d71a3ec0a, type: 2}
   boardViewPrefab: {fileID: 687086845896097673, guid: 3a064086313d5449abbb005329704baf,
     type: 3}
   gameMenuPrefab: {fileID: 4355782393892057426, guid: fc7ed93a0b7304f789064332875a5c9f,

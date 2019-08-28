@@ -118,7 +118,7 @@ public class Card : ICard
     public bool IsResource => (Type & CardType.Resource) != 0;
     public bool IsItem => (Type & CardType.Item) != 0;
     public bool IsTool => (Type & CardType.Tool) != 0;
-    public bool IsDevice => (Type & CardType.Device) != 0;
+    public bool IsDevice => (Type & CardType.Artifice) != 0;
     public bool IsMonster => IsResource && (IsLocked || WasLocked);
     public bool IsAgent => (Type & CardType.Agent) != 0;
     public bool IsPirate => (Type & CardType.Pirate) != 0;

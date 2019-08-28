@@ -91,7 +91,7 @@ public class LodgingController : ILodgingController
                 if (card.IsRangeWeapon)
                     return true;
 
-                return card is IDeviceCard device && device.IsLodgeable;
+                return card is IArtificeCard device && device.IsLodgeable;
 
             case SlotType.Player:
 

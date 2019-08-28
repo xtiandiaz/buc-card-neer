@@ -11,31 +11,41 @@ public interface IAppNavigator
     void GoToGame();
 }
 
+public interface IAppStatus
+{
+}
+
 public interface IAppInfo
 {
     int BuildNumber { get; }
 }
 
-public interface IAppController : IInitializable, IDisposable
+public interface IAppController : IInitializable, IDisposable, IAppStatus
 {
-    void Reload(); // TODO Refactor
 }
 
 public class AppController : IAppController, IAppNavigator, IAppInfo
 {
     private readonly IMenuFactory menuFactory;
+    private readonly ZenjectSceneLoader sceneLoader;
+    private readonly IStageModel defaultStage;
     private IDisposable sceneLoading;
 
+    private AppController(
+        ZenjectSceneLoader sceneLoader,
+        Stage.Factory stageFactory,
+        IStageModel defaultStage
+        )
+    {
+        this.sceneLoader = sceneLoader;
+        this.defaultStage = defaultStage;
+    }
+    
     public int BuildNumber => 9;
 
     public void Initialize()
     {
         Application.targetFrameRate = 60;
-    }
-
-    public void Reload()
-    {
-        GoToScene("Game");
     }
 
     public void Dispose()
@@ -50,28 +60,37 @@ public class AppController : IAppController, IAppNavigator, IAppInfo
 
     public void GoToGame()
     {
-        GoToScene("Game");
+        GoToScene("Game", container => 
+            {
+                container.BindInstance(defaultStage).WhenInjectedInto<GameInstaller>();
+            });
     }
 
-    private void GoToScene(string name)
+    private void GoToScene(string withName, Action<DiContainer> andExtraBindings = null)
     {
         sceneLoading?.Dispose();
         sceneLoading = Observable.FromCoroutine(() => LoadScene("Loading", LoadSceneMode.Single))
             .ContinueWith(Observable.FromCoroutine(
-                () => LoadScene(name, TimeSpan.FromSeconds(0.5), LoadSceneMode.Single)))
+                () => LoadScene(withName, TimeSpan.FromSeconds(0.5), LoadSceneMode.Single, andExtraBindings)))
             .Subscribe();
     }
 
-    private IEnumerator LoadScene(string name, TimeSpan withDelay, LoadSceneMode andMode)
+    private IEnumerator LoadScene(
+        string withName, 
+        TimeSpan delay, 
+        LoadSceneMode andMode, 
+        Action<DiContainer> andExtraBindings = null)
     {
-        yield return new WaitForSeconds((float) withDelay.TotalSeconds);
+        yield return new WaitForSeconds((float) delay.TotalSeconds);
 
-        yield return LoadScene(name, andMode);
+        yield return LoadScene(withName, andMode, andExtraBindings);
     }
     
-    private IEnumerator LoadScene(string name, LoadSceneMode withMode)
+    private IEnumerator LoadScene(string withName, LoadSceneMode mode, Action<DiContainer> andExtraBindings = null)
     {
-        var asyncLoad = SceneManager.LoadSceneAsync(name, withMode);
+        var asyncLoad = andExtraBindings != null 
+            ? sceneLoader.LoadSceneAsync(withName, mode, andExtraBindings) 
+            : sceneLoader.LoadSceneAsync(withName, mode);
         
         while (!asyncLoad.isDone)
         {

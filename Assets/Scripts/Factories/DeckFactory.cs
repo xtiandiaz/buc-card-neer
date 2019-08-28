@@ -6,7 +6,7 @@ using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
 
-public interface IDeckFactory : IFactory<IDeckModel, IDeck>, IDisposable
+public interface IDeckFactory : IFactory<IDeckModelGrouped, IDeck>, IDisposable
 {
 }
 
@@ -28,7 +28,7 @@ public class DeckFactory : IDeckFactory
         this.playerSettings = playerSettings;
     }
     
-    public IDeck Create(IDeckModel fromModel)
+    public IDeck Create(IDeckModelGrouped fromModel)
     {
         var cardData = new List<ICardModel>();
         

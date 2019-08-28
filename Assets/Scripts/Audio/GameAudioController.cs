@@ -16,8 +16,7 @@ public class GameAudioController : IGameAudioController
     private readonly IShootingController shooter;
     private readonly IMatchingController matcher;
     private readonly IGameStatus gameStatus;
-    private readonly IShip ship;
-    private readonly ISea sea;
+    private readonly IBoard board;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
     private GameAudioController(
@@ -29,8 +28,7 @@ public class GameAudioController : IGameAudioController
         IShootingController shooter,
         IMatchingController matcher,
         IGameStatus gameStatus,
-        IShip ship,
-        ISea sea
+        IBoard board
     )
     {
         this.audioManager = audioManager;
@@ -41,18 +39,17 @@ public class GameAudioController : IGameAudioController
         this.shooter = shooter;
         this.matcher = matcher;
         this.gameStatus = gameStatus;
-        this.ship = ship;
-        this.sea = sea;
+        this.board = board;
     }
     
     public void Initialize()
     {
         #region Player
 
-        disposables.Add(gameStatus.WhenLost
+        disposables.Add(gameStatus.WhenPlayerLost
             .Subscribe(_ => Play(AudioEventKey.CardAvatarDeath)));
         
-        disposables.Add(gameStatus.WhenWon
+        disposables.Add(gameStatus.WhenPlayerWon
             .Subscribe(_ => Play(AudioEventKey.GameWin)));
 
         #endregion
@@ -78,13 +75,13 @@ public class GameAudioController : IGameAudioController
             {
                 switch (deviceType)
                 {
-                    case DeviceType.Catapult:
+                    case ArtificeType.Catapult:
                         Play(AudioEventKey.CardToolRangedUseCatapult);
                         break;
-                    case DeviceType.MidasTouch:
+                    case ArtificeType.MidasTouch:
                         Play(AudioEventKey.CardItemTradeSell);
                         break;
-                    case DeviceType.TraderSpell:
+                    case ArtificeType.TraderSpell:
                         Play(AudioEventKey.CardItemTradeBuy);
                         break;
                 }
@@ -96,7 +93,7 @@ public class GameAudioController : IGameAudioController
             {
                 switch (deviceType)
                 {
-                    case DeviceType.Catapult:
+                    case ArtificeType.Catapult:
                         Play(AudioEventKey.CardToolRangedHitCatapult);
                         break;
                 }
@@ -106,14 +103,14 @@ public class GameAudioController : IGameAudioController
 
         #region Ship
 
-        disposables.Add(ship.WhenCardBoarded
+        disposables.Add(board.Ship.WhenCardBoarded
             .Subscribe(cardType => audioManager.Play(AudioEventSwitchKey.CardBoard, cardType)));
         
-        disposables.Add(ship.WhenCardRevealed
+        disposables.Add(board.Ship.WhenCardRevealed
             .Merge(forwarder.WhenCardRevealed)
             .Subscribe(cardType => audioManager.Play(AudioEventSwitchKey.CardReveal, cardType)));
         
-        disposables.Add(ship.WhenCardStashed
+        disposables.Add(board.Ship.WhenCardStashed
             .Merge(forwarder.WhenCardStashed)
             .Subscribe(cardType => audioManager.Play(AudioEventSwitchKey.CardStash, cardType)));
         
@@ -121,10 +118,10 @@ public class GameAudioController : IGameAudioController
 
         #region Sea
 
-        disposables.Add(sea.WhenArranged
+        disposables.Add(board.Sea.WhenArranged
             .Subscribe(_ => Play(AudioEventKey.CardSupplyCascade)));
         
-        disposables.Add(sea.WhenResupplied
+        disposables.Add(board.Sea.WhenResupplied
             .Merge(deferrer.WhenResupplied)
             .Subscribe(_ => Play(AudioEventKey.CardSupplyRedeal)));
 
@@ -132,7 +129,7 @@ public class GameAudioController : IGameAudioController
 
         #region Ranged Combat
 
-        disposables.Add(ship.WhenArmed
+        disposables.Add(board.Ship.WhenArmed
             .Subscribe(_ => audioManager.Play(AudioEventKey.CardToolRangedArm)));
         
         disposables.Add(shooter.WhenShot

@@ -166,7 +166,7 @@ PlayerSettings:
     iPhone: co.pintxo.royahoy
   buildNumber:
     iPhone: 9
-  AndroidBundleVersionCode: 8
+  AndroidBundleVersionCode: 9
   AndroidMinSdkVersion: 16
   AndroidTargetSdkVersion: 0
   AndroidPreferredInstallLocation: 1

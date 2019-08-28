@@ -49,7 +49,6 @@ MonoBehaviour:
   sky: {fileID: 2037470781325406659}
   sea: {fileID: 5768311884079840682}
   ship: {fileID: 6744970821475193234}
-  device: {fileID: 11400000, guid: eabd4566761eb456ba207cf4f1e3c204, type: 2}
 --- !u!1001 &1604821499198619163
 PrefabInstance:
   m_ObjectHideFlags: 0

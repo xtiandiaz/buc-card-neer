@@ -21,8 +21,7 @@ public class RoutingController : IRoutingController
 
     private readonly IWorldPointProvider worldPointProvider;
     private readonly IBoardModel boardModel;
-    private readonly IShip ship;
-    private readonly ISea sea;
+    private readonly IBoard board;
     private readonly IForwardingController forwarder;
     private readonly IDefermentController deferrer;
     private readonly IDismissalController dismisser;
@@ -32,8 +31,7 @@ public class RoutingController : IRoutingController
     private RoutingController(
         IWorldPointProvider worldPointProvider,
         IBoardModel boardModel,
-        IShip ship,
-        ISea sea,
+        IBoard board,
         IForwardingController forwarder,
         IDefermentController deferrer,
         IDismissalController dismisser,
@@ -43,8 +41,7 @@ public class RoutingController : IRoutingController
     {
         this.worldPointProvider = worldPointProvider;
         this.boardModel = boardModel;
-        this.ship = ship;
-        this.sea = sea;
+        this.board = board;
         this.forwarder = forwarder;
         this.deferrer = deferrer;
         this.dismisser = dismisser;
@@ -57,13 +54,13 @@ public class RoutingController : IRoutingController
 
     public void Initialize()
     {
-        foreach (var slot in sea.Slots)
+        foreach (var slot in board.Sea.Slots)
             Register(slot);
         
-        Register(ship.Helm);
-        Register(ship.Plank);
-        Register(ship.Mount);
-        Register(ship.Storage);
+        Register(board.Ship.Helm);
+        Register(board.Ship.Plank);
+        Register(board.Ship.Mount);
+        Register(board.Ship.Storage);
 
         disposables.Add(picking
             .Subscribe(cardFromSlot =>

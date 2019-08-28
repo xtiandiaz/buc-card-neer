@@ -23,10 +23,6 @@ public interface ISea : IInitializable, IDisposable
 
 public class Sea : ISea
 {
-    public class Factory : PlaceholderFactory<IEnumerable<ISlot>, ISeaView, Sea>
-    {
-    }
-
     private readonly Subject<Unit> arranging = new Subject<Unit>();
     private readonly Subject<Unit> resupplying = new Subject<Unit>();
     private readonly CompositeDisposable disposables = new CompositeDisposable();
@@ -171,5 +167,9 @@ public class Sea : ISea
         return (
             prevIndex >= 0 && (1 << prevIndex & clashExclusionMask) == 0 ? Slots[prevIndex] : null, 
             nextIndex < Slots.Length && (1 << nextIndex & clashExclusionMask) == 0 ? Slots[nextIndex] : null);
+    }
+    
+    public class Factory : PlaceholderFactory<IEnumerable<ISlot>, ISeaView, Sea>
+    {
     }
 }

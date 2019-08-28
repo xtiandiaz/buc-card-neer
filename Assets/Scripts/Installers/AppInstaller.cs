@@ -3,13 +3,30 @@ using Zenject;
 
 public class AppInstaller : MonoInstaller
 {
+    [Header("Models")]
     [SerializeField] private BoardModel board = default;
+    [SerializeField] private StageModel defaultStage = default;
+
+    [Header("Catalogs")]
     [SerializeField] private MenuCatalog menuCatalog = default;
     [SerializeField] private LocalizationCatalog localizationCatalog = default;
 
     public override void InstallBindings()
     {
         Container.BindInterfacesTo<AppController>().AsSingle();
+
+        #region Board
+
+        Container.BindInterfacesTo<BoardModel>().FromInstance(board).AsSingle();
+
+        #endregion
+
+        #region Stage
+
+        Container.BindFactory<IStageModel, Stage, Stage.Factory>().AsSingle();
+        Container.Bind<IStageModel>().FromInstance(defaultStage).WhenInjectedInto<AppController>();
+
+        #endregion
 
         #region Player
         
@@ -21,12 +38,6 @@ public class AppInstaller : MonoInstaller
         #region Menus
 
         Container.Bind<IMenuCatalog>().FromInstance(menuCatalog).AsSingle();
-
-        #endregion
-        
-        #region Board
-
-        Container.BindInterfacesTo<BoardModel>().FromInstance(board).AsSingle();
 
         #endregion
 

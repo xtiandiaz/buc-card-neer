@@ -1,19 +1,25 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class GameInstaller : SceneInstaller
 {
     [Header("Models")]
-    [SerializeField] private DeckModel deck = default;
+    [SerializeField] private DeckModelGrouped deck = default;
     [Space] 
     [SerializeField] private PlayerCardModel player = default;
     [Space]
     [SerializeField] private List<SlotModel> supplySlots = default;
     [Space]
+    [SerializeField] private SlotModel supplySlot = default;
+    [Space]
     [SerializeField] private SlotModel plank = default;
     [SerializeField] private SlotModel helm = default;
     [SerializeField] private SlotModel storage = default;
     [SerializeField] private SlotModel mount = default;
+    [Space]
+    [InjectOptional]
+    [SerializeField] private StageModel stage = default;
 
     [Header("Views")] 
     [SerializeField] private BoardView boardViewPrefab = default;
@@ -28,7 +34,7 @@ public class GameInstaller : SceneInstaller
     public override void InstallBindings()
     {
         base.InstallBindings();
-        
+
         #region Controllers
 
         Container.BindInterfacesTo<RoutingController>().AsSingle().NonLazy();
@@ -40,27 +46,21 @@ public class GameInstaller : SceneInstaller
         Container.BindInterfacesTo<LodgingController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<ClashingController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<ShootingController>().AsSingle().NonLazy();
-
         Container.BindInterfacesTo<GameController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<GameStatusController>().AsSingle().NonLazy();
         
         Container.BindExecutionOrder<GameAudioController>(100);
         Container.BindInterfacesAndSelfTo<GameAudioController>().AsSingle();
         
-        Container.BindInterfacesTo<GameStatusController>().AsSingle().NonLazy();
-        Container.BindInterfacesTo<BoardController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<VisualEffectsController>().AsSingle().NonLazy();
 
         #endregion
-        
-        #region UI
-        
-        Container.BindInterfacesTo<GameMenu>().FromComponentInNewPrefab(gameMenuPrefab).AsSingle().NonLazy();
-        Container.BindInterfacesTo<BoardMenu>().FromComponentInNewPrefab(boardMenuPrefab).AsSingle().NonLazy();
 
-        Container.BindFactory<FloatingBanner, FloatingBanner.Factory>().FromComponentInNewPrefab(floatingBannerPrefab);
-        Container.BindInterfacesAndSelfTo<FloatingBannerModelCatalog>().FromInstance(floatingBannerCatalog)
-            .WhenInjectedInto<FloatingBannerFactory>();
-        Container.BindInterfacesTo<FloatingBannerFactory>().AsSingle();
+        #region Stage
+
+        Container.BindInterfacesAndSelfTo<IStage>()
+            .FromResolveGetter<Stage.Factory, IStage>(stageFactory => (IStage) stageFactory.Create(stage))
+            .AsSingle();
 
         #endregion
         
@@ -68,17 +68,21 @@ public class GameInstaller : SceneInstaller
         
         Container.Bind<IBoardView>().FromComponentInNewPrefab(boardViewPrefab).AsSingle();
 
-        Container.BindFactory<IEnumerable<ISlot>, ISeaView, Sea, Sea.Factory>().AsSingle();
-        Container.Bind<List<SlotModel>>().FromInstance(supplySlots).WhenInjectedInto<SeaFactory>();
-        Container.BindInterfacesTo<Sea>().FromIFactory<ISea>(x => x.To<SeaFactory>().AsCached()).AsSingle().NonLazy();
+        Container.Bind<ISlotModel>().FromInstance(supplySlot).WhenInjectedInto<IBoardFactory>();
 
-        Container.BindFactory<ISlot, ISlot, ISlot, ISlot, IShipView, Ship, Ship.Factory>()
-            .AsSingle();
         Container.Bind<ISlotModel>().FromInstance(helm).WhenInjectedInto<ShipFactory>();
         Container.Bind<ISlotModel>().FromInstance(plank).WhenInjectedInto<ShipFactory>();
         Container.Bind<ISlotModel>().FromInstance(storage).WhenInjectedInto<ShipFactory>();
         Container.Bind<ISlotModel>().FromInstance(mount).WhenInjectedInto<ShipFactory>();
-        Container.BindInterfacesTo<Ship>().FromIFactory<IShip>(x => x.To<ShipFactory>().AsCached()).AsSingle().NonLazy();
+        
+        Container.BindFactory<IEnumerable<ISlot>, ISeaView, Sea, Sea.Factory>().AsSingle();
+        
+        Container.BindFactory<ISlot, ISlot, ISlot, ISlot, IShipView, Ship, Ship.Factory>()
+            .AsSingle();
+        Container.BindInterfacesTo<ShipFactory>().AsSingle();
+        
+        Container.BindFactory<ISea, IShip, Board, Board.Factory>().AsSingle();
+        Container.Bind<IBoard>().FromFactory<BoardFactory>();
 
         #endregion
         
@@ -102,7 +106,20 @@ public class GameInstaller : SceneInstaller
         #region Cards
 
         Container.BindInterfacesAndSelfTo<IPlayerCard>()
-            .FromResolveGetter<ICardFactory, IPlayerCard>(cardFactory => (IPlayerCard) cardFactory.Create(player)).AsSingle();
+            .FromResolveGetter<ICardFactory, IPlayerCard>(cardFactory => (IPlayerCard) cardFactory.Create(player))
+            .AsSingle();
+
+        #endregion
+
+        #region UI
+        
+        Container.BindInterfacesTo<GameMenu>().FromComponentInNewPrefab(gameMenuPrefab).AsSingle().NonLazy();
+        Container.BindInterfacesTo<BoardMenu>().FromComponentInNewPrefab(boardMenuPrefab).AsSingle().NonLazy();
+
+        Container.BindFactory<FloatingBanner, FloatingBanner.Factory>().FromComponentInNewPrefab(floatingBannerPrefab);
+        Container.BindInterfacesAndSelfTo<FloatingBannerModelCatalog>().FromInstance(floatingBannerCatalog)
+            .WhenInjectedInto<FloatingBannerFactory>();
+        Container.BindInterfacesTo<FloatingBannerFactory>().AsSingle();
 
         #endregion
     }

@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
-using UnityEngine;
 using Zenject;
 
 public interface IDealingController : IInitializable, IDisposable
 {
     IObservable<int> ActiveCardCount { get; }
+    IObservable<int> UndealtCardCount { get; }
     
     IObservable<ICard> WhenDealt { get; }
     
@@ -15,7 +15,7 @@ public interface IDealingController : IInitializable, IDisposable
     bool IsThereDeadlock();
     
     IObservable<Unit> Deal(int count, ISlot intoSlot, double atIntervalsOfDuration = 0.1);
-    IObservable<Unit> Deal(IEnumerable<DeviceType> devices, ISlot intoSlot, double atIntervalsOfDuration = 0.1);
+    IObservable<Unit> Deal(IEnumerable<ArtificeType> devices, ISlot intoSlot, double atIntervalsOfDuration = 0.1);
 }
 
 public class DealingController : IDealingController
@@ -35,9 +35,12 @@ public class DealingController : IDealingController
     {
         this.deck = deck;
         this.cardFactory = cardFactory;
+
+        UndealtCardCount = deck.CardCount;
     }
     
     public IObservable<int> ActiveCardCount => activeCardCount;
+    public IObservable<int> UndealtCardCount { get; }
     
     public IObservable<ICard> WhenDealt => dealing;
 
@@ -72,7 +75,7 @@ public class DealingController : IDealingController
         return Deal(deck.Provide(count), intoSlot, atIntervalsOfDuration);
     }
     
-    public IObservable<Unit> Deal(IEnumerable<DeviceType> devices, ISlot intoSlot, double atIntervalsOfDuration = 0.1)
+    public IObservable<Unit> Deal(IEnumerable<ArtificeType> devices, ISlot intoSlot, double atIntervalsOfDuration = 0.1)
     {
         return Deal(devices.Select(cardFactory.Create), intoSlot, atIntervalsOfDuration);
     }

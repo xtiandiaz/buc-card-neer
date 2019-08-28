@@ -11,6 +11,8 @@ public interface ISlotModel
     Color HighlightColor { get; }
     
     CardArrangementModel Arrangement { get; }
+
+    SlotView ViewPrefab { get; }
 }
 
 [CreateAssetMenu(menuName = "Model/Slot")]
@@ -28,6 +30,9 @@ public class SlotModel : ScriptableObject, ISlotModel
     [Space]
     [SerializeField] private CardArrangementModel arrangement = default;
 
+    [Space]
+    [SerializeField] private SlotView viewPrefab = default;
+
     public SlotType Type => type;
     public uint Capacity => capacity;
     public int Index => index;
@@ -37,4 +42,6 @@ public class SlotModel : ScriptableObject, ISlotModel
     public Color HighlightColor => highlightColor;
     
     public CardArrangementModel Arrangement => arrangement;
+
+    public SlotView ViewPrefab => viewPrefab;
 }

@@ -5,8 +5,8 @@ using UnityEngine;
 
 public interface IDefermentController : IDisposable
 {
-    IObservable<DeviceType> WhenMatchedDevice { get; }
-    IObservable<DeviceType> WhenDeviceActed { get; }
+    IObservable<ArtificeType> WhenMatchedDevice { get; }
+    IObservable<ArtificeType> WhenDeviceActed { get; }
     IObservable<Unit> WhenResupplied { get; }
     
     bool CanDefer(ISlot fromSource, ISlot atDestination);
@@ -18,27 +18,24 @@ public class DefermentController : IDefermentController
 {
     private const float DefermentStepDuration = 0.4f;
     
-    private readonly Subject<DeviceType> deviceMatching = new Subject<DeviceType>();
-    private readonly Subject<DeviceType> deviceActing = new Subject<DeviceType>();
+    private readonly Subject<ArtificeType> deviceMatching = new Subject<ArtificeType>();
+    private readonly Subject<ArtificeType> deviceActing = new Subject<ArtificeType>();
     private readonly Subject<Unit> resupplying = new Subject<Unit>();
     
     private readonly IDealingController dealer;
     private readonly IBoardModel boardModel;
-    private readonly IShip ship;
-    private readonly ISea sea;
+    private readonly IBoard board;
     private readonly LodgingSettings plummetSettings;
 
     private DefermentController(
         IDealingController dealer,
         IBoardModel boardModel,
-        IShip ship,
-        ISea sea
+        IBoard board
     )
     {
         this.dealer = dealer;
         this.boardModel = boardModel;
-        this.ship = ship;
-        this.sea = sea;
+        this.board = board;
         
         plummetSettings = new LodgingSettings(
             SlotLodgingMode.Default,
@@ -47,8 +44,8 @@ public class DefermentController : IDefermentController
             DefermentStepDuration);
     }
 
-    public IObservable<DeviceType> WhenDeviceActed => deviceActing;
-    public IObservable<DeviceType> WhenMatchedDevice => deviceMatching;
+    public IObservable<ArtificeType> WhenDeviceActed => deviceActing;
+    public IObservable<ArtificeType> WhenMatchedDevice => deviceMatching;
     public IObservable<Unit> WhenResupplied => resupplying;
     
     public bool CanDefer(ISlot fromSource, ISlot atDestination)
@@ -65,7 +62,7 @@ public class DefermentController : IDefermentController
                 var midairPosition = new Vector3(
                     fromSource.Position.x,
                     fromSource.Position.y + GameStatics.CardHeight * 2f,
-                    sea.ZDepth * 0.5f);
+                    board.Sea.ZDepth * 0.5f);
 
                 var deferment = deferredCard.Fling(midairPosition, Ease.OutCubic, DefermentStepDuration)
                     .Do(_ => deferredCard.Sort(boardModel.CardCountPerSupplySlot))
@@ -76,7 +73,7 @@ public class DefermentController : IDefermentController
                     .DoOnCompleted(() =>
                     {
                         deferredCard.Bounce(Vector3.down * 0.5f);
-                        deviceActing.OnNext(DeviceType.Catapult);
+                        deviceActing.OnNext(ArtificeType.Catapult);
                     });
 
                 if (fromSource.IsEmpty)
@@ -89,21 +86,21 @@ public class DefermentController : IDefermentController
                 }
 
                 return deferment
-                    .ContinueWith(sea.Arrange()
+                    .ContinueWith(board.Sea.Arrange()
                         .Merge(lodging))
                     .Subscribe(observer);
             })
             .DoOnSubscribe(() =>
             {
-                deviceMatching.OnNext(DeviceType.Catapult); // TODO Generalize
+                deviceMatching.OnNext(ArtificeType.Catapult); // TODO Generalize
                 
-                ship.Lock();
-                sea.Lock();
+                board.Ship.Lock();
+                board.Sea.Lock();
             })
             .DoOnCompleted(() =>
             {
-                ship.Unlock();
-                sea.Unlock();
+                board.Ship.Unlock();
+                board.Sea.Unlock();
             });
     }
 
@@ -120,7 +117,7 @@ public class DefermentController : IDefermentController
             return false;
 
         return !source.IsBoarded && 
-               byDestination is IDeviceCard device && 
-               (device.DeviceType & DeviceType.Catapult) != 0;
+               byDestination is IArtificeCard device && 
+               (device.ArtificeType & ArtificeType.Catapult) != 0;
     }
 }

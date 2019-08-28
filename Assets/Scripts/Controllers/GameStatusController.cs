@@ -2,24 +2,6 @@ using System;
 using UniRx;
 using Zenject;
 
-public interface IGameStatus
-{
-    bool PlayerDidStashItem { get; set; }
-    bool PlayerDidStashTool { get; set; }
-    bool DidSupplyOnce { get; set; }
-    
-    IObservable<int> UndealtCardCount { get; }
-    IObservable<Unit> WhenLost { get; }
-    IObservable<int> WhenWon { get; }
-    
-    IObservable<Unit> WhenPlayerShot { get; set; }
-    IObservable<Unit> WhenPlayerUnlockedAndHandledCard { get; set; }
-    IObservable<Unit> WhenPlayerAttackedOnBoard { get; set; }
-    IObservable<Unit> WhenPlayerConfronted { get; set; }
-
-    void Reset();
-}
-
 public interface IGameStatusController : IGameStatus, IInitializable, IDisposable
 {
 }
@@ -43,8 +25,8 @@ public class GameStatusController : IGameStatusController
     public bool DidSupplyOnce { get; set; }
 
     public IObservable<int> UndealtCardCount => deck.CardCount;
-    public IObservable<Unit> WhenLost => losing;
-    public IObservable<int> WhenWon => winning;
+    public IObservable<Unit> WhenPlayerLost => losing;
+    public IObservable<int> WhenPlayerWon => winning;
 
     public IObservable<Unit> WhenPlayerShot { get; set; }
     public IObservable<CardType> WhenPlayerBoardedCard { get; set; }
@@ -79,11 +61,6 @@ public class GameStatusController : IGameStatusController
             .Where(count => DidSupplyOnce && count < boardModel.MaxCardsInSupply && dealer.IsThereDeadlock())
             .Take(1)
             .Subscribe(_ => winning.OnNext(player.Coins)));
-    }
-
-    public void Reset()
-    {
-        appController.Reload();
     }
     
     public void Dispose()

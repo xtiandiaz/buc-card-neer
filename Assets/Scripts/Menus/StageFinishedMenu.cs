@@ -19,7 +19,6 @@ public class StageFinishedMenu : WorldSpaceMenu, IStageFinishedMenu
     [SerializeField] private TextMeshProUGUI highScoreField = default;
     [SerializeField] private TextMeshProUGUI balanceField = default;
 
-    private IGameStatus gameStatus;
     private IAppNavigator appNavigator;
     private IPlayerStats playerStats;
     
@@ -33,7 +32,6 @@ public class StageFinishedMenu : WorldSpaceMenu, IStageFinishedMenu
         IPlayerStats playerStats
         )
     {
-        this.gameStatus = gameStatus;
         this.appNavigator = appNavigator;
         this.playerStats = playerStats;
 
@@ -51,7 +49,7 @@ public class StageFinishedMenu : WorldSpaceMenu, IStageFinishedMenu
 
         replayButton.WhenClicked
             .Take(1)
-            .Subscribe(_ => gameStatus.Reset())
+            .Subscribe(_ => appNavigator.GoToGame())
             .AddTo(this);
 
         quitButton.WhenClicked

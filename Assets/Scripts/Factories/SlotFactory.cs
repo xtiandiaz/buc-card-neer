@@ -2,31 +2,52 @@ using System;
 using UniRx;
 using Zenject;
 
-public interface ISlotFactory : IFactory<ISlotModel, ISlotView, ISlot>, IDisposable
+public interface ISlotFactory : IFactory<ISlotModel, ISlot>, IDisposable
 {
+    ISlot Create(ISlotModel fromModel, ISlotView andView);
 }
 
 public class SlotFactory : ISlotFactory
 {
     private readonly CompositeDisposable disposables = new CompositeDisposable();
     
-    private readonly Slot.Factory slotFactory;
-    private readonly StashSlot.Factory stashFactory;
+    private readonly Slot.Factory instanceFactory;
+    private readonly DiContainer container;
+    private readonly StashSlot.Factory instanceFactoryStash;
+    private readonly IBoardView boardView;
 
     private SlotFactory(
-        Slot.Factory slotFactory,
-        StashSlot.Factory stashFactory
+        DiContainer container,
+        Slot.Factory instanceFactory,
+        StashSlot.Factory instanceFactoryStash,
+        IBoardView boardView
     )
     {
-        this.slotFactory = slotFactory;
-        this.stashFactory = stashFactory;
+        this.container = container;
+        this.instanceFactory = instanceFactory;
+        this.instanceFactoryStash = instanceFactoryStash;
+        this.boardView = boardView;
     }
     
     public ISlot Create(ISlotModel fromModel, ISlotView andView)
     {
         var slot = (fromModel.Type & SlotType.Stash) != 0
-            ? stashFactory.Create(fromModel, (IStashSlotView) andView)
-            : slotFactory.Create(fromModel, andView);
+            ? instanceFactoryStash.Create(fromModel, (IStashSlotView) andView)
+            : instanceFactory.Create(fromModel, andView);
+
+        disposables.Add(slot);
+
+        return slot;
+    }
+
+    public ISlot Create(ISlotModel fromModel)
+    {
+        var view = CreateView(fromModel);
+        var slot = (fromModel.Type & SlotType.Stash) != 0
+            ? instanceFactoryStash.Create(fromModel, (IStashSlotView) view)
+            : instanceFactory.Create(fromModel, view);
+
+        boardView.Sea.ParentSupplySlot(view.Transform);
 
         disposables.Add(slot);
 
@@ -36,5 +57,10 @@ public class SlotFactory : ISlotFactory
     public void Dispose()
     {
         disposables.Dispose();
+    }
+
+    private ISlotView CreateView(ISlotModel fromModel)
+    {
+        return container.InstantiatePrefabForComponent<ISlotView>(fromModel.ViewPrefab);
     }
 }

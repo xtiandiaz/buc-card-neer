@@ -13,7 +13,7 @@ public class SceneInstaller : MonoInstaller
     [SerializeField] private AudioSource audioSourcePrefab = default;
     
     [Header("Models")] 
-    [SerializeField] private DeviceCatalog deviceCatalog = default;
+    [SerializeField] private ArtificeCatalog artificeCatalog = default;
 
     public override void InstallBindings()
     {
@@ -32,9 +32,9 @@ public class SceneInstaller : MonoInstaller
         Container.BindFactory<ICardModel, ICardView, Card, Card.Factory>().AsSingle();
         Container.BindFactory<IPlayerCardModel, IPlayerCardView, PlayerCard, PlayerCard.Factory>().AsSingle();
         Container.BindFactory<ICardModel, IMerchantCardView, MerchantCard, MerchantCard.Factory>().AsSingle();
-        Container.BindFactory<IDeviceCardModel, IDeviceCardView, DeviceCard, DeviceCard.Factory>().AsSingle();
+        Container.BindFactory<IArtificeCardModel, IArtificeCardView, ArtificeCard, ArtificeCard.Factory>().AsSingle();
 
-        Container.BindInterfacesTo<DeviceCatalog>().FromInstance(deviceCatalog).WhenInjectedInto<CardFactory>();
+        Container.BindInterfacesTo<ArtificeCatalog>().FromInstance(artificeCatalog).WhenInjectedInto<CardFactory>();
         Container.BindInterfacesTo<CardFactory>().AsSingle();
 
         #endregion

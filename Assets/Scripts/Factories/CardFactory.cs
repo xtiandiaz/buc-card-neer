@@ -5,7 +5,7 @@ using UnityEngine;
 
 public interface ICardFactory : IFactory<ICardModel, ICard>, IDisposable
 {
-    IDeviceCard Create(DeviceType withType);
+    IArtificeCard Create(ArtificeType withType);
 }
 
 public class CardFactory : ICardFactory
@@ -14,9 +14,9 @@ public class CardFactory : ICardFactory
     private readonly Card.Factory cardFactory;
     private readonly PlayerCard.Factory playerFactory;
     private readonly MerchantCard.Factory merchantFactory;
-    private readonly DeviceCard.Factory deviceFactory;
+    private readonly ArtificeCard.Factory deviceFactory;
     private readonly Viewport viewport;
-    private readonly IDeviceCatalog deviceCatalog;
+    private readonly IArtificeCatalog artificeCatalog;
     private readonly ILocalizator localizator;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
 
@@ -25,9 +25,9 @@ public class CardFactory : ICardFactory
         Card.Factory cardFactory,
         PlayerCard.Factory playerFactory,
         MerchantCard.Factory merchantFactory,
-        DeviceCard.Factory deviceFactory,
+        ArtificeCard.Factory deviceFactory,
         Viewport viewport,
-        IDeviceCatalog deviceCatalog,
+        IArtificeCatalog artificeCatalog,
         ILocalizator localizator
     )
     {
@@ -37,10 +37,10 @@ public class CardFactory : ICardFactory
         this.merchantFactory = merchantFactory;
         this.deviceFactory = deviceFactory;
         this.viewport = viewport;
-        this.deviceCatalog = deviceCatalog;
+        this.artificeCatalog = artificeCatalog;
         this.localizator = localizator;
         
-        this.deviceCatalog.Index();
+        this.artificeCatalog.Index();
     }
 
     public ICard Create(ICardModel fromModel)
@@ -55,9 +55,9 @@ public class CardFactory : ICardFactory
         return card;
     }
 
-    public IDeviceCard Create(DeviceType withType)
+    public IArtificeCard Create(ArtificeType withType)
     {
-        return (IDeviceCard) Create(deviceCatalog[withType]);
+        return (IArtificeCard) Create(artificeCatalog[withType]);
     }
 
     private ICard CreateCard(ICardModel withModel, ICardView view)
@@ -68,8 +68,8 @@ public class CardFactory : ICardFactory
                 return playerFactory.Create((IPlayerCardModel) withModel, (IPlayerCardView) view);
             case CardType.Merchant:
                 return merchantFactory.Create(withModel, (IMerchantCardView) view);
-            case CardType.Device:
-                return deviceFactory.Create((IDeviceCardModel) withModel, (IDeviceCardView) view);
+            case CardType.Artifice:
+                return deviceFactory.Create((IArtificeCardModel) withModel, (IArtificeCardView) view);
             default:
                 return cardFactory.Create(withModel, view);
         }
@@ -87,7 +87,7 @@ public class CardFactory : ICardFactory
         view.ToggleValueVisibility(fromModel.ShouldDisplayValue);
 
         view.Position = (viewport.Size.y + GameStatics.CardHeight) * 0.5f *
-                        ((fromModel.Type & (CardType.Player | CardType.Device)) != 0 ? Vector3.down : Vector3.up) +
+                        ((fromModel.Type & (CardType.Player | CardType.Artifice)) != 0 ? Vector3.down : Vector3.up) +
                         5f * Vector3.back;
 
         return view;
@@ -95,9 +95,9 @@ public class CardFactory : ICardFactory
 
     private void PrepareModel(ICardModel model)
     {
-        if (model is IDeviceCardModel deviceModel)
+        if (model is IArtificeCardModel deviceModel)
         {
-            var deviceName = deviceModel.DeviceType.ToString();
+            var deviceName = deviceModel.ArtificeType.ToString();
             model.Name = localizator.GetText(
                 $"card.device.{deviceName.Substring(0, 1).ToLower() + deviceName.Substring(1)}");
         }
