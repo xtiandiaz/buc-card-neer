@@ -49,7 +49,6 @@ MonoBehaviour:
   sky: {fileID: 2037470781325406659}
   sea: {fileID: 5768311884079840682}
   ship: {fileID: 6744970821475193234}
-  device: {fileID: 11400000, guid: eabd4566761eb456ba207cf4f1e3c204, type: 2}
 --- !u!1001 &1604821499198619163
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -126,6 +125,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7377541016524543422, guid: f315c2368367f46c5935b6e9405d1738,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 6.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 4766706469181814235, guid: f315c2368367f46c5935b6e9405d1738,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4766706469181814235, guid: f315c2368367f46c5935b6e9405d1738,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4766706469181814235, guid: f315c2368367f46c5935b6e9405d1738,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 4.5
       objectReference: {fileID: 0}
     - target: {fileID: 5467241988972467839, guid: f315c2368367f46c5935b6e9405d1738,
         type: 3}

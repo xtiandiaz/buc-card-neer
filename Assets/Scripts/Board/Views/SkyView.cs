@@ -10,6 +10,8 @@ public interface ISkyView
 
 public class SkyView : MonoBehaviour, ISkyView
 {
+    [SerializeField] private Transform blueTransform = default;
+    
     public Vector3 LocalPosition
     {
         get => transform.localPosition;
@@ -18,7 +20,7 @@ public class SkyView : MonoBehaviour, ISkyView
     
     public Vector3 LocalScale
     {
-        get => transform.localScale;
-        set => transform.localScale = value;
+        get => blueTransform.localScale;
+        set => blueTransform.localScale = value;
     }
 }
