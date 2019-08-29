@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -23,6 +24,7 @@ public class SlotView : MonoBehaviour, ISlotView
 {
     [SerializeField] private SlotType type = default;
     [SerializeField] private SpriteRenderer faceRenderer = default;
+    [CanBeNull]
     [SerializeField] private SpriteRenderer iconRenderer = default;
     [SerializeField] private GestureListener gestureListener = default;
 

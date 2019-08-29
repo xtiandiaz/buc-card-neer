@@ -28,7 +28,7 @@ public class BoardView : MonoBehaviour, IBoardView
     [Inject]
     private void Initialize(
         IViewportProvider viewportProvider,
-        IBoardModel model
+        IBoardLayout layout
         )
     {
         var seaHeight = sea.Height;
@@ -39,7 +39,7 @@ public class BoardView : MonoBehaviour, IBoardView
 
         var nearViewportCenter = nearViewport.Size * 0.5f;
         
-        ship.LocalPosition = Vector3.up * model.Padding.y;
+        ship.LocalPosition = Vector3.up * layout.Padding.y;
         sea.LocalPosition = ship.LocalPosition + Vector3.up * (ship.HullHeight + ship.HullTopMargin);
 
         var skyScale = sky.LocalScale;

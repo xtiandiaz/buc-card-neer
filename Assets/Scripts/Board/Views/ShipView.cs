@@ -30,15 +30,15 @@ public class ShipView : MonoBehaviour, IShipView
 
     [Inject]
     private void Initialize(
-        IBoardModel boardModel
+        IBoardLayout boardLayout
         )
     {
         var storagePos = storage.position;
-        storagePos.x = -GameStatics.CardWidth - boardModel.SlotSpacing;
+        storagePos.x = -GameStatics.CardWidth - boardLayout.SlotSpacing;
         storage.position = storagePos;
         
         var mountPos = mount.position;
-        mountPos.x = GameStatics.CardWidth + boardModel.SlotSpacing;
+        mountPos.x = GameStatics.CardWidth + boardLayout.SlotSpacing;
         mount.position = mountPos;
     }
 }

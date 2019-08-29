@@ -18,6 +18,7 @@ public class AppInstaller : MonoInstaller
         #region Board
 
         Container.BindInterfacesTo<BoardModel>().FromInstance(board).AsSingle();
+        Container.BindInterfacesTo<BoardLayout>().AsSingle();
 
         #endregion
 

@@ -478,7 +478,7 @@ GameObject:
   - component: {fileID: 8666774430191881066}
   - component: {fileID: 2438965235345391129}
   m_Layer: 0
-  m_Name: Device
+  m_Name: Artifice
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

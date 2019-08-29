@@ -30,7 +30,7 @@ public class AppController : IAppController, IAppNavigator, IAppInfo
     private readonly ZenjectSceneLoader sceneLoader;
     private readonly IStageModel defaultStage;
     private IDisposable sceneLoading;
-
+    
     private AppController(
         ZenjectSceneLoader sceneLoader,
         Stage.Factory stageFactory,
@@ -41,7 +41,7 @@ public class AppController : IAppController, IAppNavigator, IAppInfo
         this.defaultStage = defaultStage;
     }
     
-    public int BuildNumber => 9;
+    public int BuildNumber => 10;
 
     public void Initialize()
     {

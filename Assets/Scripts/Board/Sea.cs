@@ -4,7 +4,7 @@ using System.Linq;
 using UniRx;
 using Zenject;
 
-public interface ISea : IInitializable, IDisposable
+public interface ISea : IDisposable
 {
     ISlot[] Slots { get; }
     float ZDepth { get; }
@@ -23,11 +23,11 @@ public interface ISea : IInitializable, IDisposable
 
 public class Sea : ISea
 {
+    private readonly ISeaView view;
     private readonly Subject<Unit> arranging = new Subject<Unit>();
     private readonly Subject<Unit> resupplying = new Subject<Unit>();
     private readonly CompositeDisposable disposables = new CompositeDisposable();
     
-    private readonly ISeaView view;
     private readonly IDealingController dealer;
     private readonly IClashingController clasher;
     private readonly int cardCountPerSlot;
@@ -40,25 +40,19 @@ public class Sea : ISea
         ISeaView view,
         IDealingController dealer,
         IClashingController clasher,
-        IBoardModel boardModel
+        IBoardModel boardModel,
+        IBoardLayout boardLayout
         )
     {
         Slots = supplySlots.ToArray();
         cardCountPerSlot = boardModel.CardCountPerSupplySlot;
 
-        this.view = view;
         this.dealer = dealer;
         this.clasher = clasher;
-    }
+        
+        this.view = view;
+        this.view.ParentAndArrangeSlots(Slots.Select(s => s.Transform).ToArray(), boardLayout);
 
-    public ISlot[] Slots { get; }
-    public float ZDepth => view.ZDepth;
-
-    public IObservable<Unit> WhenArranged => arranging;
-    public IObservable<Unit> WhenResupplied => resupplying;
-
-    public void Initialize()
-    {
         disposables.Add(Slots
             .Select((slot, i) => slot.WhenReleased
                 .Do(_ =>
@@ -69,6 +63,13 @@ public class Sea : ISea
             .Merge()
             .Subscribe());
     }
+
+    public ISlot[] Slots { get; }
+    public float ZDepth => View.ZDepth;
+    public ISeaView View { get; }
+
+    public IObservable<Unit> WhenArranged => arranging;
+    public IObservable<Unit> WhenResupplied => resupplying;
     
     public IObservable<Unit> Supply()
     {

@@ -47,8 +47,6 @@ public class SlotFactory : ISlotFactory
             ? instanceFactoryStash.Create(fromModel, (IStashSlotView) view)
             : instanceFactory.Create(fromModel, view);
 
-        boardView.Sea.ParentSupplySlot(view.Transform);
-
         disposables.Add(slot);
 
         return slot;

@@ -18,16 +18,16 @@ public class GameCamera : MonoBehaviour, IGameCamera
 
     [Inject]
     private void Initialize(
-        IBoardModel fromModel
+        IBoardLayout boardLayout
     )
     {
         Camera = GetComponent<Camera>();
 
-        var slotSpacing = fromModel.SlotSpacing;
+        var slotSpacing = boardLayout.SlotSpacing;
         var desiredViewWidth = (GameStatics.CardWidth + slotSpacing) 
-                               * fromModel.SupplySlotCount
+                               * boardLayout.MaxSupplySlotCount
                                - slotSpacing
-                               + fromModel.Padding.x * 2f;
+                               + boardLayout.Padding.x * 2f;
 	
         transform.position = new Vector3(
             0, 

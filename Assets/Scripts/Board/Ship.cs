@@ -2,7 +2,7 @@ using System;
 using UniRx;
 using Zenject;
 
-public interface IShip : IInitializable, IDisposable
+public interface IShip : IDisposable
 {
     ISlot Helm { get; }
     ISlot Plank { get; }
@@ -49,24 +49,7 @@ public class Ship : IShip
         Mount = mount;
 
         this.view = view;
-    }
-    
-    public ISlot Helm { get; }
-    public ISlot Plank { get; }
-    public ISlot Storage { get; }
-    public ISlot Mount { get; }
 
-    public IObservable<Unit> WhenArmed => Plank.WhenLodged
-        .Where(card => card.IsRangeWeapon && card.IsStashed)
-        .AsUnitObservable();
-
-    public IObservable<CardType> WhenCardBoarded => boarding;
-    public IObservable<CardType> WhenCardRevealed => revealing;
-    public IObservable<CardType> WhenCardStashed => stashing;
-    public IObservable<CardType> WhenCardHandled => handling;
-
-    public void Initialize()
-    {
         disposables.Add(Plank.WhenLodged
             .Where(card => !card.IsBoarded)
             .Do(card =>
@@ -89,6 +72,20 @@ public class Ship : IShip
             })
             .Subscribe());
     }
+    
+    public ISlot Helm { get; }
+    public ISlot Plank { get; }
+    public ISlot Storage { get; }
+    public ISlot Mount { get; }
+
+    public IObservable<Unit> WhenArmed => Plank.WhenLodged
+        .Where(card => card.IsRangeWeapon && card.IsStashed)
+        .AsUnitObservable();
+
+    public IObservable<CardType> WhenCardBoarded => boarding;
+    public IObservable<CardType> WhenCardRevealed => revealing;
+    public IObservable<CardType> WhenCardStashed => stashing;
+    public IObservable<CardType> WhenCardHandled => handling;
 
     public IObservable<Unit> ExpressHandle(ICard card)
     {

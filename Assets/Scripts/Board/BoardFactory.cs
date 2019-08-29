@@ -15,6 +15,7 @@ public class BoardFactory : IBoardFactory
     private readonly IShipFactory shipFactory;
     private readonly ISlotFactory slotFactory;
     private readonly IBoardView boardView;
+    private readonly IBoardLayout boardLayout;
 
     private BoardFactory(
         IStage stage,
@@ -24,7 +25,8 @@ public class BoardFactory : IBoardFactory
         Sea.Factory seaFactory,
         IShipFactory shipFactory,
         ISlotFactory slotFactory,
-        IBoardView boardView
+        IBoardView boardView,
+        IBoardLayout boardLayout
     )
     {
         this.stage = stage;
@@ -35,6 +37,7 @@ public class BoardFactory : IBoardFactory
         this.shipFactory = shipFactory;
         this.slotFactory = slotFactory;
         this.boardView = boardView;
+        this.boardLayout = boardLayout;
     }
     
     public IBoard Create()
@@ -45,6 +48,6 @@ public class BoardFactory : IBoardFactory
         var sea = seaFactory.Create(supplySlots, boardView.Sea);
         var ship = shipFactory.Create();
         
-        return instanceFactory.Create(sea, ship);
+        return instanceFactory.Create(sea, ship, model);
     }
 }

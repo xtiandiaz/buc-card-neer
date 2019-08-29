@@ -39,7 +39,7 @@
     },
     {
       "key" : "ui.toggle.deviceCards",
-      "value" : "Cartas de Dispositivo"
+      "value" : "Cartas de Artificio"
     },
 
     {
@@ -66,7 +66,7 @@
 
     {
       "key" : "ui.info.aboutStore",
-      "value" : "Compra nuevos Dispositivos y explora tu colección."
+      "value" : "Compra nuevos Artificios y explora tu colección."
     },
     {
       "key" : "ui.info.aboutLogbook",

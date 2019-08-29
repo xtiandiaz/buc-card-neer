@@ -15,7 +15,7 @@ public abstract class WorldSpaceMenu : Menu, IWorldSpaceMenu
     private void Initialize(
         IGameCamera gameCamera,
         Viewport viewport,
-        IBoardModel boardModel
+        IBoardLayout boardLayout
     )
     {
         GetComponent<Canvas>().worldCamera = gameCamera.Camera;
@@ -23,7 +23,7 @@ public abstract class WorldSpaceMenu : Menu, IWorldSpaceMenu
         var canvasScaler = GetComponent<CanvasScaler>();
         
         canvasScaler.scaleFactor = 
-            (boardModel.Tx > 0.25f ? 0.75f : 1f) * Screen.width / viewport.Size.x / 10f;
+            (boardLayout.Tx > 0.25f ? 0.75f : 1f) * Screen.width / viewport.Size.x / 10f;
 
         ReferencePixelsPerUnit = canvasScaler.referencePixelsPerUnit;
     }

@@ -1,17 +1,21 @@
-using System;
 using UnityEngine;
 
-public interface IBoardModel : IDisposable
+public interface IBoardModel
 {
-    Vector2 Padding { get; }
+    Vector2 ReferenceAspectRatio { get; }
+    Vector2 WidestAspectRatio { get; }
+    Vector2 TallestAspectRatio { get; }
     
-    int SupplySlotCount { get; }
-    float SlotSpacing { get; }
+    Vector2 MinPadding { get; }
+    Vector2 FlexiblePadding { get; }
+
+    float MinSlotSpacing { get; }
+    float FlexibleSlotSpacing { get; }
+    
+    int MaxSupplySlotCount { get; }
     
     int CardCountPerSupplySlot { get; }
     int MaxCardsInSupply { get; }
-    
-    float Tx { get; }
     
     string SlotSortingLayerName { get; }
     string CardSortingLayerName { get; }
@@ -42,25 +46,17 @@ public class BoardModel : ScriptableObject, IBoardModel
     [SerializeField] private int floatingCardSortingOrder = default;
     [SerializeField] private float floatingCardDepth = default;
 
-    private Vector2? padding;
-    private float? tx, ty;
-    private float? cardExtent;
+    public Vector2 ReferenceAspectRatio => referenceAspectRatio;
+    public Vector2 WidestAspectRatio => widestAspectRatio;
+    public Vector2 TallestAspectRatio =>  tallestAspectRatio;
 
-    public Vector2 Padding
-    {
-        get
-        {
-            if (padding.HasValue)
-                return padding.Value;
+    public Vector2 MinPadding => minPadding;
+    public Vector2 FlexiblePadding => flexiblePadding;
 
-            padding = minPadding + Tx * flexiblePadding.x * Vector2.right + Ty * flexiblePadding.y * Vector2.up;
+    public float MinSlotSpacing => minSlotSpacing;
+    public float FlexibleSlotSpacing => flexibleSlotSpacing;
 
-            return padding.Value;
-        }
-    }
-
-    public int SupplySlotCount => supplySlotCount;
-    public float SlotSpacing => minSlotSpacing + flexibleSlotSpacing * Tx;
+    public int MaxSupplySlotCount => supplySlotCount;
 
     public int CardCountPerSupplySlot => cardCountPerSupplySlot;
     public int MaxCardsInSupply => cardCountPerSupplySlot * supplySlotCount;
@@ -69,45 +65,4 @@ public class BoardModel : ScriptableObject, IBoardModel
     public string CardSortingLayerName => cardSortingLayerName;
     public int FloatingCardSortingOrder => floatingCardSortingOrder;
     public float FloatingCardDepth => floatingCardDepth;
-    
-    public float Tx
-    {
-        get
-        {
-            if (tx.HasValue)
-                return tx.Value;
-            
-            var refRatio = referenceAspectRatio.x / referenceAspectRatio.y;
-            var wideRatio = widestAspectRatio.x / widestAspectRatio.y;
-            var widthRatio = Mathf.Clamp((float) Screen.width / Screen.height, refRatio, wideRatio);
-            
-            tx = (widthRatio - refRatio) / (wideRatio - refRatio);
-
-            return tx.Value;
-        }
-    }
-    
-    private float Ty
-    {
-        get
-        {
-            if (ty.HasValue)
-                return ty.Value;
-            
-            var refRatio = referenceAspectRatio.y / referenceAspectRatio.x;
-            var tallRatio = tallestAspectRatio.y / tallestAspectRatio.x;
-            var heightRatio = Mathf.Clamp((float) Screen.height / Screen.width, refRatio, tallRatio);
-            
-            ty = (heightRatio - refRatio) / (tallRatio - refRatio);
-
-            return ty.Value;
-        }
-    }
-
-    public void Dispose()
-    {
-        padding = default;
-        tx = default;
-        ty = default;
-    }
 }

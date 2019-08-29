@@ -9,8 +9,6 @@ public class GameInstaller : SceneInstaller
     [Space] 
     [SerializeField] private PlayerCardModel player = default;
     [Space]
-    [SerializeField] private List<SlotModel> supplySlots = default;
-    [Space]
     [SerializeField] private SlotModel supplySlot = default;
     [Space]
     [SerializeField] private SlotModel plank = default;
@@ -52,6 +50,7 @@ public class GameInstaller : SceneInstaller
         Container.BindExecutionOrder<GameAudioController>(100);
         Container.BindInterfacesAndSelfTo<GameAudioController>().AsSingle();
         
+        Container.BindInterfacesTo<CardNotificationsController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<VisualEffectsController>().AsSingle().NonLazy();
 
         #endregion
@@ -81,8 +80,8 @@ public class GameInstaller : SceneInstaller
             .AsSingle();
         Container.BindInterfacesTo<ShipFactory>().AsSingle();
         
-        Container.BindFactory<ISea, IShip, Board, Board.Factory>().AsSingle();
-        Container.Bind<IBoard>().FromFactory<BoardFactory>();
+        Container.BindFactory<ISea, IShip, IBoardModel, Board, Board.Factory>().AsSingle();
+        Container.Bind<IBoard>().FromFactory<BoardFactory>().AsSingle();
 
         #endregion
         

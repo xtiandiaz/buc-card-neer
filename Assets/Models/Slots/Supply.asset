@@ -19,5 +19,5 @@ MonoBehaviour:
   shouldSelfArrange: 0
   highlightColor: {r: 0, g: 1, b: 0, a: 1}
   arrangement: {fileID: 11400000, guid: 8c652235ab686451bbe0cde2d23cc2a1, type: 2}
-  viewPrefab: {fileID: 4629558531078662713, guid: 2fbe541c3947b49e9898dc04ca06b96e,
+  viewPrefab: {fileID: 4629558531078662713, guid: 2126257bd879d48279c9dcf05cbb5751,
     type: 3}

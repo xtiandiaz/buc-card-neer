@@ -83,7 +83,7 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _EndColor: {r: 0.31510323, g: 0.9104069, b: 0.9150943, a: 1}
+    - _EndColor: {r: 0.16078432, g: 0.8, b: 0.81960785, a: 1}
     - _FadeColor: {r: 1, g: 0.20334104, b: 0, a: 0.5921569}
     - _QOffset: {r: 12.3, g: 26.2, b: 6.75, a: 6.73}
-    - _StartColor: {r: 0.2285066, g: 0.6526533, b: 0.745283, a: 1}
+    - _StartColor: {r: 0.35686275, g: 0.8862745, b: 0.8980392, a: 1}

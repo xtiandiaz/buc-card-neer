@@ -1,35 +1,27 @@
 using UnityEngine;
-using DG.Tweening;
 using Zenject;
+using System.Collections.Generic;
 
 public interface ISeaView
 {
     float Height { get; }
     float ZDepth { get; }
     Vector3 LocalPosition { get; set; }
-    
-    ISlotView[] Slots { get; }
 
-    void ParentSupplySlot(Transform slotTransform);
+    void ParentAndArrangeSlots(Transform[] transforms, IBoardLayout withLayout);
 }
 
 public class SeaView : MonoBehaviour, ISeaView
-{
-    [SerializeField] private SlotView[] slots = default;
-    
+{    
     [Header("Water")]
     [SerializeField] private Transform waterTransform = default;
     [SerializeField] private Transform waterSurfaceTransform = default;
-    
-    private Material oceanMaterial;
-    private Sequence projectionSequence;
+
+    [Space]
+    [SerializeField] private Transform slotWrapper = default;
 
     public float Height => waterSurfaceTransform.localScale.y * Mathf.Sin(SurfaceSlope);
     public float ZDepth => waterSurfaceTransform.localScale.y * Mathf.Cos(SurfaceSlope);
-
-    private float SurfaceSlope => (90f - waterTransform.rotation.eulerAngles.x) * Mathf.Deg2Rad;
-    
-    public ISlotView[] Slots => slots;
     
     public Vector3 LocalPosition
     {
@@ -37,27 +29,21 @@ public class SeaView : MonoBehaviour, ISeaView
         set => transform.localPosition = value;
     }
 
-    [Inject]
-    private void Initialize(
-        IBoardModel boardModel
-        )
-    {
-        var positioner = -slots.Length * 0.5f + 0.5f;
-        
-        foreach (var slot in slots)
-        {
-            var slotPos = slot.Transform.localPosition;
+    private float SurfaceSlope => (90f - waterTransform.rotation.eulerAngles.x) * Mathf.Deg2Rad;
 
-            slotPos.x = positioner * (GameStatics.CardWidth + boardModel.SlotSpacing);
+    public void ParentAndArrangeSlots(Transform[] transforms, IBoardLayout withLayout)
+    {
+        var positioner = -transforms.Length * 0.5f + 0.5f;
+        
+        foreach (var slotTransform in transforms)
+        {
+            slotTransform.SetParent(slotWrapper, false);
             
-            slot.Transform.localPosition = slotPos;
+            slotTransform.localPosition = new Vector3(
+                positioner * (GameStatics.CardWidth + withLayout.SlotSpacing),
+                0);
             
             positioner += 1f;
         }
-    }
-
-    public void ParentSupplySlot(Transform slotTransform)
-    {
-        slotTransform.SetParent(transform);
     }
 }
