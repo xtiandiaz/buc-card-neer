@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: Helm
   m_EditorClassIdentifier: 
   type: 4
+  index: 0
   capacity: 1
-  entryway: 0
-  shouldStartLocked: 1
+  shouldStartLocked: 0
+  shouldSelfArrange: 1
   highlightColor: {r: 0, g: 1, b: 0, a: 1}
   arrangement: {fileID: 11400000, guid: abf818a7cdd644848a362b3e4c9abcf2, type: 2}
+  viewPrefab: {fileID: 0}

@@ -116,12 +116,7 @@ public class Ship : IShip
     public void Unlock()
     {
         foreach (var slot in slots)
-        {
-            if ((slot.Type & SlotType.Player) != 0)
-                continue;
-
             slot.Unlock();
-        }
     }
     
     public void Dispose()

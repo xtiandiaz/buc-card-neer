@@ -10,6 +10,7 @@ public class VisualEffectsController : IVisualEffectsController
 {
     private readonly IGameCamera camera;
     private readonly IGameStatus gameStatus;
+    private readonly IConfrontationController confrontator;
     private readonly IBoard board;
     private readonly IShip ship;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
@@ -17,11 +18,13 @@ public class VisualEffectsController : IVisualEffectsController
     private VisualEffectsController(
         IGameCamera camera,
         IGameStatus gameStatus,
+        IConfrontationController confrontator,
         IBoard board
     )
     {
         this.camera = camera;
         this.gameStatus = gameStatus;
+        this.confrontator = confrontator;
         this.board = board;
     }
 
@@ -35,7 +38,7 @@ public class VisualEffectsController : IVisualEffectsController
             .Subscribe(_ => camera.Shake(0.25f, TimeSpan.FromSeconds(1), 4)));
         
         disposables.Add(gameStatus.WhenPlayerAttackedOnBoard
-            .Merge(gameStatus.WhenPlayerConfronted)
+            .Merge(confrontator.WhenPlayerConfronted.AsUnitObservable())
             .Subscribe(_ => camera.Shake(0.15f, TimeSpan.FromSeconds(0.5), 2)));
     }
 

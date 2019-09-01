@@ -10,15 +10,17 @@ public interface ICard : IDisposable
     CardType AbstractType { get; }
     CardType? SuitType { get; }
     ISuitModel Suit { get; }
+    string Name { get; }
 
     int Value { get; }
     int LockValue { get; }
     int OriginalValue { get; }
     
+    bool IsPlayer { get; }
     bool IsResource { get; }
     bool IsItem { get; }
     bool IsTool { get; }
-    bool IsDevice { get; }
+    bool IsArtifice { get; }
     bool IsMonster { get; }
     bool IsAgent { get; }
     bool IsPirate { get; }
@@ -114,11 +116,13 @@ public class Card : ICard
     }
 
     public int OriginalValue { get; }
+    public string Name => view.ObjectName;
 
+    public bool IsPlayer => (Type & CardType.Player) != 0;
     public bool IsResource => (Type & CardType.Resource) != 0;
     public bool IsItem => (Type & CardType.Item) != 0;
     public bool IsTool => (Type & CardType.Tool) != 0;
-    public bool IsDevice => (Type & CardType.Artifice) != 0;
+    public bool IsArtifice => (Type & CardType.Artifice) != 0;
     public bool IsMonster => IsResource && (IsLocked || WasLocked);
     public bool IsAgent => (Type & CardType.Agent) != 0;
     public bool IsPirate => (Type & CardType.Pirate) != 0;

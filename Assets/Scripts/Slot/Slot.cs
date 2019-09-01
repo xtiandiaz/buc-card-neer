@@ -61,7 +61,6 @@ public class Slot : ISlot
     {
         Type = model.Type;
         index = model.Index;
-        IsLocked = model.ShouldStartLocked;
         shouldSelfArrange = model.ShouldSelfArrange;
 
         pile = (Type & SlotType.Supply) != 0 || model.Capacity > 0

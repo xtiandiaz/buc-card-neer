@@ -35,7 +35,7 @@ public class ForwardingController : IForwardingController
     
     public bool CanForward(ICard card, ISlot fromUserDestination)
     {
-        if (!card.IsResource || card.IsLocked || card.IsDevice)
+        if (!card.IsResource || card.IsLocked || card.IsArtifice)
             return false;
         
         if (card.IsItem && !gameStatus.PlayerDidStashItem)

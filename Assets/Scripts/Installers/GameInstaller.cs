@@ -41,6 +41,8 @@ public class GameInstaller : SceneInstaller
         Container.BindInterfacesTo<ForwardingController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<DismissalController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<MatchingController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<ArtificeMatchingController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<ConfrontationController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<LodgingController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<ClashingController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<ShootingController>().AsSingle().NonLazy();

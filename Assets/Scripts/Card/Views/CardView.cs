@@ -8,6 +8,7 @@ public interface ICardView
     int Value { set; }
     int LockValue { set; }
     string Name { set; }
+    string ObjectName { get; }
     CardFace Face { set; }
     ISuitModel Suit { set; }
     
@@ -71,6 +72,8 @@ public class CardView : MonoBehaviour, ICardView
     {
         set => customizer.CardName = value;
     }
+
+    public string ObjectName => name;
 
     public virtual ISuitModel Suit
     {

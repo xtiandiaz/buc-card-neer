@@ -126,21 +126,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 4766706469181814235, guid: f315c2368367f46c5935b6e9405d1738,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 4.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4766706469181814235, guid: f315c2368367f46c5935b6e9405d1738,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4766706469181814235, guid: f315c2368367f46c5935b6e9405d1738,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1.4
-      objectReference: {fileID: 0}
     - target: {fileID: 5467241988972467839, guid: f315c2368367f46c5935b6e9405d1738,
         type: 3}
       propertyPath: m_Size.y
@@ -174,11 +159,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 687086845896097672}
     m_Modifications:
-    - target: {fileID: 8801376356439893927, guid: f07163ce87ba84912be93f4c3d2195e4,
-        type: 3}
-      propertyPath: m_Name
-      value: Sky
-      objectReference: {fileID: 0}
     - target: {fileID: 8801376356439893926, guid: f07163ce87ba84912be93f4c3d2195e4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -234,6 +214,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8801376356439893927, guid: f07163ce87ba84912be93f4c3d2195e4,
+        type: 3}
+      propertyPath: m_Name
+      value: Sky
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f07163ce87ba84912be93f4c3d2195e4, type: 3}
 --- !u!4 &2037470781325406656 stripped
@@ -261,11 +246,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 687086845896097672}
     m_Modifications:
-    - target: {fileID: 3976414289871140751, guid: 65f0b6f86bfa5471387be3c83a5f35ac,
-        type: 3}
-      propertyPath: m_Name
-      value: Sea
-      objectReference: {fileID: 0}
     - target: {fileID: 3976414289871140748, guid: 65f0b6f86bfa5471387be3c83a5f35ac,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -320,6 +300,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3976414289871140751, guid: 65f0b6f86bfa5471387be3c83a5f35ac,
+        type: 3}
+      propertyPath: m_Name
+      value: Sea
       objectReference: {fileID: 0}
     - target: {fileID: 1914819646398621573, guid: 65f0b6f86bfa5471387be3c83a5f35ac,
         type: 3}

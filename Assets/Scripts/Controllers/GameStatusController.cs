@@ -2,6 +2,21 @@ using System;
 using UniRx;
 using Zenject;
 
+public interface IGameStatus : IInitializable, IDisposable
+{
+    bool PlayerDidStashItem { get; set; }
+    bool PlayerDidStashTool { get; set; }
+    bool DidSupplyOnce { get; set; }
+    
+    IObservable<int> UndealtCardCount { get; }
+    IObservable<Unit> WhenPlayerLost { get; }
+    IObservable<int> WhenPlayerWon { get; }
+    
+    IObservable<Unit> WhenPlayerShot { get; set; }
+    IObservable<Unit> WhenPlayerUnlockedAndHandledCard { get; set; }
+    IObservable<Unit> WhenPlayerAttackedOnBoard { get; set; }
+}
+
 public interface IGameStatusController : IGameStatus, IInitializable, IDisposable
 {
 }
@@ -33,7 +48,6 @@ public class GameStatusController : IGameStatusController
     public IObservable<CardType> WhenPlayerBoardedAndHandledCard { get; set; }
     public IObservable<Unit> WhenPlayerUnlockedAndHandledCard { get; set; }
     public IObservable<Unit> WhenPlayerAttackedOnBoard { get; set; }
-    public IObservable<Unit> WhenPlayerConfronted { get; set; }
 
     private GameStatusController(
         IAppController appController,

@@ -15,6 +15,8 @@ public class GameAudioController : IGameAudioController
     private readonly IForwardingController forwarder;
     private readonly IShootingController shooter;
     private readonly IMatchingController matcher;
+    private readonly IArtificeMatchingController artificeMatcher;
+    private readonly IConfrontationController confrontator;
     private readonly IGameStatus gameStatus;
     private readonly IBoard board;
     private readonly CompositeDisposable disposables = new CompositeDisposable();
@@ -27,6 +29,8 @@ public class GameAudioController : IGameAudioController
         IForwardingController forwarder,
         IShootingController shooter,
         IMatchingController matcher,
+        IArtificeMatchingController artificeMatcher,
+        IConfrontationController confrontator,
         IGameStatus gameStatus,
         IBoard board
     )
@@ -38,6 +42,8 @@ public class GameAudioController : IGameAudioController
         this.forwarder = forwarder;
         this.shooter = shooter;
         this.matcher = matcher;
+        this.artificeMatcher = artificeMatcher;
+        this.confrontator = confrontator;
         this.gameStatus = gameStatus;
         this.board = board;
     }
@@ -69,7 +75,7 @@ public class GameAudioController : IGameAudioController
 
         #region Card Matching
 
-        disposables.Add(matcher.WhenMatchedDevice
+        disposables.Add(artificeMatcher.WhenMatched
             .Merge(deferrer.WhenMatchedDevice)
             .Subscribe(deviceType =>
             {
@@ -87,7 +93,7 @@ public class GameAudioController : IGameAudioController
                 }
             }));
 
-        disposables.Add(matcher.WhenDeviceActed
+        disposables.Add(artificeMatcher.WhenActed
             .Merge(deferrer.WhenDeviceActed)
             .Subscribe(deviceType =>
             {
@@ -98,6 +104,9 @@ public class GameAudioController : IGameAudioController
                         break;
                 }
             }));
+
+        disposables.Add(confrontator.WhenPlayerConfronted
+            .Subscribe(foeType => audioManager.Play(AudioEventSwitchKey.CardConfront, foeType)));
 
         #endregion
 
