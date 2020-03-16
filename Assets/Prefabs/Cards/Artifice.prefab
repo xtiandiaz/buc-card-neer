@@ -921,8 +921,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: "Trader\u2019s Spell"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7142c82f1c6234d769016fb4bbe5da35, type: 2}
