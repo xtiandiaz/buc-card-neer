@@ -127,12 +127,16 @@ public class Sea : ISea
     {
         foreach (var slot in Slots)
             slot.Lock();
+
+        VisualEffectsController.ToggleTintFilterToSupplySlots();
     }
 
     public void Unlock()
     {
         foreach (var slot in Slots)
             slot.Unlock();
+
+        VisualEffectsController.ToggleTintFilterToSupplySlots();
     }
     
     public void Dispose()

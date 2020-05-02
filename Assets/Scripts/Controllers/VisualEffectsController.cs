@@ -1,5 +1,6 @@
 using System;
 using UniRx;
+using UnityEngine;
 using Zenject;
 
 public interface IVisualEffectsController : IInitializable, IDisposable
@@ -45,5 +46,17 @@ public class VisualEffectsController : IVisualEffectsController
     public void Dispose()
     {
         disposables?.Dispose();
+    }
+
+    public static void ToggleTintFilterToSupplySlots()
+    {
+        GameObject[] SupplySlotsInScene = GameObject.FindGameObjectsWithTag("SupplyCardFilter");
+
+        for (int i = 0; i < SupplySlotsInScene.Length; i++)
+        {
+            Debug.Log("Supply Slots: " + i);
+            var supplySlotFilters = SupplySlotsInScene[i].GetComponent<SpriteRenderer>();
+            supplySlotFilters.enabled = !supplySlotFilters.enabled;
+        }
     }
 }
