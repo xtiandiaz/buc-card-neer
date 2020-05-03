@@ -128,7 +128,7 @@ public class Sea : ISea
         foreach (var slot in Slots)
             slot.Lock();
 
-        VisualEffectsController.ToggleTintFilterToSupplySlots();
+        VisualEffectsController.ToggleColorFilterToSupplySlots(true);
     }
 
     public void Unlock()
@@ -136,7 +136,7 @@ public class Sea : ISea
         foreach (var slot in Slots)
             slot.Unlock();
 
-        VisualEffectsController.ToggleTintFilterToSupplySlots();
+        VisualEffectsController.ToggleColorFilterToSupplySlots(false);
     }
     
     public void Dispose()

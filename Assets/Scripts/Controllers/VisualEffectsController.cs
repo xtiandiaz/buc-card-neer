@@ -48,15 +48,28 @@ public class VisualEffectsController : IVisualEffectsController
         disposables?.Dispose();
     }
 
-    public static void ToggleTintFilterToSupplySlots()
+    public static void ToggleColorFilterToSupplySlots(bool toggle)
     {
-        GameObject[] SupplySlotsInScene = GameObject.FindGameObjectsWithTag("SupplyCardFilter");
+        bool isColorFiltered = toggle; 
+        
+        float defaultSaturationAmount = 1f; // To do: Switch this with a variable from shader.
+        float filteredSaturationAmount = 0.9f; // To do: Switch this with a relative value.
+        float transitionTime = 0.05f;
 
-        for (int i = 0; i < SupplySlotsInScene.Length; i++)
+        GameObject[] supplyCards = GameObject.FindGameObjectsWithTag("SupplyCardFilter");
+
+        for (int i = 0; i < supplyCards.Length; i++)
         {
-            Debug.Log("Supply Slots: " + i);
-            var supplySlotFilters = SupplySlotsInScene[i].GetComponent<SpriteRenderer>();
-            supplySlotFilters.enabled = !supplySlotFilters.enabled;
+            var supplyCardShaders = supplyCards[i].GetComponent<CardShader>();
+            var supplyCard = supplyCards[i].GetComponent<CardView>();
+            
+            if (!supplyCard.IsBoarded)
+            {
+                if (isColorFiltered)
+                    supplyCardShaders.Fade(filteredSaturationAmount, transitionTime); // To do: Change saturation, not opacity.
+                else
+                    supplyCardShaders.Fade(defaultSaturationAmount, transitionTime); // To do: Change saturation, not opacity.
+            }
         }
     }
 }

@@ -82,7 +82,7 @@ public class CardView : MonoBehaviour, ICardView
 
     public bool IsBoarded
     {
-        private get => isBoarded.Value;
+        get => isBoarded.Value;
         set => isBoarded.Value = value;
     }
 
