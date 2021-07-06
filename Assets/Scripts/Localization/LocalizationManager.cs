@@ -100,7 +100,7 @@ public class LocalizationManager : ILocalizationManager, ILocalizator
     {
         GetObservableEntry(withKey)
             .TakeUntilDestroy(textField)
-            .Subscribe(textField.SetText)
+            .Subscribe(text => textField.SetText(text))
             .AddTo(textField);
     }
 
