@@ -28,11 +28,19 @@ SpriteAtlas:
       allowAlphaSplitting: 0
       enableRotation: 1
       enableTightPacking: 1
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: bc1fdcda3d8024a90925b402284e75da, type: 3}
-    totalSpriteSurfaceArea: 1400000
     bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+    packedSpriteRenderDataKeys:
+    - dd8d17801cdb34453afae4bd4bdc8b76: 21300000
+    - 86f1ad9090ae042bab70c5a9265ea93d: 21300000
+    - 1f40b4c98798046f5b45d2e541ce3e4f: 21300000
+    - 3b1beceaca5484967a72d8c2cd76f87c: 21300000
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: dd8d17801cdb34453afae4bd4bdc8b76, type: 3}
@@ -44,5 +52,6 @@ SpriteAtlas:
   - Inspector
   - Pirate
   - Player
+  m_RenderDataMap: {}
   m_Tag: FrontFaces
   m_IsVariant: 0

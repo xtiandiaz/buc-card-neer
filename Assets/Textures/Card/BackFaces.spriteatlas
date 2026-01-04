@@ -28,11 +28,20 @@ SpriteAtlas:
       allowAlphaSplitting: 0
       enableRotation: 1
       enableTightPacking: 1
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: cd54c4964b8cb4b8692ac631a247b8c4, type: 3}
-    totalSpriteSurfaceArea: 1750000
     bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+    packedSpriteRenderDataKeys:
+    - e0c5ddc0092624ea18a4afd9dcb6599a: 21300000
+    - 3524d803fc7b741fdbaa13e573d40f7c: 21300000
+    - 2f2aa4140721a48ceb58dbef774bb478: 21300000
+    - 54b63cc400e4a44b1954a5f1a9a6846d: 21300000
+    - 5051615c02c57464d89499432909e4a6: 21300000
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: e0c5ddc0092624ea18a4afd9dcb6599a, type: 3}
@@ -46,5 +55,6 @@ SpriteAtlas:
   - MerchantShip
   - PirateShip
   - InspectorShip
+  m_RenderDataMap: {}
   m_Tag: BackFaces
   m_IsVariant: 0

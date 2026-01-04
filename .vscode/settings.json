@@ -1,6 +1,5 @@
 {
-    "files.exclude":
-    {
+    "files.exclude": {
         "**/.DS_Store": true,
         "**/.git": true,
         "**/.gitmodules": true,
@@ -50,5 +49,7 @@
         "ProjectSettings/": true,
         "temp/": true,
         "Temp/": true
-    }
+    },
+    "dotnet.preferCSharpExtension": true,
+    "dotnet.defaultSolution": "buc-card-neer.slnx"
 }
