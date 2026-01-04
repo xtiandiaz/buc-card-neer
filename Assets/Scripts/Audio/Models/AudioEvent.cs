@@ -4,7 +4,7 @@ using Random = UnityEngine.Random;
 public interface IAudioEvent
 {
 	AudioEventKey Key { get; }
-	AudioClip? Clip { get; }
+	AudioClip Clip { get; }
 	float Volume { get; }
 	float Pitch { get; }
 	bool ShouldLoop { get; }
@@ -20,7 +20,7 @@ public class AudioEvent : ScriptableObject, IAudioEvent
 	[SerializeField] private bool shouldLoop = default;
 	
 	public AudioEventKey Key => key;
-	public AudioClip? Clip => clips.Length > 0 ? clips[Random.Range(0, clips.Length)] : null;
+	public AudioClip Clip => clips.Length > 0 ? clips[Random.Range(0, clips.Length)] : null;
 	public float Volume => volume;
 	public float Pitch => pitch;
 	public bool ShouldLoop => shouldLoop;
