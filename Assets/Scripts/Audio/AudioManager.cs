@@ -64,10 +64,15 @@ public class AudioManager : IAudioManager
             Debug.LogError("[AudioManager] Attempted to play a null Audio Event.");
             return;
         }
+        if (audioEvent.Clip == null)
+        {
+            Debug.LogWarning($"[AudioManager] Missing audio event clips for {audioEvent.Key}");
+            return;
+        }
         
         var source = sourcePool.Spawn(audioEvent);
         
-        disposables.Add(Observable.Timer(TimeSpan.FromSeconds(source.clip.length))
+        disposables.Add(Observable.Timer(TimeSpan.FromSeconds(source.clip?.length ?? 0))
             .Subscribe(_ => sourcePool.Despawn(source)));
        
         source.Play();
