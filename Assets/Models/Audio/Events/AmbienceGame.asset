@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: AmbienceGame
   m_EditorClassIdentifier: 
   key: 1000
-  clips:
-  - {fileID: 8300000, guid: 31e05f3bd65b47e4b8e48ad8d1651d4c, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

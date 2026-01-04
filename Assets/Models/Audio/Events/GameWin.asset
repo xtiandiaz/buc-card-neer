@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: GameWin
   m_EditorClassIdentifier: 
   key: 3003
-  clips:
-  - {fileID: 8300000, guid: bf358ecc45fc0be4ea736a8105587582, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

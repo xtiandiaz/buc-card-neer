@@ -13,9 +13,7 @@ MonoBehaviour:
   m_Name: CardSupplyCascade
   m_EditorClassIdentifier: 
   key: 2600
-  clips:
-  - {fileID: 8300000, guid: 3ca5f1aedafd61e46b6c86f5abc726ed, type: 3}
-  - {fileID: 8300000, guid: 6af83ab10d131284bbaeec0d7be6a085, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

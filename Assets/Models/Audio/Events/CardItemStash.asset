@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: CardItemStash
   m_EditorClassIdentifier: 
   key: 2501
-  clips:
-  - {fileID: 8300000, guid: 1d80c27ba7a727b4a8396948940c515c, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

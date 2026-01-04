@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: UITapButtonConfirm
   m_EditorClassIdentifier: 
   key: 5101
-  clips:
-  - {fileID: 8300000, guid: 15e9678aa5daa2e4f8d3936795503a43, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

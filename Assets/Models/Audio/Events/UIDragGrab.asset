@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: UIDragGrab
   m_EditorClassIdentifier: 
   key: 5001
-  clips:
-  - {fileID: 8300000, guid: a753f0de16cf20b4c9c7caa28699026c, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

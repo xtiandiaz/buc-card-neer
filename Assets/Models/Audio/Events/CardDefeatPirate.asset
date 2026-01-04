@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: CardDefeatPirate
   m_EditorClassIdentifier: 
   key: 2302
-  clips:
-  - {fileID: 8300000, guid: 08773c911c28c2a419c9c7359d47ec51, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

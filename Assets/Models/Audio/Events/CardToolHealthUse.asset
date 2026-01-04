@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: CardToolHealthUse
   m_EditorClassIdentifier: 
   key: 2701
-  clips:
-  - {fileID: 8300000, guid: 5cd87955e307421409ead339bcc59fcc, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

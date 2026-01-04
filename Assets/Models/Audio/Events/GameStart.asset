@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: GameStart
   m_EditorClassIdentifier: 
   key: 3002
-  clips:
-  - {fileID: 8300000, guid: 3a711baa92d1c2e4ea8413caa8236014, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

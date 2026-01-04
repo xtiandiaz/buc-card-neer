@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: CardClashBribe
   m_EditorClassIdentifier: 
   key: 2201
-  clips:
-  - {fileID: 8300000, guid: 5ec00e1b0eceb4248b8ae16923689d5e, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

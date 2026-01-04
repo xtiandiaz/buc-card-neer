@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: MusicGameLoop
   m_EditorClassIdentifier: 
   key: 4000
-  clips:
-  - {fileID: 0}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

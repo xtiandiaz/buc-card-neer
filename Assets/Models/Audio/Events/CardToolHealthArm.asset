@@ -13,11 +13,7 @@ MonoBehaviour:
   m_Name: CardToolHealthArm
   m_EditorClassIdentifier: 
   key: 0
-  clips:
-  - {fileID: 0}
-  volume:
-    minValue: 1
-    maxValue: 1
-  pitch:
-    minValue: 1.0037217
-    maxValue: 1.0037217
+  clips: []
+  volume: 1
+  pitch: 1
+  shouldLoop: 0

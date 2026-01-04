@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: CardBoardMonster
   m_EditorClassIdentifier: 
   key: 2102
-  clips:
-  - {fileID: 8300000, guid: 0c7e2055dc409c1468b452612adce0e0, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

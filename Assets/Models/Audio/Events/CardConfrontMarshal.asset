@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: CardConfrontMarshal
   m_EditorClassIdentifier: 
   key: 2204
-  clips:
-  - {fileID: 8300000, guid: f93cd1fa8bb6e3f4cbe642540d6318a8, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

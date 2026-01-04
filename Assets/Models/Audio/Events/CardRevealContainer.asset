@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: CardRevealContainer
   m_EditorClassIdentifier: 
   key: 2400
-  clips:
-  - {fileID: 8300000, guid: fba7db9d3b6273f4fb2feb28e7e57f12, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

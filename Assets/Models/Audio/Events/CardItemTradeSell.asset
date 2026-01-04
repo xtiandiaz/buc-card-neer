@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: CardItemTradeSell
   m_EditorClassIdentifier: 
   key: 2503
-  clips:
-  - {fileID: 8300000, guid: 6d909de165b3fc1459d908258ed96114, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

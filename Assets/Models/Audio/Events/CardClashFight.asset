@@ -13,9 +13,7 @@ MonoBehaviour:
   m_Name: CardClashFight
   m_EditorClassIdentifier: 
   key: 2203
-  clips:
-  - {fileID: 8300000, guid: 50620e856013cde42bbbf508ffb0f3d5, type: 3}
-  - {fileID: 8300000, guid: 34978c4114eaabf459e91aa1cc39253c, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

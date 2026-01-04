@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: CardToolMeleeUse
   m_EditorClassIdentifier: 
   key: 2703
-  clips:
-  - {fileID: 8300000, guid: 720136544708ab447920c336ef13eea5, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

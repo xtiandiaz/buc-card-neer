@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: CardSupplyRedeal
   m_EditorClassIdentifier: 
   key: 2601
-  clips:
-  - {fileID: 8300000, guid: bd97b83971efc8840a4a81f9533e3161, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

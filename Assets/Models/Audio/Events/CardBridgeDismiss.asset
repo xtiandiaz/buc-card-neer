@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: CardBridgeDismiss
   m_EditorClassIdentifier: 
   key: 2800
-  clips:
-  - {fileID: 8300000, guid: b7d65059d1482774a8535b7f9323d17d, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

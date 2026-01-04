@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: CardToolRangedHitCatapult
   m_EditorClassIdentifier: 
   key: 2706
-  clips:
-  - {fileID: 8300000, guid: 4a8757807638ee64ea467ecbd37e1bfc, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

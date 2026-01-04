@@ -13,11 +13,7 @@ MonoBehaviour:
   m_Name: CardClashDestroy
   m_EditorClassIdentifier: 
   key: 0
-  clips:
-  - {fileID: 8300000, guid: bf4ef5018d69d0e4d9b4260d3b966f99, type: 3}
-  volume:
-    minValue: 1
-    maxValue: 1
-  pitch:
-    minValue: 1.0037217
-    maxValue: 1.0037217
+  clips: []
+  volume: 1
+  pitch: 1
+  shouldLoop: 0

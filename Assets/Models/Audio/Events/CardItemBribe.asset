@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: CardItemBribe
   m_EditorClassIdentifier: 
   key: 2500
-  clips:
-  - {fileID: 8300000, guid: 764c2ae633d574145904c4b6393443e5, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: UIDragCancel
   m_EditorClassIdentifier: 
   key: 5000
-  clips:
-  - {fileID: 8300000, guid: 2835e9f2cb735f647b075d57ead8721e, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0

@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: GameAssemble
   m_EditorClassIdentifier: 
   key: 3000
-  clips:
-  - {fileID: 8300000, guid: ee740b669f2d31d4eb01aed33702fe24, type: 3}
+  clips: []
   volume: 1
   pitch: 1
   shouldLoop: 0
