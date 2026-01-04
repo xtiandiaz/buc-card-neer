@@ -1,4 +1,5 @@
-# Sly Tides
-Sly Tides game Unity project.
+# Buc-card-neer
 
-Requires **Unity 2019.3.5f1**
+A prototype of a card game with a buccaneering theme.
+
+Requires **Unity 6000.3.2f1**
