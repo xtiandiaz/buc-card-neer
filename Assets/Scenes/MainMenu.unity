@@ -391,6 +391,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3527700012517399649, guid: d8d0b5a0eecf542879d52b0424f04a6a,
+        type: 3}
+      propertyPath: m_ChildControlWidth
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3527700012517399655, guid: d8d0b5a0eecf542879d52b0424f04a6a,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -428,10 +433,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3527700012936657207, guid: d8d0b5a0eecf542879d52b0424f04a6a,
         type: 3}
-      propertyPath: m_FontData.m_Font
-      value: 
-      objectReference: {fileID: 12800000, guid: 3811403f69f8b41f8988a951b48e8715,
-        type: 3}
+      propertyPath: m_Text
+      value: Play
+      objectReference: {fileID: 0}
     - target: {fileID: 7300648199759978439, guid: d8d0b5a0eecf542879d52b0424f04a6a,
         type: 3}
       propertyPath: m_AnchoredPosition.x
