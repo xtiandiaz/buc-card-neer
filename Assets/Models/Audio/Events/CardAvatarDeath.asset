@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: CardAvatarDeath
   m_EditorClassIdentifier: 
   key: 2000
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: 86c84129bca5041f7b71ba80ff515f59, type: 3}
   volume: 1
   pitch: 1
   shouldLoop: 0

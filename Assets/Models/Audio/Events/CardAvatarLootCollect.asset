@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: CardAvatarLootCollect
   m_EditorClassIdentifier: 
   key: 0
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: 28a9c3c5fa8d14fe0bba893a2201d7d1, type: 3}
   volume: 1
   pitch: 1
   shouldLoop: 0

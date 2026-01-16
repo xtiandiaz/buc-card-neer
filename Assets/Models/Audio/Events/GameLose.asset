@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: GameLose
   m_EditorClassIdentifier: 
   key: 3001
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: 5f72dd5d18ba44398b12b15817ee24a6, type: 3}
   volume: 1
   pitch: 1
   shouldLoop: 0

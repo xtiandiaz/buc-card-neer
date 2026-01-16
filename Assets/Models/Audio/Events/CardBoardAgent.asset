@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: CardBoardAgent
   m_EditorClassIdentifier: 
   key: 0
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: 28564c60426714b00bd1f4114806cccb, type: 3}
   volume: 1
   pitch: 1
   shouldLoop: 0
