@@ -4,6 +4,8 @@ using UnityEngine;
 public class CardCustomizer : MonoBehaviour
 {
     [SerializeField] protected CardValue cardValue = default;
+    
+    [CanBeNull] [SerializeField] protected CardValue cardValue2 = default;
     [CanBeNull]
     [SerializeField] protected CardValue lockValue = default;
     [CanBeNull]
@@ -28,10 +30,8 @@ public class CardCustomizer : MonoBehaviour
     {
         set
         {
-            if (cardValue == null)
-                return;
-            
-            cardValue.SetValue(value);
+            cardValue?.SetValue(value);
+            cardValue2?.SetValue(value);
         }
     }
 
@@ -39,10 +39,11 @@ public class CardCustomizer : MonoBehaviour
     {
         set
         {
-            if (cardValue == null)
-                return;
+            if (cardValue != null)
+                cardValue.Color = value;
             
-            cardValue.Color = value;
+            if (cardValue2 != null)
+                cardValue2.Color = value;
         }
     }
 
@@ -50,10 +51,7 @@ public class CardCustomizer : MonoBehaviour
     {
         set
         {
-            if (lockValue == null)
-                return;
-            
-            lockValue.SetValue(value);
+            lockValue?.SetValue(value);
         }
     }
 
@@ -61,8 +59,7 @@ public class CardCustomizer : MonoBehaviour
     {
         set 
         { 
-            if (cardName != null)
-                cardName.SetValue(value); 
+            cardName?.SetValue(value); 
         }
     }
 
@@ -99,7 +96,7 @@ public class CardCustomizer : MonoBehaviour
     {
         set
         {
-            if (frontMotif != null) 
+            if (frontMotif != null)
                 frontMotif.sprite = value;
         }
     }
@@ -108,7 +105,7 @@ public class CardCustomizer : MonoBehaviour
     {
         set
         {
-            if (frontMotif != null) 
+            if (frontMotif != null)
                 frontMotif.color = value;
         }
     }
@@ -117,7 +114,7 @@ public class CardCustomizer : MonoBehaviour
     {
         set
         {
-            if (backMotif != null) 
+            if (backMotif != null)
                 backMotif.sprite = value;
         }
     }
@@ -139,19 +136,17 @@ public class CardCustomizer : MonoBehaviour
     
     public void ToggleValueVisibility(bool toValue)
     {
-        if (cardValue != null) 
-            cardValue.ToggleVisibility(toValue);
+        cardValue?.ToggleVisibility(toValue);
+        cardValue2?.ToggleVisibility(toValue);
     }
     
     public void ToggleLockVisibility(bool toValue)
     {
-        if (lockValue != null) 
-            lockValue.ToggleVisibility(toValue);
+        lockValue?.ToggleVisibility(toValue);
     }
 
     public void ToggleSuitVisibility(bool toValue)
     {
-        if (suit != null)
-            suit.ToggleVisibility(toValue);
+        suit?.ToggleVisibility(toValue);
     }
 }

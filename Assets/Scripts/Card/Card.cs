@@ -176,6 +176,10 @@ public class Card : ICard
         return Observable.Create<Unit>(observer =>
         {
             Value -= withValue;
+            
+            Debug.Log("Hit");
+            Debug.Log(Type);
+            Debug.Log(withValue);
 
             if (Value <= 0)
                 return Destroy()
@@ -289,6 +293,10 @@ public class Card : ICard
                 if (!IsMonster)
                     return Hit(withValue)
                         .Subscribe(observer);
+                        
+                Debug.Log("OnClashed");
+                Debug.Log(Type);
+                Debug.Log(withValue);
 
                 Hack(withValue);
 

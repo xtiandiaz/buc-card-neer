@@ -118,6 +118,7 @@ GameObject:
   - component: {fileID: 502908570983209038}
   - component: {fileID: 3718507041543053044}
   - component: {fileID: 1022231630767127457}
+  - component: {fileID: 7402274769181889496}
   m_Layer: 0
   m_Name: Value
   m_TagString: Untagged
@@ -289,6 +290,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 3718507041543053044}
   m_maskType: 0
+--- !u!114 &7402274769181889496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 458901535990264896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19f4114ebaaf4fe18c6c013c396e3d33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CardValue
+  textRenderers:
+  - {fileID: 1022231630767127457}
 --- !u!1 &684478429683352594
 GameObject:
   m_ObjectHideFlags: 0
@@ -533,6 +548,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardValue: {fileID: 301429407380724858}
+  cardValue2: {fileID: 7402274769181889496}
   lockValue: {fileID: 0}
   cardName: {fileID: 0}
   suit: {fileID: 0}
@@ -771,7 +787,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textRenderers:
-  - {fileID: 1246120447331816975}
   - {fileID: 1246120447331816975}
 --- !u!23 &441183325462975518
 MeshRenderer:
