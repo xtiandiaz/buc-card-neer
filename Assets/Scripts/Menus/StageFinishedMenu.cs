@@ -3,6 +3,7 @@ using DG.Tweening;
 using TMPro;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
 public interface IStageFinishedMenu : IMenu
@@ -15,9 +16,9 @@ public class StageFinishedMenu : WorldSpaceMenu, IStageFinishedMenu
     [SerializeField] private ButtonText replayButton = default;
     [SerializeField] private ButtonText quitButton = default;
 
-    [SerializeField] private TextMeshProUGUI scoreField = default;
-    [SerializeField] private TextMeshProUGUI highScoreField = default;
-    [SerializeField] private TextMeshProUGUI balanceField = default;
+    [SerializeField] private Text scoreField = default;
+    [SerializeField] private Text highScoreField = default;
+    [SerializeField] private Text balanceField = default;
 
     private IAppNavigator appNavigator;
     private IPlayerStats playerStats;
@@ -67,7 +68,7 @@ public class StageFinishedMenu : WorldSpaceMenu, IStageFinishedMenu
                     return transform.DOPunchScale(Vector3.one * 0.75f, 0.5f, 3);
                 }
 
-                Tween Count(int fromValue, int toValue, TMP_Text inField)
+                Tween Count(int fromValue, int toValue, Text inField)
                 {
                     var count = fromValue;
 

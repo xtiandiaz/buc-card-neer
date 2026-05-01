@@ -137,6 +137,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
+  m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: -838278561
@@ -206,9 +207,9 @@ MonoBehaviour:
   closeButton: {fileID: 0}
   replayButton: {fileID: 2252187285171320953}
   quitButton: {fileID: 2268795309598980823}
-  scoreField: {fileID: 0}
-  highScoreField: {fileID: 0}
-  balanceField: {fileID: 0}
+  scoreField: {fileID: 6214269001378935134}
+  highScoreField: {fileID: 2571295820567017947}
+  balanceField: {fileID: 8013142792821015008}
 --- !u!1 &3778069253307700443
 GameObject:
   m_ObjectHideFlags: 0
